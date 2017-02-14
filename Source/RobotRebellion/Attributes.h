@@ -15,6 +15,9 @@ protected:
     unsigned char m_strength;
     unsigned char m_defense;
     unsigned char m_agility;
+
+
+protected:
     Attributes()
         : m_health{}, m_maxHealth{}, m_mana{}, m_maxMana{},
         m_strength{}, m_defense{}, m_agility{}
@@ -28,44 +31,115 @@ protected:
     ~Attributes()
     {}
 
-    /*
-    * GETTER
-    */
-    // HEALTH
+
+protected:
+    /************************************************************************/
+    /*                          GETTER                                      */
+    /************************************************************************/
+    /*******HEALTH********/
+    //get the current health
     unsigned int getHealth() const noexcept
     {
         return m_health;
     }
+
+    //get the maximum health
     unsigned int getMaxHealth() const noexcept
     {
         return m_maxHealth;
     }
-    // MANA
+
+    /*******MANA********/
+    //get the current mana value
     unsigned int getMana() const noexcept
     {
         return m_mana;
     }
+
+    //get the maximum mana value
     unsigned int getMaxMana() const noexcept
     {
         return m_maxMana;
     }
-    // STRENGTH
+
+    /*******STRENGTH********/
+    //get the current strength 
     unsigned char getStrength() const noexcept
     {
         return m_strength;
     }
-    // DEFENSE
+
+    /*******DEFENSE********/
+    // get the current defense
     unsigned char getDefense() const noexcept
     {
         return m_defense;
     }
-    // AGILITY
+
+    /*******AGILITY********/
+    // get the current agility
     unsigned char getAgility() const noexcept
     {
         return m_agility;
     }
 
-    /*
-    * SETTER
-    */
+    /************************************************************************/
+    /*                          SETTER                                      */
+    /************************************************************************/
+    /*******HEALTH********/
+    //set the current health
+    unsigned int setHealth(unsigned int newValue) noexcept
+    {
+        m_health = (newValue > m_maxHealth) ? m_maxHealth : newValue;
+    }
+
+    //set the maximum value of health
+    unsigned int setMaxHealth(unsigned int newValue) noexcept
+    {
+        m_maxHealth = newValue;
+
+        if (newValue < m_health)
+        {
+            m_health = m_maxHealth;
+        }
+    }
+
+    /*******MANA********/
+    // set the current mana value
+    unsigned int setMana(unsigned int newValue) noexcept
+    {
+        m_mana = (newValue > m_maxMana) ? m_maxMana : newValue;
+    }
+
+    //set the maximum mana value
+    unsigned int setMaxMana(unsigned int newValue) noexcept
+    {
+        m_maxMana = newValue;
+
+        if (newValue < m_maxMana)
+        {
+            m_maxMana = m_maxMana;
+        }
+    }
+
+    /*******STRENGTH********/
+    // set the current strength value
+    unsigned char setStrength(unsigned char newValue) noexcept
+    {
+        m_strength = newValue;
+    }
+
+    /*******DEFENSE********/
+    // set the current defense value
+    unsigned char setDefense(unsigned char newValue) noexcept
+    {
+        m_defense = newValue;
+    }
+
+    /*******AGILITY********/
+    // set the current agility value
+    unsigned char setAgility(unsigned char newValue) noexcept
+    {
+        m_agility = newValue;
+    }
 };
