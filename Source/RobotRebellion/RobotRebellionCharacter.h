@@ -1,10 +1,11 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
+#include "Attributes.h"
 #include "GameFramework/Character.h"
 #include "RobotRebellionCharacter.generated.h"
 
 UCLASS(config=Game)
-class ARobotRebellionCharacter : public ACharacter
+class ARobotRebellionCharacter : public ACharacter, public Attributes
 {
 	GENERATED_BODY()
 

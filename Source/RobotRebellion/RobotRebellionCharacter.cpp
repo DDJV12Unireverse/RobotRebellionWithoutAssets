@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////
 // ARobotRebellionCharacter
 
-ARobotRebellionCharacter::ARobotRebellionCharacter()
+ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
