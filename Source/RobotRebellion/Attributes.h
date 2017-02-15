@@ -94,15 +94,7 @@ protected:
     }
 
     //set the maximum value of health
-    unsigned int setMaxHealth(unsigned int newValue) noexcept
-    {
-        m_maxHealth = newValue;
-
-        if (newValue < m_health)
-        {
-            m_health = m_maxHealth;
-        }
-    }
+    unsigned int setMaxHealth(unsigned int newValue) noexcept;
 
     /*******MANA********/
     // set the current mana value
@@ -112,15 +104,7 @@ protected:
     }
 
     //set the maximum mana value
-    unsigned int setMaxMana(unsigned int newValue) noexcept
-    {
-        m_maxMana = newValue;
-
-        if (newValue < m_maxMana)
-        {
-            m_maxMana = m_maxMana;
-        }
-    }
+    unsigned int setMaxMana(unsigned int newValue) noexcept;
 
     /*******STRENGTH********/
     // set the current strength value
@@ -142,4 +126,11 @@ protected:
     {
         m_agility = newValue;
     }
+
+
+    /************************************************************************/
+    /*                          UTILITARY                                   */
+    /************************************************************************/
+protected:
+
 };
