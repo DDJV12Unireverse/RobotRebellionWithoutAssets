@@ -6,18 +6,10 @@
 
 
 
-class DamageHelperConstants
-{
-public:
-    static constexpr const float RANDOM_MIN_COEFFICIENT = 0.8f;
-    static constexpr const float RANDOM_MAX_COEFFICIENT = 1.2f;
-};
-
-Damage::Damage(ARobotRebellionCharacter* assailant, ARobotRebellionCharacter* receiver) :
+Damage::Damage(const ARobotRebellionCharacter*const assailant, const ARobotRebellionCharacter*const receiver) :
     m_assailant{ assailant },
     m_receiver{ receiver }
 {
-    //FMath::FRandRange();
 }
 
 Damage::~Damage()

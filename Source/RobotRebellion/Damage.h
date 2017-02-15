@@ -4,37 +4,49 @@
 
 
 #include "Algorithm.h"
+#include <Runtime/Core/Public/Math/UnrealMathUtility.h>
 
 /**
  * 
  */
+class DamageHelperConstants
+{
+public:
+    static constexpr const float RANDOM_MIN_COEFFICIENT = 0.8f;
+    static constexpr const float RANDOM_MAX_COEFFICIENT = 1.2f;
+};
+
+class ARobotRebellionCharacter;
+
 class ROBOTREBELLION_API Damage
 {
-private:
-    class ARobotRebellionCharacter;
-
-
 public:
     using CoefficientType = float;
     using DamageValue = unsigned int;
 
 
 private:
-    ARobotRebellionCharacter* m_assailant;
-    ARobotRebellionCharacter* m_receiver;
+    const ARobotRebellionCharacter* m_assailant;
+    const ARobotRebellionCharacter* m_receiver;
 
 
 public:
-	Damage(ARobotRebellionCharacter* m_assailant, ARobotRebellionCharacter* m_receiver);
+	Damage(const ARobotRebellionCharacter*const m_assailant, const ARobotRebellionCharacter*const m_receiver);
 	~Damage();
 
 
 public:
     template<class Func>
-    DamageValue operator()(Func& algorithm, CoefficientType damageCoefficient)
+    DamageValue operator()(const Func& algorithm, CoefficientType damageCoefficient) const
     {
         Algorithm<Func> alg{ algorithm };
-        return (*static_cast<Algorithm<Func>*>(alg))(damageCoefficient, m_assailant, m_receiver);
+
+        return 
+            damageCoefficient * 
+            FMath::FRandRange(
+                DamageHelperConstants::RANDOM_MIN_COEFFICIENT, 
+                DamageHelperConstants::RANDOM_MAX_COEFFICIENT
+            ) * alg.operator()<DamageValue>(m_assailant, m_receiver);
     }
 };
 

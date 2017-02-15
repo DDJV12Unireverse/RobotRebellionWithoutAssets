@@ -4,6 +4,11 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "RobotRebellionCharacter.h"
 
+#include "Damage.h"
+#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+
+
+
 //////////////////////////////////////////////////////////////////////////
 // ARobotRebellionCharacter
 
@@ -40,6 +45,7 @@ ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,6 +116,20 @@ void ARobotRebellionCharacter::MoveForward(float Value)
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
+
+
+
+
+        Damage test(this, this);
+
+        unsigned int k = test([](const ARobotRebellionCharacter*, const ARobotRebellionCharacter*) {
+                return 10;
+            },
+            3.f
+        );
+
+        //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Dammage %d"));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Dammage " + FString::FromInt(k)));
 	}
 }
 

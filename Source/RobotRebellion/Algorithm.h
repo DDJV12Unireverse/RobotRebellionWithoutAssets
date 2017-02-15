@@ -13,8 +13,8 @@ public:
 
 
 public:
-    template<class ... Args>
-    void operator()(Args&& ... args);
+    template<class ReturnType, class ... Args>
+    ReturnType operator()(Args&& ... args);
 };
 
 
@@ -32,10 +32,10 @@ public:
 
 
 public:
-    template<class ... Args>
-    void operator()(Args&& ... args)
+    template<class ReturnType, class ... Args>
+    ReturnType operator()(Args&& ... args)
     {
-        m_func(std::forward<Args>(args)...);
+        return m_func(std::forward<Args>(args)...);
     }
 };
 
