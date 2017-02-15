@@ -2,6 +2,29 @@
 
 #pragma once
 
+#define GENERATED_USING_FROM_Attributes public: \
+using Attributes::AttributeULongType; \
+using Attributes::AttributeUSmallType; \
+using Attributes::getHealth; \
+using Attributes::getMaxHealth; \
+using Attributes::getMana; \
+using Attributes::getMaxMana; \
+using Attributes::getStrength; \
+using Attributes::getDefense; \
+using Attributes::getAgility; \
+using Attributes::setHealth; \
+using Attributes::setMaxHealth; \
+using Attributes::setMana; \
+using Attributes::setMaxMana; \
+using Attributes::setStrength; \
+using Attributes::setDefense; \
+using Attributes::setAgility; \
+using Attributes::inflictDamage; \
+using Attributes::restoreHealth; \
+using Attributes::isDead; \
+
+
+
 /**
  * 
  */
