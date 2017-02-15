@@ -22,3 +22,15 @@ void Attributes::setMaxHealth(AttributeULongType newValue) noexcept
         m_health = m_maxHealth;
     }
 }
+
+void Attributes::inflictDamage(AttributeULongType damage) noexcept
+{
+    if (damage < m_health)
+    {
+        m_health -= damage;
+    }
+    else
+    {
+        m_health = 0;
+    }
+}

@@ -161,15 +161,7 @@ protected:
     /************************************************************************/
 protected:
     //Inflict damage, reduce the current health value and if damage > health, health goes to 0
-    void inflictDamage(AttributeULongType damage) noexcept
-    {
-        if (damage > m_health)
-        {
-            m_health = 0;
-        }
-
-        m_health -= damage;
-    }
+    void inflictDamage(AttributeULongType damage) noexcept;
 
     //restore current health value and if the value to restore is over max_health, health goes to max_health
     void restoreHealth(AttributeULongType valueToRestore) noexcept

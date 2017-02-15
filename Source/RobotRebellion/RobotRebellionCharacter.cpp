@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////
 // ARobotRebellionCharacter
 
-ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes()
+ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes(1000, 1000, 100, 100, 10, 5, 6)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -118,18 +118,37 @@ void ARobotRebellionCharacter::MoveForward(float Value)
 		AddMovementInput(Direction, Value);
 
 
+        // A retirer
 
+        int b = 2;
 
         Damage test(this, this);
 
-        unsigned int k = test([](const ARobotRebellionCharacter*, const ARobotRebellionCharacter*) {
-                return 10;
+        unsigned int k = test([b](const ARobotRebellionCharacter* assaillant, const ARobotRebellionCharacter* receiver) {
+                float intermediary = static_cast<float>(assaillant->getStrength()) - static_cast<float>(receiver->getDefense());
+                if (intermediary < 1.f)
+                {
+                    intermediary = 1.f;
+                }
+
+                return b * static_cast<Damage::DamageValue>(static_cast<float>(assaillant->getAgility()) / static_cast<float>(receiver->getAgility()) * intermediary);
             },
             3.f
         );
 
+        this->inflictDamage(k);
+
         //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Dammage %d"));
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Dammage " + FString::FromInt(k)));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, 
+                                         TEXT(
+                                             "received Damage : " + 
+                                             FString::FromInt(k) + 
+                                             " Current PV : " + 
+                                             FString::FromInt(this->getHealth()) + 
+                                             "/" + 
+                                             FString::FromInt(this->getMaxHealth())
+                                         )
+        );
 	}
 }
 
