@@ -7,14 +7,19 @@
  */
 class ROBOTREBELLION_API Attributes
 {
+public:
+    using AttributeULongType = unsigned int;
+    using AttributeUSmallType = unsigned char;
+
+
 protected:
-    unsigned int m_health;
-    unsigned int m_maxHealth;
-    unsigned int m_mana;
-    unsigned int m_maxMana;
-    unsigned char m_strength;
-    unsigned char m_defense;
-    unsigned char m_agility;
+    AttributeULongType m_health;
+    AttributeULongType m_maxHealth;
+    AttributeULongType m_mana;
+    AttributeULongType m_maxMana;
+    AttributeUSmallType m_strength;
+    AttributeUSmallType m_defense;
+    AttributeUSmallType m_agility;
 
 
 protected:
@@ -23,8 +28,8 @@ protected:
         m_strength{}, m_defense{}, m_agility{}
     {}
 
-    Attributes(unsigned int health, unsigned int maxHealth, unsigned int mana, unsigned int maxMana,
-               unsigned char strength, unsigned char defense, unsigned char agility)
+    Attributes(AttributeULongType health, AttributeULongType maxHealth, AttributeULongType mana, AttributeULongType maxMana,
+               AttributeUSmallType strength, AttributeUSmallType defense, AttributeUSmallType agility)
         : m_health{health}, m_maxHealth{maxHealth}, m_mana{mana}, m_maxMana{maxMana},
         m_strength{strength}, m_defense{defense}, m_agility{agility}
     {}
@@ -38,47 +43,47 @@ protected:
     /************************************************************************/
     /*******HEALTH********/
     //get the current health
-    unsigned int getHealth() const noexcept
+    AttributeULongType getHealth() const noexcept
     {
         return m_health;
     }
 
     //get the maximum health
-    unsigned int getMaxHealth() const noexcept
+    AttributeULongType getMaxHealth() const noexcept
     {
         return m_maxHealth;
     }
 
     /*******MANA********/
     //get the current mana value
-    unsigned int getMana() const noexcept
+    AttributeULongType getMana() const noexcept
     {
         return m_mana;
     }
 
     //get the maximum mana value
-    unsigned int getMaxMana() const noexcept
+    AttributeULongType getMaxMana() const noexcept
     {
         return m_maxMana;
     }
 
     /*******STRENGTH********/
     //get the current strength 
-    unsigned char getStrength() const noexcept
+    AttributeUSmallType getStrength() const noexcept
     {
         return m_strength;
     }
 
     /*******DEFENSE********/
     // get the current defense
-    unsigned char getDefense() const noexcept
+    AttributeUSmallType getDefense() const noexcept
     {
         return m_defense;
     }
 
     /*******AGILITY********/
     // get the current agility
-    unsigned char getAgility() const noexcept
+    AttributeUSmallType getAgility() const noexcept
     {
         return m_agility;
     }
@@ -88,41 +93,41 @@ protected:
     /************************************************************************/
     /*******HEALTH********/
     //set the current health
-    unsigned int setHealth(unsigned int newValue) noexcept
+    void setHealth(AttributeULongType newValue) noexcept
     {
         m_health = (newValue > m_maxHealth) ? m_maxHealth : newValue;
     }
 
     //set the maximum value of health
-    unsigned int setMaxHealth(unsigned int newValue) noexcept;
+    void setMaxHealth(AttributeULongType newValue) noexcept;
 
     /*******MANA********/
     // set the current mana value
-    unsigned int setMana(unsigned int newValue) noexcept
+    void setMana(AttributeULongType newValue) noexcept
     {
         m_mana = (newValue > m_maxMana) ? m_maxMana : newValue;
     }
 
     //set the maximum mana value
-    unsigned int setMaxMana(unsigned int newValue) noexcept;
+    void setMaxMana(AttributeULongType newValue) noexcept;
 
     /*******STRENGTH********/
     // set the current strength value
-    unsigned char setStrength(unsigned char newValue) noexcept
+    void setStrength(AttributeUSmallType newValue) noexcept
     {
         m_strength = newValue;
     }
 
     /*******DEFENSE********/
     // set the current defense value
-    unsigned char setDefense(unsigned char newValue) noexcept
+    void setDefense(AttributeUSmallType newValue) noexcept
     {
         m_defense = newValue;
     }
 
     /*******AGILITY********/
     // set the current agility value
-    unsigned char setAgility(unsigned char newValue) noexcept
+    void setAgility(AttributeUSmallType newValue) noexcept
     {
         m_agility = newValue;
     }
@@ -131,6 +136,32 @@ protected:
     /************************************************************************/
     /*                          UTILITARY                                   */
     /************************************************************************/
+protected:
+    //Inflict damage, reduce the current health value and if damage > health, health goes to 0
+    void inflictDamage(AttributeULongType damage) noexcept
+    {
+        if (damage > m_health)
+        {
+            m_health = 0;
+        }
+
+        m_health -= damage;
+    }
+
+    //restore current health value and if the value to restore is over max_health, health goes to max_health
+    void restoreHealth(AttributeULongType valueToRestore) noexcept
+    {
+        setHealth(m_health + valueToRestore);
+    }
+
+    //return true if the player's current health is 0, false otherwise.
+    bool isDead() const noexcept
+    {
+        return m_health == 0;
+    }
+
+
+    //Déserialization and serialization methods
 protected:
 
 };

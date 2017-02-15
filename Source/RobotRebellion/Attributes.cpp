@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "Attributes.h"
 
-unsigned int Attributes::setMaxMana(unsigned int newValue) noexcept
+void Attributes::setMaxMana(AttributeULongType newValue) noexcept
 {
     m_maxMana = newValue;
 
@@ -13,7 +13,7 @@ unsigned int Attributes::setMaxMana(unsigned int newValue) noexcept
     }
 }
 
-unsigned int Attributes::setMaxHealth(unsigned int newValue) noexcept
+void Attributes::setMaxHealth(AttributeULongType newValue) noexcept
 {
     m_maxHealth = newValue;
 
