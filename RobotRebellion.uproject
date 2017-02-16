@@ -9,10 +9,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-<<<<<<< HEAD
 				"CoreUObject",
-=======
->>>>>>> Sprint1-Develop
 				"Engine"
 			]
 		}
