@@ -9,37 +9,41 @@
 
 ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes()
 {
-	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+    // Set size for collision capsule
+    GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
+    // set our turn rates for input
+    BaseTurnRate = 45.f;
+    BaseLookUpRate = 45.f;
 
-	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+    // Don't rotate when the controller rotates. Let that just affect the camera.
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
 
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-	GetCharacterMovement()->JumpZVelocity = 600.f;
-	GetCharacterMovement()->AirControl = 0.2f;
+    // Configure character movement
+    GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+    GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+    GetCharacterMovement()->JumpZVelocity = 600.f;
+    GetCharacterMovement()->AirControl = 0.2f;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+    // Create a camera boom (pulls in towards the player if there is a collision)
+    CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+    CameraBoom->SetupAttachment(RootComponent);
+    CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
+    CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+    // Create a follow camera
+    FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+    FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+    FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+    m_moveSpeed = 0.3f;
+    m_bPressedCrouch = false;
+    m_bPressedRun = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -47,83 +51,188 @@ ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes()
 
 void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-	// Set up gameplay key bindings
-	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+    // Set up gameplay key bindings
+    check(PlayerInputComponent);
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARobotRebellionCharacter::OnStartJump);
+    PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARobotRebellionCharacter::OnStopJump);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &ARobotRebellionCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ARobotRebellionCharacter::MoveRight);
+    PlayerInputComponent->BindAxis("MoveForward", this, &ARobotRebellionCharacter::MoveForward);
+    PlayerInputComponent->BindAxis("MoveRight", this, &ARobotRebellionCharacter::MoveRight);
 
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &ARobotRebellionCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &ARobotRebellionCharacter::LookUpAtRate);
+    // We have 2 versions of the rotation bindings to handle different kinds of devices differently
+    // "turn" handles devices that provide an absolute delta, such as a mouse.
+    // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+    PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+    PlayerInputComponent->BindAxis("TurnRate", this, &ARobotRebellionCharacter::TurnAtRate);
+    PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+    PlayerInputComponent->BindAxis("LookUpRate", this, &ARobotRebellionCharacter::LookUpAtRate);
 
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &ARobotRebellionCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &ARobotRebellionCharacter::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ARobotRebellionCharacter::OnResetVR);
-}
-
-
-void ARobotRebellionCharacter::OnResetVR()
-{
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
-
-void ARobotRebellionCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		Jump();
-}
-
-void ARobotRebellionCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-		StopJumping();
+    //Crouch & Sprint
+    PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ARobotRebellionCharacter::OnCrouchToggle);
+    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ARobotRebellionCharacter::OnStartSprint);
+    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARobotRebellionCharacter::OnStopSprint);
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
 {
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+    // calculate delta for this frame from the rate information
+    AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ARobotRebellionCharacter::LookUpAtRate(float Rate)
 {
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+    // calculate delta for this frame from the rate information
+    AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ARobotRebellionCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+    if ((Controller != NULL) && (Value != 0.0f))
+    {
+        // find out which way is forward
+        const FRotator Rotation = Controller->GetControlRotation();
+        const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
-	}
+        // get forward vector
+        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+        AddMovementInput(Direction, m_moveSpeed*Value);
+    }
 }
 
 void ARobotRebellionCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
-	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-	}
+    if ((Controller != NULL) && (Value != 0.0f))
+    {
+        // find out which way is right
+        const FRotator Rotation = Controller->GetControlRotation();
+        const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+        // get right vector 
+        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+        // add movement in that direction
+        AddMovementInput(Direction, m_moveSpeed*Value);
+    }
+}
+//////////////////////////////////////////////////////////////////////////ADDED FUNCTIONS
+
+///// SERVER
+void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedCrouch, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedRun, COND_SkipOwner);
+}
+
+///// JUMP
+void ARobotRebellionCharacter::OnStartJump()
+{
+    if (m_bPressedCrouch) {
+        OnCrouchToggle();
+    }
+    else {
+        bPressedJump = true;
+    }
+}
+void ARobotRebellionCharacter::OnStopJump()
+{
+    bPressedJump = false;
+}
+
+///// SPRINT
+void ARobotRebellionCharacter::OnStartSprint()
+{
+    if (m_bPressedCrouch) {
+        OnCrouchToggle();
+    }
+    else {
+        //increase move speed
+        m_moveSpeed = 1.0f;
+        m_bPressedRun = true;
+
+        if (Role < ROLE_Authority)
+        {
+            ServerSprintActivate(m_bPressedRun);
+        }
+    }
+}
+
+void ARobotRebellionCharacter::OnStopSprint()
+{
+    //decrease move speed
+    m_moveSpeed = 0.3;
+    m_bPressedRun = false;
+    // Si nous sommes sur un client
+    if (Role < ROLE_Authority)
+    {
+        ServerSprintActivate(m_bPressedRun);
+    }
+}
+
+void ARobotRebellionCharacter::ServerSprintActivate_Implementation(bool NewRunning)
+{
+    if (NewRunning) {
+        OnStartSprint();
+    }
+    else {
+        OnStopSprint();
+    }
+}
+bool ARobotRebellionCharacter::ServerSprintActivate_Validate(bool NewRunning)
+{
+    return true;
+}
+
+void ARobotRebellionCharacter::OnRep_SprintButtonDown()
+{
+    if (m_bPressedRun == true)
+    {
+        OnStartSprint();
+    }
+    else
+    {
+        OnStopSprint();
+    }
+}
+
+/////CROUCH
+void ARobotRebellionCharacter::ServerCrouchToggle_Implementation(bool NewCrouching)
+{
+    OnCrouchToggle();
+}
+bool ARobotRebellionCharacter::ServerCrouchToggle_Validate(bool NewCrouching)
+{
+    return true;
+}
+void ARobotRebellionCharacter::OnRep_CrouchButtonDown()
+{
+    if (m_bPressedCrouch == true)
+    {
+        Crouch();
+    }
+    else
+    {
+        UnCrouch();
+    }
+}
+
+void ARobotRebellionCharacter::OnCrouchToggle()
+{
+    // Si nous sommes déjà accroupis, CanCrouch retourne false.
+    if (m_bPressedCrouch == false)
+    {
+        m_bPressedCrouch = true;
+        m_moveSpeed = 0.1f;
+        Crouch();
+    }
+    else
+    {
+        m_bPressedCrouch = false;
+        m_moveSpeed = 0.3f;
+        UnCrouch();
+    }
+    // Si nous sommes sur un client
+    if (Role < ROLE_Authority)
+    {
+        ServerCrouchToggle(true); // le param n'a pas d'importance pour l'instant
+    }
 }
