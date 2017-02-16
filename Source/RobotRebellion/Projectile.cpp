@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RobotRebellion.h"
+#include "RobotRebellionCharacter.h"
 #include "Projectile.h"
 
 
@@ -57,5 +58,18 @@ void AProjectile::InitVelocity(const FVector& shootDirection)
 void AProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(AProjectile, m_owner);
     //DOREPLIFETIME_CONDITION(AProjectile, m_bPressedCrouch, COND_SkipOwner);
+}
+
+void AProjectile::OnRep_MyOwner()
+{
+    setOwner(m_owner);
+}
+
+void AProjectile::setOwner(ARobotRebellionCharacter *newOwner)
+{
+    m_owner = newOwner;
+    // Propriétaire réseau pour les appels RPC.
+    SetOwner(newOwner);
 }

@@ -5,7 +5,7 @@
 #include "RobotRebellionCharacter.generated.h"
 
 UCLASS(config = Game)
-class ARobotRebellionCharacter : public ACharacter, public Attributes
+class ARobotRebellionCharacter : public ACharacter//, public Attributes
 {
     GENERATED_BODY()
 

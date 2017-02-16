@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+class ARobotRebellionCharacter;
+
 UCLASS()
 class ROBOTREBELLION_API AProjectile : public AActor
 {
@@ -21,6 +23,15 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
     //////////////////////////////////////////////////////////////////////////ADDED MEMBERS /////
     
+
+    ////OWNER////
+    UPROPERTY(Transient, ReplicatedUsing = OnRep_MyOwner)
+        ARobotRebellionCharacter *  m_owner;
+    UFUNCTION()
+    void OnRep_MyOwner();
+
+    void setOwner(ARobotRebellionCharacter *newOwner);
+
     /** Movement component */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
         UProjectileMovementComponent* m_projectileMovement;
