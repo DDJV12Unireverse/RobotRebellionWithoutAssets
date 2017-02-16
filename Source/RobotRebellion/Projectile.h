@@ -36,9 +36,13 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
         UProjectileMovementComponent* m_projectileMovement;
 
-    // Collision Component
+    //// Collision ////
     UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
         USphereComponent* m_collisionComp;
+    // On hit function called every collision
+    UFUNCTION()
+        void OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
+            OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
     
     /** Initialize velocity */

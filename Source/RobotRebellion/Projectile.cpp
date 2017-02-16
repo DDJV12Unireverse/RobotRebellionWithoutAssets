@@ -13,9 +13,11 @@ AProjectile::AProjectile()
 
     // Create Sphere for collision shape
     m_collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-    m_collisionComp->InitSphereRadius(5.0f);
-    RootComponent = m_collisionComp;
+    m_collisionComp->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
     m_collisionComp->BodyInstance.SetCollisionProfileName("Projectile");
+    m_collisionComp->InitSphereRadius(5.0f);
+    
+    RootComponent = m_collisionComp;
     //Projectile Movement datas
     m_projectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
     m_projectileMovement->UpdatedComponent = m_collisionComp;
@@ -29,15 +31,14 @@ AProjectile::AProjectile()
     bNetUseOwnerRelevancy = true;
 
     //Life Time
-    InitialLifeSpan = 3.0f;
+    InitialLifeSpan = 2.0f;
 
 }
 
 // Called when the game starts or when spawned
 void AProjectile::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
 }
 
 // Called every frame
@@ -72,4 +73,15 @@ void AProjectile::setOwner(ARobotRebellionCharacter *newOwner)
     m_owner = newOwner;
     // Propriétaire réseau pour les appels RPC.
     SetOwner(newOwner);
+}
+
+void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
+    OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+    //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Hit"));
+    if (Role == ROLE_Authority)
+    {
+        Destroy();
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Destroy on Server"));
+    }
 }

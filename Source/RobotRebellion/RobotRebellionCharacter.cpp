@@ -247,7 +247,11 @@ void ARobotRebellionCharacter::OnCrouchToggle()
 void ARobotRebellionCharacter::mainFire()
 {
     // Essayer de tirer un projectile
-    if (ProjectileClass != NULL)
+    if (Role < ROLE_Authority)
+    {
+        serverMainFire(); // le param n'a pas d'importance pour l'instant
+    }
+    else if (ProjectileClass != NULL)
     {
 
         // Obtenir la transformation de la caméra
@@ -275,10 +279,6 @@ void ARobotRebellionCharacter::mainFire()
                 projectile->InitVelocity(DirectionDuTir);
             }
         }
-    }
-    if (Role < ROLE_Authority)
-    {
-        serverMainFire(); // le param n'a pas d'importance pour l'instant
     }
 }
 
