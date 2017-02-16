@@ -6,6 +6,7 @@
 
 #include "Damage.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+#include "GlobalDamageMethod.h"
 
 
 
@@ -132,7 +133,7 @@ void ARobotRebellionCharacter::MoveForward(float Value)
 
         Damage test(this, this);
 
-        unsigned int k = test([b](const ARobotRebellionCharacter* assaillant, const ARobotRebellionCharacter* receiver) {
+        /*unsigned int damage = test([b](const ARobotRebellionCharacter* assaillant, const ARobotRebellionCharacter* receiver) {
                 float intermediary = static_cast<float>(assaillant->getStrength()) - static_cast<float>(receiver->getDefense());
                 if (intermediary < 1.f)
                 {
@@ -142,14 +143,16 @@ void ARobotRebellionCharacter::MoveForward(float Value)
                 return b * static_cast<Damage::DamageValue>(static_cast<float>(assaillant->getAgility()) / static_cast<float>(receiver->getAgility()) * intermediary);
             },
             3.f
-        );
+        );*/
 
-        this->inflictDamage(k);
+        unsigned int damage = test(&UGlobalDamageMethod::normalHit, 3.f);
+
+        this->inflictDamage(damage);
 
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
                                          TEXT(
                                              "received Damage : " +
-                                             FString::FromInt(k) +
+                                             FString::FromInt(damage) +
                                              " Current PV : " +
                                              FString::FromInt(this->getHealth()) +
                                              "/" +
