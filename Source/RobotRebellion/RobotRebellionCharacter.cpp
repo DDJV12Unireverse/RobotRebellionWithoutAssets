@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////
 // ARobotRebellionCharacter
 
-ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes(1000, 1000, 100, 100, 10, 5, 6)
+ARobotRebellionCharacter::ARobotRebellionCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -45,7 +45,7 @@ ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes(1000, 1000, 10
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-
+    m_attribute = Attributes(1000, 1000, 1000, 1000, 10, 5, 5);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -138,14 +138,13 @@ void ARobotRebellionCharacter::MoveForward(float Value)
 
         this->inflictDamage(k);
 
-        //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Dammage %d"));
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, 
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
                                          TEXT(
-                                             "received Damage : " + 
-                                             FString::FromInt(k) + 
-                                             " Current PV : " + 
-                                             FString::FromInt(this->getHealth()) + 
-                                             "/" + 
+                                             "received Damage : " +
+                                             FString::FromInt(k) +
+                                             " Current PV : " +
+                                             FString::FromInt(this->getHealth()) +
+                                             "/" +
                                              FString::FromInt(this->getMaxHealth())
                                          )
         );

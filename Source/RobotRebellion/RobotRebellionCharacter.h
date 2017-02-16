@@ -4,11 +4,11 @@
 #include "GameFramework/Character.h"
 #include "RobotRebellionCharacter.generated.h"
 
+
 UCLASS(config=Game)
-class ARobotRebellionCharacter : public ACharacter, public Attributes
+class ARobotRebellionCharacter : public ACharacter
 {
     GENERATED_BODY()
-    GENERATED_USING_FROM_Attributes
 
 
 private:
@@ -19,6 +19,7 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
 public:
 	ARobotRebellionCharacter();
 
@@ -29,6 +30,11 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+
+public:
+    Attributes m_attribute;
+
 
 protected:
 
@@ -69,5 +75,8 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+public:
+    GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, .);
 };
 

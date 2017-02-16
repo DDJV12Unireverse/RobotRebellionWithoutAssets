@@ -2,26 +2,26 @@
 
 #pragma once
 
-#define GENERATED_USING_FROM_Attributes public: \
-using Attributes::AttributeULongType; \
-using Attributes::AttributeUSmallType; \
-using Attributes::getHealth; \
-using Attributes::getMaxHealth; \
-using Attributes::getMana; \
-using Attributes::getMaxMana; \
-using Attributes::getStrength; \
-using Attributes::getDefense; \
-using Attributes::getAgility; \
-using Attributes::setHealth; \
-using Attributes::setMaxHealth; \
-using Attributes::setMana; \
-using Attributes::setMaxMana; \
-using Attributes::setStrength; \
-using Attributes::setDefense; \
-using Attributes::setAgility; \
-using Attributes::inflictDamage; \
-using Attributes::restoreHealth; \
-using Attributes::isDead; \
+#define GENERATED_USING_AND_METHODS_FROM_Attributes(attributeName, operator) public: \
+using AttributeULongType = Attributes::AttributeULongType; \
+using AttributeUSmallType = Attributes::AttributeUSmallType; \
+AttributeULongType getHealth()    const noexcept { return attributeName##operator##getHealth(); } \
+AttributeULongType getMaxHealth() const noexcept { return attributeName##operator##getMaxHealth(); } \
+AttributeULongType getMana()      const noexcept { return attributeName##operator##getMana(); } \
+AttributeULongType getMaxMana()   const noexcept { return attributeName##operator##getMaxMana(); } \
+AttributeUSmallType getStrength() const noexcept { return attributeName##operator##getStrength(); } \
+AttributeUSmallType getDefense()  const noexcept { return attributeName##operator##getDefense(); } \
+AttributeUSmallType getAgility()  const noexcept { return attributeName##operator##getAgility(); } \
+void setHealth(AttributeULongType newValue)    noexcept { attributeName##operator##setHealth(newValue); } \
+void setMaxHealth(AttributeULongType newValue) noexcept { attributeName##operator##setMaxHealth(newValue); } \
+void setMana(AttributeULongType newValue)      noexcept { attributeName##operator##setMana(newValue); } \
+void setMaxMana(AttributeULongType newValue)   noexcept { attributeName##operator##setMaxMana(newValue); } \
+void setStrength(AttributeUSmallType newValue) noexcept { attributeName##operator##setStrength(newValue); } \
+void setDefense(AttributeUSmallType newValue)  noexcept { attributeName##operator##setDefense(newValue); } \
+void setAgility(AttributeUSmallType newValue)  noexcept { attributeName##operator##setAgility(newValue); } \
+void inflictDamage(AttributeULongType damage)  noexcept { attributeName##operator##inflictDamage(damage); } \
+void restoreHealth(AttributeULongType valueToRestore) noexcept { attributeName##operator##restoreHealth(valueToRestore); } \
+bool isDead() const noexcept { return attributeName##operator##isDead(); }
 
 
 
@@ -35,7 +35,7 @@ public:
     using AttributeUSmallType = unsigned char;
 
 
-protected:
+private:
     AttributeULongType m_health;
     AttributeULongType m_maxHealth;
     AttributeULongType m_mana;
@@ -45,7 +45,7 @@ protected:
     AttributeUSmallType m_agility;
 
 
-protected:
+public:
     Attributes()
         : m_health{}, m_maxHealth{}, m_mana{}, m_maxMana{},
         m_strength{}, m_defense{}, m_agility{}
@@ -60,7 +60,7 @@ protected:
     {}
 
 
-protected:
+public:
     /************************************************************************/
     /*                          GETTER                                      */
     /************************************************************************/
@@ -159,7 +159,7 @@ protected:
     /************************************************************************/
     /*                          UTILITARY                                   */
     /************************************************************************/
-protected:
+public:
     //Inflict damage, reduce the current health value and if damage > health, health goes to 0
     void inflictDamage(AttributeULongType damage) noexcept;
 
@@ -177,6 +177,6 @@ protected:
 
 
     //Déserialization and serialization methods
-protected:
+public:
 
 };
