@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include "UObject/NoExportTypes.h"
+#include "Attributes.generated.h"
+
 #define GENERATED_USING_AND_METHODS_FROM_Attributes(attributeName, operator) public: \
-using AttributeULongType = Attributes::AttributeULongType; \
-using AttributeUSmallType = Attributes::AttributeUSmallType; \
+using AttributeULongType = UAttributes::AttributeULongType; \
+using AttributeUSmallType = UAttributes::AttributeUSmallType; \
 AttributeULongType getHealth()    const noexcept { return attributeName##operator##getHealth(); } \
 AttributeULongType getMaxHealth() const noexcept { return attributeName##operator##getMaxHealth(); } \
 AttributeULongType getMana()      const noexcept { return attributeName##operator##getMana(); } \
@@ -28,8 +31,12 @@ bool isDead() const noexcept { return attributeName##operator##isDead(); }
 /**
  * 
  */
-class ROBOTREBELLION_API Attributes
+UCLASS()
+class ROBOTREBELLION_API UAttributes : public UObject
 {
+    GENERATED_BODY()
+
+
 public:
     using AttributeULongType = unsigned int;
     using AttributeUSmallType = unsigned char;
@@ -46,17 +53,10 @@ private:
 
 
 public:
-    Attributes()
-        : m_health{}, m_maxHealth{}, m_mana{}, m_maxMana{},
-        m_strength{}, m_defense{}, m_agility{}
+    UAttributes()
     {}
 
-    Attributes(AttributeULongType health, AttributeULongType maxHealth, AttributeULongType mana, AttributeULongType maxMana,
-               AttributeUSmallType strength, AttributeUSmallType defense, AttributeUSmallType agility)
-        : m_health{health}, m_maxHealth{maxHealth}, m_mana{mana}, m_maxMana{maxMana},
-        m_strength{strength}, m_defense{defense}, m_agility{agility}
-    {}
-    ~Attributes()
+    ~UAttributes()
     {}
 
 

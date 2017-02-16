@@ -33,7 +33,8 @@ public:
 
 
 public:
-    Attributes m_attribute;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attribute)
+    UAttributes* m_attribute;
 
 
 protected:
@@ -65,6 +66,7 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -77,6 +79,6 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 public:
-    GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, .);
+    GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
 };
 

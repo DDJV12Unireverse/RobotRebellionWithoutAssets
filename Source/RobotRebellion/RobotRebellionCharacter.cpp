@@ -45,7 +45,15 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-    m_attribute = Attributes(1000, 1000, 1000, 1000, 10, 5, 5);
+
+    //m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attribute"));
+    m_attribute = NewObject<UAttributes>((UObject*)GetTransientPackage(), TEXT("Test"), EObjectFlags::RF_BeingRegenerated);
+    
+    setMaxHealth(1000);
+    setHealth(1000);
+    setStrength(10);
+    setDefense(5);
+    setAgility(5);
 }
 
 //////////////////////////////////////////////////////////////////////////

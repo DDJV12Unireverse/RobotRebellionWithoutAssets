@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "Attributes.h"
 
-void Attributes::setMaxMana(AttributeULongType newValue) noexcept
+void UAttributes::setMaxMana(AttributeULongType newValue) noexcept
 {
     m_maxMana = newValue;
 
@@ -13,7 +13,7 @@ void Attributes::setMaxMana(AttributeULongType newValue) noexcept
     }
 }
 
-void Attributes::setMaxHealth(AttributeULongType newValue) noexcept
+void UAttributes::setMaxHealth(AttributeULongType newValue) noexcept
 {
     m_maxHealth = newValue;
 
@@ -23,7 +23,7 @@ void Attributes::setMaxHealth(AttributeULongType newValue) noexcept
     }
 }
 
-void Attributes::inflictDamage(AttributeULongType damage) noexcept
+void UAttributes::inflictDamage(AttributeULongType damage) noexcept
 {
     if (damage < m_health)
     {
