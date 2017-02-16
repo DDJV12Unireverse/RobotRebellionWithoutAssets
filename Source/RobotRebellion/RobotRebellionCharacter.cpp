@@ -5,10 +5,16 @@
 #include "RobotRebellionCharacter.h"
 #include "Projectile.h"
 
+#include "Damage.h"
+#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+#include "GlobalDamageMethod.h"
+
+
+
 //////////////////////////////////////////////////////////////////////////
 // ARobotRebellionCharacter
 
-ARobotRebellionCharacter::ARobotRebellionCharacter() //: Attributes()
+ARobotRebellionCharacter::ARobotRebellionCharacter()
 {
     // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -39,8 +45,9 @@ ARobotRebellionCharacter::ARobotRebellionCharacter() //: Attributes()
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+    m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
@@ -145,10 +152,12 @@ void ARobotRebellionCharacter::OnStopJump()
 ///// SPRINT
 void ARobotRebellionCharacter::OnStartSprint()
 {
-    if (m_bPressedCrouch) {
+    if (m_bPressedCrouch) 
+    {
         OnCrouchToggle();
     }
-    else {
+    else 
+    {
         //increase move speed
         m_moveSpeed = 1.0f;
         m_bPressedRun = true;
@@ -174,10 +183,12 @@ void ARobotRebellionCharacter::OnStopSprint()
 
 void ARobotRebellionCharacter::ServerSprintActivate_Implementation(bool NewRunning)
 {
-    if (NewRunning) {
+    if (NewRunning) 
+    {
         OnStartSprint();
     }
-    else {
+    else 
+    {
         OnStopSprint();
     }
 }
@@ -203,10 +214,12 @@ void ARobotRebellionCharacter::ServerCrouchToggle_Implementation(bool NewCrouchi
 {
     OnCrouchToggle();
 }
+
 bool ARobotRebellionCharacter::ServerCrouchToggle_Validate(bool NewCrouching)
 {
     return true;
 }
+
 void ARobotRebellionCharacter::OnRep_CrouchButtonDown()
 {
     if (m_bPressedCrouch == true)
@@ -286,6 +299,7 @@ void ARobotRebellionCharacter::serverMainFire_Implementation()
 {
     mainFire();
 }
+
 bool ARobotRebellionCharacter::serverMainFire_Validate()
 {
     return true;

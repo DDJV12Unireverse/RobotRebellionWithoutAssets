@@ -4,18 +4,22 @@
 #include "GameFramework/Character.h"
 #include "RobotRebellionCharacter.generated.h"
 
+
 UCLASS(config = Game)
 class ARobotRebellionCharacter : public ACharacter//, public Attributes
 {
     GENERATED_BODY()
 
-        /** Camera boom positioning the camera behind the character */
-        UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+
+    /** Camera boom positioning the camera behind the character */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
         class USpringArmComponent* CameraBoom;
 
     /** Follow camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
         class UCameraComponent* FollowCamera;
+
+
 public:
     ARobotRebellionCharacter();
 
@@ -26,6 +30,26 @@ public:
     /** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseLookUpRate;
+
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
+        UAttributes* m_attribute;
+
+
+    /////////////////////////////////////////////////////////ADDED ATTRIBUTES AND FUNCTIONS:
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+        float m_moveSpeed;
+
+
+    /** Projectile class */
+    UPROPERTY(EditDefaultsOnly, Category = Projectile)
+        TSubclassOf<class AProjectile> ProjectileClass;
+
+    //Projectile position Offset
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+        FVector MuzzleOffset;
+
 
 protected:
 
@@ -59,14 +83,10 @@ public:
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-    /////////////////////////////////////////////////////////ADDED ATTRIBUTES AND FUNCTIONS:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
-        float m_moveSpeed;
-
-
     //On active le booléen bPressedJump
     UFUNCTION()
         void OnStartJump();
+
     // On désactive le booléen bPressedJump
     UFUNCTION()
         void OnStopJump();
@@ -78,6 +98,7 @@ public:
 
     UFUNCTION()
         void OnStartSprint();
+
     UFUNCTION()
         void OnStopSprint();
 
@@ -90,6 +111,7 @@ public:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void ServerSprintActivate(bool NewRunning);
+
     UFUNCTION()
         void OnRep_SprintButtonDown();
 
@@ -107,6 +129,7 @@ public:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void ServerCrouchToggle(bool NewCrouching);
+
     UFUNCTION()
         void OnRep_CrouchButtonDown();
 
@@ -117,12 +140,6 @@ public:
 
     /////FIRE
 
-    /** Projectile class */
-    UPROPERTY(EditDefaultsOnly, Category = Projectile)
-        TSubclassOf<class AProjectile> ProjectileClass;
-    //Projectile position Offset
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-        FVector MuzzleOffset;
 
     UFUNCTION()
         void mainFire();
@@ -131,5 +148,8 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+
+public:
+    GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
 };
 
