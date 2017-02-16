@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "UObject/NoExportTypes.h"
+#include "Components/ActorComponent.h"
 #include "Attributes.generated.h"
+
 
 #define GENERATED_USING_AND_METHODS_FROM_Attributes(attributeName, operator) public: \
 using AttributeULongType = UAttributes::AttributeULongType; \
@@ -27,38 +28,47 @@ void restoreHealth(AttributeULongType valueToRestore) noexcept { attributeName##
 bool isDead() const noexcept { return attributeName##operator##isDead(); }
 
 
-
-/**
- * 
- */
-UCLASS()
-class ROBOTREBELLION_API UAttributes : public UObject
+UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
+class ROBOTREBELLION_API UAttributes : public UActorComponent
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 
 public:
-    using AttributeULongType = unsigned int;
-    using AttributeUSmallType = unsigned char;
+    using AttributeULongType = float;
+    using AttributeUSmallType = float;
 
 
-private:
-    AttributeULongType m_health;
-    AttributeULongType m_maxHealth;
-    AttributeULongType m_mana;
-    AttributeULongType m_maxMana;
-    AttributeUSmallType m_strength;
-    AttributeUSmallType m_defense;
-    AttributeUSmallType m_agility;
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute)
+    float m_health;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute)
+    float m_maxHealth;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute)
+    float m_mana;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute)
+    float m_maxMana;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute)
+    float m_strength;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute)
+    float m_defense;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute)
+    float m_agility;
 
 
 public:
-    UAttributes()
-    {}
+	// Sets default values for this component's properties
+	UAttributes();
 
-    ~UAttributes()
-    {}
 
+public:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+	
+	// Called every frame
+	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+
+		
 
 public:
     /************************************************************************/

@@ -46,15 +46,12 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-
-    //m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attribute"));
-    m_attribute = NewObject<UAttributes>((UObject*)GetTransientPackage(), TEXT("Test"), EObjectFlags::RF_BeingRegenerated);
-    
-    setMaxHealth(1000);
+    m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
+    /*setMaxHealth(1000);
     setHealth(1000);
     setStrength(10);
     setDefense(5);
-    setAgility(5);
+    setAgility(5);*/
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -129,36 +126,44 @@ void ARobotRebellionCharacter::MoveForward(float Value)
 
         // A retirer
 
-        int b = 2;
+        if (m_attribute)
+        {
+            int b = 2;
 
-        Damage test(this, this);
+            Damage test(this, this);
 
-        /*unsigned int damage = test([b](const ARobotRebellionCharacter* assaillant, const ARobotRebellionCharacter* receiver) {
-                float intermediary = static_cast<float>(assaillant->getStrength()) - static_cast<float>(receiver->getDefense());
-                if (intermediary < 1.f)
-                {
-                    intermediary = 1.f;
-                }
+            /*unsigned int damage = test([b](const ARobotRebellionCharacter* assaillant, const ARobotRebellionCharacter* receiver) {
+            float intermediary = static_cast<float>(assaillant->getStrength()) - static_cast<float>(receiver->getDefense());
+            if (intermediary < 1.f)
+            {
+            intermediary = 1.f;
+            }
 
-                return b * static_cast<Damage::DamageValue>(static_cast<float>(assaillant->getAgility()) / static_cast<float>(receiver->getAgility()) * intermediary);
+            return b * static_cast<Damage::DamageValue>(static_cast<float>(assaillant->getAgility()) / static_cast<float>(receiver->getAgility()) * intermediary);
             },
             3.f
-        );*/
+            );*/
 
-        unsigned int damage = test(&UGlobalDamageMethod::normalHit, 3.f);
 
-        this->inflictDamage(damage);
+            unsigned int damage = test(&UGlobalDamageMethod::normalHit, 3.f);
 
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
-                                         TEXT(
-                                             "received Damage : " +
-                                             FString::FromInt(damage) +
-                                             " Current PV : " +
-                                             FString::FromInt(this->getHealth()) +
-                                             "/" +
-                                             FString::FromInt(this->getMaxHealth())
-                                         )
-        );
+            this->inflictDamage(damage);
+
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
+                                             TEXT(
+                                                 "received Damage : " +
+                                                 FString::FromInt(damage) +
+                                                 " Current PV : " +
+                                                 FString::FromInt(this->getHealth()) +
+                                                 "/" +
+                                                 FString::FromInt(this->getMaxHealth())
+                                             )
+            );
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Attribute not loaded"));
+        }
 	}
 }
 

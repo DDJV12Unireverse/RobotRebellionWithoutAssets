@@ -33,7 +33,7 @@ public:
 
 
 public:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attribute)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
     UAttributes* m_attribute;
 
 

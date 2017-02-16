@@ -6,12 +6,12 @@
 
 Damage::DamageValue UGlobalDamageMethod::normalHit(const ARobotRebellionCharacter* assailant, const ARobotRebellionCharacter* receiver)
 {
-    float intermediary = static_cast<float>(assailant->getStrength()) - static_cast<float>(receiver->getDefense());
+    float intermediary = assailant->getStrength() - receiver->getDefense();
     if (intermediary < 1.f)
     {
         intermediary = 1.f;
     }
 
-    return static_cast<Damage::DamageValue>(static_cast<float>(assailant->getAgility()) / static_cast<float>(receiver->getAgility()) * intermediary);
+    return static_cast<Damage::DamageValue>(assailant->getAgility() / receiver->getAgility() * intermediary);
 }
 
