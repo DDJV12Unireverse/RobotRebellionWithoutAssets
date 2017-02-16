@@ -85,13 +85,14 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
     if (Role == ROLE_Authority)
     {
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
-        if (receiver)
+        if (receiver && m_owner != receiver)
         {
-            Damage damage{ Cast<ARobotRebellionCharacter>(m_owner), Cast<ARobotRebellionCharacter>(OtherActor) };
+            Damage damage{ m_owner, receiver };
             receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHit, 7.f));
         }
         
         Destroy();
+        
         //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Destroy on Server"));
     }
 }
