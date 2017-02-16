@@ -5,7 +5,7 @@
 #include "RobotRebellionCharacter.generated.h"
 
 UCLASS(config = Game)
-class ARobotRebellionCharacter : public ACharacter, public Attributes
+class ARobotRebellionCharacter : public ACharacter//, public Attributes
 {
     GENERATED_BODY()
 
@@ -111,8 +111,25 @@ public:
         void OnRep_CrouchButtonDown();
 
 
-
+    ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+
+
+    /////FIRE
+
+    /** Projectile class */
+    UPROPERTY(EditDefaultsOnly, Category = Projectile)
+        TSubclassOf<class AProjectile> ProjectileClass;
+    //Projectile position Offset
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+        FVector MuzzleOffset;
+
+    UFUNCTION()
+        void mainFire();
+
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverMainFire();
 
 };
 

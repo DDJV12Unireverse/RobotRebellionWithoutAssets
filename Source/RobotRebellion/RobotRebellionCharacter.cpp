@@ -3,11 +3,12 @@
 #include "RobotRebellion.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "RobotRebellionCharacter.h"
+#include "Projectile.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ARobotRebellionCharacter
 
-ARobotRebellionCharacter::ARobotRebellionCharacter() : Attributes()
+ARobotRebellionCharacter::ARobotRebellionCharacter() //: Attributes()
 {
     // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -71,6 +72,9 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
     PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ARobotRebellionCharacter::OnCrouchToggle);
     PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ARobotRebellionCharacter::OnStartSprint);
     PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARobotRebellionCharacter::OnStopSprint);
+
+    //FIRE
+    PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
@@ -235,4 +239,54 @@ void ARobotRebellionCharacter::OnCrouchToggle()
     {
         ServerCrouchToggle(true); // le param n'a pas d'importance pour l'instant
     }
+}
+
+
+//////FIRE/////
+
+void ARobotRebellionCharacter::mainFire()
+{
+    // Essayer de tirer un projectile
+    if (Role < ROLE_Authority)
+    {
+        serverMainFire(); // le param n'a pas d'importance pour l'instant
+    }
+    else if (ProjectileClass != NULL)
+    {
+
+        // Obtenir la transformation de la caméra
+        FVector CameraLoc;
+        FRotator CameraRot;
+        GetActorEyesViewPoint(CameraLoc, CameraRot);
+        // MuzzleOffset est dans l'espace caméra, il faut le transformer dans l'espace monde
+        FVector const MuzzleLocation = CameraLoc +
+            FTransform(CameraRot).TransformVector(MuzzleOffset);
+        FRotator MuzzleRotation = CameraRot;
+        MuzzleRotation.Pitch += 10.0f; // On lance un peu vers le haut
+        UWorld* const World = GetWorld();
+        if (World)
+        {
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Owner = this;
+            SpawnParams.Instigator = Instigator;
+            // Faire apparaître le projectile à la distance prévue
+            AProjectile* const projectile = World->SpawnActor<AProjectile>(ProjectileClass,
+                MuzzleLocation, MuzzleRotation, SpawnParams);
+            if (projectile)
+            {
+                // Trouver la direction du tir et tirer
+                FVector const DirectionDuTir = MuzzleRotation.Vector();
+                projectile->InitVelocity(DirectionDuTir);
+            }
+        }
+    }
+}
+
+void ARobotRebellionCharacter::serverMainFire_Implementation()
+{
+    mainFire();
+}
+bool ARobotRebellionCharacter::serverMainFire_Validate()
+{
+    return true;
 }
