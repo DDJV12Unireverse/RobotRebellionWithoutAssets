@@ -3,6 +3,9 @@
 #include "RobotRebellion.h"
 #include "RobotRebellionCharacter.h"
 #include "Projectile.h"
+#include "Damage.h"
+#include "GlobalDamageMethod.h"
+
 
 
 // Sets default values
@@ -81,7 +84,14 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
     //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Hit"));
     if (Role == ROLE_Authority)
     {
+        ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
+        if (receiver)
+        {
+            Damage damage{ Cast<ARobotRebellionCharacter>(m_owner), Cast<ARobotRebellionCharacter>(OtherActor) };
+            receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHit, 7.f));
+        }
+        
         Destroy();
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Destroy on Server"));
+        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Destroy on Server"));
     }
 }

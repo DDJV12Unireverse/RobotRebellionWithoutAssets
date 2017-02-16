@@ -287,6 +287,7 @@ void ARobotRebellionCharacter::mainFire()
                 MuzzleLocation, MuzzleRotation, SpawnParams);
             if (projectile)
             {
+                projectile->setOwner(this);
                 // Trouver la direction du tir et tirer
                 FVector const DirectionDuTir = MuzzleRotation.Vector();
                 projectile->InitVelocity(DirectionDuTir);

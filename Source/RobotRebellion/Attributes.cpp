@@ -36,7 +36,7 @@ void UAttributes::TickComponent( float DeltaTime, ELevelTick TickType, FActorCom
 	// ...
 }
 
-void UAttributes::setMaxMana(AttributeULongType newValue) noexcept
+void UAttributes::setMaxMana(AttributeULongType newValue) USE_NOEXCEPT
 {
     m_maxMana = newValue;
 
@@ -46,7 +46,7 @@ void UAttributes::setMaxMana(AttributeULongType newValue) noexcept
     }
 }
 
-void UAttributes::setMaxHealth(AttributeULongType newValue) noexcept
+void UAttributes::setMaxHealth(AttributeULongType newValue) USE_NOEXCEPT
 {
     m_maxHealth = newValue;
 
@@ -56,7 +56,7 @@ void UAttributes::setMaxHealth(AttributeULongType newValue) noexcept
     }
 }
 
-void UAttributes::inflictDamage(AttributeULongType damage) noexcept
+void UAttributes::inflictDamage(AttributeULongType damage) USE_NOEXCEPT
 {
     if (damage < m_health)
     {
@@ -66,4 +66,6 @@ void UAttributes::inflictDamage(AttributeULongType damage) noexcept
     {
         m_health = 0;
     }
+
+    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PV = " + FString::FromInt(m_health)));
 }

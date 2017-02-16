@@ -6,4 +6,7 @@
 #include "Engine.h"
 #include "Net/UnrealNetwork.h"
 #define COLLISION_PROJECTILE ECC_GameTraceChannel1
+
+#define USE_NOEXCEPT 
+
 #endif
