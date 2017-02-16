@@ -1,0 +1,61 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "RobotRebellion.h"
+#include "Projectile.h"
+
+
+// Sets default values
+AProjectile::AProjectile()
+{
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+    // Create Sphere for collision shape
+    m_collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+    m_collisionComp->InitSphereRadius(5.0f);
+    RootComponent = m_collisionComp;
+    m_collisionComp->BodyInstance.SetCollisionProfileName("Projectile");
+    //Projectile Movement datas
+    m_projectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
+    m_projectileMovement->UpdatedComponent = m_collisionComp;
+    m_projectileMovement->InitialSpeed = 3000.f;
+    m_projectileMovement->MaxSpeed = 3000.f;
+    m_projectileMovement->bRotationFollowsVelocity = true;
+    m_projectileMovement->bShouldBounce = true;
+    m_projectileMovement->Bounciness = 0.3f;
+
+    bReplicates = true;
+    bNetUseOwnerRelevancy = true;
+
+    //Life Time
+    InitialLifeSpan = 3.0f;
+
+}
+
+// Called when the game starts or when spawned
+void AProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+// Called every frame
+void AProjectile::Tick( float DeltaTime )
+{
+	Super::Tick( DeltaTime );
+}
+
+void AProjectile::InitVelocity(const FVector& shootDirection)
+{
+    if (m_projectileMovement)
+    {
+        // Adjust velocity with direction
+        m_projectileMovement->Velocity = shootDirection * m_projectileMovement->InitialSpeed;
+    }
+}
+
+void AProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    //DOREPLIFETIME_CONDITION(AProjectile, m_bPressedCrouch, COND_SkipOwner);
+}
