@@ -151,5 +151,21 @@ public:
 
 public:
     GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
+
+
+    //CLASS FLAG
+    enum classtype
+    {
+        SOLDIER,
+        ASSASSIN,
+        HEALER,
+        WIZARD,
+        NONE
+    };
+
+    virtual classtype getClass()
+    {
+        return NONE;
+    }
 };
 
