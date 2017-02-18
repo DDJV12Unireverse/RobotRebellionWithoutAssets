@@ -151,16 +151,6 @@ public:
         void serverMainFire();
 
 
-    ///// Set Health
-
-    UFUNCTION()
-        void inflictDamage(float damage);
-
-
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverInflictDamage(float damage);
-
-
 public:
     GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
 };

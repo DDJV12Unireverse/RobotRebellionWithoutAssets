@@ -22,6 +22,7 @@ void setMaxMana(float newValue)   USE_NOEXCEPT { attributeName##operator##setMax
 void setStrength(float newValue) USE_NOEXCEPT { attributeName##operator##setStrength(newValue); } \
 void setDefense(float newValue)  USE_NOEXCEPT { attributeName##operator##setDefense(newValue); } \
 void setAgility(float newValue)  USE_NOEXCEPT { attributeName##operator##setAgility(newValue); } \
+void inflictDamage(float damage) USE_NOEXCEPT { attributeName##operator##inflictDamage(damage); } \
 void restoreHealth(float valueToRestore) USE_NOEXCEPT { attributeName##operator##restoreHealth(valueToRestore); } \
 bool isDead() const USE_NOEXCEPT { return attributeName##operator##isDead(); }
 
