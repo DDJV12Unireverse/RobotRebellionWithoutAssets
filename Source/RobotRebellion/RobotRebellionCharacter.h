@@ -52,6 +52,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
         FVector MuzzleOffset;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+        class UWeaponInventory* m_weaponInventory;
+
 
 public:
     ARobotRebellionCharacter();
@@ -144,6 +147,13 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+
+    UFUNCTION()
+        void switchWeapon();
+
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSwitchWeapon();
 
 
 public:

@@ -8,6 +8,7 @@
 #include "Damage.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
+#include "WeaponInventory.h"
 
 
 
@@ -52,6 +53,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
+
+    m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,6 +85,9 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
     //FIRE
     PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+
+    //SWITCH WEAPON
+    PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
@@ -302,6 +308,28 @@ void ARobotRebellionCharacter::serverMainFire_Implementation()
 }
 
 bool ARobotRebellionCharacter::serverMainFire_Validate()
+{
+    return true;
+}
+
+void ARobotRebellionCharacter::switchWeapon()
+{
+    if (Role < ROLE_Authority)
+    {
+        serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+    }
+    else
+    {
+        m_weaponInventory->switchWeapon();
+    }
+}
+
+void ARobotRebellionCharacter::serverSwitchWeapon_Implementation()
+{
+    switchWeapon();
+}
+
+bool ARobotRebellionCharacter::serverSwitchWeapon_Validate()
 {
     return true;
 }
