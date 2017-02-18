@@ -83,6 +83,8 @@ public:
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+    virtual void BeginPlay() override;
+
     //On active le booléen bPressedJump
     UFUNCTION()
         void OnStartJump();
@@ -147,6 +149,7 @@ public:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
+
 
 
 public:

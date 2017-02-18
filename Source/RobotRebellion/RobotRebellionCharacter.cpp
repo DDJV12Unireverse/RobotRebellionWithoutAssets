@@ -8,6 +8,7 @@
 #include "Damage.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
+#include "CustomPlayerController.h"
 
 
 
@@ -82,6 +83,17 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
     //FIRE
     PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+}
+
+void ARobotRebellionCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    ACustomPlayerController* customController = Cast<ACustomPlayerController>(GetController());
+    if (customController)
+    { 
+        customController->initializeHUD();
+    }
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
