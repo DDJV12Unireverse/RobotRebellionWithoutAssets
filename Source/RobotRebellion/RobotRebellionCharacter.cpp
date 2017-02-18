@@ -340,8 +340,3 @@ void ARobotRebellionCharacter::inflictDamage(float damage) USE_NOEXCEPT
         m_attribute->inflictDamage(damage);
     }
 }
-
-void ARobotRebellionCharacter::onRep_setAttribute(UAttributes* attribute)
-{
-    setHealth(attribute->getHealth());
-}
