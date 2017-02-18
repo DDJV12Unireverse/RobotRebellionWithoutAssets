@@ -10,6 +10,7 @@
 #include "GlobalDamageMethod.h"
 #include "WeaponInventory.h"
 
+#include "UtilitaryMacros.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -143,10 +144,12 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 ///// JUMP
 void ARobotRebellionCharacter::OnStartJump()
 {
-    if (m_bPressedCrouch) {
+    if (m_bPressedCrouch) 
+    {
         OnCrouchToggle();
     }
-    else {
+    else 
+    {
         bPressedJump = true;
     }
 }
@@ -320,13 +323,19 @@ void ARobotRebellionCharacter::switchWeapon()
     }
     else
     {
+        FString message = m_weaponInventory->toFString() + TEXT(" Go to : ");
+
         m_weaponInventory->switchWeapon();
+
+        message += m_weaponInventory->toFString();
+
+        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, message);
     }
 }
 
 void ARobotRebellionCharacter::serverSwitchWeapon_Implementation()
 {
-    switchWeapon();
+    this->switchWeapon();
 }
 
 bool ARobotRebellionCharacter::serverSwitchWeapon_Validate()
