@@ -8,22 +8,21 @@
 
 class UIWeaponBase;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ROBOTREBELLION_API UWeaponInventory : public UActorComponent
 {
 	GENERATED_BODY()
 
 
 public:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-        UIWeaponBase* m_currentWeapon;
+        UIWeaponBase** m_currentWeapon;
 
 
 private:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
         UIWeaponBase* m_mainWeapon;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
         UIWeaponBase* m_secondaryWeapon;
 
 
@@ -52,11 +51,16 @@ public:
     void switchWeapon() USE_NOEXCEPT;
 
     //get the current equipped weapon
-    UIWeaponBase* getCurrentWeapon() USE_NOEXCEPT;
+    UIWeaponBase** getCurrentWeapon() USE_NOEXCEPT;
 
     //return true if the current equipped weapon is the main weapon, false otherwise
     bool isMainWeaponEquipped() const USE_NOEXCEPT;
 
     //return true if the current equipped weapon is the secondary weapon, false otherwise
     bool isSecondaryWeaponEquipped() const USE_NOEXCEPT;
+
+
+public:
+    //Debug string
+    FString toFString() const USE_NOEXCEPT;
 };

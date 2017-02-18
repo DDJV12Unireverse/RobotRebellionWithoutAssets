@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "WeaponInventory.h"
 
+#include "UtilitaryMacros.h"
 
 // Sets default values for this component's properties
 UWeaponInventory::UWeaponInventory()
@@ -33,29 +34,29 @@ void UWeaponInventory::TickComponent( float DeltaTime, ELevelTick TickType, FAct
 
 void UWeaponInventory::changeToMainWeapon() USE_NOEXCEPT
 {
-    m_currentWeapon = m_mainWeapon;
-    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Main weapon equipped"));
+    m_currentWeapon = &m_mainWeapon;
+    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Main weapon equipped"));
 }
 
 void UWeaponInventory::changeToSecondaryWeapon() USE_NOEXCEPT
 {
-    m_currentWeapon = m_secondaryWeapon;
-    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Secondary weapon equipped"));
+    m_currentWeapon = &m_secondaryWeapon;
+    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Secondary weapon equipped"));
 }
 
-UIWeaponBase* UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
+UIWeaponBase** UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
 {
     return m_currentWeapon;
 }
 
 bool UWeaponInventory::isMainWeaponEquipped() const USE_NOEXCEPT
 {
-    return m_currentWeapon == m_mainWeapon;
+    return m_currentWeapon == &m_mainWeapon;
 }
 
 bool UWeaponInventory::isSecondaryWeaponEquipped() const USE_NOEXCEPT
 {
-    return m_currentWeapon == m_secondaryWeapon;
+    return m_currentWeapon == &m_secondaryWeapon;
 }
 
 void UWeaponInventory::switchWeapon() USE_NOEXCEPT
@@ -67,5 +68,18 @@ void UWeaponInventory::switchWeapon() USE_NOEXCEPT
     else
     {
         changeToMainWeapon();
+    }
+}
+
+FString UWeaponInventory::toFString() const USE_NOEXCEPT
+{
+    FString message(TEXT("Current weapon : "));
+    if (isMainWeaponEquipped())
+    {
+        return message + TEXT("Main Weapon");
+    }
+    else
+    {
+        return message + TEXT("Secondary Weapon");
     }
 }
