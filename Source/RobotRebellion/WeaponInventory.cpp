@@ -33,3 +33,17 @@ void UWeaponInventory::TickComponent( float DeltaTime, ELevelTick TickType, FAct
 	// ...
 }
 
+void UWeaponInventory::changeToMainWeapon() USE_NOEXCEPT
+{
+    m_currentWeapon = m_mainWeapon;
+}
+
+void UWeaponInventory::changeToSecondaryWeapon() USE_NOEXCEPT
+{
+    m_currentWeapon = m_secondaryWeapon;
+}
+
+UIWeaponBase* UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
+{
+    return m_currentWeapon;
+}
