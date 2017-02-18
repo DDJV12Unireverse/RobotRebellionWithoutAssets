@@ -144,6 +144,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
 }
 
 ///// JUMP
@@ -316,4 +317,31 @@ void ARobotRebellionCharacter::serverMainFire_Implementation()
 bool ARobotRebellionCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+void ARobotRebellionCharacter::serverInflictDamage_Implementation(float damage)
+{
+    m_attribute->inflictDamage(damage);
+}
+
+bool ARobotRebellionCharacter::serverInflictDamage_Validate(float damage)
+{
+    return true;
+}
+
+void ARobotRebellionCharacter::inflictDamage(float damage) USE_NOEXCEPT
+{ 
+    if (Role < ROLE_Authority)
+    {
+        serverInflictDamage(damage); // le param n'a pas d'importance pour l'instant
+    }
+    else
+    {
+        m_attribute->inflictDamage(damage);
+    }
+}
+
+void ARobotRebellionCharacter::onRep_setAttribute(UAttributes* attribute)
+{
+    setHealth(attribute->getHealth());
 }

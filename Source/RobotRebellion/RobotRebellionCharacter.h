@@ -33,7 +33,7 @@ public:
 
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), ReplicatedUsing = onRep_setAttribute)
         UAttributes* m_attribute;
 
 
@@ -150,6 +150,18 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+
+    ///// Set Health
+
+    UFUNCTION()
+        void inflictDamage(float damage);
+
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverInflictDamage(float damage);
+
+    UFUNCTION()
+        void onRep_setAttribute(UAttributes* attribute);
 
 
 public:
