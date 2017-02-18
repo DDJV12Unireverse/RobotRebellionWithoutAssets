@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ROBOTREBELLION_API UIWeaponBase : public UPrimitiveComponent
 {
 	GENERATED_BODY()
