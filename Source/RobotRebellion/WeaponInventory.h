@@ -47,6 +47,10 @@ public:
     //change the current equipped weapon to the secondary weapon
     void changeToSecondaryWeapon() USE_NOEXCEPT;
 
+    //equip the secondary weapon if the current weapon is the main one.
+    //equip the main weapon if the current weapon is the secondary one
+    void switchWeapon() USE_NOEXCEPT;
+
     //get the current equipped weapon
     UIWeaponBase* getCurrentWeapon() USE_NOEXCEPT;
 

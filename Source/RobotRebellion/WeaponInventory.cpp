@@ -57,3 +57,15 @@ bool UWeaponInventory::isSecondaryWeaponEquipped() const USE_NOEXCEPT
 {
     return m_currentWeapon == m_secondaryWeapon;
 }
+
+void UWeaponInventory::switchWeapon() USE_NOEXCEPT
+{
+    if (isMainWeaponEquipped())
+    {
+        changeToSecondaryWeapon();
+    }
+    else
+    {
+        changeToMainWeapon();
+    }
+}
