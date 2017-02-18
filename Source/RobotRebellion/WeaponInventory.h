@@ -15,15 +15,15 @@ class ROBOTREBELLION_API UWeaponInventory : public UActorComponent
 
 
 public:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
         UIWeaponBase* m_currentWeapon;
 
 
 private:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
         UIWeaponBase* m_mainWeapon;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
         UIWeaponBase* m_secondaryWeapon;
 
 
@@ -48,4 +48,6 @@ public:
     UIWeaponBase* getCurrentWeapon() USE_NOEXCEPT;
 
     bool isMainWeaponEquipped() const USE_NOEXCEPT;
+
+    bool isSecondaryWeaponEquipped() const USE_NOEXCEPT;
 };

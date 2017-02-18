@@ -52,3 +52,8 @@ bool UWeaponInventory::isMainWeaponEquipped() const USE_NOEXCEPT
 {
     return m_currentWeapon == m_mainWeapon;
 }
+
+bool UWeaponInventory::isSecondaryWeaponEquipped() const USE_NOEXCEPT
+{
+    return m_currentWeapon == m_secondaryWeapon;
+}
