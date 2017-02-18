@@ -41,13 +41,18 @@ public:
 
 	
 public:
+    //change the current equipped weapon to the main weapon
     void changeToMainWeapon() USE_NOEXCEPT;
 
+    //change the current equipped weapon to the secondary weapon
     void changeToSecondaryWeapon() USE_NOEXCEPT;
 
+    //get the current equipped weapon
     UIWeaponBase* getCurrentWeapon() USE_NOEXCEPT;
 
+    //return true if the current equipped weapon is the main weapon, false otherwise
     bool isMainWeaponEquipped() const USE_NOEXCEPT;
 
+    //return true if the current equipped weapon is the secondary weapon, false otherwise
     bool isSecondaryWeaponEquipped() const USE_NOEXCEPT;
 };
