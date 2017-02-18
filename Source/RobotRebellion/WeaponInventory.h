@@ -46,4 +46,6 @@ public:
     void changeToSecondaryWeapon() USE_NOEXCEPT;
 
     UIWeaponBase* getCurrentWeapon() USE_NOEXCEPT;
+
+    bool isMainWeaponEquipped() const USE_NOEXCEPT;
 };
