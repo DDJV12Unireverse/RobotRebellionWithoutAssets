@@ -132,6 +132,7 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void ServerCrouchToggle(bool NewCrouching);
 
+
     UFUNCTION()
         void OnRep_CrouchButtonDown();
 
@@ -141,8 +142,6 @@ public:
 
 
     /////FIRE
-
-
     UFUNCTION()
         void mainFire();
 
