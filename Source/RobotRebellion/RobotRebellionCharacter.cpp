@@ -10,6 +10,8 @@
 #include "GlobalDamageMethod.h"
 
 
+#define TYPE_PARSING(TypeName) "Type is "## #TypeName
+
 
 //////////////////////////////////////////////////////////////////////////
 // ARobotRebellionCharacter
@@ -314,4 +316,17 @@ EClassType ARobotRebellionCharacter::getClassType() const USE_NOEXCEPT
 EClassType ARobotRebellionCharacter::getType() const USE_NOEXCEPT
 {
     return this->getClassType();
+}
+
+FString ARobotRebellionCharacter::typeToString() const USE_NOEXCEPT
+{
+    static const FString typeLookUpTable[EClassType::TYPE_COUNT] = {
+        TYPE_PARSING(None),
+        TYPE_PARSING(Soldier),
+        TYPE_PARSING(Assassin),
+        TYPE_PARSING(Healer),
+        TYPE_PARSING(Wizard)
+    };
+
+    return typeLookUpTable[static_cast<uint8>(getClassType())];
 }

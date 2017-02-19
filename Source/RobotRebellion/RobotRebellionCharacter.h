@@ -8,13 +8,15 @@
 
 //CLASS FLAG
 UENUM(BlueprintType)
-enum class EClassType
+enum class EClassType : uint8
 {
     NONE        UMETA(DisplayName = "None"),
     SOLDIER     UMETA(DisplayName = "Soldier"),
     ASSASSIN    UMETA(DisplayName = "Assassin"),
     HEALER      UMETA(DisplayName = "Healer"),
-    WIZARD      UMETA(DisplayName = "Wizard")
+    WIZARD      UMETA(DisplayName = "Wizard"),
+
+    TYPE_COUNT
 };
 
 
@@ -168,6 +170,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "General")
         EClassType getType() const USE_NOEXCEPT;
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        FString typeToString() const USE_NOEXCEPT;
 
 
 public:
