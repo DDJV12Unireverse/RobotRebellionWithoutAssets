@@ -5,6 +5,7 @@
 #include "IsSingleton.h"
 #include "Damage.h"
 #include "RobotRebellionCharacter.h"
+#include "IWeaponBase.h"
 
 /**
  * 
@@ -13,5 +14,6 @@ class UGlobalDamageMethod
 {
 public:
     static Damage::DamageValue normalHit(const ARobotRebellionCharacter* assailant, const ARobotRebellionCharacter* receiver);
+    static Damage::DamageValue normalHitWithWeaponComputed(const ARobotRebellionCharacter* assailant, const ARobotRebellionCharacter* receiver);
 	
 };
