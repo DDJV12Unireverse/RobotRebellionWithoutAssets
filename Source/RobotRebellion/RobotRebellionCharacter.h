@@ -21,8 +21,6 @@ class ARobotRebellionCharacter : public ACharacter//, public Attributes
 
 
 public:
-    ARobotRebellionCharacter();
-
     /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseTurnRate;
@@ -36,11 +34,17 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
         UAttributes* m_attribute;
 
-
     /////////////////////////////////////////////////////////ADDED ATTRIBUTES AND FUNCTIONS:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
         float m_moveSpeed;
 
+    ////Sprint////
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_SprintButtonDown)
+        bool m_bPressedRun;
+
+    ////CROUCH////
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
+        bool m_bPressedCrouch;
 
     /** Projectile class */
     UPROPERTY(EditDefaultsOnly, Category = Projectile)
@@ -49,6 +53,13 @@ public:
     //Projectile position Offset
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
         FVector MuzzleOffset;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+        class UWeaponInventory* m_weaponInventory;
+
+
+public:
+    ARobotRebellionCharacter();
 
 
 protected:
@@ -71,15 +82,17 @@ protected:
      */
     void LookUpAtRate(float Rate);
 
+
 protected:
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     // End of APawn interface
 
-public:
 
+public:
     /** Returns CameraBoom subobject **/
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
@@ -93,17 +106,11 @@ public:
     UFUNCTION()
         void OnStopJump();
 
-    ////Sprint////
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_SprintButtonDown)
-        bool m_bPressedRun;
-
     UFUNCTION()
         void OnStartSprint();
 
     UFUNCTION()
         void OnStopSprint();
-
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
         bool IsRunning()
@@ -116,10 +123,6 @@ public:
 
     UFUNCTION()
         void OnRep_SprintButtonDown();
-
-    ////CROUCH////
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
-        bool m_bPressedCrouch;
 
     void OnCrouchToggle();
 
@@ -148,6 +151,14 @@ public:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
+
+
+    UFUNCTION()
+        void switchWeapon();
+
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSwitchWeapon();
 
 
 public:
