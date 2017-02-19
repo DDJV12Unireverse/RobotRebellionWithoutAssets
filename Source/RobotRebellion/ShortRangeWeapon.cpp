@@ -2,10 +2,11 @@
 
 #include "RobotRebellion.h"
 #include "ShortRangeWeapon.h"
+#include "RobotRebellionCharacter.h"
 
 
-void UShortRangeWeapon::cppAttack(float agility)
+void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
-
+    PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "ShortAtt");
 }
 

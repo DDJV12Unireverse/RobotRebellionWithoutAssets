@@ -80,9 +80,9 @@ public:
     }
 
     UFUNCTION(BlueprintCallable, Category = "Action")
-        void attack(float agility)
+        void attack(class ARobotRebellionCharacter* user)
     {
-        return this->cppAttack(agility);
+        return this->cppAttack(user);
     }
 
     UFUNCTION(BlueprintCallable, Category = "Action")
@@ -101,8 +101,10 @@ public:
     /************************************************************************/
     virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
-    virtual void cppAttack(float agility)
-    {}
+    virtual void cppAttack(ARobotRebellionCharacter* user)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt");
+    }
 
     void cannotAttack(float agility) 
     {}

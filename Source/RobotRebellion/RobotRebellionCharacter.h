@@ -44,14 +44,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
 
-    /** Projectile class */
-    UPROPERTY(EditDefaultsOnly, Category = Projectile)
-        TSubclassOf<class AProjectile> ProjectileClass;
-
-    //Projectile position Offset
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-        FVector MuzzleOffset;
-
+    ////Weapon Inventory/////
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
         class UWeaponInventory* m_weaponInventory;
 

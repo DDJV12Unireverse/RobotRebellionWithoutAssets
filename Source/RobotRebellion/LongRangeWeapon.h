@@ -16,6 +16,28 @@ class ROBOTREBELLION_API ULongRangeWeapon : public UIWeaponBase
 
 public:
     /************************************************************************/
+    /*                  CONSTANT                                           */
+    /************************************************************************/
+    static constexpr const float LIFT_OFFSET = 10.f;
+
+
+
+
+    /************************************************************************/
+    /*                  UPROPERTY                                           */
+    /************************************************************************/
+    /** Projectile class */
+    UPROPERTY(EditDefaultsOnly, Category = Projectile)
+        TSubclassOf<class AProjectile> m_projectileClass;
+
+    //Projectile position Offset
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+        FVector m_muzzleOffset;
+
+
+
+
+    /************************************************************************/
     /*                  UFUNCTION                                           */
     /************************************************************************/
     UFUNCTION(BlueprintCallable, Category = "General")
@@ -26,8 +48,13 @@ public:
 	
 
 
+
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
-    virtual void cppAttack(float agility) override;
+    virtual void cppAttack(class ARobotRebellionCharacter* user) override;
+
+
+
+    ULongRangeWeapon();
 };

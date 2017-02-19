@@ -29,5 +29,5 @@ public:
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
-    virtual void cppAttack(float agility) override;
+    virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 };

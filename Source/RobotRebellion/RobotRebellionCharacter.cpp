@@ -8,6 +8,7 @@
 #include "Damage.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
+#include "IWeaponBase.h"
 #include "WeaponInventory.h"
 
 #include "UtilitaryMacros.h"
@@ -273,35 +274,9 @@ void ARobotRebellionCharacter::mainFire()
     {
         serverMainFire(); // le param n'a pas d'importance pour l'instant
     }
-    else if (ProjectileClass != NULL)
+    else
     {
-
-        // Obtenir la transformation de la caméra
-        FVector CameraLoc;
-        FRotator CameraRot;
-        GetActorEyesViewPoint(CameraLoc, CameraRot);
-        // MuzzleOffset est dans l'espace caméra, il faut le transformer dans l'espace monde
-        FVector const MuzzleLocation = CameraLoc +
-            FTransform(CameraRot).TransformVector(MuzzleOffset);
-        FRotator MuzzleRotation = CameraRot;
-        MuzzleRotation.Pitch += 10.0f; // On lance un peu vers le haut
-        UWorld* const World = GetWorld();
-        if (World)
-        {
-            FActorSpawnParameters SpawnParams;
-            SpawnParams.Owner = this;
-            SpawnParams.Instigator = Instigator;
-            // Faire apparaître le projectile à la distance prévue
-            AProjectile* const projectile = World->SpawnActor<AProjectile>(ProjectileClass,
-                MuzzleLocation, MuzzleRotation, SpawnParams);
-            if (projectile)
-            {
-                projectile->setOwner(this);
-                // Trouver la direction du tir et tirer
-                FVector const DirectionDuTir = MuzzleRotation.Vector();
-                projectile->InitVelocity(DirectionDuTir);
-            }
-        }
+        m_weaponInventory->getCurrentWeapon()->cppAttack(this);
     }
 }
 
