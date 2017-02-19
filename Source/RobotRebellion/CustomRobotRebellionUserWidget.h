@@ -15,11 +15,15 @@ class ROBOTREBELLION_API UCustomRobotRebellionUserWidget : public UUserWidget
 	
 
 public:
-    //I override the NativeTick method
-    virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
-
-    //Implement in the blueprint
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
-        virtual void updateEveryFrame(); 
+        void getHealthRatio(float& ratio, float& health, float& maxHealth) const;
+
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        void getManaRatio(float& ratio, float& mana, float& maxMana) const;
+
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        FString healthParseToScreen(float health, float maxHealth) const;
+
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        FString manaParseToScreen(float mana, float maxMana) const;
 };
