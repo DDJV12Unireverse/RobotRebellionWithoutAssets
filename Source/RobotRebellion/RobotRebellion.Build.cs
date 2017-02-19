@@ -6,6 +6,7 @@ public class RobotRebellion : ModuleRules
 {
 	public RobotRebellion(TargetInfo Target)
 	{
+		UEBuildConfiguration.bForceEnableExceptions = true;
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
 	}
 }
