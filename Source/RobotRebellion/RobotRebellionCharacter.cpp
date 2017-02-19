@@ -84,6 +84,16 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
     //FIRE
     PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+
+
+    /************************************************************************/
+    /* DEBUG                                                                */
+    /************************************************************************/
+    //Class change
+    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
