@@ -13,12 +13,13 @@ class ROBOTREBELLION_API AWizard : public ARobotRebellionCharacter
 {
 	GENERATED_BODY()
 	
-        AWizard() :ARobotRebellionCharacter()
+
+public:
+    AWizard() : ARobotRebellionCharacter()
     {}
-    classtype getClass() override
+
+    EClassType getClassType() const USE_NOEXCEPT override
     {
-        return WIZARD;
+        return EClassType::WIZARD;
     }
-	
-	
 };

@@ -306,3 +306,12 @@ bool ARobotRebellionCharacter::serverMainFire_Validate()
     return true;
 }
 
+EClassType ARobotRebellionCharacter::getClassType() const USE_NOEXCEPT
+{
+    return EClassType::NONE;
+}
+
+EClassType ARobotRebellionCharacter::getType() const USE_NOEXCEPT
+{
+    return this->getClassType();
+}

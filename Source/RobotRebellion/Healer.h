@@ -13,12 +13,13 @@ class ROBOTREBELLION_API AHealer : public ARobotRebellionCharacter
 {
 	GENERATED_BODY()
 	
-        AHealer() :ARobotRebellionCharacter()
+
+public:
+    AHealer() : ARobotRebellionCharacter()
     {}
-    classtype getClass() override
+
+    EClassType getClassType() const USE_NOEXCEPT override
     {
-        return HEALER;
-    }
-	
-	
+        return EClassType::HEALER;
+    }	
 };

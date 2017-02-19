@@ -13,12 +13,13 @@ class ROBOTREBELLION_API ASoldier : public ARobotRebellionCharacter
 {
     GENERATED_BODY()
 
-        ASoldier() :ARobotRebellionCharacter()
+
+public:
+    ASoldier() : ARobotRebellionCharacter()
     {}
-    classtype getClass() override
+
+    EClassType getClassType() const USE_NOEXCEPT override
     {
-        return SOLDIER;
+        return EClassType::SOLDIER;
     }
-	
-	
 };

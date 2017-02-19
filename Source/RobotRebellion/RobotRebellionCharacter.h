@@ -5,6 +5,19 @@
 #include "RobotRebellionCharacter.generated.h"
 
 
+
+//CLASS FLAG
+UENUM(BlueprintType)
+enum class EClassType
+{
+    NONE        UMETA(DisplayName = "None"),
+    SOLDIER     UMETA(DisplayName = "Soldier"),
+    ASSASSIN    UMETA(DisplayName = "Assassin"),
+    HEALER      UMETA(DisplayName = "Healer"),
+    WIZARD      UMETA(DisplayName = "Wizard")
+};
+
+
 UCLASS(config = Game)
 class ARobotRebellionCharacter : public ACharacter//, public Attributes
 {
@@ -12,7 +25,7 @@ class ARobotRebellionCharacter : public ACharacter//, public Attributes
 
 
     /** Camera boom positioning the camera behind the character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+        UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
         class USpringArmComponent* CameraBoom;
 
     /** Follow camera */
@@ -71,10 +84,15 @@ protected:
      */
     void LookUpAtRate(float Rate);
 
+
+
 protected:
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     // End of APawn interface
+
+    virtual EClassType getClassType() const USE_NOEXCEPT;
+
 
 public:
 
@@ -148,24 +166,11 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+    UFUNCTION(BlueprintCallable, Category = "General")
+        EClassType getType() const USE_NOEXCEPT;
+
 
 public:
     GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
-
-
-    //CLASS FLAG
-    enum classtype
-    {
-        SOLDIER,
-        ASSASSIN,
-        HEALER,
-        WIZARD,
-        NONE
-    };
-
-    virtual classtype getClass()
-    {
-        return NONE;
-    }
 };
 
