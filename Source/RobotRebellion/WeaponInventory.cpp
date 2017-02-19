@@ -26,6 +26,9 @@ void UWeaponInventory::BeginPlay()
 
 	// ...
     changeToMainWeapon();
+
+    m_mainWeapon.GetDefaultObject()->m_owner = GetOwner();
+    m_secondaryWeapon.GetDefaultObject()->m_owner = GetOwner();
 }
 
 // Called every frame

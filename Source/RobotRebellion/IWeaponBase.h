@@ -29,6 +29,9 @@ public:
     /*                  UPROPERTY                                           */
     /************************************************************************/
     
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Owner")
+        AActor* m_owner;
+
     //Damage multiplier. Specific to the weapon.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponDamageCoefficient;
@@ -41,16 +44,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponBaseCadence;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "General", ReplicatedUsing = waitForReloading)
-        bool m_canAttack;
-
 
 
 protected:
     /************************************************************************/
     /*                  PROPERTY                                            */
     /************************************************************************/
-    FTimerHandle m_nextAllowedAttackTimer;
+    double m_nextAllowedAttackTimer;
 
 
 
@@ -86,13 +86,10 @@ public:
     }
 
     UFUNCTION(BlueprintCallable, Category = "Action")
-        bool canAttack() const USE_NOEXCEPT
-    {
-        return m_canAttack;
-    }
+        bool canAttack() const USE_NOEXCEPT;
 
-    UFUNCTION()
-    void waitForReloading();
+    UFUNCTION(BlueprintCallable, Category = "Action")
+        void reload();
 
 
 
@@ -106,10 +103,7 @@ public:
         PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt");
     }
 
-    void cannotAttack(float agility) 
-    {}
 
-    void reload();
 
     virtual FString toDebugFString() const USE_NOEXCEPT;
 

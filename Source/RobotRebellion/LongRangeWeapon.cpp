@@ -9,20 +9,19 @@
 ULongRangeWeapon::ULongRangeWeapon() :
     UIWeaponBase()
 {
-    m_canAttack = true;
+    
 }
 
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
+    bool canFire = canAttack();
     PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "LongAtt");
-    if (/*canAttack() &&*/ m_projectileClass != NULL)
+    if (canFire && m_projectileClass != NULL)
     {
         // Retrieve the camera location and rotation
         FVector cameraLocation;
         FRotator muzzleRotation;
         user->GetActorEyesViewPoint(cameraLocation, muzzleRotation);
-        
-        PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "Compute fire");
 
         // m_muzzleOffset is in camera space coordinate => must be transformed to world space coordinate.
         const FVector MuzzleLocation = cameraLocation + FTransform(muzzleRotation).TransformVector(m_muzzleOffset);
@@ -34,8 +33,6 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
             spawnParams.Owner = user;
             spawnParams.Instigator = user->Instigator;
 
-            PRINT_MESSAGE_ON_SCREEN(FColor::Green, "Ready To Spawn");
-
             // spawn a projectile
             AProjectile* const projectile = World->SpawnActor<AProjectile>(
                 m_projectileClass,                                                           
@@ -46,16 +43,20 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
             if (projectile)
             {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Spawned");
-
                 projectile->setOwner(user);
+
+                PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "FIRE");
 
                 // Fire
                 const FVector fireDirection = muzzleRotation.Vector();
                 projectile->InitVelocity(fireDirection);
 
-                //waitForReloading();
+                reload();
             }
         }
+    }
+    else if (!canFire)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Cannot attack !!! Reloading")
     }
 }

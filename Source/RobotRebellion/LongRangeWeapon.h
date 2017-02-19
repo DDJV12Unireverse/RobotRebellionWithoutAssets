@@ -55,6 +55,5 @@ public:
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
 
-
     ULongRangeWeapon();
 };
