@@ -52,9 +52,16 @@ public:
     }
 #endif //WE_RE_ON_DEBUG
 
-    //DO NOT MOVE OR COMMENT !! It is the only way I found... 
+    //DO NOT MOVE OR COMMENT !! It is the only way I found...
     void dummy1(){}
 
     UFUNCTION(BlueprintCallable, Category = "General")
         FString toFStringDebug() const USE_NOEXCEPT;
+
+
+
+    /************************************************************************/
+    /*                  METHODS                                             */
+    /************************************************************************/
+    virtual void attack() {}
 };
