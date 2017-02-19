@@ -4,7 +4,9 @@
 
 #include "Components/PrimitiveComponent.h"
 #include "UtilitaryMacros.h"
+#include "Engine/EngineTypes.h"
 #include "IWeaponBase.generated.h"
+
 
 UENUM(BlueprintType)
 enum class EWeaponRange : uint8
@@ -28,16 +30,32 @@ public:
     /************************************************************************/
     
     //Damage multiplier. Specific to the weapon.
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponDamageCoefficient;
 
     //Weapon base damage. Specific to the weapon.
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponBaseDamage;
 
+    //Weapon base damage. Specific to the weapon.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
+        float m_weaponBaseCadence;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "General", ReplicatedUsing = waitForReloading)
+        bool m_canAttack;
 
 
 
+protected:
+    /************************************************************************/
+    /*                  PROPERTY                                            */
+    /************************************************************************/
+    FTimerHandle m_nextAllowedAttackTimer;
+
+
+
+
+public:
     /************************************************************************/
     /*                  UFUNCTION                                           */
     /************************************************************************/
@@ -56,12 +74,44 @@ public:
     void dummy1(){}
 
     UFUNCTION(BlueprintCallable, Category = "General")
-        FString toFStringDebug() const USE_NOEXCEPT;
+        FString toFString() const USE_NOEXCEPT
+    {
+        return this->toDebugFString();
+    }
+
+    UFUNCTION(BlueprintCallable, Category = "Action")
+        void attack(float agility)
+    {
+        return this->cppAttack(agility);
+    }
+
+    UFUNCTION(BlueprintCallable, Category = "Action")
+        bool canAttack() const USE_NOEXCEPT
+    {
+        return m_canAttack;
+    }
+
+    UFUNCTION()
+    void waitForReloading();
 
 
 
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
-    virtual void attack() {}
+    virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+
+    virtual void cppAttack(float agility)
+    {}
+
+    void cannotAttack(float agility) 
+    {}
+
+    void reload();
+
+    virtual FString toDebugFString() const USE_NOEXCEPT;
+
+
+
+    UIWeaponBase();
 };

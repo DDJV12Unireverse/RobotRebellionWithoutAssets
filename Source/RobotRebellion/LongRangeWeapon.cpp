@@ -5,4 +5,7 @@
 
 
 
+void ULongRangeWeapon::cppAttack(float agility)
+{
 
+}

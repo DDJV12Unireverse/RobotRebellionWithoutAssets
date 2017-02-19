@@ -4,5 +4,8 @@
 #include "ShortRangeWeapon.h"
 
 
+void UShortRangeWeapon::cppAttack(float agility)
+{
 
+}
 
