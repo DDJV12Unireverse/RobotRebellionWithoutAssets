@@ -5,7 +5,7 @@
 #include "IsSingleton.h"
 #include "Damage.h"
 #include "RobotRebellionCharacter.h"
-#include "IWeaponBase.h"
+#include "WeaponBase.h"
 
 /**
  * 

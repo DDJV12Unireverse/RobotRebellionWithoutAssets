@@ -14,15 +14,15 @@ class ROBOTREBELLION_API UWeaponInventory : public UActorComponent
 
 
 public:
-        class UIWeaponBase* m_currentWeapon;
+        class UWeaponBase* m_currentWeapon;
 
 
 private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-        TSubclassOf<UIWeaponBase> m_mainWeapon;
+        TSubclassOf<UWeaponBase> m_mainWeapon;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-        TSubclassOf<UIWeaponBase> m_secondaryWeapon;
+        TSubclassOf<UWeaponBase> m_secondaryWeapon;
 
 
 public:	
@@ -50,7 +50,7 @@ public:
     void switchWeapon() USE_NOEXCEPT;
 
     //get the current equipped weapon
-    UIWeaponBase* getCurrentWeapon() USE_NOEXCEPT;
+    UWeaponBase* getCurrentWeapon() USE_NOEXCEPT;
 
     //return true if the current equipped weapon is the main weapon, false otherwise
     bool isMainWeaponEquipped() const USE_NOEXCEPT;

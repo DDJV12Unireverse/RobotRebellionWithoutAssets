@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RobotRebellion.h"
-#include "IWeaponBase.h"
+#include "WeaponBase.h"
 #include "Engine/World.h"
 
 
 
-UIWeaponBase::UIWeaponBase() :
+UWeaponBase::UWeaponBase() :
     m_weaponDamageCoefficient{ 1.f },
     m_weaponBaseDamage{ 0.f },
     m_weaponBaseCadence{ 1.f },
@@ -15,22 +15,22 @@ UIWeaponBase::UIWeaponBase() :
     bReplicates = true;
 }
 
-void UIWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-bool UIWeaponBase::canAttack() const USE_NOEXCEPT
+bool UWeaponBase::canAttack() const USE_NOEXCEPT
 {
     return FPlatformTime::Seconds() > m_nextAllowedAttackTimer;
 }
 
-void UIWeaponBase::reload()
+void UWeaponBase::reload()
 {
     m_nextAllowedAttackTimer = FPlatformTime::Seconds() + m_weaponBaseCadence;
 }
 
-FString UIWeaponBase::toDebugFString() const USE_NOEXCEPT
+FString UWeaponBase::toDebugFString() const USE_NOEXCEPT
 {
     return TEXT("Damage coefficient multiplier : ") + 
         FString::FromInt(m_weaponDamageCoefficient) +

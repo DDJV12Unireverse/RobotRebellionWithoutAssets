@@ -8,7 +8,7 @@
 #include "Damage.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
-#include "IWeaponBase.h"
+#include "WeaponBase.h"
 #include "WeaponInventory.h"
 
 #include "UtilitaryMacros.h"
@@ -142,7 +142,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedRun, COND_SkipOwner);
 }
 
-UIWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
+UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
 {
     return m_weaponInventory->getCurrentWeapon();
 }

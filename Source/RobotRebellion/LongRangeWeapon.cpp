@@ -7,7 +7,7 @@
 
 
 ULongRangeWeapon::ULongRangeWeapon() :
-    UIWeaponBase()
+    UWeaponBase()
 {
     
 }

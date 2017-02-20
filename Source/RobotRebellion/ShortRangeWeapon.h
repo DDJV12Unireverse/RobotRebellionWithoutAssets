@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "IWeaponBase.h"
+#include "WeaponBase.h"
 #include "ShortRangeWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ROBOTREBELLION_API UShortRangeWeapon : public UIWeaponBase
+class ROBOTREBELLION_API UShortRangeWeapon : public UWeaponBase
 {
 	GENERATED_BODY()
 	

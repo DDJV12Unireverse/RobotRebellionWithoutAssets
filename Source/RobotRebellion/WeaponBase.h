@@ -5,21 +5,22 @@
 #include "Components/PrimitiveComponent.h"
 #include "UtilitaryMacros.h"
 #include "Engine/EngineTypes.h"
-#include "IWeaponBase.generated.h"
+#include "WeaponBase.generated.h"
 
 
 UENUM(BlueprintType)
 enum class EWeaponRange : uint8
 {
-    SHORT_RANGE_WEAPON  UMETA(DisplayName = "Short Range Weapon"),
-    LONG_RANGE_WEAPON   UMETA(DisplayName = "Long Range Weapon")
+    SHORT_RANGE_WEAPON   UMETA(DisplayName = "Short Range Weapon"),
+    LONG_RANGE_WEAPON    UMETA(DisplayName = "Long Range Weapon"),
+    INVALID_RANGE_WEAPON UMETA(DisplayName = "Invalid Range Weapon"),
 };
 
 /**
  * 
  */
 UCLASS(ABSTRACT, Blueprintable)
-class ROBOTREBELLION_API UIWeaponBase : public UPrimitiveComponent
+class ROBOTREBELLION_API UWeaponBase : public UPrimitiveComponent
 {
 	GENERATED_BODY()
 
@@ -61,17 +62,10 @@ public:
     /************************************************************************/
 
     UFUNCTION(BlueprintCallable, Category = "General")
-#ifdef WE_RE_ON_DEBUG
-        EWeaponRange getWeaponRange() const USE_NOEXCEPT PURE_VIRTUAL(UIWeaponBase::getWeaponRange, return EWeaponRange::SHORT_RANGE_WEAPON;)
-#else //!WE_RE_ON_DEBUG
         EWeaponRange getWeaponRange() const USE_NOEXCEPT
     {
-        return EWeaponRange::SHORT_RANGE_WEAPON;
+        return EWeaponRange::INVALID_RANGE_WEAPON;
     }
-#endif //WE_RE_ON_DEBUG
-
-    //DO NOT MOVE OR COMMENT !! It is the only way I found...
-    void dummy1(){}
 
     UFUNCTION(BlueprintCallable, Category = "General")
         FString toFString() const USE_NOEXCEPT
@@ -109,5 +103,5 @@ public:
 
 
 
-    UIWeaponBase();
+    UWeaponBase();
 };

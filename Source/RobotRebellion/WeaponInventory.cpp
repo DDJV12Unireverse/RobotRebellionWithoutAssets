@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "WeaponInventory.h"
-#include "IWeaponBase.h"
+#include "WeaponBase.h"
 
 #include "UtilitaryMacros.h"
 
@@ -51,7 +51,7 @@ void UWeaponInventory::changeToSecondaryWeapon() USE_NOEXCEPT
     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Secondary weapon equipped"));
 }
 
-UIWeaponBase* UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
+UWeaponBase* UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
 {
     return m_currentWeapon;
 }

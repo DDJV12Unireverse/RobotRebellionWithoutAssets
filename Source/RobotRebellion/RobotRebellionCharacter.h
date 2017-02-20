@@ -87,7 +87,7 @@ public:
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-    class UIWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
+    class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
 
     //On active le booléen bPressedJump
     UFUNCTION()
