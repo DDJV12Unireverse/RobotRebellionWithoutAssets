@@ -15,8 +15,7 @@ class ROBOTREBELLION_API AAssassin : public ARobotRebellionCharacter
 	
 
 public:
-    AAssassin() : ARobotRebellionCharacter()
-    {}
+    AAssassin();
 
     EClassType getClassType() const USE_NOEXCEPT override
     {

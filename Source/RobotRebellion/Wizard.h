@@ -15,8 +15,7 @@ class ROBOTREBELLION_API AWizard : public ARobotRebellionCharacter
 	
 
 public:
-    AWizard() : ARobotRebellionCharacter()
-    {}
+    AWizard();
 
     EClassType getClassType() const USE_NOEXCEPT override
     {
