@@ -15,8 +15,7 @@ class ROBOTREBELLION_API ASoldier : public ARobotRebellionCharacter
 
 
 public:
-    ASoldier() : ARobotRebellionCharacter()
-    {}
+    ASoldier();
 
     EClassType getClassType() const USE_NOEXCEPT override
     {

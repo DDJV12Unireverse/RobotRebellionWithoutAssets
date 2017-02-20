@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "Assassin.h"
 
-
+AAssassin::AAssassin():ARobotRebellionCharacter()
+{}
 
 

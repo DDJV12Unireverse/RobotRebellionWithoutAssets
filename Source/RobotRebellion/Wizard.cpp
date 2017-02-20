@@ -3,6 +3,6 @@
 #include "RobotRebellion.h"
 #include "Wizard.h"
 
-
-
+AWizard::AWizard() :ARobotRebellionCharacter()
+{}
 

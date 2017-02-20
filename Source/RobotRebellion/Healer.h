@@ -15,8 +15,7 @@ class ROBOTREBELLION_API AHealer : public ARobotRebellionCharacter
 	
 
 public:
-    AHealer() : ARobotRebellionCharacter()
-    {}
+    AHealer();
 
     EClassType getClassType() const USE_NOEXCEPT override
     {
