@@ -59,6 +59,7 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
     m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
+    //m_spawner->m_owner = this;
 
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
@@ -358,7 +359,9 @@ FString ARobotRebellionCharacter::typeToString() const USE_NOEXCEPT
 
 void ARobotRebellionCharacter::changeInstanceTo(EClassType toType)
 {
-    m_spawner->spawnAndReplace(toType, this);
+    /*m_spawner->m_owner = this;
+    m_spawner->m_typeToChange = toType;*/
+    m_spawner->spawnAndReplace(this, toType);
 }
 
 void ARobotRebellionCharacter::changeToAssassin()

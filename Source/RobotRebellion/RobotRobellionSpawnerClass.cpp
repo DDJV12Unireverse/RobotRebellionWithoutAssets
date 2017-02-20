@@ -41,43 +41,47 @@ void URobotRobellionSpawnerClass::TickComponent( float DeltaTime, ELevelTick Tic
 
 
 
-void URobotRobellionSpawnerClass::spawnAndReplace(EClassType type, ARobotRebellionCharacter* original)
+void URobotRobellionSpawnerClass::spawnAndReplace(ARobotRebellionCharacter* m_owner, EClassType m_typeToChange)
 {
-    if (type != original->getType()) //already the same, does nothing
+    if (m_owner->Role < ROLE_Authority)
     {
-        UWorld* const world = original->GetWorld();
+        serverSpawnAndReplace(m_owner, m_typeToChange);
+    }
+    else if (m_typeToChange != m_owner->getType()) //already the same, does nothing
+    {
+        UWorld* const world = m_owner->GetWorld();
         if (world)
         {
             FActorSpawnParameters spawnParams;
-            spawnParams.Owner = original->GetOwner();
-            spawnParams.Instigator = original->Instigator;
+            spawnParams.Owner = m_owner->GetOwner();
+            spawnParams.Instigator = m_owner->Instigator;
             spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
+            
             ARobotRebellionCharacter* intermediary;
 
-            switch (type)
+            switch (m_typeToChange)
             {
             case EClassType::ASSASSIN:
             {
-                intermediary = world->SpawnActor<AAssassin>(m_assassinActor, original->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<AAssassin>(m_assassinActor, m_owner->GetTransform(), spawnParams);
             }
             break;
 
             case EClassType::HEALER:
             {
-                intermediary = world->SpawnActor<AHealer>(m_healerActor, original->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<AHealer>(m_healerActor, m_owner->GetTransform(), spawnParams);
             }
             break;
 
             case EClassType::SOLDIER:
             {
-                intermediary = world->SpawnActor<ASoldier>(m_soldierActor, original->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<ASoldier>(m_soldierActor, m_owner->GetTransform(), spawnParams);
             }
             break;
 
             case EClassType::WIZARD:
             {
-                intermediary = world->SpawnActor<AWizard>(m_wizardActor, original->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<AWizard>(m_wizardActor, m_owner->GetTransform(), spawnParams);
             }
             break;
 
@@ -85,11 +89,21 @@ void URobotRobellionSpawnerClass::spawnAndReplace(EClassType type, ARobotRebelli
                 return;
             }
 
-            original->Controller->Possess(intermediary);
+            m_owner->Controller->Possess(intermediary);
 
-            original->Destroy();
+            m_owner->Destroy();
 
             GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Black, "Spawn");
         }
     }
+}
+
+void URobotRobellionSpawnerClass::serverSpawnAndReplace_Implementation(ARobotRebellionCharacter* m_owner, EClassType m_typeToChange)
+{
+    spawnAndReplace(m_owner, m_typeToChange);
+}
+
+bool URobotRobellionSpawnerClass::serverSpawnAndReplace_Validate(ARobotRebellionCharacter* m_owner, EClassType m_typeToChange)
+{
+    return true;
 }

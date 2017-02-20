@@ -15,6 +15,15 @@ class ROBOTREBELLION_API URobotRobellionSpawnerClass : public UActorComponent
 
 public:
     /************************************************************************/
+    /* PROPERTY                                                             */
+    /************************************************************************/
+   /*  ARobotRebellionCharacter* m_owner;
+
+    EClassType m_typeToChange;*/
+
+
+
+    /************************************************************************/
     /* UPROPERTY                                                            */
     /************************************************************************/
 
@@ -22,13 +31,13 @@ public:
         TSubclassOf<class ARobotRebellionCharacter> m_assassinActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TSubclassOf<class ARobotRebellionCharacter> m_healerActor;
+        TSubclassOf<ARobotRebellionCharacter> m_healerActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TSubclassOf<class ARobotRebellionCharacter> m_soldierActor;
+        TSubclassOf<ARobotRebellionCharacter> m_soldierActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TSubclassOf<class ARobotRebellionCharacter> m_wizardActor;
+        TSubclassOf<ARobotRebellionCharacter> m_wizardActor;
 
 
 
@@ -50,7 +59,10 @@ public:
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
+    UFUNCTION(BlueprintCallable, Category = "General", Server, Reliable, WithValidation)
+        void serverSpawnAndReplace(ARobotRebellionCharacter* m_owner, EClassType m_typeToChange);
 
-    UFUNCTION(BlueprintCallable, Category = "General")
-        void spawnAndReplace(EClassType type, class ARobotRebellionCharacter* original);
+
+    UFUNCTION()
+        void spawnAndReplace(ARobotRebellionCharacter* m_owner, EClassType m_typeToChange);
 };
