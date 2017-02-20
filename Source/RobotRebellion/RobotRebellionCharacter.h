@@ -176,9 +176,11 @@ public:
     //////////////////////////////////////////////////////////////////////////
     // Debug / cheats
 
+    //Parse the class type to a string
     UFUNCTION(BlueprintCallable, Category = "Debug")
         FString typeToString() const USE_NOEXCEPT;
 
+    //change instance to the specified instance type. Can be executed from command line
     UFUNCTION(BlueprintCallable, Category = "Debug", Exec)
         void changeInstanceTo(EClassType toType);
 
