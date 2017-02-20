@@ -2,22 +2,9 @@
 #pragma once
 #include "Attributes.h"
 #include "GameFramework/Character.h"
+#include "ClassType.h"
 #include "RobotRebellionCharacter.generated.h"
 
-
-
-//CLASS FLAG
-UENUM(BlueprintType)
-enum class EClassType : uint8
-{
-    NONE        UMETA(DisplayName = "None"),
-    SOLDIER     UMETA(DisplayName = "Soldier"),
-    ASSASSIN    UMETA(DisplayName = "Assassin"),
-    HEALER      UMETA(DisplayName = "Healer"),
-    WIZARD      UMETA(DisplayName = "Wizard"),
-
-    TYPE_COUNT
-};
 
 
 UCLASS(config = Game)
@@ -50,6 +37,9 @@ public:
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
         UAttributes* m_attribute;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+        class URobotRobellionSpawnerClass* m_spawner;
 
 
     /////////////////////////////////////////////////////////ADDED ATTRIBUTES AND FUNCTIONS:
@@ -160,7 +150,6 @@ public:
 
     /////FIRE
 
-
     UFUNCTION()
         void mainFire();
 
@@ -171,9 +160,28 @@ public:
     UFUNCTION(BlueprintCallable, Category = "General")
         EClassType getType() const USE_NOEXCEPT;
 
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // Debug / cheats
+
     UFUNCTION(BlueprintCallable, Category = "Debug")
         FString typeToString() const USE_NOEXCEPT;
 
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeInstanceTo(EClassType toType);
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToAssassin();
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToHealer();
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToSoldier();
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToWizard();
 
 public:
     GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);

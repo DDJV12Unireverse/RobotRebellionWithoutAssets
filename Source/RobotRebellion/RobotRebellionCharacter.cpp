@@ -9,6 +9,13 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
 
+#include "RobotRobellionSpawnerClass.h"
+
+#include "Assassin.h"
+#include "Wizard.h"
+#include "Soldier.h"
+#include "Healer.h"
+
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
 
@@ -51,6 +58,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
+    m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
+
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
@@ -90,10 +99,10 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
     /* DEBUG                                                                */
     /************************************************************************/
     //Class change
-    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
-    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
-    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
-    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::changeToAssassin);
+    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::changeToHealer);
+    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
+    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
@@ -328,6 +337,12 @@ EClassType ARobotRebellionCharacter::getType() const USE_NOEXCEPT
     return this->getClassType();
 }
 
+
+/************************************************************************/
+/* DEBUG / CHEAT                                                        */
+/************************************************************************/
+
+
 FString ARobotRebellionCharacter::typeToString() const USE_NOEXCEPT
 {
     static const FString typeLookUpTable[EClassType::TYPE_COUNT] = {
@@ -339,4 +354,29 @@ FString ARobotRebellionCharacter::typeToString() const USE_NOEXCEPT
     };
 
     return typeLookUpTable[static_cast<uint8>(getClassType())];
+}
+
+void ARobotRebellionCharacter::changeInstanceTo(EClassType toType)
+{
+    m_spawner->spawnAndReplace(toType, this);
+}
+
+void ARobotRebellionCharacter::changeToAssassin()
+{
+    changeInstanceTo(EClassType::ASSASSIN);
+}
+
+void ARobotRebellionCharacter::changeToHealer()
+{
+    changeInstanceTo(EClassType::HEALER);
+}
+
+void ARobotRebellionCharacter::changeToSoldier()
+{
+    changeInstanceTo(EClassType::SOLDIER);
+}
+
+void ARobotRebellionCharacter::changeToWizard()
+{
+    changeInstanceTo(EClassType::WIZARD);
 }
