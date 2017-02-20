@@ -15,15 +15,6 @@ class ROBOTREBELLION_API URobotRobellionSpawnerClass : public UActorComponent
 
 public:
     /************************************************************************/
-    /* PROPERTY                                                             */
-    /************************************************************************/
-   /*  ARobotRebellionCharacter* m_owner;
-
-    EClassType m_typeToChange;*/
-
-
-
-    /************************************************************************/
     /* UPROPERTY                                                            */
     /************************************************************************/
 
@@ -59,10 +50,11 @@ public:
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
-    UFUNCTION(BlueprintCallable, Category = "General", Server, Reliable, WithValidation)
-        void serverSpawnAndReplace(ARobotRebellionCharacter* m_owner, EClassType m_typeToChange);
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSpawnAndReplace(ARobotRebellionCharacter* owner, EClassType typeToChange);
 
 
-    UFUNCTION()
-        void spawnAndReplace(ARobotRebellionCharacter* m_owner, EClassType m_typeToChange);
+    //Replace the player with a new character. Specify the player and the new type of character.
+    UFUNCTION(BlueprintCallable, Category = "")
+        void spawnAndReplace(ARobotRebellionCharacter* owner, EClassType typeToChange);
 };
