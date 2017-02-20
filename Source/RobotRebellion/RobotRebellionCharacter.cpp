@@ -8,6 +8,7 @@
 #include "Damage.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
+#include "WeaponInventory.h"
 
 #include "RobotRobellionSpawnerClass.h"
 
@@ -15,6 +16,8 @@
 #include "Wizard.h"
 #include "Soldier.h"
 #include "Healer.h"
+
+#include "UtilitaryMacros.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -63,6 +66,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
+
+    m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,6 +99,8 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
     //FIRE
     PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
 
+    //SWITCH WEAPON
+    PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
 
     /************************************************************************/
     /* DEBUG                                                                */
@@ -158,10 +165,12 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 ///// JUMP
 void ARobotRebellionCharacter::OnStartJump()
 {
-    if (m_bPressedCrouch) {
+    if (m_bPressedCrouch) 
+    {
         OnCrouchToggle();
     }
-    else {
+    else 
+    {
         bPressedJump = true;
     }
 }
@@ -335,6 +344,34 @@ EClassType ARobotRebellionCharacter::getClassType() const USE_NOEXCEPT
 EClassType ARobotRebellionCharacter::getType() const USE_NOEXCEPT
 {
     return this->getClassType();
+}
+
+void ARobotRebellionCharacter::switchWeapon()
+{
+    if (Role < ROLE_Authority)
+    {
+        serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+    }
+    else
+    {
+        FString message = m_weaponInventory->toFString() + TEXT(" Go to : ");
+
+        m_weaponInventory->switchWeapon();
+
+        message += m_weaponInventory->toFString();
+
+        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, message);
+    }
+}
+
+void ARobotRebellionCharacter::serverSwitchWeapon_Implementation()
+{
+    this->switchWeapon();
+}
+
+bool ARobotRebellionCharacter::serverSwitchWeapon_Validate()
+{
+    return true;
 }
 
 

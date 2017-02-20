@@ -11,7 +11,24 @@ UCLASS()
 class ROBOTREBELLION_API AProjectile : public AActor
 {
 	GENERATED_BODY()
+
+public:
+    //////////////////////////////////////////////////////////////////////////ADDED MEMBERS /////
+    
+
+    ////OWNER////
+    UPROPERTY(Transient, ReplicatedUsing = OnRep_MyOwner)
+        ARobotRebellionCharacter *  m_owner;
+
+    /** Movement component */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+        UProjectileMovementComponent* m_projectileMovement;
+
+    //// Collision ////
+    UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+        USphereComponent* m_collisionComp;
 	
+
 public:	
 	// Sets default values for this actor's properties
 	AProjectile();
@@ -21,24 +38,12 @@ public:
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
-    //////////////////////////////////////////////////////////////////////////ADDED MEMBERS /////
-    
 
-    ////OWNER////
-    UPROPERTY(Transient, ReplicatedUsing = OnRep_MyOwner)
-        ARobotRebellionCharacter *  m_owner;
     UFUNCTION()
     void OnRep_MyOwner();
 
     void setOwner(ARobotRebellionCharacter *newOwner);
 
-    /** Movement component */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
-        UProjectileMovementComponent* m_projectileMovement;
-
-    //// Collision ////
-    UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
-        USphereComponent* m_collisionComp;
     // On hit function called every collision
     UFUNCTION()
         void OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
