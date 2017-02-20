@@ -63,6 +63,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
+
+    //PrimaryActorTick.bCanEverTick = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,6 +106,46 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
     PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
     PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
 }
+
+//void ARobotRebellionCharacter::Tick(float DeltaTime)
+//{
+//    Super::Tick(DeltaTime);
+//}
+
+/*
+bool ARobotRebellionCharacter::ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor)
+{
+    FString command{ cmd };
+    if (command.Contains("changeTo"))
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Yellow, command);
+
+        if (command.Contains("Assassin"))
+        {
+            changeToAssassin();
+            return true;
+        }
+        else if (command.Contains("Wizard"))
+        {
+            changeToWizard();
+            return true;
+        }
+        else if(command.Contains("Healer"))
+        {
+            changeToHealer();
+            return true;
+        }
+        else if(command.Contains("Soldier"))
+        {
+            changeToSoldier();
+            return true;
+        }
+    }
+
+    GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Yellow, command);
+
+    return false;
+}*/
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
 {

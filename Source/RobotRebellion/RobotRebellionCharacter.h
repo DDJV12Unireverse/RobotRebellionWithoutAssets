@@ -87,11 +87,24 @@ protected:
 
 
 public:
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
+
+    //virtual void Tick(float DeltaTime) override;
+
 
     /** Returns CameraBoom subobject **/
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+    //virtual bool ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor) override;
+
+
+    /************************************************************************/
+    /* UFUNCTION                                                            */
+    /************************************************************************/
 
     //On active le booléen bPressedJump
     UFUNCTION()
@@ -168,7 +181,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Debug")
         FString typeToString() const USE_NOEXCEPT;
 
-    UFUNCTION(BlueprintCallable, Category = "Debug")
+    UFUNCTION(BlueprintCallable, Category = "Debug", Exec)
         void changeInstanceTo(EClassType toType);
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
