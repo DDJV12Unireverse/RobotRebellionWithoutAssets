@@ -84,9 +84,12 @@ void URobotRobellionSpawnerClass::spawnAndReplace(EClassType type, ARobotRebelli
             default:
                 return;
             }
+
+            original->Controller->Possess(intermediary);
+
+            original->Destroy();
+
             GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Black, "Spawn");
-            intermediary->Controller = original->GetController();
-            original = intermediary;
         }
     }
 }
