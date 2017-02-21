@@ -11,10 +11,23 @@ UAttributes::UAttributes()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+    bReplicates = true;
 	// ...
 
 }
 
+void UAttributes::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UAttributes, m_health);
+    DOREPLIFETIME(UAttributes, m_maxHealth);
+    DOREPLIFETIME(UAttributes, m_mana);
+    DOREPLIFETIME(UAttributes, m_maxMana);
+    DOREPLIFETIME(UAttributes, m_strength);
+    DOREPLIFETIME(UAttributes, m_defense);
+    DOREPLIFETIME(UAttributes, m_agility);
+}
 
 // Called when the game starts
 void UAttributes::BeginPlay()
@@ -36,7 +49,7 @@ void UAttributes::TickComponent( float DeltaTime, ELevelTick TickType, FActorCom
 	// ...
 }
 
-void UAttributes::setMaxMana(AttributeULongType newValue) USE_NOEXCEPT
+void UAttributes::setMaxMana(float newValue) USE_NOEXCEPT
 {
     m_maxMana = newValue;
 
@@ -46,7 +59,7 @@ void UAttributes::setMaxMana(AttributeULongType newValue) USE_NOEXCEPT
     }
 }
 
-void UAttributes::setMaxHealth(AttributeULongType newValue) USE_NOEXCEPT
+void UAttributes::setMaxHealth(float newValue) USE_NOEXCEPT
 {
     m_maxHealth = newValue;
 
@@ -56,7 +69,7 @@ void UAttributes::setMaxHealth(AttributeULongType newValue) USE_NOEXCEPT
     }
 }
 
-void UAttributes::inflictDamage(AttributeULongType damage) USE_NOEXCEPT
+void UAttributes::inflictDamage(float damage) USE_NOEXCEPT
 {
     if (damage < m_health)
     {

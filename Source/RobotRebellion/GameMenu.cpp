@@ -11,5 +11,9 @@ void AGameMenu::BeginPlay()
 {
     Super::BeginPlay();
 
-    //DisplayWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
+    LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
+    HideWidget(LobbyImpl);
+
+    HUDCharacterImpl = CreateCustomWidget<UCustomRobotRebellionUserWidget>(HUDCharacterWidget.GetDefaultObject());
+    //HUDCharacterImpl->SetVisibility(ESlateVisibility::Hidden);
 }

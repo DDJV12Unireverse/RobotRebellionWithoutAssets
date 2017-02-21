@@ -4,6 +4,7 @@
 
 #include "GameFramework/HUD.h"
 #include "LobbyUIWidget.h"
+#include "CustomRobotRebellionUserWidget.h"
 #include "GameMenu.generated.h"
 
 /**
@@ -18,52 +19,56 @@ public:
     AGameMenu();
     virtual void BeginPlay() override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD Game Menu Widget")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Game Menu Lobby Widget")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
+    ULobbyUIWidget* LobbyImpl;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD Character Widget")
+        TSubclassOf<UCustomRobotRebellionUserWidget> HUDCharacterWidget;
+    UCustomRobotRebellionUserWidget* HUDCharacterImpl;
 
     template <class T>
-    void DisplayWidget(T *Widget)
+    T* CreateCustomWidget(T *Widget)
     {
-        if(GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | BEGIN"));
-        }
+        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | BEGIN"));
         if(Widget)
         {
             T* WidgetToImp = CreateWidget<T>(GetWorld(), Widget->GetClass());
 
-            if(GEngine)
-            {
-                GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | TEST"));
-            }
+            PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | TEST"));
             /** Make sure widget was created */
             if(WidgetToImp)
             {
                 /** Add it to the viewport */
                 WidgetToImp->AddToViewport();
 
-                if(GEngine)
-                {
-                    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | DONE"));
-                }
+                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | DONE"));
+                return WidgetToImp;
             }
+        }
+        return nullptr;
+    }
+
+    template <class T>
+    void RemoveWidget(T *WidgetRef)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Hide widget | Begin"));
+
+        if(WidgetRef->IsInViewport())
+        {
+            WidgetRef->RemoveFromParent();
+
+            PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Hide widget | DONE"));
         }
     }
 
-    //template <class T>
-    //void HideWidget(T *Widget)
-    //{
-    //    if(GEngine)
-    //    {
-    //        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hide widget | BEGIN"));
-    //    }
-    //    if(Widget->IsInViewport())
-    //    {
-    //        Widget->RemoveFromParent();
-    //        if(GEngine)
-    //        {
-    //            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hide widget | DONE"));
-    //        }
-    //    }
-    //}
+    void DisplayWidget(UUserWidget* WidgetRef)
+    {
+        WidgetRef->SetVisibility(ESlateVisibility::Visible);
+    }
+
+    void HideWidget(UUserWidget* WidgetRef)
+    {
+        WidgetRef->SetVisibility(ESlateVisibility::Hidden);
+    }
 };

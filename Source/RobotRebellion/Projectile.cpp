@@ -88,7 +88,7 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
         if (receiver && m_owner != receiver)
         {
             Damage damage{ m_owner, receiver };
-            receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHit, 7.f));
+            receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, 7.f));
         }
         
         Destroy();

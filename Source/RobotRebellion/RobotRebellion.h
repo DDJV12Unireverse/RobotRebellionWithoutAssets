@@ -11,6 +11,8 @@
 
 #define COLLISION_PROJECTILE ECC_GameTraceChannel1
 
-#define USE_NOEXCEPT 
+#include "UtilitaryMacros.h"
+
+#define USE_NOEXCEPT noexcept
 
 #endif

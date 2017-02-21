@@ -6,10 +6,13 @@
 #include "Projectile.h"
 
 #include "Damage.h"
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
 #include "GameMenu.h"
+#include "WeaponBase.h"
+#include "WeaponInventory.h"
+#include "CustomPlayerController.h"
 
+#include "UtilitaryMacros.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,6 +56,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
+
+    m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -86,6 +91,27 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
     //ESCAPE
     PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
+    //SWITCH WEAPON
+    PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
+}
+
+void ARobotRebellionCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    //APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    //if(MyPC)
+    //{
+    //    auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+    //    myHud->DisplayWidget(myHud->HUDCharacterImpl);
+    //}
+
+    //ACustomPlayerController* customController = Cast<ACustomPlayerController>(GetController());
+    //if (customController)
+    //{ 
+    //    customController->initializeHUD();
+    //}
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
@@ -136,6 +162,12 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
+}
+
+UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
+{
+    return m_weaponInventory->getCurrentWeapon();
 }
 
 void ARobotRebellionCharacter::ExecuteCommand(FString command) const
@@ -154,10 +186,12 @@ void ARobotRebellionCharacter::ExecuteCommand(FString command) const
 ///// JUMP
 void ARobotRebellionCharacter::OnStartJump()
 {
-    if (m_bPressedCrouch) {
+    if (m_bPressedCrouch) 
+    {
         OnCrouchToggle();
     }
-    else {
+    else 
+    {
         bPressedJump = true;
     }
 }
@@ -251,7 +285,7 @@ void ARobotRebellionCharacter::OnRep_CrouchButtonDown()
 
 void ARobotRebellionCharacter::OnCrouchToggle()
 {
-    // Si nous sommes déjà accroupis, CanCrouch retourne false.
+    // Si nous sommes dï¿½jï¿½ accroupis, CanCrouch retourne false.
     if (m_bPressedCrouch == false)
     {
         m_bPressedCrouch = true;
@@ -281,35 +315,9 @@ void ARobotRebellionCharacter::mainFire()
     {
         serverMainFire(); // le param n'a pas d'importance pour l'instant
     }
-    else if (ProjectileClass != NULL)
+    else
     {
-
-        // Obtenir la transformation de la caméra
-        FVector CameraLoc;
-        FRotator CameraRot;
-        GetActorEyesViewPoint(CameraLoc, CameraRot);
-        // MuzzleOffset est dans l'espace caméra, il faut le transformer dans l'espace monde
-        FVector const MuzzleLocation = CameraLoc +
-            FTransform(CameraRot).TransformVector(MuzzleOffset);
-        FRotator MuzzleRotation = CameraRot;
-        MuzzleRotation.Pitch += 10.0f; // On lance un peu vers le haut
-        UWorld* const World = GetWorld();
-        if (World)
-        {
-            FActorSpawnParameters SpawnParams;
-            SpawnParams.Owner = this;
-            SpawnParams.Instigator = Instigator;
-            // Faire apparaître le projectile à la distance prévue
-            AProjectile* const projectile = World->SpawnActor<AProjectile>(ProjectileClass,
-                MuzzleLocation, MuzzleRotation, SpawnParams);
-            if (projectile)
-            {
-                projectile->setOwner(this);
-                // Trouver la direction du tir et tirer
-                FVector const DirectionDuTir = MuzzleRotation.Vector();
-                projectile->InitVelocity(DirectionDuTir);
-            }
-        }
+        m_weaponInventory->getCurrentWeapon()->cppAttack(this);
     }
 }
 
@@ -323,6 +331,7 @@ bool ARobotRebellionCharacter::serverMainFire_Validate()
     return true;
 }
 
+
 /////////UI
 void ARobotRebellionCharacter::openLobbyWidget()
 {
@@ -331,7 +340,7 @@ void ARobotRebellionCharacter::openLobbyWidget()
     if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
-        myHud->DisplayWidget<ULobbyUIWidget>(myHud->LobbyWidget.GetDefaultObject());
+        myHud->DisplayWidget(myHud->LobbyImpl);
         FInputModeGameAndUI Mode;
         Mode.SetLockMouseToViewport(true);
         Mode.SetHideCursorDuringCapture(false);
@@ -343,4 +352,32 @@ void ARobotRebellionCharacter::openLobbyWidget()
     {
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | PRESSED"));
     }
+}
+
+void ARobotRebellionCharacter::switchWeapon()
+{
+    if (Role < ROLE_Authority)
+    {
+        serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+    }
+    else
+    {
+        FString message = m_weaponInventory->toFString() + TEXT(" Go to : ");
+
+        m_weaponInventory->switchWeapon();
+
+        message += m_weaponInventory->toFString();
+
+        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, message);
+    }
+}
+
+void ARobotRebellionCharacter::serverSwitchWeapon_Implementation()
+{
+    this->switchWeapon();
+}
+
+bool ARobotRebellionCharacter::serverSwitchWeapon_Validate()
+{
+    return true;
 }
