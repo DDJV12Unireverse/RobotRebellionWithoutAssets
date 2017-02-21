@@ -6,9 +6,9 @@
 #include "Projectile.h"
 
 #include "Damage.h"
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
 #include "WeaponInventory.h"
+#include "CustomPlayerController.h"
 
 #include "RobotRobellionSpawnerClass.h"
 
@@ -112,6 +112,17 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
     PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
 }
 
+void ARobotRebellionCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    ACustomPlayerController* customController = Cast<ACustomPlayerController>(GetController());
+    if (customController)
+    { 
+        customController->initializeHUD();
+    }
+}
+
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
 {
     // calculate delta for this frame from the rate information
@@ -160,6 +171,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
 }
 
 ///// JUMP

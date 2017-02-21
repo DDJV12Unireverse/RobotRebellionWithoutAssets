@@ -31,7 +31,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseLookUpRate;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
         UAttributes* m_attribute;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
@@ -108,8 +110,7 @@ public:
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-    //virtual bool ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor) override;
-
+    virtual void BeginPlay() override;
 
     /************************************************************************/
     /* UFUNCTION                                                            */
@@ -151,6 +152,7 @@ public:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void ServerCrouchToggle(bool NewCrouching);
+
 
     UFUNCTION()
         void OnRep_CrouchButtonDown();
