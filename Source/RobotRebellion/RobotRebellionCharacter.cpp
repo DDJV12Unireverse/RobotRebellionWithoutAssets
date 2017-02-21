@@ -341,6 +341,6 @@ void ARobotRebellionCharacter::openLobbyWidget()
 
     if(GEngine)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Test creation widget | PRESSED"));
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | PRESSED"));
     }
 }

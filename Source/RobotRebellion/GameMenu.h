@@ -7,26 +7,26 @@
 #include "GameMenu.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class ROBOTREBELLION_API AGameMenu : public AHUD
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
     AGameMenu();
     virtual void BeginPlay() override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD Game Menu Widget")
-    TSubclassOf<ULobbyUIWidget> LobbyWidget;
+        TSubclassOf<ULobbyUIWidget> LobbyWidget;
 
     template <class T>
     void DisplayWidget(T *Widget)
     {
         if(GEngine)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Test creation widget | BEGIN"));
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | BEGIN"));
         }
         if(Widget)
         {
@@ -34,7 +34,7 @@ public:
 
             if(GEngine)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Test creation widget | TEST"));
+                GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | TEST"));
             }
             /** Make sure widget was created */
             if(WidgetToImp)
@@ -44,10 +44,26 @@ public:
 
                 if(GEngine)
                 {
-                    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Test creation widget | DONE"));
+                    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | DONE"));
                 }
             }
         }
     }
-    //void HideWidget(UUserWidget *Widget);
+
+    //template <class T>
+    //void HideWidget(T *Widget)
+    //{
+    //    if(GEngine)
+    //    {
+    //        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hide widget | BEGIN"));
+    //    }
+    //    if(Widget->IsInViewport())
+    //    {
+    //        Widget->RemoveFromParent();
+    //        if(GEngine)
+    //        {
+    //            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Hide widget | DONE"));
+    //        }
+    //    }
+    //}
 };

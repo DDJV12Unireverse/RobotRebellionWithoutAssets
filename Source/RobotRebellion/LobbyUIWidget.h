@@ -19,10 +19,10 @@ public:
         FString m_widgetName;
 
     UFUNCTION(BlueprintCallable, Category = "LobbyServer | Function")
-        void CreateServer(ARobotRebellionCharacter* currentCharac, FString mapName);
+        void CreateServer(FString mapName);
 
     UFUNCTION(BlueprintCallable, Category = "LobbyServer | Function")
-        void JoinServer(ARobotRebellionCharacter* currentCharac, FString IPAdress);
+        void JoinServer(FString IPAdress);
 	
 	
 };

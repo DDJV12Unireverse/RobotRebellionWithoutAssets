@@ -4,17 +4,21 @@
 #include "RobotRebellionCharacter.h"
 #include "LobbyUIWidget.h"
 
-void ULobbyUIWidget::CreateServer(ARobotRebellionCharacter* currentCharac, FString mapName)
+void ULobbyUIWidget::CreateServer(FString mapName)
 {
+    auto currentCharacter = Cast<ARobotRebellionCharacter>(GetOwningPlayer()->GetCharacter());
+
     FString command = "open " + mapName + "?listen";
     
-    currentCharac->ExecuteCommand(command);
+    currentCharacter->ExecuteCommand(command);
 }
 
-void ULobbyUIWidget::JoinServer(ARobotRebellionCharacter* currentCharac, FString IPAdress)
+void ULobbyUIWidget::JoinServer(FString IPAdress)
 {
+    auto currentCharacter = Cast<ARobotRebellionCharacter>(GetOwningPlayer()->GetCharacter());
+
     FString command = "open " + IPAdress + ":7777";
 
-    currentCharac->ExecuteCommand(command);
+    currentCharacter->ExecuteCommand(command);
 }
 
