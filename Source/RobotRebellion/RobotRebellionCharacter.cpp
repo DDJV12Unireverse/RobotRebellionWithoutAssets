@@ -8,6 +8,7 @@
 #include "Damage.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
+#include "GameMenu.h"
 
 
 
@@ -82,6 +83,9 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
     //FIRE
     PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+
+    //ESCAPE
+    PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
@@ -132,6 +136,19 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedRun, COND_SkipOwner);
+}
+
+void ARobotRebellionCharacter::ExecuteCommand(FString command) const
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+    if(MyPC)
+    {
+        MyPC->ConsoleCommand(command, true);
+        if(GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, command);
+        }
+    }
 }
 
 ///// JUMP
@@ -304,4 +321,26 @@ void ARobotRebellionCharacter::serverMainFire_Implementation()
 bool ARobotRebellionCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+/////////UI
+void ARobotRebellionCharacter::openLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->DisplayWidget<ULobbyUIWidget>(myHud->LobbyWidget.GetDefaultObject());
+        FInputModeGameAndUI Mode;
+        Mode.SetLockMouseToViewport(true);
+        Mode.SetHideCursorDuringCapture(false);
+        MyPC->bShowMouseCursor = true;
+        MyPC->SetInputMode(Mode);
+    }
+
+    if(GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Test creation widget | PRESSED"));
+    }
 }
