@@ -29,7 +29,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseLookUpRate;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
         UAttributes* m_attribute;
 
     /////////////////////////////////////////////////////////ADDED ATTRIBUTES AND FUNCTIONS:
@@ -94,6 +96,8 @@ public:
     /** Returns FollowCamera subobject **/
     FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+    virtual void BeginPlay() override;
+
     //On active le booléen bPressedJump
     UFUNCTION()
         void OnStartJump();
@@ -130,6 +134,7 @@ public:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void ServerCrouchToggle(bool NewCrouching);
+
 
     UFUNCTION()
         void OnRep_CrouchButtonDown();
