@@ -2,6 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "WeaponInventory.h"
+#include "WeaponBase.h"
 
 #include "UtilitaryMacros.h"
 
@@ -11,6 +12,9 @@ UWeaponInventory::UWeaponInventory()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+
+    //m_mainWeapon = CreateDefaultSubobject<ULongRangeWeapon>(TEXT("mainWeapon"));
+    //m_secondaryWeapon = CreateDefaultSubobject<UShortRangeWeapon>(TEXT("secondaryWeapon"));
 
 	// ...
 }
@@ -22,6 +26,9 @@ void UWeaponInventory::BeginPlay()
 
 	// ...
     changeToMainWeapon();
+
+    m_mainWeapon.GetDefaultObject()->m_owner = GetOwner();
+    m_secondaryWeapon.GetDefaultObject()->m_owner = GetOwner();
 }
 
 // Called every frame
@@ -34,29 +41,29 @@ void UWeaponInventory::TickComponent( float DeltaTime, ELevelTick TickType, FAct
 
 void UWeaponInventory::changeToMainWeapon() USE_NOEXCEPT
 {
-    m_currentWeapon = &m_mainWeapon;
+    m_currentWeapon = m_mainWeapon.GetDefaultObject();
     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Main weapon equipped"));
 }
 
 void UWeaponInventory::changeToSecondaryWeapon() USE_NOEXCEPT
 {
-    m_currentWeapon = &m_secondaryWeapon;
+    m_currentWeapon = m_secondaryWeapon.GetDefaultObject();
     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Secondary weapon equipped"));
 }
 
-UIWeaponBase** UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
+UWeaponBase* UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
 {
     return m_currentWeapon;
 }
 
 bool UWeaponInventory::isMainWeaponEquipped() const USE_NOEXCEPT
 {
-    return m_currentWeapon == &m_mainWeapon;
+    return m_currentWeapon == m_mainWeapon.GetDefaultObject();
 }
 
 bool UWeaponInventory::isSecondaryWeaponEquipped() const USE_NOEXCEPT
 {
-    return m_currentWeapon == &m_secondaryWeapon;
+    return m_currentWeapon == m_secondaryWeapon.GetDefaultObject();
 }
 
 void UWeaponInventory::switchWeapon() USE_NOEXCEPT
