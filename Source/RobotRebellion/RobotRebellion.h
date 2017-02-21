@@ -7,8 +7,8 @@
 #include "Net/UnrealNetwork.h"
 #define COLLISION_PROJECTILE ECC_GameTraceChannel1
 
-
 #include "UtilitaryMacros.h"
-#define USE_NOEXCEPT 
+
+#define USE_NOEXCEPT noexcept
 
 #endif
