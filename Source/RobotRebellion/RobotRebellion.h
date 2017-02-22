@@ -5,6 +5,7 @@
 
 #include "Engine.h"
 #include "Net/UnrealNetwork.h"
+#include "Online.h"
 
 // Include UMG
 #include "SlateBasics.h"
