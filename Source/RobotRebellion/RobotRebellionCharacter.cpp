@@ -265,35 +265,42 @@ void ARobotRebellionCharacter::ServerCrouchToggle_Implementation(bool NewCrouchi
 
 bool ARobotRebellionCharacter::ServerCrouchToggle_Validate(bool NewCrouching)
 {
+    
     return true;
+
 }
 
 void ARobotRebellionCharacter::OnRep_CrouchButtonDown()
 {
-    if (m_bPressedCrouch == true)
-    {
-        Crouch();
-    }
-    else
-    {
-        UnCrouch();
-    }
+   
+        if (m_bPressedCrouch == true)
+        {
+            Crouch();
+        }
+        else
+        {
+            UnCrouch();
+        }
 }
 
 void ARobotRebellionCharacter::OnCrouchToggle()
 {
-    // Si nous sommes déjà accroupis, CanCrouch retourne false.
-    if (m_bPressedCrouch == false)
+    // Not crouched and not running -> can Crouch
+    if (!IsRunning())
     {
-        m_bPressedCrouch = true;
-        m_moveSpeed = 0.1f;
-        Crouch();
-    }
-    else
-    {
-        m_bPressedCrouch = false;
-        m_moveSpeed = 0.3f;
-        UnCrouch();
+
+        if (!m_bPressedCrouch)
+        {
+            m_bPressedCrouch = true;
+            m_moveSpeed = 0.1f;
+            Crouch();
+        }
+        else
+        {
+            m_bPressedCrouch = false;
+            m_moveSpeed = 0.3f;
+            UnCrouch();
+        }
     }
     // Si nous sommes sur un client
     if (Role < ROLE_Authority)
