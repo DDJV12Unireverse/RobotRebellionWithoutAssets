@@ -11,15 +11,6 @@
 
 
 
-/************************************************************************/
-/*                  UFUNCTION                                           */
-/************************************************************************/
-
-void UShortRangeWeapon::OnBeginOverlap(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-    PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "Contact !");
-
-}
 
 /************************************************************************/
 /*                  METHODS                                           */
@@ -42,18 +33,13 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     ActorsToIgnore.Add(user);
     
     //Result
-#ifdef DEBUG
+
+
     TArray<FHitResult> OutHits;
-    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(user->GetWorld(), MultiSphereStart, MultiSphereEnd, 75.0f*user->GetActorForwardVector().Size(), ObjectTypes, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, // Visual Debug
-        OutHits, // Où seront stockés les résultats
-        true);
-#endif // _DEBUG
-#ifndef DEBUG
-    TArray<FHitResult> OutHits;
-    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(user->GetWorld(), MultiSphereStart, MultiSphereEnd, 75.0f*user->GetActorForwardVector().Size(), ObjectTypes, false, ActorsToIgnore, EDrawDebugTrace::None, // No debug visual
+    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(user->GetWorld(), MultiSphereStart, MultiSphereEnd, 75.0f*user->GetActorForwardVector().Size(), ObjectTypes, false, ActorsToIgnore, EDrawDebugTrace::None, 
         OutHits, 
         true);
-#endif
+
     
     if (Result)
     {
