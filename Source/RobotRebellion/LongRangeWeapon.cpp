@@ -59,4 +59,8 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     {
         PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Cannot attack !!! Reloading")
     }
+    else
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "Projectile null");
+    }
 }

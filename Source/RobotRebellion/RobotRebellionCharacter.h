@@ -2,7 +2,9 @@
 #pragma once
 #include "Attributes.h"
 #include "GameFramework/Character.h"
+#include "ClassType.h"
 #include "RobotRebellionCharacter.generated.h"
+
 
 
 UCLASS(config = Game)
@@ -12,7 +14,7 @@ class ARobotRebellionCharacter : public ACharacter//, public Attributes
 
 
     /** Camera boom positioning the camera behind the character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+        UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
         class USpringArmComponent* CameraBoom;
 
     /** Follow camera */
@@ -33,6 +35,10 @@ public:
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
         UAttributes* m_attribute;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+        class URobotRobellionSpawnerClass* m_spawner;
+
 
     /////////////////////////////////////////////////////////ADDED ATTRIBUTES AND FUNCTIONS:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
@@ -76,13 +82,21 @@ protected:
     void LookUpAtRate(float Rate);
 
 
-protected:
+
+public:
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
+
+    //virtual void Tick(float DeltaTime) override;
+
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     // End of APawn interface
 
+    virtual EClassType getClassType() const USE_NOEXCEPT;
 
-public:
+
     /** Returns CameraBoom subobject **/
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
@@ -92,6 +106,10 @@ public:
     class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
 
     virtual void BeginPlay() override;
+
+    /************************************************************************/
+    /* UFUNCTION                                                            */
+    /************************************************************************/
 
     //On active le booléen bPressedJump
     UFUNCTION()
@@ -147,6 +165,33 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+    UFUNCTION(BlueprintCallable, Category = "General")
+        EClassType getType() const USE_NOEXCEPT;
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // Debug / cheats
+
+    //Parse the class type to a string
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        FString typeToString() const USE_NOEXCEPT;
+
+    //change instance to the specified instance type. Can be executed from command line
+    UFUNCTION(BlueprintCallable, Category = "Debug", Exec)
+        void changeInstanceTo(EClassType toType);
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToAssassin();
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToHealer();
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToSoldier();
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+        void changeToWizard();
 
     UFUNCTION()
         void switchWeapon();
