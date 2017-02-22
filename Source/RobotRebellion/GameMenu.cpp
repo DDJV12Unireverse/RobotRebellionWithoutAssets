@@ -12,6 +12,7 @@ void AGameMenu::BeginPlay()
     Super::BeginPlay();
 
     LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
+    LobbyImpl->initialiseOnliSubsystem();
     HideWidget(LobbyImpl);
 
     HUDCharacterImpl = CreateCustomWidget<UCustomRobotRebellionUserWidget>(HUDCharacterWidget.GetDefaultObject());
