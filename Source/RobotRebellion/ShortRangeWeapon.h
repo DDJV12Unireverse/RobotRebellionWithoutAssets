@@ -15,14 +15,6 @@ class ROBOTREBELLION_API UShortRangeWeapon : public UWeaponBase
 	
 public:
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack Collision")
-        UCapsuleComponent* m_attackZone;
-	
-public:
-    /************************************************************************/
-    /*                  CONSTRUCTOR                                           */
-    /************************************************************************/
-    UShortRangeWeapon();
 
     /************************************************************************/
     /*                  UFUNCTION                                           */
@@ -35,9 +27,7 @@ public:
     {
         return EWeaponRange::SHORT_RANGE_WEAPON;
     }
-
-
-
+    
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
