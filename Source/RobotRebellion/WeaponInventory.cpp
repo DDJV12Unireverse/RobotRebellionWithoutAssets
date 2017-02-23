@@ -24,11 +24,14 @@ void UWeaponInventory::BeginPlay()
 {
 	Super::BeginPlay();
 
+    m_mainWeaponInstance = DuplicateObject(m_mainWeapon.GetDefaultObject(), this);
+    m_secondaryWeaponInstance = DuplicateObject(m_secondaryWeapon.GetDefaultObject(), this);
+
 	// ...
     changeToMainWeapon();
 
-    m_mainWeapon.GetDefaultObject()->m_owner = GetOwner();
-    m_secondaryWeapon.GetDefaultObject()->m_owner = GetOwner();
+    m_mainWeaponInstance->m_owner = GetOwner();
+    m_secondaryWeaponInstance->m_owner = GetOwner();
 }
 
 // Called every frame
@@ -41,13 +44,13 @@ void UWeaponInventory::TickComponent( float DeltaTime, ELevelTick TickType, FAct
 
 void UWeaponInventory::changeToMainWeapon() USE_NOEXCEPT
 {
-    m_currentWeapon = m_mainWeapon.GetDefaultObject();
+    m_currentWeapon = m_mainWeaponInstance;
     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Main weapon equipped"));
 }
 
 void UWeaponInventory::changeToSecondaryWeapon() USE_NOEXCEPT
 {
-    m_currentWeapon = m_secondaryWeapon.GetDefaultObject();
+    m_currentWeapon = m_secondaryWeaponInstance;
     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Secondary weapon equipped"));
 }
 
@@ -58,12 +61,12 @@ UWeaponBase* UWeaponInventory::getCurrentWeapon() USE_NOEXCEPT
 
 bool UWeaponInventory::isMainWeaponEquipped() const USE_NOEXCEPT
 {
-    return m_currentWeapon == m_mainWeapon.GetDefaultObject();
+    return m_currentWeapon == m_mainWeaponInstance;
 }
 
 bool UWeaponInventory::isSecondaryWeaponEquipped() const USE_NOEXCEPT
 {
-    return m_currentWeapon == m_secondaryWeapon.GetDefaultObject();
+    return m_currentWeapon == m_secondaryWeaponInstance;
 }
 
 void UWeaponInventory::switchWeapon() USE_NOEXCEPT
