@@ -13,17 +13,18 @@ class ROBOTREBELLION_API UShortRangeWeapon : public UWeaponBase
 {
 	GENERATED_BODY()
 	
-public:
+private:
 
     /************************************************************************/
     /*                  UPROPERTY                                           */
     /************************************************************************/
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range", meta = (AllowPrivateAccess = "true"))
         float m_weaponForwardRange;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range", meta = (AllowPrivateAccess = "true"))
         float m_weaponVerticallyRange;
 
+public:
     /************************************************************************/
     /*                  CONSTRUCTORS                                        */
     /************************************************************************/
