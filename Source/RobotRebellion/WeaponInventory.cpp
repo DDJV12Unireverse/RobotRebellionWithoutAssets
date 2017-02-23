@@ -4,6 +4,8 @@
 #include "WeaponInventory.h"
 #include "WeaponBase.h"
 
+#include "UtilitaryFunctionLibrary.h"
+
 #include "UtilitaryMacros.h"
 #include "LongRangeWeapon.h"
 #include "ShortRangeWeapon.h"
@@ -34,26 +36,43 @@ void UWeaponInventory::BeginPlay()
 
     if (intermediary->rangeToFString() == "Long Range weapon")
     {
-        m_mainWeaponInstance = NewObject<ULongRangeWeapon>(this, TEXT("mainWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<ULongRangeWeapon>(m_mainWeapon.GetDefaultObject()));
+        UUtilitaryFunctionLibrary::createObjectFromDefault<ULongRangeWeapon>(
+            &m_mainWeaponInstance, 
+            m_mainWeapon, 
+            this, 
+            TEXT("mainWeapon")
+        );
     }
     else
     {
-        m_mainWeaponInstance = NewObject<UShortRangeWeapon>(this, TEXT("mainWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<UShortRangeWeapon>(m_mainWeapon.GetDefaultObject()));
+        UUtilitaryFunctionLibrary::createObjectFromDefault<UShortRangeWeapon>(
+            &m_mainWeaponInstance, 
+            m_mainWeapon, 
+            this, 
+            TEXT("mainWeapon")                                                          
+        );
     }
 
     intermediary = Cast<UWeaponBase>(m_secondaryWeapon->GetDefaultObject());
 
     if (intermediary->rangeToFString() == "Long Range weapon")
     {
-        m_secondaryWeaponInstance = NewObject<ULongRangeWeapon>(this, TEXT("secondaryWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<ULongRangeWeapon>(m_secondaryWeapon.GetDefaultObject()));
+        UUtilitaryFunctionLibrary::createObjectFromDefault<ULongRangeWeapon>(
+            &m_secondaryWeaponInstance, 
+            m_secondaryWeapon, 
+            this, 
+            TEXT("secondaryWeapon")
+        );
     }
     else
     {
-        m_secondaryWeaponInstance = NewObject<UShortRangeWeapon>(this, TEXT("secondaryWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<UShortRangeWeapon>(m_secondaryWeapon.GetDefaultObject()));
+        UUtilitaryFunctionLibrary::createObjectFromDefault<UShortRangeWeapon>(
+            &m_secondaryWeaponInstance, 
+            m_secondaryWeapon, 
+            this, 
+            TEXT("secondaryWeapon")
+        );
     }    
-
-    /*m_mainWeaponInstance = DuplicateObject(m_mainWeapon.GetDefaultObject(), this);
-    m_secondaryWeaponInstance = DuplicateObject(m_secondaryWeapon.GetDefaultObject(), this);*/
 
 	// ...
     changeToMainWeapon();
