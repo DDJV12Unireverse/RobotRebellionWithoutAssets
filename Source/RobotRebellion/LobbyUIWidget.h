@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+#include "ScrollBox.h"
+
 #include "LobbyUIWidget.generated.h"
 
 class IOnlineSubsystem;
@@ -20,12 +22,12 @@ private:
         MAX_PLAYERS = 4,
         IS_LAN = true,
         USE_PRESENCE = false
-    };
+    };   
 
     /*
     Create Session
     */
-    TSharedPtr<class FOnlineSessionSettings> SessionSettings;
+    TSharedPtr<class FOnlineSessionSettings> m_sessionSettings;
     /* Delegate called when session created */
     FOnCreateSessionCompleteDelegate OnCreateSessionCompleteDelegate;
     /* Delegate called when session started */
@@ -37,7 +39,8 @@ private:
     /*
     Searching Session
     */
-    TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+    bool m_isFindSessionDone = false;
+    TSharedPtr<class FOnlineSessionSearch> m_sessionSearch;
     /** Delegate for searching for sessions */
     FOnFindSessionsCompleteDelegate OnFindSessionsCompleteDelegate;
     /** Handle to registered delegate for searching a session */
@@ -46,6 +49,7 @@ private:
     /*
     Joining Session
     */
+    int m_selectedSessionIndex;
     /** Delegate for joining a session */
     FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
     /** Handle to registered delegate for joining a session */
@@ -70,8 +74,34 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LobbyServer | Settings")
         FName m_mainMenuMapName;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LobbyServer | Settings")
+        UScrollBox* m_sessionsScrollBox;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LobbyServer | Settings")
+        TSubclassOf<class USessionWidget> m_sessionWidgetClass;
+
+    /*
+     * METHODS
+     */
+
+private:
+    /*
+    * Delegate methods
+    */
+    virtual void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
+
+    void OnStartSessionComplete(FName SessionName, bool bWasSuccessful);
+
+    void OnFindSessionsComplete(bool bWasSuccessful);
+
+    void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
+    virtual void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
+
+public:
     void initialiseOnliSubsystem();
+
+    void setSelectedSession(int index);
 
     /*
     Server with command line
@@ -94,18 +124,4 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "LobbyServer | Session")
         void DestroySessionAndLeaveGame();
-
-private:
-    /*
-     * Delegate methods
-     */
-    virtual void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
-
-    void OnStartSessionComplete(FName SessionName, bool bWasSuccessful);
-
-    void OnFindSessionsComplete(bool bWasSuccessful);
-
-    void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-
-    virtual void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 };

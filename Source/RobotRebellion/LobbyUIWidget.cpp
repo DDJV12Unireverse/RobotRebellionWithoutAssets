@@ -5,6 +5,8 @@
 #include "OnlineSubsystem.h"
 #include "LobbyUIWidget.h"
 
+#include "SessionWidget.h"
+
 void ULobbyUIWidget::initialiseOnliSubsystem()
 {
     m_onlineSub = IOnlineSubsystem::Get();
@@ -25,6 +27,30 @@ void ULobbyUIWidget::initialiseOnliSubsystem()
 
     /** Bind function for DESTROYING a Session */
     OnDestroySessionCompleteDelegate = FOnDestroySessionCompleteDelegate::CreateUObject(this, &ULobbyUIWidget::OnDestroySessionComplete);
+
+    m_sessionSearch = MakeShareable(new FOnlineSessionSearch());
+    m_sessionsScrollBox = Cast<UScrollBox>(GetWidgetFromName("SessionsScrollBox"));
+    if(m_sessionsScrollBox)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Black, TEXT("scroll Box gotten"));
+    }
+}
+
+void ULobbyUIWidget::setSelectedSession(int index)
+{
+    if(m_selectedSessionIndex == index)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, TEXT("Session already selected"));
+        return;
+    }
+
+    for(int i = 0; i < m_sessionsScrollBox->GetChildrenCount(); ++i)
+    {
+        Cast<USessionWidget>(m_sessionsScrollBox->GetChildAt(i))->setSelected(false);
+    }
+    Cast<USessionWidget>(m_sessionsScrollBox->GetChildAt(index))->setSelected();
+    m_selectedSessionIndex = index;
+    PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, TEXT("New session selected : " + FString::FromInt(index)));
 }
 
 void ULobbyUIWidget::CreateServer(FString mapName)
@@ -58,28 +84,28 @@ bool ULobbyUIWidget::HostSession()
         /*
         Fill in all the Session Settings that we want to use.
 
-        There are more with SessionSettings.Set(...);
+        There are more with m_sessionSettings.Set(...);
         For example the Map or the GameMode/Type.
         */
-        SessionSettings = MakeShareable(new FOnlineSessionSettings());
+        m_sessionSettings = MakeShareable(new FOnlineSessionSettings());
 
-        SessionSettings->bIsLANMatch = IS_LAN;
-        SessionSettings->bUsesPresence = USE_PRESENCE;
-        SessionSettings->NumPublicConnections = MAX_PLAYERS;
-        SessionSettings->NumPrivateConnections = MAX_PLAYERS;
-        SessionSettings->bAllowInvites = true;
-        SessionSettings->bAllowJoinInProgress = true;
-        SessionSettings->bShouldAdvertise = true;
-        SessionSettings->bAllowJoinViaPresence = USE_PRESENCE;
-        SessionSettings->bAllowJoinViaPresenceFriendsOnly = USE_PRESENCE;
+        m_sessionSettings->bIsLANMatch = IS_LAN;
+        m_sessionSettings->bUsesPresence = USE_PRESENCE;
+        m_sessionSettings->NumPublicConnections = MAX_PLAYERS;
+        m_sessionSettings->NumPrivateConnections = MAX_PLAYERS;
+        m_sessionSettings->bAllowInvites = true;
+        m_sessionSettings->bAllowJoinInProgress = true;
+        m_sessionSettings->bShouldAdvertise = true;
+        m_sessionSettings->bAllowJoinViaPresence = USE_PRESENCE;
+        m_sessionSettings->bAllowJoinViaPresenceFriendsOnly = USE_PRESENCE;
 
-        //SessionSettings->Set(SETTING_MAPNAME, m_openMapName, EOnlineDataAdvertisementType::ViaOnlineService);
+        //m_sessionSettings->Set(SETTING_MAPNAME, m_openMapName, EOnlineDataAdvertisementType::ViaOnlineService);
 
         // Set the delegate to the Handle of the SessionInterface
         OnCreateSessionCompleteDelegateHandle = Sessions->AddOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegate);
 
         // Our delegate should get called when this is complete (doesn't need to be successful!)
-        return Sessions->CreateSession(*UserId, m_gameSessionName, *SessionSettings);
+        return Sessions->CreateSession(*UserId, m_gameSessionName, *m_sessionSettings);
     }
     return false;
 }
@@ -97,20 +123,22 @@ void ULobbyUIWidget::FindSessions()
         /*
         Fill in all the SearchSettings, like if we are searching for a LAN game and how many results we want to have!
         */
-        SessionSearch = MakeShareable(new FOnlineSessionSearch());
+        // m_sessionSearch = MakeShareable(new FOnlineSessionSearch());
 
+        m_sessionSearch->bIsLanQuery = IS_LAN;
+        m_sessionSearch->MaxSearchResults = 20;
+        m_sessionSearch->PingBucketSize = 50;
 
-        SessionSearch->bIsLanQuery = IS_LAN;
-        SessionSearch->MaxSearchResults = 20;
-        SessionSearch->PingBucketSize = 50;
-
-        TSharedRef<FOnlineSessionSearch> SearchSettingsRef = SessionSearch.ToSharedRef();
+        TSharedRef<FOnlineSessionSearch> SearchSettingsRef = m_sessionSearch.ToSharedRef();
 
         // Set the Delegate to the Delegate Handle of the FindSession function
         OnFindSessionsCompleteDelegateHandle = Sessions->AddOnFindSessionsCompleteDelegate_Handle(OnFindSessionsCompleteDelegate);
 
         // Finally call the SessionInterface function. The Delegate gets called once this is finished
         Sessions->FindSessions(*UserId, SearchSettingsRef);
+        
+        // Remove all children of the current list
+        m_sessionsScrollBox->ClearChildren();
     }
 }
 
@@ -123,30 +151,26 @@ void ULobbyUIWidget::JoinLanSession()
     FOnlineSessionSearchResult SearchResult;
 
     // If the Array is not empty, we can go through it
-    if(SessionSearch->SearchResults.Num() > 0)
+    if(m_sessionSearch->SearchResults.Num() > 0)
     {
-        for(int32 i = 0; i < SessionSearch->SearchResults.Num(); i++)
+        // To avoid something crazy, we filter sessions from ourself
+        if(m_sessionSearch->SearchResults[m_selectedSessionIndex].Session.OwningUserId != Player->GetPreferredUniqueNetId())
         {
-            // To avoid something crazy, we filter sessions from ourself
-            if(SessionSearch->SearchResults[i].Session.OwningUserId != Player->GetPreferredUniqueNetId())
+            SearchResult = m_sessionSearch->SearchResults[m_selectedSessionIndex];
+
+            // Once we found sounce a Session that is not ours, just join it. Instead of using a for loop, you could
+            // use a widget where you click on and have a reference for the GameSession it represents which you can use
+            // here
+            IOnlineSessionPtr Sessions = m_onlineSub->GetSessionInterface();
+
+            if(Sessions.IsValid() && UserId.IsValid())
             {
-                SearchResult = SessionSearch->SearchResults[i];
+                // Set the Handle again
+                OnJoinSessionCompleteDelegateHandle = Sessions->AddOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegate);
 
-                // Once we found sounce a Session that is not ours, just join it. Instead of using a for loop, you could
-                // use a widget where you click on and have a reference for the GameSession it represents which you can use
-                // here
-                IOnlineSessionPtr Sessions = m_onlineSub->GetSessionInterface();
-
-                if(Sessions.IsValid() && UserId.IsValid())
-                {
-                    // Set the Handle again
-                    OnJoinSessionCompleteDelegateHandle = Sessions->AddOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegate);
-
-                    // Call the "JoinSession" Function with the passed "SearchResult". The "SessionSearch->SearchResults" can be used to get such a
-                    // "FOnlineSessionSearchResult" and pass it. Pretty straight forward!
-                    Sessions->JoinSession(*UserId, m_gameSessionName, SearchResult);
-                }
-                break;
+                // Call the "JoinSession" Function with the passed "SearchResult". The "m_sessionSearch->SearchResults" can be used to get such a
+                // "FOnlineSessionSearchResult" and pass it. Pretty straight forward!
+                Sessions->JoinSession(*UserId, m_gameSessionName, SearchResult);
             }
         }
     }
@@ -217,21 +241,24 @@ void ULobbyUIWidget::OnFindSessionsComplete(bool bWasSuccessful)
     {
         // Clear the Delegate handle, since we finished this call
         Sessions->ClearOnFindSessionsCompleteDelegate_Handle(OnFindSessionsCompleteDelegateHandle);
-
+        
         // Just debugging the Number of Search results. Can be displayed in UMG or something later on
-        PRINT_MESSAGE_ON_SCREEN(FColor::Red, FString::Printf(TEXT("Num Search Results: %d"), SessionSearch->SearchResults.Num()));
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, FString::Printf(TEXT("Num Search Results: %d"), m_sessionSearch->SearchResults.Num()));
 
         // If we have found at least 1 session, we just going to debug them. You could add them to a list of UMG Widgets, like it is done in the BP version!
-        if(SessionSearch->SearchResults.Num() > 0)
+        if(m_sessionSearch->SearchResults.Num() > 0)
         {
-            // "SessionSearch->SearchResults" is an Array that contains all the information. You can access the Session in this and get a lot of information.
+            // "m_sessionSearch->SearchResults" is an Array that contains all the information. You can access the Session in this and get a lot of information.
             // This can be customized later on with your own classes to add more information that can be set and displayed
-            for(int32 SearchIdx = 0; SearchIdx < SessionSearch->SearchResults.Num(); SearchIdx++)
+            for(int32 SearchIdx = 0; SearchIdx < m_sessionSearch->SearchResults.Num(); SearchIdx++)
             {
                 // OwningUserName is just the SessionName for now. I guess you can create your own Host Settings class and GameSession Class and add a proper GameServer Name here.
                 // This is something you can't do in Blueprint for example!
                 // TODO - Afficher la liste des parties sur l'écran (dans l'UI)
-                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, FString::Printf(TEXT("Session Number: %d | Sessionname: %s "), SearchIdx + 1, *(SessionSearch->SearchResults[SearchIdx].Session.OwningUserName)));
+                USessionWidget* temp = NewObject<USessionWidget>(GetTransientPackage(), m_sessionWidgetClass);
+                temp->initialiseWidget(SearchIdx, this);
+                m_sessionsScrollBox->AddChild(temp);
+                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, FString::Printf(TEXT("Session Number: %d | Sessionname: %s "), SearchIdx + 1, *(m_sessionSearch->SearchResults[SearchIdx].Session.OwningUserName)));
             }
         }
     }
