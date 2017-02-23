@@ -15,17 +15,16 @@ class ROBOTREBELLION_API USessionWidget : public UUserWidget
     GENERATED_BODY()
 
 private:
-    bool m_isSelected;
-    int m_index;
     ULobbyUIWidget* m_parentWidget;
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SessionWidget, meta = (AllowPrivateAccess = "true"))
+    int m_index;
 
 public:
     void initialiseWidget(int index, ULobbyUIWidget* parent);
     void setSelected(bool selected = true);
-    bool isSelected() const USE_NOEXCEPT
-    {
-        return m_isSelected;
-    }
+
     UFUNCTION(BlueprintCallable, Category = SessionWidget)
         void OnClicked();
     UFUNCTION(BlueprintCallable, Category = SessionWidget)

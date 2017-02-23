@@ -112,6 +112,8 @@ bool ULobbyUIWidget::HostSession()
 
 void ULobbyUIWidget::FindSessions()
 {
+    m_selectedSessionIndex = -1; // initailiaze at -1 to avoid confusion with index 0
+
     ULocalPlayer* const Player = GetOwningPlayer()->GetLocalPlayer();
     TSharedPtr<const FUniqueNetId> UserId = Player->GetPreferredUniqueNetId();
 
@@ -133,12 +135,12 @@ void ULobbyUIWidget::FindSessions()
 
         // Set the Delegate to the Delegate Handle of the FindSession function
         OnFindSessionsCompleteDelegateHandle = Sessions->AddOnFindSessionsCompleteDelegate_Handle(OnFindSessionsCompleteDelegate);
-
-        // Finally call the SessionInterface function. The Delegate gets called once this is finished
-        Sessions->FindSessions(*UserId, SearchSettingsRef);
         
         // Remove all children of the current list
         m_sessionsScrollBox->ClearChildren();
+
+        // Finally call the SessionInterface function. The Delegate gets called once this is finished
+        Sessions->FindSessions(*UserId, SearchSettingsRef);
     }
 }
 
