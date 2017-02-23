@@ -9,7 +9,15 @@
 #include "GlobalDamageMethod.h"
 #include "Damage.h"
 
+/************************************************************************/
+/*                  CONSTRUCTORS                                        */
+/************************************************************************/
 
+UShortRangeWeapon::UShortRangeWeapon():UWeaponBase()
+{
+    m_weaponForwardRange = 75.f;
+    m_weaponVerticallyRange = 75.f;
+}
 
 
 /************************************************************************/
@@ -21,8 +29,8 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     bool alreadyHit = false;
 
     //Sphere for short range collision
-    FVector MultiSphereStart = user->GetActorLocation() + FVector(0, 0, -75.f) + 75.f*user->GetActorForwardVector();
-    FVector MultiSphereEnd = MultiSphereStart + FVector(0.f, 0.f, 155.f);
+    FVector MultiSphereStart = user->GetActorLocation() + FVector(0.f, 0.f, -m_weaponVerticallyRange) + m_weaponForwardRange*user->GetActorForwardVector();
+    FVector MultiSphereEnd = MultiSphereStart + FVector(0.f, 0.f, 2.f* m_weaponVerticallyRange);
     
     //Considered Actors
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
@@ -36,7 +44,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
 
     TArray<FHitResult> OutHits;
-    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(user->GetWorld(), MultiSphereStart, MultiSphereEnd, 75.0f*user->GetActorForwardVector().Size(), ObjectTypes, false, ActorsToIgnore, EDrawDebugTrace::None, 
+    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(user->GetWorld(), MultiSphereStart, MultiSphereEnd, m_weaponForwardRange*user->GetActorForwardVector().Size(), ObjectTypes, false, ActorsToIgnore, EDrawDebugTrace::None, 
         OutHits, 
         true);
 

@@ -15,7 +15,20 @@ class ROBOTREBELLION_API UShortRangeWeapon : public UWeaponBase
 	
 public:
 
+    /************************************************************************/
+    /*                  UPROPERTY                                           */
+    /************************************************************************/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range")
+        float m_weaponForwardRange;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range")
+        float m_weaponVerticallyRange;
+
+    /************************************************************************/
+    /*                  CONSTRUCTORS                                        */
+    /************************************************************************/
+
+    UShortRangeWeapon();
     /************************************************************************/
     /*                  UFUNCTION                                           */
     /************************************************************************/
