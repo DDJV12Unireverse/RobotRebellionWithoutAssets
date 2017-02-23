@@ -5,6 +5,7 @@
 #include "WeaponBase.h"
 
 #include "UtilitaryMacros.h"
+#include "UtilitaryFunctionLibrary.h"
 
 // Sets default values for this component's properties
 UWeaponInventory::UWeaponInventory()
@@ -24,8 +25,8 @@ void UWeaponInventory::BeginPlay()
 {
 	Super::BeginPlay();
 
-    m_mainWeaponInstance = DuplicateObject(m_mainWeapon.GetDefaultObject(), this);
-    m_secondaryWeaponInstance = DuplicateObject(m_secondaryWeapon.GetDefaultObject(), this);
+    UUtilitaryFunctionLibrary::duplicateObjectFromDefault(&m_mainWeaponInstance, m_mainWeapon, this);
+    UUtilitaryFunctionLibrary::duplicateObjectFromDefault(&m_secondaryWeaponInstance, m_secondaryWeapon, this);
 
 	// ...
     changeToMainWeapon();
