@@ -64,3 +64,8 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
         PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "Projectile null");
     }
 }
+
+FString ULongRangeWeapon::rangeToFString() const USE_NOEXCEPT
+{
+    return "Long Range weapon";
+}

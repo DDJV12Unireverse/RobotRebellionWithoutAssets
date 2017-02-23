@@ -5,7 +5,9 @@
 #include "WeaponBase.h"
 
 #include "UtilitaryMacros.h"
-#include "UtilitaryFunctionLibrary.h"
+#include "LongRangeWeapon.h"
+#include "ShortRangeWeapon.h"
+
 
 // Sets default values for this component's properties
 UWeaponInventory::UWeaponInventory()
@@ -25,8 +27,33 @@ void UWeaponInventory::BeginPlay()
 {
 	Super::BeginPlay();
 
-    UUtilitaryFunctionLibrary::duplicateObjectFromDefault(&m_mainWeaponInstance, m_mainWeapon, this);
-    UUtilitaryFunctionLibrary::duplicateObjectFromDefault(&m_secondaryWeaponInstance, m_secondaryWeapon, this);
+    UWeaponBase* intermediary = Cast<UWeaponBase>(m_mainWeapon->GetDefaultObject());
+
+
+    PRINT_MESSAGE_ON_SCREEN(FColor::Red, intermediary->rangeToFString());
+
+    if (intermediary->rangeToFString() == "Long Range weapon")
+    {
+        m_mainWeaponInstance = NewObject<ULongRangeWeapon>(this, TEXT("mainWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<ULongRangeWeapon>(m_mainWeapon.GetDefaultObject()));
+    }
+    else
+    {
+        m_mainWeaponInstance = NewObject<UShortRangeWeapon>(this, TEXT("mainWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<UShortRangeWeapon>(m_mainWeapon.GetDefaultObject()));
+    }
+
+    intermediary = Cast<UWeaponBase>(m_secondaryWeapon->GetDefaultObject());
+
+    if (intermediary->rangeToFString() == "Long Range weapon")
+    {
+        m_secondaryWeaponInstance = NewObject<ULongRangeWeapon>(this, TEXT("secondaryWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<ULongRangeWeapon>(m_secondaryWeapon.GetDefaultObject()));
+    }
+    else
+    {
+        m_secondaryWeaponInstance = NewObject<UShortRangeWeapon>(this, TEXT("secondaryWeapon"), RF_Dynamic | RF_ArchetypeObject, Cast<UShortRangeWeapon>(m_secondaryWeapon.GetDefaultObject()));
+    }    
+
+    /*m_mainWeaponInstance = DuplicateObject(m_mainWeapon.GetDefaultObject(), this);
+    m_secondaryWeaponInstance = DuplicateObject(m_secondaryWeapon.GetDefaultObject(), this);*/
 
 	// ...
     changeToMainWeapon();

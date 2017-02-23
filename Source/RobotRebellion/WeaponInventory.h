@@ -27,14 +27,15 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
         TSubclassOf<UWeaponBase> m_secondaryWeapon;
 
+    UWeaponBase* m_mainWeaponInstance;
+    UWeaponBase* m_secondaryWeaponInstance;
+
 
 
 
     /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
-    UWeaponBase* m_mainWeaponInstance;
-    UWeaponBase* m_secondaryWeaponInstance;
 
 
 public:	

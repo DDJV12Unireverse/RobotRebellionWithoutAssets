@@ -30,4 +30,6 @@ public:
     /*                  METHODS                                             */
     /************************************************************************/
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
+
+    virtual FString rangeToFString() const USE_NOEXCEPT;
 };
