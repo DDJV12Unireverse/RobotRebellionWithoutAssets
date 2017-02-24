@@ -460,3 +460,8 @@ void ARobotRebellionCharacter::changeToWizard()
 {
     changeInstanceTo(EClassType::WIZARD);
 }
+
+void ARobotRebellionCharacter::onDeath()
+{
+    PRINT_MESSAGE_ON_SCREEN(FColor::Silver, "DEEEEEEEAAAAAAAAAAAAAADDDDDDDDDDDDDDDD !!! YOU ARE DEAD ! Game over !!");
+}
