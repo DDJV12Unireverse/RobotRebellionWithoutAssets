@@ -14,6 +14,8 @@ UAttributes::UAttributes()
     bReplicates = true;
 	// ...
 
+    m_inflictDamageDelegate = &UAttributes::inflictDamageMortal;
+    m_restoreHealthDelegate = &UAttributes::restoreHealthMortal;
 }
 
 void UAttributes::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -69,7 +71,7 @@ void UAttributes::setMaxHealth(float newValue) USE_NOEXCEPT
     }
 }
 
-void UAttributes::inflictDamage(float damage) USE_NOEXCEPT
+void UAttributes::inflictDamageMortal(float damage)
 {
     if (damage < m_health)
     {

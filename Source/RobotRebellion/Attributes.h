@@ -68,10 +68,11 @@ protected:
     /************************************************************************/
 
 
+    void(UAttributes::*m_inflictDamageDelegate)(float);
+    void(UAttributes::*m_restoreHealthDelegate)(float);
 
 
-
-
+public:
     /************************************************************************/
     /* METHODS                                                              */
     /************************************************************************/
@@ -191,12 +192,15 @@ protected:
     /************************************************************************/
 
     //Inflict damage, reduce the current health value and if damage > health, health goes to 0
-    void inflictDamage(float damage) USE_NOEXCEPT;
+    void inflictDamage(float damage)
+    {
+        (this->*m_inflictDamageDelegate)(damage);
+    }
 
     //restore current health value and if the value to restore is over max_health, health goes to max_health
-    void restoreHealth(float valueToRestore) USE_NOEXCEPT
+    void restoreHealth(float valueToRestore)
     {
-        setHealth(m_health + valueToRestore);
+        (this->*m_restoreHealthDelegate)(valueToRestore);
     }
 
     //return true if the player's current health is 0, false otherwise.
@@ -206,6 +210,13 @@ protected:
     }
 
 
-    //Déserialization and serialization methods
+private:
+    void inflictDamageMortal(float damage);
 
+    void restoreHealthMortal(float restoreValue)
+    {
+        setHealth(m_health + restoreValue);
+    }
+
+    void immortalMethod(float) {}
 };
