@@ -35,6 +35,11 @@ class ROBOTREBELLION_API UAttributes : public UActorComponent
 
 
 protected:
+    /************************************************************************/
+    /* UPROPERTY                                                            */
+    /************************************************************************/
+
+
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
     float m_health;
 
@@ -57,11 +62,26 @@ protected:
     float m_agility;
 
 
-public:
+
+    /************************************************************************/
+    /* PROPERTY                                                             */
+    /************************************************************************/
+
+
+
+
+
+
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
+
+
 	// Sets default values for this component's properties
 	UAttributes();
         
-public:
+
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
@@ -70,7 +90,7 @@ public:
 
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
-public:
+
     /************************************************************************/
     /*                          GETTER                                      */
     /************************************************************************/
@@ -169,7 +189,7 @@ public:
     /************************************************************************/
     /*                          UTILITARY                                   */
     /************************************************************************/
-public:
+
     //Inflict damage, reduce the current health value and if damage > health, health goes to 0
     void inflictDamage(float damage) USE_NOEXCEPT;
 
@@ -187,6 +207,5 @@ public:
 
 
     //Déserialization and serialization methods
-public:
 
 };
