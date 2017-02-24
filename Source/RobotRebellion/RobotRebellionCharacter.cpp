@@ -7,6 +7,7 @@
 
 #include "Damage.h"
 #include "GlobalDamageMethod.h"
+#include "GameMenu.h"
 #include "WeaponBase.h"
 #include "WeaponInventory.h"
 #include "CustomPlayerController.h"
@@ -100,6 +101,8 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
     //FIRE
     PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
 
+    //ESCAPE
+    PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
     //SWITCH WEAPON
     PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
 
@@ -117,11 +120,19 @@ void ARobotRebellionCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
-    ACustomPlayerController* customController = Cast<ACustomPlayerController>(GetController());
-    if (customController)
-    { 
-        customController->initializeHUD();
-    }
+    //APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    //if(MyPC)
+    //{
+    //    auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+    //    myHud->DisplayWidget(myHud->HUDCharacterImpl);
+    //}
+
+    //ACustomPlayerController* customController = Cast<ACustomPlayerController>(GetController());
+    //if (customController)
+    //{ 
+    //    customController->initializeHUD();
+    //}
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
@@ -178,6 +189,19 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
 {
     return m_weaponInventory->getCurrentWeapon();
+}
+
+void ARobotRebellionCharacter::ExecuteCommand(FString command) const
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+    if(MyPC)
+    {
+        MyPC->ConsoleCommand(command, true);
+        if(GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, command);
+        }
+    }
 }
 
 ///// JUMP
@@ -282,7 +306,7 @@ void ARobotRebellionCharacter::OnRep_CrouchButtonDown()
 
 void ARobotRebellionCharacter::OnCrouchToggle()
 {
-    // Si nous sommes déjà accroupis, CanCrouch retourne false.
+    // Si nous sommes dï¿½jï¿½ accroupis, CanCrouch retourne false.
     if (m_bPressedCrouch == false)
     {
         m_bPressedCrouch = true;
@@ -336,6 +360,27 @@ EClassType ARobotRebellionCharacter::getClassType() const USE_NOEXCEPT
 EClassType ARobotRebellionCharacter::getType() const USE_NOEXCEPT
 {
     return this->getClassType();
+}
+
+
+
+/////////UI
+void ARobotRebellionCharacter::openLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->DisplayWidget(myHud->LobbyImpl);
+        FInputModeGameAndUI Mode;
+        Mode.SetLockMouseToViewport(true);
+        Mode.SetHideCursorDuringCapture(false);
+        MyPC->bShowMouseCursor = true;
+        MyPC->SetInputMode(Mode);
+    }
+
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
 }
 
 void ARobotRebellionCharacter::switchWeapon()

@@ -156,6 +156,20 @@ public:
     ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
+    ////Command Line
+    UFUNCTION(BlueprintCallable, Category = "CharacterCommand")
+        void ExecuteCommand(FString command) const;
+
+    //////UI
+    void openLobbyWidget();
+
+
+    ///// WORLD INFO
+    UFUNCTION(BlueprintCallable, Category = "World Info")
+        FString GetCurrentMapName()
+    {
+        return GetWorld()->GetMapName();
+    }
 
     /////FIRE
     UFUNCTION()

@@ -5,6 +5,17 @@
 
 #include "Engine.h"
 #include "Net/UnrealNetwork.h"
+#include "Online.h"
+
+// Include UMG
+#include "Runtime/UMG/Public/UMG.h"
+#include "Runtime/UMG/Public/UMGStyle.h"
+#include "Runtime/UMG/Public/Slate/SObjectWidget.h"
+#include "Runtime/UMG/Public/IUMGModule.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+
+#include "SlateBasics.h"
+
 #define COLLISION_PROJECTILE ECC_GameTraceChannel1
 
 #include "UtilitaryMacros.h"
