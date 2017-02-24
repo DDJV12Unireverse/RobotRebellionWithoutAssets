@@ -12,7 +12,17 @@
 #include "WeaponInventory.h"
 #include "CustomPlayerController.h"
 
+#include "RobotRobellionSpawnerClass.h"
+
+#include "Assassin.h"
+#include "Wizard.h"
+#include "Soldier.h"
+#include "Healer.h"
+
 #include "UtilitaryMacros.h"
+
+
+#define TYPE_PARSING(TypeName) "Type is "## #TypeName
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,6 +62,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
+
+    m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
 
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
@@ -93,6 +105,15 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
     PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
     //SWITCH WEAPON
     PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
+
+    /************************************************************************/
+    /* DEBUG                                                                */
+    /************************************************************************/
+    //Class change
+    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::changeToAssassin);
+    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::changeToHealer);
+    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
+    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -331,6 +352,17 @@ bool ARobotRebellionCharacter::serverMainFire_Validate()
     return true;
 }
 
+EClassType ARobotRebellionCharacter::getClassType() const USE_NOEXCEPT
+{
+    return EClassType::NONE;
+}
+
+EClassType ARobotRebellionCharacter::getType() const USE_NOEXCEPT
+{
+    return this->getClassType();
+}
+
+
 
 /////////UI
 void ARobotRebellionCharacter::openLobbyWidget()
@@ -348,10 +380,7 @@ void ARobotRebellionCharacter::openLobbyWidget()
         MyPC->SetInputMode(Mode);
     }
 
-    if(GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("Creation widget | PRESSED"));
-    }
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
 }
 
 void ARobotRebellionCharacter::switchWeapon()
@@ -380,4 +409,48 @@ void ARobotRebellionCharacter::serverSwitchWeapon_Implementation()
 bool ARobotRebellionCharacter::serverSwitchWeapon_Validate()
 {
     return true;
+}
+
+
+/************************************************************************/
+/* DEBUG / CHEAT                                                        */
+/************************************************************************/
+
+
+FString ARobotRebellionCharacter::typeToString() const USE_NOEXCEPT
+{
+    static const FString typeLookUpTable[EClassType::TYPE_COUNT] = {
+        TYPE_PARSING(None),
+        TYPE_PARSING(Soldier),
+        TYPE_PARSING(Assassin),
+        TYPE_PARSING(Healer),
+        TYPE_PARSING(Wizard)
+    };
+
+    return typeLookUpTable[static_cast<uint8>(getClassType())];
+}
+
+void ARobotRebellionCharacter::changeInstanceTo(EClassType toType)
+{
+    m_spawner->spawnAndReplace(this, toType);
+}
+
+void ARobotRebellionCharacter::changeToAssassin()
+{
+    changeInstanceTo(EClassType::ASSASSIN);
+}
+
+void ARobotRebellionCharacter::changeToHealer()
+{
+    changeInstanceTo(EClassType::HEALER);
+}
+
+void ARobotRebellionCharacter::changeToSoldier()
+{
+    changeInstanceTo(EClassType::SOLDIER);
+}
+
+void ARobotRebellionCharacter::changeToWizard()
+{
+    changeInstanceTo(EClassType::WIZARD);
 }
