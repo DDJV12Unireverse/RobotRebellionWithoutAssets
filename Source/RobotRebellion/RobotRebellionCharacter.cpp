@@ -6,9 +6,23 @@
 #include "Projectile.h"
 
 #include "Damage.h"
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "GlobalDamageMethod.h"
+#include "GameMenu.h"
+#include "WeaponBase.h"
+#include "WeaponInventory.h"
+#include "CustomPlayerController.h"
 
+#include "RobotRobellionSpawnerClass.h"
+
+#include "Assassin.h"
+#include "Wizard.h"
+#include "Soldier.h"
+#include "Healer.h"
+
+#include "UtilitaryMacros.h"
+
+
+#define TYPE_PARSING(TypeName) "Type is "## #TypeName
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,9 +63,13 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
+    m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
+
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
+
+    m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,6 +100,39 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
 
     //FIRE
     PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+
+    //ESCAPE
+    PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
+    //SWITCH WEAPON
+    PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
+
+    /************************************************************************/
+    /* DEBUG                                                                */
+    /************************************************************************/
+    //Class change
+    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::changeToAssassin);
+    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::changeToHealer);
+    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
+    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
+}
+
+void ARobotRebellionCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    //APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    //if(MyPC)
+    //{
+    //    auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+    //    myHud->DisplayWidget(myHud->HUDCharacterImpl);
+    //}
+
+    //ACustomPlayerController* customController = Cast<ACustomPlayerController>(GetController());
+    //if (customController)
+    //{ 
+    //    customController->initializeHUD();
+    //}
 }
 
 void ARobotRebellionCharacter::TurnAtRate(float Rate)
@@ -132,15 +183,36 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(ARobotRebellionCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
+}
+
+UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
+{
+    return m_weaponInventory->getCurrentWeapon();
+}
+
+void ARobotRebellionCharacter::ExecuteCommand(FString command) const
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+    if(MyPC)
+    {
+        MyPC->ConsoleCommand(command, true);
+        if(GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, command);
+        }
+    }
 }
 
 ///// JUMP
 void ARobotRebellionCharacter::OnStartJump()
 {
-    if (m_bPressedCrouch) {
+    if (m_bPressedCrouch) 
+    {
         OnCrouchToggle();
     }
-    else {
+    else 
+    {
         bPressedJump = true;
     }
 }
@@ -217,35 +289,41 @@ void ARobotRebellionCharacter::ServerCrouchToggle_Implementation(bool NewCrouchi
 
 bool ARobotRebellionCharacter::ServerCrouchToggle_Validate(bool NewCrouching)
 {
+    
     return true;
+
 }
 
 void ARobotRebellionCharacter::OnRep_CrouchButtonDown()
 {
-    if (m_bPressedCrouch == true)
-    {
-        Crouch();
-    }
-    else
-    {
-        UnCrouch();
-    }
+   
+        if (m_bPressedCrouch == true)
+        {
+            Crouch();
+        }
+        else
+        {
+            UnCrouch();
+        }
 }
 
 void ARobotRebellionCharacter::OnCrouchToggle()
 {
-    // Si nous sommes déjà accroupis, CanCrouch retourne false.
-    if (m_bPressedCrouch == false)
+    // Not crouched and not running -> can Crouch
+    if (!IsRunning())
     {
-        m_bPressedCrouch = true;
-        m_moveSpeed = 0.1f;
-        Crouch();
-    }
-    else
-    {
-        m_bPressedCrouch = false;
-        m_moveSpeed = 0.3f;
-        UnCrouch();
+        if (!m_bPressedCrouch)
+        {
+            m_bPressedCrouch = true;
+            m_moveSpeed = 0.1f;
+            Crouch();
+        }
+        else
+        {
+            m_bPressedCrouch = false;
+            m_moveSpeed = 0.3f;
+            UnCrouch();
+        }
     }
     // Si nous sommes sur un client
     if (Role < ROLE_Authority)
@@ -264,35 +342,9 @@ void ARobotRebellionCharacter::mainFire()
     {
         serverMainFire(); // le param n'a pas d'importance pour l'instant
     }
-    else if (ProjectileClass != NULL)
+    else
     {
-
-        // Obtenir la transformation de la caméra
-        FVector CameraLoc;
-        FRotator CameraRot;
-        GetActorEyesViewPoint(CameraLoc, CameraRot);
-        // MuzzleOffset est dans l'espace caméra, il faut le transformer dans l'espace monde
-        FVector const MuzzleLocation = CameraLoc +
-            FTransform(CameraRot).TransformVector(MuzzleOffset);
-        FRotator MuzzleRotation = CameraRot;
-        MuzzleRotation.Pitch += 10.0f; // On lance un peu vers le haut
-        UWorld* const World = GetWorld();
-        if (World)
-        {
-            FActorSpawnParameters SpawnParams;
-            SpawnParams.Owner = this;
-            SpawnParams.Instigator = Instigator;
-            // Faire apparaître le projectile à la distance prévue
-            AProjectile* const projectile = World->SpawnActor<AProjectile>(ProjectileClass,
-                MuzzleLocation, MuzzleRotation, SpawnParams);
-            if (projectile)
-            {
-                projectile->setOwner(this);
-                // Trouver la direction du tir et tirer
-                FVector const DirectionDuTir = MuzzleRotation.Vector();
-                projectile->InitVelocity(DirectionDuTir);
-            }
-        }
+        m_weaponInventory->getCurrentWeapon()->cppAttack(this);
     }
 }
 
@@ -304,4 +356,107 @@ void ARobotRebellionCharacter::serverMainFire_Implementation()
 bool ARobotRebellionCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+EClassType ARobotRebellionCharacter::getClassType() const USE_NOEXCEPT
+{
+    return EClassType::NONE;
+}
+
+EClassType ARobotRebellionCharacter::getType() const USE_NOEXCEPT
+{
+    return this->getClassType();
+}
+
+
+
+/////////UI
+void ARobotRebellionCharacter::openLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->DisplayWidget(myHud->LobbyImpl);
+        FInputModeGameAndUI Mode;
+        Mode.SetLockMouseToViewport(true);
+        Mode.SetHideCursorDuringCapture(false);
+        MyPC->bShowMouseCursor = true;
+        MyPC->SetInputMode(Mode);
+    }
+
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
+}
+
+void ARobotRebellionCharacter::switchWeapon()
+{
+    if (Role < ROLE_Authority)
+    {
+        serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+    }
+    else
+    {
+        FString message = m_weaponInventory->toFString() + TEXT(" Go to : ");
+
+        m_weaponInventory->switchWeapon();
+
+        message += m_weaponInventory->toFString();
+
+        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, message);
+    }
+}
+
+void ARobotRebellionCharacter::serverSwitchWeapon_Implementation()
+{
+    this->switchWeapon();
+}
+
+bool ARobotRebellionCharacter::serverSwitchWeapon_Validate()
+{
+    return true;
+}
+
+
+/************************************************************************/
+/* DEBUG / CHEAT                                                        */
+/************************************************************************/
+
+
+FString ARobotRebellionCharacter::typeToString() const USE_NOEXCEPT
+{
+    static const FString typeLookUpTable[EClassType::TYPE_COUNT] = {
+        TYPE_PARSING(None),
+        TYPE_PARSING(Soldier),
+        TYPE_PARSING(Assassin),
+        TYPE_PARSING(Healer),
+        TYPE_PARSING(Wizard)
+    };
+
+    return typeLookUpTable[static_cast<uint8>(getClassType())];
+}
+
+void ARobotRebellionCharacter::changeInstanceTo(EClassType toType)
+{
+    m_spawner->spawnAndReplace(this, toType);
+}
+
+void ARobotRebellionCharacter::changeToAssassin()
+{
+    changeInstanceTo(EClassType::ASSASSIN);
+}
+
+void ARobotRebellionCharacter::changeToHealer()
+{
+    changeInstanceTo(EClassType::HEALER);
+}
+
+void ARobotRebellionCharacter::changeToSoldier()
+{
+    changeInstanceTo(EClassType::SOLDIER);
+}
+
+void ARobotRebellionCharacter::changeToWizard()
+{
+    changeInstanceTo(EClassType::WIZARD);
 }
