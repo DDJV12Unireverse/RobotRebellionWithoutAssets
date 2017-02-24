@@ -224,5 +224,8 @@ private:
         setHealth(m_health + restoreValue);
     }
 
-    void immortalMethod(float) {}
+    void immortalMethod(float) 
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Magenta, "IMMORTAL OBJECT");
+    }
 };

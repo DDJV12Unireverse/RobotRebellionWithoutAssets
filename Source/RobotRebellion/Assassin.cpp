@@ -6,4 +6,7 @@
 AAssassin::AAssassin():ARobotRebellionCharacter()
 {}
 
-
+void AAssassin::BeginPlay()
+{
+    Super::BeginPlay();
+}
