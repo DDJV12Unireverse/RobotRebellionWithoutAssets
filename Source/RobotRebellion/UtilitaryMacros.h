@@ -16,7 +16,7 @@
 
 #ifdef ENABLE_PRINT_ON_SCREEN /*&& defined(WE_RE_ON_DEBUG)*/
 
-#define PRINT_MESSAGE_ON_SCREEN(color, message) GEngine->AddOnScreenDebugMessage(-1, 5.0f, color, message);
+#define PRINT_MESSAGE_ON_SCREEN(color, message) if(GEngine) { GEngine->AddOnScreenDebugMessage(-1, 5.0f, color, message); }
 
 #else //!ENABLE_PRINT_ON_SCREEN
 

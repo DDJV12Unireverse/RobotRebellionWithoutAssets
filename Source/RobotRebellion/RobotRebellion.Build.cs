@@ -7,6 +7,9 @@ public class RobotRebellion : ModuleRules
 	public RobotRebellion(TargetInfo Target)
 	{
         UEBuildConfiguration.bForceEnableExceptions = true;
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG", "Slate", "SlateCore" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG",
+           "OnlineSubsystem", "OnlineSubsystemUtils", "Slate", "SlateCore" });
+		
+        DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
     }
 }

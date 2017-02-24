@@ -19,7 +19,7 @@ enum class EWeaponRange : uint8
 /**
  * 
  */
-UCLASS(ABSTRACT, Blueprintable)
+UCLASS(Blueprintable)
 class ROBOTREBELLION_API UWeaponBase : public UPrimitiveComponent
 {
 	GENERATED_BODY()
@@ -97,7 +97,7 @@ public:
         PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt");
     }
 
-
+    virtual FString rangeToFString() const USE_NOEXCEPT;
 
     virtual FString toDebugFString() const USE_NOEXCEPT;
 
