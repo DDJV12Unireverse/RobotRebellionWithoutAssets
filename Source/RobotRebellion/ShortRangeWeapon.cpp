@@ -30,7 +30,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
     //Sphere for short range collision
     FVector MultiSphereStart = user->GetActorLocation() + FVector(0.f, 0.f, -m_weaponVerticallyRange) + m_weaponForwardRange*user->GetActorForwardVector();
-    FVector MultiSphereEnd = MultiSphereStart + FVector(0.f, 0.f, 2.f* m_weaponVerticallyRange);
+    FVector MultiSphereEnd = MultiSphereStart + FVector(0.f, 0.f, 2.f * m_weaponVerticallyRange);
     
     //Considered Actors
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
@@ -42,15 +42,25 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     
     //Result
 
-
     TArray<FHitResult> OutHits;
-    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(user->GetWorld(), MultiSphereStart, MultiSphereEnd, m_weaponForwardRange*user->GetActorForwardVector().Size(), ObjectTypes, false, ActorsToIgnore, EDrawDebugTrace::None, 
+
+    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(
+        user->GetWorld(), 
+        MultiSphereStart, 
+        MultiSphereEnd, 
+        m_weaponForwardRange * user->GetActorForwardVector().Size(), 
+        ObjectTypes, 
+        false, 
+        ActorsToIgnore, 
+        EDrawDebugTrace::None, 
         OutHits, 
-        true);
+        true
+    );
 
     
     if (Result)
     {
+        //CAN BE OPTIMIZED
         for (int32 noEnnemy = 0; noEnnemy < OutHits.Num(); ++noEnnemy)
         {
             FHitResult hit = OutHits[noEnnemy];
@@ -66,3 +76,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     }
 }
 
+FString UShortRangeWeapon::rangeToFString() const USE_NOEXCEPT
+{
+    return "Short Range weapon";
+}
