@@ -11,10 +11,10 @@ void AGameMenu::BeginPlay()
 {
     Super::BeginPlay();
 
+    HUDCharacterImpl = CreateCustomWidget<UCustomRobotRebellionUserWidget>(HUDCharacterWidget.GetDefaultObject());
+    //HUDCharacterImpl->SetVisibility(ESlateVisibility::Hidden);
+
     LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
     LobbyImpl->initialiseOnliSubsystem();
     HideWidget(LobbyImpl);
-
-    HUDCharacterImpl = CreateCustomWidget<UCustomRobotRebellionUserWidget>(HUDCharacterWidget.GetDefaultObject());
-    //HUDCharacterImpl->SetVisibility(ESlateVisibility::Hidden);
 }
