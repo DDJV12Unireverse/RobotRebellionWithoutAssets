@@ -37,3 +37,8 @@ FString UWeaponBase::toDebugFString() const USE_NOEXCEPT
         TEXT("weapon base damage : ") +
         FString::FromInt(m_weaponBaseDamage);
 }
+
+FString UWeaponBase::rangeToFString() const USE_NOEXCEPT
+{
+    return "Invalid weapon";
+}
