@@ -32,10 +32,6 @@ public:
         float BaseLookUpRate;
 
 
-public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
-        UAttributes* m_attribute;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
         class URobotRobellionSpawnerClass* m_spawner;
 
@@ -55,6 +51,10 @@ public:
     ////Weapon Inventory/////
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
         class UWeaponInventory* m_weaponInventory;
+
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
+        UAttributes* m_attribute;
 
 
 public:

@@ -14,8 +14,7 @@ UAttributes::UAttributes()
     bReplicates = true;
 	// ...
 
-    m_inflictDamageDelegate = &UAttributes::inflictDamageMortal;
-    m_restoreHealthDelegate = &UAttributes::restoreHealthMortal;
+    setImmortal(false);
 }
 
 void UAttributes::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -83,4 +82,23 @@ void UAttributes::inflictDamageMortal(float damage)
     }
 
     GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PV = " + FString::FromInt(m_health)));
+}
+
+void UAttributes::setImmortal(bool isImmortal) USE_NOEXCEPT
+{
+    if (isImmortal)
+    {
+        m_inflictDamageDelegate = &UAttributes::immortalMethod;
+        m_restoreHealthDelegate = &UAttributes::immortalMethod;
+    }
+    else
+    {
+        m_inflictDamageDelegate = &UAttributes::inflictDamageMortal;
+        m_restoreHealthDelegate = &UAttributes::restoreHealthMortal;
+    }
+}
+
+bool UAttributes::isImmortal() const USE_NOEXCEPT
+{
+    return m_inflictDamageDelegate == &UAttributes::immortalMethod;
 }

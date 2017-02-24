@@ -24,7 +24,9 @@ void setDefense(float newValue)  USE_NOEXCEPT { attributeName##operator##setDefe
 void setAgility(float newValue)  USE_NOEXCEPT { attributeName##operator##setAgility(newValue); } \
 void inflictDamage(float damage) USE_NOEXCEPT { attributeName##operator##inflictDamage(damage); } \
 void restoreHealth(float valueToRestore) USE_NOEXCEPT { attributeName##operator##restoreHealth(valueToRestore); } \
-bool isDead() const USE_NOEXCEPT { return attributeName##operator##isDead(); }
+bool isDead() const USE_NOEXCEPT { return !attributeName##operator##isImmortal() && attributeName##operator##isDead(); } \
+void setImmortal(bool isImmortal) const USE_NOEXCEPT { attributeName##operator##setImmortal(isImmortal); } \
+bool isImmortal() const USE_NOEXCEPT { return attributeName##operator##isImmortal(); } 
 
 
 
@@ -208,6 +210,10 @@ public:
     {
         return m_health == 0;
     }
+
+    void setImmortal(bool isImmortal) USE_NOEXCEPT;
+
+    bool isImmortal() const USE_NOEXCEPT;
 
 
 private:
