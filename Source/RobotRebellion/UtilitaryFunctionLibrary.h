@@ -74,7 +74,7 @@ public:
     params :
     - printMessage : bool => true to print what is the effect (in the order passed by parameter)
     - object : the object to those we want to apply methods
-    - the remaining parameters : method pointer of the object class type. MUST BE VOID AND TAKE NO ARGUMENTS
+    - the remaining parameters : method pointer of the object class type. MUST TAKE NO ARGUMENTS
     */
     template<size_t count, class ObjectTypeToTest, class ... DelegateObj>
     static void randomApplyObjectMethod(bool printMessage, ObjectTypeToTest& object, DelegateObj ... func)
@@ -96,7 +96,7 @@ public:
             {
                 int32 randomisator = getRandWithCoeff(coefficient);
 
-                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, "Executing method : " + FString::FromInt(randomisator));
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, "Executing method : " + FString::FromInt(randomisator));
 
                 (object.*delegateArray[randomisator])();
             }
