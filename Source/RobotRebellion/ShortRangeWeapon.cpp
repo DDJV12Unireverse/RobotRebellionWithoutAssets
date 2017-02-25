@@ -8,6 +8,7 @@
 #include "UObjectGlobals.h"
 #include "GlobalDamageMethod.h"
 #include "Damage.h"
+#include "DamageCoefficientLogic.h"
 
 /************************************************************************/
 /*                  CONSTRUCTORS                                        */
@@ -68,8 +69,10 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
             ARobotRebellionCharacter* ennemy = static_cast<ARobotRebellionCharacter*>(hit.GetActor());
             if (!alreadyHit)
             {
+                DamageCoefficientLogic coeff;
+
                 Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), ennemy };
-                ennemy->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, 7.f));
+                ennemy->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue()));
                 alreadyHit = true;
 
                 if (ennemy->isDead())
