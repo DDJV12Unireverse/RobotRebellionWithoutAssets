@@ -461,7 +461,19 @@ void ARobotRebellionCharacter::changeToWizard()
     changeInstanceTo(EClassType::WIZARD);
 }
 
+AController* control;
+
 void ARobotRebellionCharacter::onDeath()
 {
-    PRINT_MESSAGE_ON_SCREEN(FColor::Silver, "DEEEEEEEAAAAAAAAAAAAAADDDDDDDDDDDDDDDD !!! YOU ARE DEAD ! Game over !!");
+    FVector currentPosition = this->GetTransform().GetLocation();
+    currentPosition.Z = 135.f;
+
+    this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
+    this->SetActorLocation(currentPosition);
+    //this->UnPossessed();
+    
+    
+    this->DisableInput(NULL);
+
+    /*this->EnableInput(NULL);*/ //renable inputs
 }
