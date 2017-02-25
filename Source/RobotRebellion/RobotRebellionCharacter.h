@@ -107,6 +107,8 @@ public:
 
     virtual void BeginPlay() override;
 
+    virtual void cppOnRevive();
+
     virtual void cppOnDeath();
 
     void inputOnLiving(class UInputComponent* playerInput);

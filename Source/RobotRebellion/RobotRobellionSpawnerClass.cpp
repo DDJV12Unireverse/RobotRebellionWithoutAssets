@@ -59,29 +59,35 @@ void URobotRobellionSpawnerClass::spawnAndReplace(ARobotRebellionCharacter* owne
             
             ARobotRebellionCharacter* intermediary;
 
+            FTransform spawnTransform{
+                FRotator{0.f,0.f,0.f},
+                owner->GetActorLocation(),
+                owner->GetActorScale3D()
+            };
+
             switch (typeToChange)
             {
             case EClassType::ASSASSIN:
             {
-                intermediary = world->SpawnActor<AAssassin>(m_assassinActor, owner->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<AAssassin>(m_assassinActor, spawnTransform, spawnParams);
             }
             break;
 
             case EClassType::HEALER:
             {
-                intermediary = world->SpawnActor<AHealer>(m_healerActor, owner->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<AHealer>(m_healerActor, spawnTransform, spawnParams);
             }
             break;
 
             case EClassType::SOLDIER:
             {
-                intermediary = world->SpawnActor<ASoldier>(m_soldierActor, owner->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<ASoldier>(m_soldierActor, spawnTransform, spawnParams);
             }
             break;
 
             case EClassType::WIZARD:
             {
-                intermediary = world->SpawnActor<AWizard>(m_wizardActor, owner->GetTransform(), spawnParams);
+                intermediary = world->SpawnActor<AWizard>(m_wizardActor, spawnTransform, spawnParams);
             }
             break;
 
@@ -90,6 +96,8 @@ void URobotRobellionSpawnerClass::spawnAndReplace(ARobotRebellionCharacter* owne
             }
 
             owner->Controller->Possess(intermediary);
+
+            owner->cppOnRevive();
 
             owner->Destroy();
 

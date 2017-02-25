@@ -435,9 +435,9 @@ void ARobotRebellionCharacter::cppOnDeath()
     this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
     this->SetActorLocation(currentPosition);
 
-    APlayerController* playerController = Cast<APlayerController>(GetInstigatorController()->GetPawn()->GetController());
+    APlayerController* playerController = Cast<APlayerController>(GetController());
 
-    if (playerController->InputComponent)
+    if (playerController && playerController->InputComponent)
     {
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
 
@@ -527,4 +527,20 @@ void ARobotRebellionCharacter::inputOnDying(class UInputComponent* PlayerInputCo
         PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
         PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
     }
+}
+
+void ARobotRebellionCharacter::cppOnRevive()
+{
+    APlayerController* playerController = Cast<APlayerController>(GetController());
+
+    if (playerController && playerController->InputComponent)
+    {
+        UInputComponent* newPlayerController = CreatePlayerInputComponent();
+
+        inputOnLiving(newPlayerController);
+
+        playerController->InputComponent = newPlayerController;
+    }
+
+    //TODO - Continue the Revive method
 }
