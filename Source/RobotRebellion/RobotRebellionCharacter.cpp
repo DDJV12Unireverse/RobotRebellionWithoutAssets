@@ -197,10 +197,7 @@ void ARobotRebellionCharacter::ExecuteCommand(FString command) const
     if(MyPC)
     {
         MyPC->ConsoleCommand(command, true);
-        if(GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, command);
-        }
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, command);
     }
 }
 
