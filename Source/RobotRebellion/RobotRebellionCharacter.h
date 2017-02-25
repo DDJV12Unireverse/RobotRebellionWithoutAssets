@@ -35,9 +35,9 @@ public:
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
         UAttributes* m_attribute;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
-        class URobotRobellionSpawnerClass* m_spawner;
+// 
+//     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+//         class URobotRobellionSpawnerClass* m_spawner;
 
 
     /////////////////////////////////////////////////////////ADDED ATTRIBUTES AND FUNCTIONS:

@@ -43,6 +43,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseLookUpRate;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+        class URobotRobellionSpawnerClass* m_spawner;
 
 public:
     APlayableCharacter();
