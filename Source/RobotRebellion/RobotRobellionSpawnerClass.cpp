@@ -93,7 +93,7 @@ void URobotRobellionSpawnerClass::spawnAndReplace(ARobotRebellionCharacter* owne
 
             owner->Destroy();
 
-            GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Black, "Spawn");
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Black, "Spawn");
         }
     }
 }

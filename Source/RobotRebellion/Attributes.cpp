@@ -80,5 +80,5 @@ void UAttributes::inflictDamage(float damage) USE_NOEXCEPT
         m_health = 0;
     }
 
-    GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("PV = " + FString::FromInt(m_health)));
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, TEXT("PV = " + FString::FromInt(m_health));
 }

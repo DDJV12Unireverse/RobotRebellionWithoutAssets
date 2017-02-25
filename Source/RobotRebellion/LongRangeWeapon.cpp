@@ -15,7 +15,7 @@ ULongRangeWeapon::ULongRangeWeapon() :
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
     bool canFire = canAttack();
-    PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "LongAtt");
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "LongAtt");
     if (canFire && m_projectileClass != NULL)
     {
         // Retrieve the camera location and rotation
@@ -45,7 +45,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
             {
                 projectile->setOwner(user);
 
-                PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "FIRE");
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
 
                 // Fire
                 const FVector fireDirection = muzzleRotation.Vector();
@@ -57,11 +57,11 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     }
     else if (!canFire)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Cannot attack !!! Reloading")
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading")
     }
     else
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "Projectile null");
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
     }
 }
 
