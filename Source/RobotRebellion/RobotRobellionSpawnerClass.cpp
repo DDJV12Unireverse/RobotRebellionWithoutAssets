@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "RobotRobellionSpawnerClass.h"
 
-#include "RobotRebellionCharacter.h"
+#include "PlayableCharacter.h"
 #include "Assassin.h"
 #include "Wizard.h"
 #include "Healer.h"
@@ -41,7 +41,7 @@ void URobotRobellionSpawnerClass::TickComponent( float DeltaTime, ELevelTick Tic
 
 
 
-void URobotRobellionSpawnerClass::spawnAndReplace(ARobotRebellionCharacter* owner, EClassType typeToChange)
+void URobotRobellionSpawnerClass::spawnAndReplace(APlayableCharacter* owner, EClassType typeToChange)
 {
     if (owner->Role < ROLE_Authority)
     {
@@ -57,7 +57,7 @@ void URobotRobellionSpawnerClass::spawnAndReplace(ARobotRebellionCharacter* owne
             spawnParams.Instigator = owner->Instigator;
             spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
             
-            ARobotRebellionCharacter* intermediary;
+            APlayableCharacter* intermediary;
 
             switch (typeToChange)
             {
@@ -98,12 +98,12 @@ void URobotRobellionSpawnerClass::spawnAndReplace(ARobotRebellionCharacter* owne
     }
 }
 
-void URobotRobellionSpawnerClass::serverSpawnAndReplace_Implementation(ARobotRebellionCharacter* owner, EClassType typeToChange)
+void URobotRobellionSpawnerClass::serverSpawnAndReplace_Implementation(APlayableCharacter* owner, EClassType typeToChange)
 {
     spawnAndReplace(owner, typeToChange);
 }
 
-bool URobotRobellionSpawnerClass::serverSpawnAndReplace_Validate(ARobotRebellionCharacter* owner, EClassType typeToChange)
+bool URobotRobellionSpawnerClass::serverSpawnAndReplace_Validate(APlayableCharacter* owner, EClassType typeToChange)
 {
     return true;
 }
