@@ -59,17 +59,14 @@ APlayableCharacter::APlayableCharacter()
 
                                                    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
                                                    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-//    m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
-//    m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
+    m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
+    m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
 
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
-    m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
-
-    m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

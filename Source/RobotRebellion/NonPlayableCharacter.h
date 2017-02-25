@@ -6,7 +6,7 @@
 #include "NonPlayableCharacter.generated.h"
 
 /**
- * 
+ * Mother class for every npc in RobotRebellion Game
  */
 UCLASS()
 class ROBOTREBELLION_API ANonPlayableCharacter : public ARobotRebellionCharacter

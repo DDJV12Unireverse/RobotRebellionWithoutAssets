@@ -6,7 +6,7 @@
 #include "TrainingDummyCharacter.generated.h"
 
 /**
- * 
+ * Just A simple trainning dummy class
  */
 UCLASS()
 class ROBOTREBELLION_API ATrainingDummyCharacter : public ANonPlayableCharacter
