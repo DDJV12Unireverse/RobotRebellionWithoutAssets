@@ -461,9 +461,7 @@ void ARobotRebellionCharacter::changeToWizard()
     changeInstanceTo(EClassType::WIZARD);
 }
 
-AController* control;
-
-void ARobotRebellionCharacter::onDeath()
+void ARobotRebellionCharacter::cppOnDeath()
 {
     FVector currentPosition = this->GetTransform().GetLocation();
     currentPosition.Z = 135.f;
@@ -471,9 +469,29 @@ void ARobotRebellionCharacter::onDeath()
     this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
     this->SetActorLocation(currentPosition);
     //this->UnPossessed();
-    
-    
+
+
     this->DisableInput(NULL);
 
     /*this->EnableInput(NULL);*/ //renable inputs
+}
+
+void ARobotRebellionCharacter::onDeath()
+{
+    if (Role == ROLE_Authority)
+    {
+        clientOnDeath();
+    }
+        
+    this->cppOnDeath();
+}
+
+void ARobotRebellionCharacter::clientOnDeath_Implementation()
+{
+    onDeath();
+}
+
+bool ARobotRebellionCharacter::clientOnDeath_Validate()
+{
+    return true;
 }

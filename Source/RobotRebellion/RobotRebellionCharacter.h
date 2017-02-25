@@ -107,8 +107,7 @@ public:
 
     virtual void BeginPlay() override;
 
-    virtual void onDeath();
-
+    virtual void cppOnDeath();
 
     /************************************************************************/
     /* UFUNCTION                                                            */
@@ -184,6 +183,12 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "General")
         EClassType getType() const USE_NOEXCEPT;
+
+    UFUNCTION()
+        void onDeath();
+
+    UFUNCTION(Reliable, Client, WithValidation)
+        void clientOnDeath();
 
 
 
