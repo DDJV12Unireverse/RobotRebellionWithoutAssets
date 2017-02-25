@@ -41,7 +41,7 @@ public:
     /*                  UFUNCTION                                           */
     /************************************************************************/
     UFUNCTION(BlueprintCallable, Category = "General")
-        EWeaponRange getWeaponRange() const USE_NOEXCEPT
+        virtual EWeaponRange getWeaponRange() const USE_NOEXCEPT override
     {
         return EWeaponRange::LONG_RANGE_WEAPON;
     }
