@@ -5,6 +5,8 @@
 #include "Projectile.h"
 #include "Damage.h"
 #include "GlobalDamageMethod.h"
+#include "DamageCoefficientLogic.h"
+#include "UtilitaryFunctionLibrary.h"
 
 
 
@@ -87,8 +89,23 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
         if (receiver && m_owner != receiver)
         {
+            DamageCoefficientLogic coeff;
+
+            UUtilitaryFunctionLibrary::randomApplyObjectMethod<3>(
+                true,
+                coeff,
+                &DamageCoefficientLogic::criticalHit,
+                &DamageCoefficientLogic::engagementHit,
+                &DamageCoefficientLogic::graze,
+                &DamageCoefficientLogic::superEfficient,
+                &DamageCoefficientLogic::lessEfficient,
+                &DamageCoefficientLogic::multipleHit
+            );
+
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));
+
             Damage damage{ m_owner, receiver };
-            receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, 7.f));
+            receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue()));
         }
         
         Destroy();

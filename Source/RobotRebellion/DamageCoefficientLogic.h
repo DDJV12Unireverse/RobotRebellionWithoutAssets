@@ -18,6 +18,7 @@ public:
     static constexpr const float MIN_COEFFICIENT_VALUE = 0.1f;
 
 
+
 private:
     float m_damageCoefficient = 1.0f;
 
@@ -88,4 +89,5 @@ public:
     {
         return m_damageCoefficient;
     }
+
 };
