@@ -471,7 +471,9 @@ void ARobotRebellionCharacter::cppOnDeath()
     //this->UnPossessed();
 
 
-    this->DisableInput(NULL);
+    //this->DisableInput(NULL);
+    
+
 
     /*this->EnableInput(NULL);*/ //renable inputs
 }

@@ -49,7 +49,7 @@ void UWeaponInventory::BeginPlay()
             &m_mainWeaponInstance, 
             m_mainWeapon, 
             this, 
-            TEXT("mainWeapon")                                                          
+            TEXT("mainWeapon")
         );
     }
 
@@ -72,7 +72,7 @@ void UWeaponInventory::BeginPlay()
             this, 
             TEXT("secondaryWeapon")
         );
-    }    
+    }
 
 	// ...
     changeToMainWeapon();
