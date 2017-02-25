@@ -79,41 +79,7 @@ void ARobotRebellionCharacter::SetupPlayerInputComponent(class UInputComponent* 
 {
     // Set up gameplay key bindings
     check(PlayerInputComponent);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARobotRebellionCharacter::OnStartJump);
-    PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARobotRebellionCharacter::OnStopJump);
-
-    PlayerInputComponent->BindAxis("MoveForward", this, &ARobotRebellionCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &ARobotRebellionCharacter::MoveRight);
-
-    // We have 2 versions of the rotation bindings to handle different kinds of devices differently
-    // "turn" handles devices that provide an absolute delta, such as a mouse.
-    // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-    PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-    PlayerInputComponent->BindAxis("TurnRate", this, &ARobotRebellionCharacter::TurnAtRate);
-    PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("LookUpRate", this, &ARobotRebellionCharacter::LookUpAtRate);
-
-    //Crouch & Sprint
-    PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ARobotRebellionCharacter::OnCrouchToggle);
-    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ARobotRebellionCharacter::OnStartSprint);
-    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARobotRebellionCharacter::OnStopSprint);
-
-    //FIRE
-    PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
-
-    //ESCAPE
-    PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
-    //SWITCH WEAPON
-    PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
-
-    /************************************************************************/
-    /* DEBUG                                                                */
-    /************************************************************************/
-    //Class change
-    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::changeToAssassin);
-    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::changeToHealer);
-    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
-    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
+    inputOnLiving(PlayerInputComponent);
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -468,14 +434,17 @@ void ARobotRebellionCharacter::cppOnDeath()
 
     this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
     this->SetActorLocation(currentPosition);
-    //this->UnPossessed();
 
+    APlayerController* playerController = Cast<APlayerController>(GetInstigatorController()->GetPawn()->GetController());
 
-    //this->DisableInput(NULL);
-    
+    if (playerController->InputComponent)
+    {
+        UInputComponent* newPlayerController = CreatePlayerInputComponent();
 
+        inputOnDying(newPlayerController);
 
-    /*this->EnableInput(NULL);*/ //renable inputs
+        playerController->InputComponent = newPlayerController;
+    }
 }
 
 void ARobotRebellionCharacter::onDeath()
@@ -483,6 +452,7 @@ void ARobotRebellionCharacter::onDeath()
     if (Role == ROLE_Authority)
     {
         clientOnDeath();
+        //return;
     }
         
     this->cppOnDeath();
@@ -490,10 +460,71 @@ void ARobotRebellionCharacter::onDeath()
 
 void ARobotRebellionCharacter::clientOnDeath_Implementation()
 {
-    onDeath();
+    this->cppOnDeath();
 }
 
 bool ARobotRebellionCharacter::clientOnDeath_Validate()
 {
     return true;
+}
+
+void ARobotRebellionCharacter::inputOnLiving(class UInputComponent* PlayerInputComponent)
+{
+    if (PlayerInputComponent)
+    {
+        PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARobotRebellionCharacter::OnStartJump);
+        PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARobotRebellionCharacter::OnStopJump);
+
+        PlayerInputComponent->BindAxis("MoveForward", this, &ARobotRebellionCharacter::MoveForward);
+        PlayerInputComponent->BindAxis("MoveRight", this, &ARobotRebellionCharacter::MoveRight);
+
+        // We have 2 versions of the rotation bindings to handle different kinds of devices differently
+        // "turn" handles devices that provide an absolute delta, such as a mouse.
+        // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+        PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+        PlayerInputComponent->BindAxis("TurnRate", this, &ARobotRebellionCharacter::TurnAtRate);
+        PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+        PlayerInputComponent->BindAxis("LookUpRate", this, &ARobotRebellionCharacter::LookUpAtRate);
+
+        //Crouch & Sprint
+        PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ARobotRebellionCharacter::OnCrouchToggle);
+        PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ARobotRebellionCharacter::OnStartSprint);
+        PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARobotRebellionCharacter::OnStopSprint);
+
+        //FIRE
+        PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &ARobotRebellionCharacter::mainFire);
+
+        //ESCAPE
+        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
+        //SWITCH WEAPON
+        PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &ARobotRebellionCharacter::switchWeapon);
+
+        /************************************************************************/
+        /* DEBUG                                                                */
+        /************************************************************************/
+        //Class change
+        PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::changeToAssassin);
+        PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::changeToHealer);
+        PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
+        PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
+    }
+}
+
+void ARobotRebellionCharacter::inputOnDying(class UInputComponent* PlayerInputComponent)
+{
+    if (PlayerInputComponent)
+    {
+        //ESCAPE
+        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &ARobotRebellionCharacter::openLobbyWidget);
+
+
+        /************************************************************************/
+        /* DEBUG                                                                */
+        /************************************************************************/
+        //Class change
+        PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &ARobotRebellionCharacter::changeToAssassin);
+        PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &ARobotRebellionCharacter::changeToHealer);
+        PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &ARobotRebellionCharacter::changeToSoldier);
+        PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &ARobotRebellionCharacter::changeToWizard);
+    }
 }

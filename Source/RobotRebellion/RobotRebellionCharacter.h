@@ -109,6 +109,9 @@ public:
 
     virtual void cppOnDeath();
 
+    void inputOnLiving(class UInputComponent* playerInput);
+    void inputOnDying(class UInputComponent* playerInput);
+
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
