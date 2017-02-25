@@ -15,6 +15,14 @@ class ROBOTREBELLION_API UUtilitaryFunctionLibrary : public UBlueprintFunctionLi
 	
 	
 public:
+    /*
+    Duplicate an object (exact copy) from a default object. The default objecct will be casted to the objInstance type.
+    ex :
+    while(!UUtilitaryFunctionLibrary::duplicateObjectFromDefault(&objInstance, objDefaultStatic, this, TEXT("youhou")))
+    {
+        //...
+    }
+    */
     template<class Object>
     static bool duplicateObjectFromDefault(Object** out, const TSubclassOf<Object>& in, UObject* objectAttachedTo)
     {
@@ -29,6 +37,14 @@ public:
         return false;
     }
 	
+    /*
+    Create an object (exact copy) from a default object. Named version.
+    ex : 
+    while(!UUtilitaryFunctionLibrary::createObjectFromDefault<objInstanceType>(&objInstance, objDefaultStatic, this, TEXT("youhou")))
+    {
+        //...
+    }
+    */
     template<class Casted, class Object>
     static bool createObjectFromDefault(Object** out, const TSubclassOf<Object>& in, UObject* objectAttachedTo, FName name, EObjectFlags RF_flag = RF_Dynamic | RF_ArchetypeObject)
     {
@@ -43,6 +59,9 @@ public:
         return false;
     }
 
+    /*
+    Create an object (exact copy) from a default object. Same as createObjectFromDefault but with no name specified
+    */
     template<class Casted, class Object>
     static bool createObjectFromDefault(Object** out, const TSubclassOf<Object>& in, UObject* objectAttachedTo, EObjectFlags RF_flag = RF_Dynamic | RF_ArchetypeObject)
     {
