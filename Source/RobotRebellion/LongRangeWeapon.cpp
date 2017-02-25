@@ -57,7 +57,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     }
     else if (!canFire)
     {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading")
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading");
     }
     else
     {
