@@ -5,6 +5,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UtilitaryFunctionLibrary.generated.h"
 
+
 /**
  * 
  */
@@ -66,5 +67,66 @@ public:
     static bool createObjectFromDefault(Object** out, const TSubclassOf<Object>& in, UObject* objectAttachedTo, EObjectFlags RF_flag = RF_Dynamic | RF_ArchetypeObject)
     {
         return createObjectFromDefault<Casted, Object>(out, in, objectAttachedTo, NAME_None, RF_flag);
+    }
+
+    /*
+    Randomly applies an effect method from those specified with the parameters equal or above the 3rd parameters
+    params :
+    - printMessage : bool => true to print what is the effect (in the order passed by parameter)
+    - object : the object to those we want to apply methods
+    - the remaining parameters : method pointer of the object class type. MUST BE VOID AND TAKE NO ARGUMENTS
+    */
+    template<size_t count, class ObjectTypeToTest, class ... DelegateObj>
+    static void randomApplyObjectMethod(bool printMessage, ObjectTypeToTest& object, DelegateObj ... func)
+    {
+        constexpr int32 totalSize = sizeof...(func);
+
+        if (totalSize == 0)
+        {
+            return;
+        }
+
+        decltype(ObtainFirstElemOnAVariadic(func...)) delegateArray[totalSize] = { func... };
+
+        float coefficient = (static_cast<float>(totalSize) - 0.001f) / (static_cast<float>(RAND_MAX));
+
+        if (printMessage)
+        {
+            for (size_t iter = 0; iter < count; ++iter)
+            {
+                int32 randomisator = getRandWithCoeff(coefficient);
+
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, "Executing method : " + FString::FromInt(randomisator));
+
+                (object.*delegateArray[randomisator])();
+            }
+        }
+        else
+        {
+            for (size_t iter = 0; iter < count; ++iter)
+            {
+                int32 randomisator = getRandWithCoeff(coefficient);
+
+                (object.*delegateArray[randomisator])();
+            }
+        }
+    }
+
+    template<class FirstElem, class ... OtherElem>
+    static constexpr FirstElem ObtainFirstElemOnAVariadic(const FirstElem& first, const OtherElem& ... other)
+    {
+        return first;
+    }
+
+    
+
+    /************************************************************************/
+    /* UFUNCTION                                                            */
+    /************************************************************************/
+    template<class ReturnType> 
+    UFUNCTION()
+    static FORCEINLINE ReturnType getRandWithCoeff(ReturnType coeff)
+    {
+        return static_cast<ReturnType>(FMath::Rand()) * coeff;
     }
 };
