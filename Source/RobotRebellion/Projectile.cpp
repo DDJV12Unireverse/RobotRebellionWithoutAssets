@@ -91,19 +91,29 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
         {
             DamageCoefficientLogic coeff;
 
-            UUtilitaryFunctionLibrary::randomApplyObjectMethod<3>(
+            /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
                 true,
                 coeff,
                 &DamageCoefficientLogic::criticalHit,
                 &DamageCoefficientLogic::engagementHit,
-                &DamageCoefficientLogic::superEfficient
+                &DamageCoefficientLogic::superEfficient,
+                &DamageCoefficientLogic::lessEfficient,
+                &DamageCoefficientLogic::multipleHit,
+                &DamageCoefficientLogic::graze
             );
 
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
 
             Damage damage{ m_owner, receiver };
-                
-            receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue()));
+            
+            Damage::DamageValue currentDamage = damage(
+                &UGlobalDamageMethod::normalHitWithWeaponComputed, 
+                coeff.getCoefficientValue()
+            );
+
+            receiver->inflictDamage(currentDamage);
+
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, FString::Printf(TEXT("Damage = %u"), currentDamage));
 
             if (receiver->isDead())
             {
