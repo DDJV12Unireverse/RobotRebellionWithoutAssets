@@ -31,10 +31,7 @@ void UWeaponInventory::BeginPlay()
 
     UWeaponBase* intermediary = Cast<UWeaponBase>(m_mainWeapon->GetDefaultObject());
 
-
-    PRINT_MESSAGE_ON_SCREEN(FColor::Red, intermediary->rangeToFString());
-
-    if (intermediary->rangeToFString() == "Long Range weapon")
+    if (intermediary->getWeaponRange() == EWeaponRange::LONG_RANGE_WEAPON)
     {
         UUtilitaryFunctionLibrary::createObjectFromDefault<ULongRangeWeapon>(
             &m_mainWeaponInstance, 
@@ -55,7 +52,7 @@ void UWeaponInventory::BeginPlay()
 
     intermediary = Cast<UWeaponBase>(m_secondaryWeapon->GetDefaultObject());
 
-    if (intermediary->rangeToFString() == "Long Range weapon")
+    if (intermediary->getWeaponRange() == EWeaponRange::LONG_RANGE_WEAPON)
     {
         UUtilitaryFunctionLibrary::createObjectFromDefault<ULongRangeWeapon>(
             &m_secondaryWeaponInstance, 
