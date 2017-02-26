@@ -83,7 +83,7 @@ void AProjectile::setOwner(ARobotRebellionCharacter *newOwner)
 void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
     OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Hit"));
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Hit"));
     if (Role == ROLE_Authority)
     {
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
@@ -110,6 +110,6 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
         
         Destroy();
         
-        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Destroy on Server"));
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Destroy on Server"));
     }
 }
