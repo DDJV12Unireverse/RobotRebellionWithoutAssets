@@ -106,6 +106,8 @@ public:
     void inputOnLiving(class UInputComponent* playerInput);
     void inputOnDying(class UInputComponent* playerInput);
 
+    void inputDebug(class UInputComponent* playerInput);
+
     ////Command Line
     UFUNCTION(BlueprintCallable, Category = "CharacterCommand")
         void ExecuteCommand(FString command) const;

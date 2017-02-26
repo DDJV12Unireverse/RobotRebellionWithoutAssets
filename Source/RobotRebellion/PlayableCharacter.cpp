@@ -438,11 +438,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
-        //Class change
-        PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &APlayableCharacter::changeToAssassin);
-        PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &APlayableCharacter::changeToHealer);
-        PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &APlayableCharacter::changeToSoldier);
-        PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
+        inputDebug(PlayerInputComponent);
     }
 }
 
@@ -457,12 +453,17 @@ void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponen
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
-        //Class change
-        PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &APlayableCharacter::changeToAssassin);
-        PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &APlayableCharacter::changeToHealer);
-        PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &APlayableCharacter::changeToSoldier);
-        PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
+        inputDebug(PlayerInputComponent);
     }
+}
+
+void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
+{
+    //Class change
+    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &APlayableCharacter::changeToAssassin);
+    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &APlayableCharacter::changeToHealer);
+    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &APlayableCharacter::changeToSoldier);
+    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
 }
 
 void APlayableCharacter::cppOnRevive()
