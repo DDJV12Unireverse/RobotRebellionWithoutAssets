@@ -10,3 +10,7 @@ ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 }
 
 
+void ANonPlayableCharacter::cppOnDeath()
+{
+    this->Destroy();
+}

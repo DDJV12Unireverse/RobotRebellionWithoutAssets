@@ -16,5 +16,5 @@ class ROBOTREBELLION_API ANonPlayableCharacter : public ARobotRebellionCharacter
 public:
     ANonPlayableCharacter();
 	
-	
+    virtual void cppOnDeath() override;
 };
