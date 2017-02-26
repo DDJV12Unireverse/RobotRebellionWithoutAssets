@@ -19,16 +19,16 @@ public:
     /************************************************************************/
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TSubclassOf<class ARobotRebellionCharacter> m_assassinActor;
+        TSubclassOf<class APlayableCharacter> m_assassinActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TSubclassOf<ARobotRebellionCharacter> m_healerActor;
+        TSubclassOf<APlayableCharacter> m_healerActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TSubclassOf<ARobotRebellionCharacter> m_soldierActor;
+        TSubclassOf<APlayableCharacter> m_soldierActor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TSubclassOf<ARobotRebellionCharacter> m_wizardActor;
+        TSubclassOf<APlayableCharacter> m_wizardActor;
 
 
 
@@ -51,10 +51,10 @@ public:
     /* UFUNCTION                                                            */
     /************************************************************************/
     UFUNCTION(Reliable, Server, WithValidation)
-        void serverSpawnAndReplace(ARobotRebellionCharacter* owner, EClassType typeToChange);
+        void serverSpawnAndReplace(APlayableCharacter* owner, EClassType typeToChange);
 
 
     //Replace the player with a new character. Specify the player and the new type of character.
     UFUNCTION(BlueprintCallable, Category = "")
-        void spawnAndReplace(ARobotRebellionCharacter* owner, EClassType typeToChange);
+        void spawnAndReplace(APlayableCharacter* owner, EClassType typeToChange);
 };
