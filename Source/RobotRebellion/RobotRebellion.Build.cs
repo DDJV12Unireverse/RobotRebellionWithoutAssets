@@ -8,7 +8,7 @@ public class RobotRebellion : ModuleRules
 	{
         UEBuildConfiguration.bForceEnableExceptions = true;
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG",
-           "OnlineSubsystem", "OnlineSubsystemUtils", "Slate", "SlateCore" });
+           "OnlineSubsystem", "OnlineSubsystemUtils", "Slate", "SlateCore", "AIModule", "GameplayTasks" });
 		
         DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
     }

@@ -4,5 +4,9 @@
 #include "CustomAIControllerBase.h"
 
 
-
+EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
+{
+    EPathFollowingRequestResult::Type MoveToActorResult = MoveToActor(Cast<AActor>(m_targetToFollow));
+    return MoveToActorResult;
+}
 
