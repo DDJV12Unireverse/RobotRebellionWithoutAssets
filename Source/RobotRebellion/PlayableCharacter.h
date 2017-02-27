@@ -174,6 +174,14 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+
+    //Death
+    UFUNCTION(BlueprintCallable, Category = "General")
+        bool isDeadBP();
+    
+
+
+    //Type
     UFUNCTION(BlueprintCallable, Category = "General")
         EClassType getType() const USE_NOEXCEPT;
 

@@ -302,6 +302,13 @@ bool APlayableCharacter::serverMainFire_Validate()
     return true;
 }
 
+//Dead
+bool APlayableCharacter::isDeadBP()
+{
+    return isDead();
+}
+
+//TYPE
 EClassType APlayableCharacter::getClassType() const USE_NOEXCEPT
 {
     return EClassType::NONE;
@@ -484,11 +491,11 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
-    FVector currentPosition = this->GetTransform().GetLocation();
-    currentPosition.Z = 135.f;
+   // FVector currentPosition = this->GetTransform().GetLocation();
+    //currentPosition.Z = 135.f;
 
-    this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
-    this->SetActorLocation(currentPosition);
+    //this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
+   // this->SetActorLocation(currentPosition);
 
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
