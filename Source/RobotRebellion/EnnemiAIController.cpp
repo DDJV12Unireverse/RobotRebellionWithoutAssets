@@ -16,7 +16,9 @@ void AEnnemiAIController::CheckEnnemyNear()
     FVector MultiSphereStart = Pawn->GetActorLocation();
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
+    //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
     TArray<AActor*> ActorsToIgnore;
     ActorsToIgnore.Add(Pawn);
     TArray<FHitResult> OutHits;
@@ -46,6 +48,7 @@ void AEnnemiAIController::CheckEnnemyNear()
             {
                 //BlackboardComponent->SetValueAsObject("TargetActorToFollow", Character);
                 m_targetToFollow = Character;
+                break;
             }
         }
     }

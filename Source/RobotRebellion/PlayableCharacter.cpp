@@ -67,6 +67,8 @@ APlayableCharacter::APlayableCharacter()
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
+    //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
+    GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
