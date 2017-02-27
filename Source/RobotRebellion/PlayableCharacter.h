@@ -73,8 +73,10 @@ protected:
 
 public:
     void LookUpAtRate(float Rate);
+
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
     // End of APawn interface
     virtual EClassType getClassType() const USE_NOEXCEPT;
 
@@ -97,6 +99,14 @@ public:
 
     ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+
+    virtual void cppOnRevive() override;
+    virtual void cppOnDeath() override;
+
+    void inputOnLiving(class UInputComponent* playerInput);
+    void inputOnDying(class UInputComponent* playerInput);
+
+    void inputDebug(class UInputComponent* playerInput);
 
     ////Command Line
     UFUNCTION(BlueprintCallable, Category = "CharacterCommand")
@@ -194,6 +204,4 @@ public:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverSwitchWeapon();
-
-
 };

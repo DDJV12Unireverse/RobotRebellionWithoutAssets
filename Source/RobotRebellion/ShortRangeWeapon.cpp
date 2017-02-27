@@ -74,6 +74,11 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), ennemy };
                 ennemy->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue()));
                 alreadyHit = true;
+
+                if (ennemy->isDead())
+                {
+                    ennemy->onDeath();
+                }
             }
         }
     }

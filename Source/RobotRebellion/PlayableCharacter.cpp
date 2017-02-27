@@ -73,41 +73,7 @@ void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 {
     // Set up gameplay key bindings
     check(PlayerInputComponent);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayableCharacter::OnStartJump);
-    PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayableCharacter::OnStopJump);
-
-    PlayerInputComponent->BindAxis("MoveForward", this, &APlayableCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &APlayableCharacter::MoveRight);
-
-    // We have 2 versions of the rotation bindings to handle different kinds of devices differently
-    // "turn" handles devices that provide an absolute delta, such as a mouse.
-    // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-    PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-    PlayerInputComponent->BindAxis("TurnRate", this, &APlayableCharacter::TurnAtRate);
-    PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("LookUpRate", this, &APlayableCharacter::LookUpAtRate);
-
-    //Crouch & Sprint
-    PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APlayableCharacter::OnCrouchToggle);
-    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &APlayableCharacter::OnStartSprint);
-    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayableCharacter::OnStopSprint);
-
-    //FIRE
-    PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &APlayableCharacter::mainFire);
-
-    //ESCAPE
-    PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
-    //SWITCH WEAPON
-    PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
-
-    /************************************************************************/
-    /* DEBUG                                                                */
-    /************************************************************************/
-    //Class change
-    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &APlayableCharacter::changeToAssassin);
-    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &APlayableCharacter::changeToHealer);
-    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &APlayableCharacter::changeToSoldier);
-    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
+    inputOnLiving(PlayerInputComponent);
 }
 
 void APlayableCharacter::BeginPlay()
@@ -436,4 +402,102 @@ void APlayableCharacter::changeToSoldier()
 void APlayableCharacter::changeToWizard()
 {
     changeInstanceTo(EClassType::WIZARD);
+}
+
+void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputComponent)
+{
+    if (PlayerInputComponent)
+    {
+        PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayableCharacter::OnStartJump);
+        PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayableCharacter::OnStopJump);
+
+        PlayerInputComponent->BindAxis("MoveForward", this, &APlayableCharacter::MoveForward);
+        PlayerInputComponent->BindAxis("MoveRight", this, &APlayableCharacter::MoveRight);
+
+        // We have 2 versions of the rotation bindings to handle different kinds of devices differently
+        // "turn" handles devices that provide an absolute delta, such as a mouse.
+        // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+        PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+        PlayerInputComponent->BindAxis("TurnRate", this, &APlayableCharacter::TurnAtRate);
+        PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+        PlayerInputComponent->BindAxis("LookUpRate", this, &APlayableCharacter::LookUpAtRate);
+
+        //Crouch & Sprint
+        PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APlayableCharacter::OnCrouchToggle);
+        PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &APlayableCharacter::OnStartSprint);
+        PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayableCharacter::OnStopSprint);
+
+        //FIRE
+        PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &APlayableCharacter::mainFire);
+
+        //ESCAPE
+        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        //SWITCH WEAPON
+        PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
+
+        /************************************************************************/
+        /* DEBUG                                                                */
+        /************************************************************************/
+        inputDebug(PlayerInputComponent);
+    }
+}
+
+void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponent)
+{
+    if (PlayerInputComponent)
+    {
+        //ESCAPE
+        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+
+
+        /************************************************************************/
+        /* DEBUG                                                                */
+        /************************************************************************/
+        inputDebug(PlayerInputComponent);
+    }
+}
+
+void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
+{
+    //Class change
+    PlayerInputComponent->BindAction("Debug_ChangeToAssassin", IE_Pressed, this, &APlayableCharacter::changeToAssassin);
+    PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &APlayableCharacter::changeToHealer);
+    PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &APlayableCharacter::changeToSoldier);
+    PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
+}
+
+void APlayableCharacter::cppOnRevive()
+{
+    APlayerController* playerController = Cast<APlayerController>(GetController());
+
+    if (playerController && playerController->InputComponent)
+    {
+        UInputComponent* newPlayerController = CreatePlayerInputComponent();
+
+        inputOnLiving(newPlayerController);
+
+        playerController->InputComponent = newPlayerController;
+    }
+
+    //TODO - Continue the Revive method
+}
+
+void APlayableCharacter::cppOnDeath()
+{
+    FVector currentPosition = this->GetTransform().GetLocation();
+    currentPosition.Z = 135.f;
+
+    this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
+    this->SetActorLocation(currentPosition);
+
+    APlayerController* playerController = Cast<APlayerController>(GetController());
+
+    if (playerController && playerController->InputComponent)
+    {
+        UInputComponent* newPlayerController = CreatePlayerInputComponent();
+
+        inputOnDying(newPlayerController);
+
+        playerController->InputComponent = newPlayerController;
+    }
 }

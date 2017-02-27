@@ -96,16 +96,19 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                 coeff,
                 &DamageCoefficientLogic::criticalHit,
                 &DamageCoefficientLogic::engagementHit,
-                &DamageCoefficientLogic::graze,
-                &DamageCoefficientLogic::superEfficient,
-                &DamageCoefficientLogic::lessEfficient,
-                &DamageCoefficientLogic::multipleHit
+                &DamageCoefficientLogic::superEfficient
             );
 
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));
 
             Damage damage{ m_owner, receiver };
+                
             receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue()));
+
+            if (receiver->isDead())
+            {
+                receiver->onDeath();
+            }
         }
         
         Destroy();

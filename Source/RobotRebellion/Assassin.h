@@ -17,6 +17,8 @@ class ROBOTREBELLION_API AAssassin : public APlayableCharacter
 public:
     AAssassin();
 
+    //virtual void BeginPlay() override;
+
     EClassType getClassType() const USE_NOEXCEPT override
     {
         return EClassType::ASSASSIN;

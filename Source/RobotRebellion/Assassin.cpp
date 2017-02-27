@@ -6,4 +6,7 @@
 AAssassin::AAssassin() :APlayableCharacter()
 {}
 
-
+//void AAssassin::BeginPlay()
+//{
+//    Super::BeginPlay();
+//}

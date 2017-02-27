@@ -19,7 +19,7 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
-
+    //m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -38,3 +38,30 @@ UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEX
 {
     return m_weaponInventory->getCurrentWeapon();
 }
+
+void ARobotRebellionCharacter::cppOnDeath()
+{}
+
+void ARobotRebellionCharacter::onDeath()
+{
+    if (Role == ROLE_Authority)
+    {
+        clientOnDeath();
+        //return;
+    }
+        
+    this->cppOnDeath();
+}
+
+void ARobotRebellionCharacter::clientOnDeath_Implementation()
+{
+    this->cppOnDeath();
+}
+
+bool ARobotRebellionCharacter::clientOnDeath_Validate()
+{
+    return true;
+}
+
+void ARobotRebellionCharacter::cppOnRevive()
+{}
