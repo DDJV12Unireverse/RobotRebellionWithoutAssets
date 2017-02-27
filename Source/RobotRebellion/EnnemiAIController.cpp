@@ -41,8 +41,8 @@ void AEnnemiAIController::CheckEnnemyNear()
         for(int32 i = 0; i < OutHits.Num(); i++)
         {
             FHitResult Hit = OutHits[i];
-            ARobotRebellionCharacter* Character = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-            if(NULL != Character && Hit.GetActor() == Character)
+            ARobotRebellionCharacter* Character = Cast<ARobotRebellionCharacter>(Hit.GetActor());
+            if(NULL != Character)
             {
                 //BlackboardComponent->SetValueAsObject("TargetActorToFollow", Character);
                 m_targetToFollow = Character;
