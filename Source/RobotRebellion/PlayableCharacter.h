@@ -175,7 +175,9 @@ public:
         void serverMainFire();
 
 
-    //Death
+    //DEATH
+    
+    //Function to call in BP, can't do it with macro
     UFUNCTION(BlueprintCallable, Category = "General")
         bool isDeadBP();
     

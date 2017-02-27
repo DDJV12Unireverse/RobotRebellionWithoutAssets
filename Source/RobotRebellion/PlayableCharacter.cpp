@@ -302,7 +302,9 @@ bool APlayableCharacter::serverMainFire_Validate()
     return true;
 }
 
-//Dead
+//DEAD
+
+//Function to call in BP, can't do it with macro
 bool APlayableCharacter::isDeadBP()
 {
     return isDead();
