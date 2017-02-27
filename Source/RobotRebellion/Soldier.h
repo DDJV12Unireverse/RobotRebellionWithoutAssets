@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "RobotRebellionCharacter.h"
+#include "PlayableCharacter.h"
 #include "Soldier.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ROBOTREBELLION_API ASoldier : public ARobotRebellionCharacter
+class ROBOTREBELLION_API ASoldier : public APlayableCharacter
 {
     GENERATED_BODY()
 

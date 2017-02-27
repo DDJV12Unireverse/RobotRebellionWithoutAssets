@@ -2,6 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "RobotRebellionCharacter.h"
+#include "PlayableCharacter.h"
 #include "OnlineSubsystem.h"
 #include "LobbyUIWidget.h"
 
@@ -55,7 +56,7 @@ void ULobbyUIWidget::setSelectedSession(int index)
 
 void ULobbyUIWidget::CreateServer(FString mapName)
 {
-    auto currentCharacter = Cast<ARobotRebellionCharacter>(GetOwningPlayer()->GetCharacter());
+    auto currentCharacter = Cast<APlayableCharacter>(GetOwningPlayer()->GetCharacter());
 
     FString command = "open " + mapName + "?listen";
 
@@ -64,7 +65,7 @@ void ULobbyUIWidget::CreateServer(FString mapName)
 
 void ULobbyUIWidget::JoinServer(FString IPAdress)
 {
-    auto currentCharacter = Cast<ARobotRebellionCharacter>(GetOwningPlayer()->GetCharacter());
+    auto currentCharacter = Cast<APlayableCharacter>(GetOwningPlayer()->GetCharacter());
 
     FString command = "open " + IPAdress + ":7777";
 

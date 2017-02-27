@@ -3,5 +3,5 @@
 #include "RobotRebellion.h"
 #include "Healer.h"
 
-AHealer::AHealer():ARobotRebellionCharacter()
+AHealer::AHealer():APlayableCharacter()
 {}
