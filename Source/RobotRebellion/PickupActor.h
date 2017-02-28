@@ -20,6 +20,11 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	
-	
+    virtual void OnBeginFocus();
+    virtual void OnEndFocus();
+    virtual void OnPickup(APawn* InstigatorPawn);
+
+    UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+        UStaticMeshComponent* MeshComp;
+
 };
