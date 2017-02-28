@@ -7,15 +7,17 @@
 
 
 
-UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ROBOTREBELLION_API UWeaponInventory : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 
 public:
-        class UWeaponBase* m_currentWeapon;
+    class UWeaponBase* m_currentWeapon;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+    bool m_hasDoubleWeapon;
 
 private:
     /************************************************************************/
@@ -38,19 +40,19 @@ private:
     /************************************************************************/
 
 
-public:	
-	// Sets default values for this component's properties
-	UWeaponInventory();
+public:
+    // Sets default values for this component's properties
+    UWeaponInventory();
 
 
 public:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+    // Called when the game starts
+    virtual void BeginPlay() override;
 
-	
+    // Called every frame
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+
 public:
     //change the current equipped weapon to the main weapon
     void changeToMainWeapon() USE_NOEXCEPT;
