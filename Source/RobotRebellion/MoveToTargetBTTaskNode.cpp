@@ -22,7 +22,7 @@ EBTNodeResult::Type UMoveToTargetBTTaskNode::ExecuteTask(UBehaviorTreeComponent&
     // If the controller doesn't have a target, the task is a fail
     if(ennemiAIController->hasTarget())
     {
-        EBTNodeResult::Type NodeResult = EBTNodeResult::InProgress;
+        NodeResult = EBTNodeResult::InProgress;
         EPathFollowingRequestResult::Type MoveToActorResult = ennemiAIController->MoveToTarget();
         if(MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
         {
