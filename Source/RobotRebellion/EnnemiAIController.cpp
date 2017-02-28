@@ -52,5 +52,4 @@ void AEnnemiAIController::CheckEnnemyNear()
             }
         }
     }
-
 }

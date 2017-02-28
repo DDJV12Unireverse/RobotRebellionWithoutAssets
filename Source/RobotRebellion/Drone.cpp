@@ -7,5 +7,8 @@
 ADrone::ADrone() : ANonPlayableCharacter()
 {
     this->setImmortal(true);
+
+    this->GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Drone");
+    this->GetCapsuleComponent()->SetEnableGravity(false); //the drone fly
 }
 

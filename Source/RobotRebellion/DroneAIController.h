@@ -14,6 +14,11 @@ class ROBOTREBELLION_API ADroneAIController : public ACustomAIControllerBase
 	GENERATED_BODY()
 	
 	
-	
-	
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
+        float m_stationaryElevation;
+
+
+
+
 };
