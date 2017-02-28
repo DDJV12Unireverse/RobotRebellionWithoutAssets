@@ -9,7 +9,8 @@ UENUM(BlueprintType)
 enum AIDroneState
 {
     DRONE_WAITING,
-    DRONE_MOVING
+    DRONE_MOVING,
+    DRONE_COMBAT
 };
 
 /**

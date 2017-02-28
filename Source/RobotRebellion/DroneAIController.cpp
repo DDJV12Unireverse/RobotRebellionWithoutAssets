@@ -125,5 +125,8 @@ void ADroneAIController::IALoop(float deltaTime)
         }
         break;
     }
+
+    case DRONE_COMBAT:
+        break;
     }
 }
