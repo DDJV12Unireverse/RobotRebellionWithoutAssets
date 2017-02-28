@@ -16,4 +16,7 @@ class ROBOTREBELLION_API ADrone : public ANonPlayableCharacter
 	
 public:
     ADrone();
+
+
+    virtual void Tick(float deltaTime) override;
 };

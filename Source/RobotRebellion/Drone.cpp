@@ -6,9 +6,15 @@
 
 ADrone::ADrone() : ANonPlayableCharacter()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     this->setImmortal(true);
 
     this->GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Drone");
-    this->GetCapsuleComponent()->SetEnableGravity(false); //the drone fly
+    this->GetCharacterMovement()->GravityScale = 0.f;
 }
 
+void ADrone::Tick(float deltaTime)
+{
+    Super::Tick(deltaTime);
+}
