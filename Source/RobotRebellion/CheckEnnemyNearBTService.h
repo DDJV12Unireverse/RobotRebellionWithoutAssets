@@ -15,7 +15,7 @@ class ROBOTREBELLION_API UCheckEnnemyNearBTService : public UBTService
 	
 public:
     UCheckEnnemyNearBTService();
-    /** Sera appelé à chaque «update» du service */
+    /** Will be called at each tick update */
     virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
                           float DeltaSeconds) override;
 	
