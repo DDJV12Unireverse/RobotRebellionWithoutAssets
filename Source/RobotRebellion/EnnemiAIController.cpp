@@ -10,7 +10,7 @@
 
 //ctr ptr method
 
-void AEnnemiAIController::CheckEnnemyNear()
+void AEnnemiAIController::CheckEnnemyNear(float range)
 {
     APawn *Pawn = GetPawn();
     FVector MultiSphereStart = Pawn->GetActorLocation();
@@ -25,7 +25,7 @@ void AEnnemiAIController::CheckEnnemyNear()
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
                                                                    MultiSphereStart,
                                                                    MultiSphereEnd,
-                                                                   700,
+                                                                   range,
                                                                    ObjectTypes,
                                                                    false,
                                                                    ActorsToIgnore,

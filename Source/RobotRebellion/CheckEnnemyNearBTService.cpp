@@ -6,7 +6,7 @@
 #include "EnnemiAIController.h"
 
 
-UCheckEnnemyNearBTService::UCheckEnnemyNearBTService()
+UCheckEnnemyNearBTService::UCheckEnnemyNearBTService(): m_radiusRange{700}
 {
     NodeName = "CheckEnnemyNear";
     // Interval update
@@ -21,5 +21,5 @@ void UCheckEnnemyNearBTService::TickNode(UBehaviorTreeComponent & OwnerComp, uin
 
     AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
 
-    ennemiAIController->CheckEnnemyNear();
+    ennemiAIController->CheckEnnemyNear(m_radiusRange);
 }
