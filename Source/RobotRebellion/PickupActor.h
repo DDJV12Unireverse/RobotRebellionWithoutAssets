@@ -27,4 +27,7 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")
         UStaticMeshComponent* MeshComp;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Sound")
+        USoundCue* PickupSound;
+
 };

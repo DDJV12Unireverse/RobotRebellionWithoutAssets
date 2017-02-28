@@ -12,6 +12,10 @@ APickupActor::APickupActor()
     
     MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     RootComponent = MeshComp;
+
+    MeshComp->SetSimulatePhysics(true);
+    bReplicates = true;
+    bReplicateMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -43,5 +47,7 @@ void APickupActor::OnEndFocus()
 void APickupActor::OnPickup(APawn * InstigatorPawn)
 {
     //Nothing. To be derived.
+
+    //UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
 }
 
