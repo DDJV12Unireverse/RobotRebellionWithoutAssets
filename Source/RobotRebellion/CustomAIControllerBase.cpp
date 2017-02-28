@@ -10,3 +10,7 @@ EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
     return MoveToActorResult;
 }
 
+bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
+{
+    return this->hasTarget() && !m_targetToFollow->isDead();
+}

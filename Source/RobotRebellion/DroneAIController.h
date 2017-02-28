@@ -74,9 +74,20 @@ public:
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
 
+    /*Main IA methods*/
+
     //update the properties of the drone
     void IAUpdate(float deltaTime);
 
     //The IA Loop
     void IALoop(float deltaTime);
+
+
+    /*Intermediary IA Methods*/
+
+    //update the targeted height of the drone
+    void updateTargetedHeight() USE_NOEXCEPT;
+
+    //update the player the drone must follows. Temporary for now because the drone will only go follow a living target.
+    void updateTargetedTarget();
 };

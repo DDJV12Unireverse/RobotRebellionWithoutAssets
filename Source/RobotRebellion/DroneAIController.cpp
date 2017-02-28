@@ -53,7 +53,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
         return EPathFollowingRequestResult::AlreadyAtGoal;
     }
-    
+
     lenght = FMath::Sqrt(lenght);
 
     if (lenght > owner->m_moveSpeed)
@@ -70,12 +70,39 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     return EPathFollowingRequestResult::RequestSuccessful;
 }
 
+void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
+{
+    m_targetedHeight = m_targetToFollow->GetActorLocation().Z + m_stationaryElevation;
+}
+
+void ADroneAIController::updateTargetedTarget()
+{
+    if (this->hasALivingTarget())
+    {
+        return;
+    }
+
+    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+
+    for (int32 iter = 0; iter < playerCount; ++iter)
+    {
+        m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+
+        if (this->hasALivingTarget())
+        {
+            //good, we've found a new living character to follow...
+            break;
+        }
+    }
+}
 
 void ADroneAIController::IAUpdate(float deltaTime)
 {
     if (m_currentTime >= m_nextUpdatePropertyTime)
     {
-        m_targetedHeight = m_targetToFollow->GetActorLocation().Z + m_stationaryElevation;
+        updateTargetedTarget();
+
+        updateTargetedHeight();
 
         m_nextUpdatePropertyTime = m_currentTime + m_updatePropertyTime;
     }

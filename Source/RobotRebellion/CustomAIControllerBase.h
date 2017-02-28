@@ -19,9 +19,10 @@ protected:
 public :
     virtual EPathFollowingRequestResult::Type MoveToTarget();
 
-    bool hasTarget() const USE_NOEXCEPT
+    FORCEINLINE bool hasTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow != NULL;
     }
 	
+    bool hasALivingTarget() const USE_NOEXCEPT;
 };
