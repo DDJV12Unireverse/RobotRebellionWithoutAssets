@@ -5,6 +5,8 @@
 
 #include "EnnemiAIController.h"
 #include "RobotRebellionCharacter.h"
+#include "WeaponInventory.h"
+#include "WeaponBase.h"
 
 
 UIsTargetInRangeBTTaskNode::UIsTargetInRangeBTTaskNode()
@@ -22,9 +24,12 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
     {
         FVector currentTargetLocation = ennemiAIController->getTarget()->GetActorLocation();
         FVector ennemiLocation = ennemiAIController->GetPawn()->GetActorLocation();
+        ARobotRebellionCharacter* ennemiCharacter = Cast<ARobotRebellionCharacter>(ennemiAIController->GetCharacter());
 
         FVector distanceBetween = currentTargetLocation - ennemiLocation;
-        if(distanceBetween.Size() < m_detectingRange)
+
+        if(distanceBetween.Size() < m_detectingRange // Ensure the target is at the correct distance
+            && ennemiCharacter->m_weaponInventory->getCurrentWeapon()->canAttack()) // Ensure the AI weapon are reloaded
         {
             NodeResult = EBTNodeResult::Succeeded;
         }
