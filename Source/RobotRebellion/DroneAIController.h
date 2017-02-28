@@ -5,6 +5,13 @@
 #include "CustomAIControllerBase.h"
 #include "DroneAIController.generated.h"
 
+UENUM(BlueprintType)
+enum AIDroneState
+{
+    DRONE_WAITING,
+    DRONE_MOVING
+};
+
 /**
  * 
  */
@@ -14,11 +21,62 @@ class ROBOTREBELLION_API ADroneAIController : public ACustomAIControllerBase
 	GENERATED_BODY()
 	
 	
+private:
+    /************************************************************************/
+    /* PROPERTY                                                             */
+    /************************************************************************/
+
+    AIDroneState m_state;
+
+    //the height the drone must be
+    float m_targetedHeight;
+
+    //the current time
+    float m_currentTime;
+
+    //the next time we update the drone properties
+    float m_nextUpdatePropertyTime;
+
+    //the next time we update the movement of the drone.
+    float m_nextMovementUpdateTime;
+
+
 public:
+    /************************************************************************/
+    /* UPROPERTY                                                            */
+    /************************************************************************/
+    //Deceleration Coefficient. Higher the value, faster the drone will arrive to its target and more rough the stop will be.
+    //Beware, a too high value will cause instability.
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
+        float m_decelerationCoefficient;
+
+    //Elevation relative to its target
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
         float m_stationaryElevation;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
+        float m_updatePropertyTime;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
+        float m_updateMovementTime;
+
+    
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
+    ADroneAIController();
 
 
+    virtual void BeginPlay() override;
 
+    virtual void Tick(float deltaTime) override;
+
+    virtual EPathFollowingRequestResult::Type MoveToTarget() override;
+
+
+    //update the properties of the drone
+    void IAUpdate(float deltaTime);
+
+    //The IA Loop
+    void IALoop(float deltaTime);
 };
