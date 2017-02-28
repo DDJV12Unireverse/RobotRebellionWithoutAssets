@@ -6,6 +6,9 @@
 #include "Runtime/AIModule/Classes/BrainComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "RobotRebellionCharacter.h"
+#include "NonPlayableCharacter.h"
+#include "WeaponInventory.h"
+#include "WeaponBase.h"
 
 
 //ctr ptr method
@@ -51,4 +54,10 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
             }
         }
     }
+}
+
+void AEnnemiAIController::AttackTarget() const
+{
+    ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
+    ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
 }
