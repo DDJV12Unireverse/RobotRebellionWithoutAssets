@@ -46,6 +46,7 @@ public:
     /************************************************************************/
     /* UPROPERTY                                                            */
     /************************************************************************/
+
     //Deceleration Coefficient. Higher the value, faster the drone will arrive to its target and more rough the stop will be.
     //Beware, a too high value will cause instability.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
@@ -62,6 +63,7 @@ public:
         float m_updateMovementTime;
 
     
+
     /************************************************************************/
     /* METHODS                                                              */
     /************************************************************************/
