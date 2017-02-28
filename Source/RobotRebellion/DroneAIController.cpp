@@ -45,20 +45,20 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
     directionToTarget.Z = m_targetedHeight - dronePosition.Z;
 
-    float lenght = directionToTarget.SizeSquared();
+    float length = directionToTarget.SizeSquared();
 
-    if (lenght < 1.f)
+    if (length < 1.f)
     {
         owner->GetMovementComponent()->Velocity = FVector{ 0.f, 0.f, 0.f };
 
         return EPathFollowingRequestResult::AlreadyAtGoal;
     }
 
-    lenght = FMath::Sqrt(lenght);
+    length = FMath::Sqrt(length);
 
-    if (lenght > owner->m_moveSpeed)
+    if (length > owner->m_moveSpeed)
     {
-        directionToTarget /= lenght;
+        directionToTarget /= length;
 
         owner->GetMovementComponent()->Velocity = directionToTarget * owner->m_moveSpeed;
     }

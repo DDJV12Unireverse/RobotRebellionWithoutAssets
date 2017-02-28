@@ -433,7 +433,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &APlayableCharacter::mainFire);
 
         //ESCAPE
-        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
@@ -449,7 +449,7 @@ void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponen
     if (PlayerInputComponent)
     {
         //ESCAPE
-        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
 
 
         /************************************************************************/
