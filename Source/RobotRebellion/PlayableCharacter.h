@@ -46,6 +46,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
         class URobotRobellionSpawnerClass* m_spawner;
 
+    // Distance maximale de focus sur les objets.
+    UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
+        float MaxUseDistance;
+
+    // Seulement vrai lors de la première image avec un nouveau focus.
+    bool bHasNewFocus;
+    class APickupActor* focusedPickupActor;
+
 public:
     APlayableCharacter();
 
@@ -201,7 +209,14 @@ public:
     UFUNCTION()
         void switchWeapon();
 
+    UFUNCTION()
+        void interact();
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverSwitchWeapon();
+
+    // Called every image
+    virtual void Tick(float DeltaSeconds) override;
+
+    class APickupActor* GetUsableInView();
 };

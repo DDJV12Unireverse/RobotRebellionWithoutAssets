@@ -12,6 +12,7 @@
 #include "WeaponBase.h"
 #include "WeaponInventory.h"
 #include "CustomPlayerController.h"
+#include "PickupActor.h"
 
 #include "RobotRobellionSpawnerClass.h"
 
@@ -52,6 +53,10 @@ APlayableCharacter::APlayableCharacter()
     CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
     CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
+    // Slight camera offset to aid with object selection
+    CameraBoom->SocketOffset = FVector(0, 35, 0);
+    CameraBoom->TargetOffset = FVector(0, 0, 55);
+
                                                 // Create a follow camera
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
@@ -67,6 +72,8 @@ APlayableCharacter::APlayableCharacter()
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
+    MaxUseDistance = 800;
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -350,6 +357,15 @@ void APlayableCharacter::switchWeapon()
     }
 }
 
+void APlayableCharacter::interact()
+{
+    APickupActor* Usable = GetUsableInView();
+    if(Usable)
+    {
+        Usable->OnPickup(this);
+    }
+}
+
 void APlayableCharacter::serverSwitchWeapon_Implementation()
 {
     this->switchWeapon();
@@ -435,6 +451,9 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
+        //SWITCH WEAPON
+        PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
+
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
@@ -500,4 +519,57 @@ void APlayableCharacter::cppOnDeath()
 
         playerController->InputComponent = newPlayerController;
     }
+}
+
+void APlayableCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    if(Controller && Controller->IsLocalController())
+    {
+        APickupActor* usable = GetUsableInView();
+        // Terminer le focus sur l'objet précédent
+        if(focusedPickupActor != usable)
+        {
+            if(focusedPickupActor)
+            {
+                focusedPickupActor->OnEndFocus();
+            }
+
+            bHasNewFocus = true;
+        }
+        // Assigner le nouveau focus (peut être nul )
+        focusedPickupActor = usable;
+        // Démarrer un nouveau focus si Usable != null;
+        if(usable)
+        {
+            if(bHasNewFocus)
+            {
+                usable->OnBeginFocus();
+                bHasNewFocus = false;
+                // Pour débogage, vous pourrez l'oter par la suite
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Focus"));
+            }
+        }
+    }
+}
+
+APickupActor* APlayableCharacter::GetUsableInView()
+{
+    FVector CamLoc;
+    FRotator CamRot;
+    if(Controller == NULL)
+        return NULL;
+    Controller->GetPlayerViewPoint(CamLoc, CamRot);
+    const FVector TraceStart = CamLoc;
+    const FVector Direction = CamRot.Vector();
+    const FVector TraceEnd = TraceStart + (Direction * MaxUseDistance);
+    FCollisionQueryParams TraceParams(FName(TEXT("TraceUsableActor")), true, this);
+    TraceParams.bTraceAsyncScene = true;
+    TraceParams.bReturnPhysicalMaterial = false;
+    TraceParams.bTraceComplex = true;
+    FHitResult Hit(ForceInit);
+    GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
+    //TODO: Comment or remove once implemented in post-process.
+    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
+    return Cast<APickupActor>(Hit.GetActor());
 }
