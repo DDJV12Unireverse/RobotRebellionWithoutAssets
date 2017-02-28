@@ -4,6 +4,7 @@
 #include "IsTargetInRangeBTTaskNode.h"
 
 #include "EnnemiAIController.h"
+#include "RobotRebellionCharacter.h"
 
 
 UIsTargetInRangeBTTaskNode::UIsTargetInRangeBTTaskNode()
@@ -17,10 +18,16 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
     EBTNodeResult::Type NodeResult = EBTNodeResult::Failed;
 
     // If the controller doesn't have a target, the task is a fail
-    if(ennemiAIController->hasTarget())
+    if(ennemiAIController->hasALivingTarget())
     {
-        auto test = ennemiAIController->getTarget();
-        PRINT_MESSAGE_ON_SCREEN(FColor::Green, TEXT("Not in range"));
+        FVector currentTargetLocation = ennemiAIController->getTarget()->GetActorLocation();
+        FVector ennemiLocation = ennemiAIController->GetPawn()->GetActorLocation();
+
+        FVector distanceBetween = currentTargetLocation - ennemiLocation;
+        if(distanceBetween.Size() < m_detectingRange)
+        {
+            NodeResult = EBTNodeResult::Succeeded;
+        }
     }
 
     return NodeResult;
@@ -29,9 +36,12 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 void UIsTargetInRangeBTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
-    if(ennemiAIController->hasTarget())
+    if(ennemiAIController->hasALivingTarget())
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Green, TEXT("Not in range"));
+        FVector currentTargetLocation = ennemiAIController->getTarget()->GetActorLocation();
+        FVector ennemiLocation = ennemiAIController->GetPawn()->GetActorLocation();
+
+        FVector distanceBetween = currentTargetLocation - ennemiLocation;
     }
 }
 
