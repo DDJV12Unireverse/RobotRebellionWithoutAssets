@@ -254,12 +254,19 @@ public:
 
     //////INVENTORY///////
     void useHealthPotion();
+    UFUNCTION(Reliable, Server, WithValidation)
+    void serverUseHealthPotion();
     void useManaPotion();
-    
+    UFUNCTION(Reliable, Server, WithValidation)
+    void serverUseManaPotion();
     //Remove later
     void looseMana()
     {
         setMana(getMana()-150.f);
+        if (getMana()<0)
+        {
+            setMana(0.f);
+        }
     }
     void giveBombToDrone()
     {}

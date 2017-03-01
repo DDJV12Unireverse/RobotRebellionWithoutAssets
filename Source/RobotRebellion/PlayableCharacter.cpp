@@ -659,6 +659,18 @@ void APlayableCharacter::useHealthPotion()
         --m_healthPotionsCount;
         PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Health potions = %u"), m_healthPotionsCount));
     }
+    if (Role<ROLE_Authority)
+    {
+        serverUseHealthPotion();
+    }
+}
+void APlayableCharacter::serverUseHealthPotion_Implementation()
+{
+    useHealthPotion();
+}
+bool APlayableCharacter::serverUseHealthPotion_Validate()
+{
+    return true;
 }
 void APlayableCharacter::useManaPotion()
 {
@@ -672,4 +684,13 @@ void APlayableCharacter::useManaPotion()
         --m_manaPotionsCount;
         PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Mana potions = %u"), m_manaPotionsCount));
     }
+}
+
+void APlayableCharacter::serverUseManaPotion_Implementation()
+{
+    useManaPotion();
+}
+bool APlayableCharacter::serverUseManaPotion_Validate()
+{
+    return true;
 }
