@@ -74,6 +74,8 @@ APlayableCharacter::APlayableCharacter()
 
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
+    //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
+    GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -309,6 +311,15 @@ bool APlayableCharacter::serverMainFire_Validate()
     return true;
 }
 
+//DEAD
+
+//Function to call in BP, can't do it with macro
+bool APlayableCharacter::isDeadBP()
+{
+    return isDead();
+}
+
+//TYPE
 EClassType APlayableCharacter::getClassType() const USE_NOEXCEPT
 {
     return EClassType::NONE;
@@ -460,7 +471,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &APlayableCharacter::mainFire);
 
         //ESCAPE
-        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
@@ -479,7 +490,7 @@ void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponen
     if (PlayerInputComponent)
     {
         //ESCAPE
-        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
 
 
         /************************************************************************/
@@ -516,11 +527,11 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
-    FVector currentPosition = this->GetTransform().GetLocation();
-    currentPosition.Z = 135.f;
+   // FVector currentPosition = this->GetTransform().GetLocation();
+    //currentPosition.Z = 135.f;
 
-    this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
-    this->SetActorLocation(currentPosition);
+    //this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
+   // this->SetActorLocation(currentPosition);
 
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
