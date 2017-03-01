@@ -72,6 +72,10 @@ APlayableCharacter::APlayableCharacter()
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
+    m_manaPotionsCount = EINVENTORY::MANA_POTION_START;
+    m_bombCount = EINVENTORY::BOMB_START;
+    m_healthPotionsCount = EINVENTORY::HEALTH_POTION_START;
+
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
@@ -477,7 +481,11 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
-
+        
+        //USE OBJECTS
+        PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
+        PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
+        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::looseMana);
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
@@ -596,4 +604,32 @@ APickupActor* APlayableCharacter::GetUsableInView()
     //TODO: Comment or remove once implemented in post-process.
     DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
     return Cast<APickupActor>(Hit.GetActor());
+}
+
+//////INVENTORY///////
+void APlayableCharacter::useHealthPotion()
+{
+    if (m_healthPotionsCount>0 && getHealth()<getMaxHealth())
+    {
+        setHealth(getHealth() + EINVENTORY::HP_BY_POTION);
+        if (getHealth()>getMaxHealth() )
+        {
+            setHealth(getMaxHealth());
+        }
+        --m_healthPotionsCount;
+        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Health potions = %u"), m_healthPotionsCount));
+    }
+}
+void APlayableCharacter::useManaPotion()
+{
+    if (m_manaPotionsCount > 0 && (getMana()<getMaxMana())
+    {
+        setMana(getMana() + EINVENTORY::MP_BY_POTION);
+        if (getMana() > getMaxMana())
+        {
+            setMana(getMaxMana());
+        }
+        --m_manaPotionsCount;
+        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Mana potions = %u"), m_manaPotionsCount));
+    }
 }

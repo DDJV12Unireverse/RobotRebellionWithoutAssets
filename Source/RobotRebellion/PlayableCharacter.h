@@ -14,6 +14,18 @@ class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 {
 	GENERATED_BODY()
 	
+        enum EINVENTORY
+    {
+        HEALTH_POTION_START = 10,
+        HEALTH_POTION_MAX = 10,
+        MANA_POTION_START = 10,
+        MANA_POTION_MAX = 10,
+        BOMB_START = 1,
+        BOMB_MAX = 1,
+        HP_BY_POTION = 100, //Health points earned with 1 potion
+        MP_BY_POTION = 100 //Mana points earned with 1 potion
+    };
+
 public:
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -31,6 +43,12 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+        int m_healthPotionsCount;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+        int m_manaPotionsCount;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+        bool m_bombCount;
 //     ////Weapon Inventory/////
 //     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 //         class UWeaponInventory* m_weaponInventory;
@@ -232,4 +250,16 @@ public:
     virtual void Tick(float DeltaSeconds) override;
 
     class APickupActor* GetUsableInView();
+
+
+    //////INVENTORY///////
+    void useHealthPotion();
+    void useManaPotion();
+    void looseMana()
+    {
+        setMana(getMana()-150.f);
+    }
+    void giveBombToDrone()
+    {}
+    
 };
