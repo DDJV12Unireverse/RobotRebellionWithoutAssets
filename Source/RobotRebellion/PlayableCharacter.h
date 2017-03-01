@@ -48,7 +48,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
         int m_manaPotionsCount;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
-        bool m_bombCount;
+        int m_bombCount;
 //     ////Weapon Inventory/////
 //     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 //         class UWeaponInventory* m_weaponInventory;
@@ -255,6 +255,8 @@ public:
     //////INVENTORY///////
     void useHealthPotion();
     void useManaPotion();
+    
+    //Remove later
     void looseMana()
     {
         setMana(getMana()-150.f);

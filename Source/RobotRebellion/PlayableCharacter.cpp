@@ -377,7 +377,47 @@ void APlayableCharacter::interact()
     APickupActor* Usable = GetUsableInView();
     if(Usable)
     {
-        Usable->OnPickup(this);
+        if (Usable->getObjectType()==EObjectType::HEALTH_POTION)
+        {
+            if (m_manaPotionsCount<EINVENTORY::HEALTH_POTION_MAX)
+            {
+                Usable->OnPickup(this);
+                ++m_healthPotionsCount;
+            }
+            else
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
+            }
+        }
+        else if (Usable->getObjectType() == EObjectType::MANA_POTION )
+        {
+            if (m_manaPotionsCount<EINVENTORY::MANA_POTION_MAX)
+            {
+                Usable->OnPickup(this);
+                ++m_manaPotionsCount;
+            }
+            else
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
+            }
+        }
+        else if (Usable->getObjectType() == EObjectType::BOMB)
+        {
+            if (m_bombCount<EINVENTORY::BOMB_MAX)
+            {
+                Usable->OnPickup(this);
+                ++m_bombCount;
+            }
+            else
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL BOMB"));
+            }
+        }
+        else
+        {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Blue,TEXT("INVALID OBJECT"));
+        }
+        
     }
     if (Role<ROLE_Authority)
     {
@@ -622,7 +662,7 @@ void APlayableCharacter::useHealthPotion()
 }
 void APlayableCharacter::useManaPotion()
 {
-    if (m_manaPotionsCount > 0 && (getMana()<getMaxMana())
+    if (m_manaPotionsCount > 0 && getMana()<getMaxMana())
     {
         setMana(getMana() + EINVENTORY::MP_BY_POTION);
         if (getMana() > getMaxMana())
