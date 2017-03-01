@@ -213,6 +213,9 @@ public:
         void interact();
 
     UFUNCTION(Reliable, Server, WithValidation)
+        void serverInteract();
+
+    UFUNCTION(Reliable, Server, WithValidation)
         void serverSwitchWeapon();
 
     // Called every image

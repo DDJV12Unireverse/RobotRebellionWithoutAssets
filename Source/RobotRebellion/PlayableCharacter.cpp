@@ -364,6 +364,19 @@ void APlayableCharacter::interact()
     {
         Usable->OnPickup(this);
     }
+    if (Role<ROLE_Authority)
+    {
+        serverInteract();
+    }
+}
+void APlayableCharacter::serverInteract_Implementation()
+{
+    interact();
+}
+
+bool APlayableCharacter::serverInteract_Validate()
+{
+    return true;
 }
 
 void APlayableCharacter::serverSwitchWeapon_Implementation()
