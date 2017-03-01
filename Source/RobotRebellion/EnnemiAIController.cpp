@@ -49,6 +49,10 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
             if(NULL != RRCharacter)
             {
                 //BlackboardComponent->SetValueAsObject("TargetActorToFollow", Character);
+                if(RRCharacter->isDead())
+                {
+                    continue;
+                }
                 m_targetToFollow = RRCharacter;
                 break;
             }
