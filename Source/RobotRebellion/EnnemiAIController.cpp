@@ -6,26 +6,28 @@
 #include "Runtime/AIModule/Classes/BrainComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "RobotRebellionCharacter.h"
+#include "NonPlayableCharacter.h"
+#include "WeaponInventory.h"
+#include "WeaponBase.h"
 
 
 //ctr ptr method
 
-void AEnnemiAIController::CheckEnnemyNear()
+void AEnnemiAIController::CheckEnnemyNear(float range)
 {
-    APawn *Pawn = GetPawn();
-    FVector MultiSphereStart = Pawn->GetActorLocation();
+    APawn *currentPawn = GetPawn();
+    FVector MultiSphereStart = currentPawn->GetActorLocation();
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
-    //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
     TArray<AActor*> ActorsToIgnore;
-    ActorsToIgnore.Add(Pawn);
+    ActorsToIgnore.Add(currentPawn);
     TArray<FHitResult> OutHits;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
                                                                    MultiSphereStart,
                                                                    MultiSphereEnd,
-                                                                   700,
+                                                                   range,
                                                                    ObjectTypes,
                                                                    false,
                                                                    ActorsToIgnore,
@@ -43,13 +45,23 @@ void AEnnemiAIController::CheckEnnemyNear()
         for(int32 i = 0; i < OutHits.Num(); i++)
         {
             FHitResult Hit = OutHits[i];
-            ARobotRebellionCharacter* Character = Cast<ARobotRebellionCharacter>(Hit.GetActor());
-            if(NULL != Character)
+            ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
+            if(NULL != RRCharacter)
             {
                 //BlackboardComponent->SetValueAsObject("TargetActorToFollow", Character);
-                m_targetToFollow = Character;
+                if(RRCharacter->isDead())
+                {
+                    continue;
+                }
+                m_targetToFollow = RRCharacter;
                 break;
             }
         }
     }
+}
+
+void AEnnemiAIController::AttackTarget() const
+{
+    ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
+    ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
 }

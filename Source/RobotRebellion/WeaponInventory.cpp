@@ -40,7 +40,7 @@ void UWeaponInventory::BeginPlay()
             TEXT("mainWeapon")
         );
     }
-    else
+    else if(intermediary->getWeaponRange() == EWeaponRange::SHORT_RANGE_WEAPON)
     {
         UUtilitaryFunctionLibrary::createObjectFromDefault<UShortRangeWeapon>(
             &m_mainWeaponInstance, 
@@ -49,33 +49,50 @@ void UWeaponInventory::BeginPlay()
             TEXT("mainWeapon")
         );
     }
-
-    intermediary = Cast<UWeaponBase>(m_secondaryWeapon->GetDefaultObject());
-
-    if (intermediary->getWeaponRange() == EWeaponRange::LONG_RANGE_WEAPON)
+    else if(intermediary->getWeaponRange() == EWeaponRange::INVALID_RANGE_WEAPON)
     {
-        UUtilitaryFunctionLibrary::createObjectFromDefault<ULongRangeWeapon>(
-            &m_secondaryWeaponInstance, 
-            m_secondaryWeapon, 
-            this, 
-            TEXT("secondaryWeapon")
-        );
-    }
-    else
-    {
-        UUtilitaryFunctionLibrary::createObjectFromDefault<UShortRangeWeapon>(
-            &m_secondaryWeaponInstance, 
-            m_secondaryWeapon, 
-            this, 
-            TEXT("secondaryWeapon")
-        );
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, TEXT("Main weapon class is invalid"));
     }
 
-	// ...
+    if(m_hasDoubleWeapon)
+    {
+        intermediary = Cast<UWeaponBase>(m_secondaryWeapon->GetDefaultObject());
+
+        if(intermediary->getWeaponRange() == EWeaponRange::LONG_RANGE_WEAPON)
+        {
+            UUtilitaryFunctionLibrary::createObjectFromDefault<ULongRangeWeapon>(
+                &m_secondaryWeaponInstance,
+                m_secondaryWeapon,
+                this,
+                TEXT("secondaryWeapon")
+                );
+        }
+        else if(intermediary->getWeaponRange() == EWeaponRange::SHORT_RANGE_WEAPON)
+        {
+            UUtilitaryFunctionLibrary::createObjectFromDefault<UShortRangeWeapon>(
+                &m_secondaryWeaponInstance,
+                m_secondaryWeapon,
+                this,
+                TEXT("secondaryWeapon")
+                );
+        }
+        else if(intermediary->getWeaponRange() == EWeaponRange::INVALID_RANGE_WEAPON)
+        {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Red, TEXT("Secondary weapon class is invalid"));
+        }
+
+        if(m_secondaryWeaponInstance)
+        {
+            m_secondaryWeaponInstance->m_owner = GetOwner();
+        }
+    }
+
     changeToMainWeapon();
 
-    m_mainWeaponInstance->m_owner = GetOwner();
-    m_secondaryWeaponInstance->m_owner = GetOwner();
+    if(m_mainWeaponInstance)
+    {
+        m_mainWeaponInstance->m_owner = GetOwner();
+    }
 }
 
 // Called every frame
@@ -115,7 +132,7 @@ bool UWeaponInventory::isSecondaryWeaponEquipped() const USE_NOEXCEPT
 
 void UWeaponInventory::switchWeapon() USE_NOEXCEPT
 {
-    if (isMainWeaponEquipped())
+    if (isMainWeaponEquipped() && m_hasDoubleWeapon)
     {
         changeToSecondaryWeapon();
     }
