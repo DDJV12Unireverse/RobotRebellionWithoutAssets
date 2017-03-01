@@ -13,6 +13,13 @@ class ROBOTREBELLION_API USpellKit : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpellKit)
+        TArray<TSubclassOf<class USpell>> m_spellsClass; // forward decl
+
+private:
+    TArray<USpell *> m_spells;
+
 public:	
 	// Sets default values for this component's properties
 	USpellKit();
@@ -23,6 +30,10 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
-		
+    // cast the spell matching the index if it exists
+    void cast(int32 index);
+
+    //Initialize spells list
+    void initializeSpells();
 	
 };

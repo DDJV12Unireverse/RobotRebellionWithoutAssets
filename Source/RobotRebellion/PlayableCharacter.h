@@ -4,6 +4,7 @@
 
 #include "RobotRebellionCharacter.h"
 #include "ClassType.h"
+#include "SpellKit.h" 
 #include "PlayableCharacter.generated.h"
 
 /**
@@ -14,15 +15,20 @@ class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 {
 	GENERATED_BODY()
 	
-public:
+private:
+    // COMPONENT
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class USpringArmComponent* CameraBoom;
-
     /** Follow camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
         class UCameraComponent* FollowCamera;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+        class URobotRobellionSpawnerClass* m_spawner;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", meta = (AllowPrivateAccess = "true"))
+        USpellKit* m_spellKit;
 
+public:
     ////Sprint////
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_SprintButtonDown)
         bool m_bPressedRun;
@@ -42,9 +48,6 @@ public:
     /** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseLookUpRate;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
-        class URobotRobellionSpawnerClass* m_spawner;
 
     // Distance maximale de focus sur les objets.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
@@ -78,9 +81,16 @@ protected:
     * Called via input to turn look up/down at a given rate.
     * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
     */
+    void LookUpAtRate(float Rate);
+
+    // spell cast function
+    template<int32 index>
+    void castSpell()
+    {
+        m_spellKit->cast(index);
+    }
 
 public:
-    void LookUpAtRate(float Rate);
 
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

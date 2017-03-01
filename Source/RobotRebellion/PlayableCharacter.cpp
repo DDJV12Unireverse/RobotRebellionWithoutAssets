@@ -65,8 +65,10 @@ APlayableCharacter::APlayableCharacter()
                                                    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
                                                    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
+    
     m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
     m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
+    m_spellKit = CreateDefaultSubobject<USpellKit>(TEXT("SpellKit"));
 
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
@@ -88,6 +90,8 @@ void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 void APlayableCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    m_spellKit->initializeSpells();
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -312,7 +316,6 @@ bool APlayableCharacter::serverMainFire_Validate()
 }
 
 //DEAD
-
 //Function to call in BP, can't do it with macro
 bool APlayableCharacter::isDeadBP()
 {
@@ -475,8 +478,14 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
-        //SWITCH WEAPON
+        //INTERACT
         PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
+
+        // SPELLS
+        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpell<0>);
+        PlayerInputComponent->BindAction("Spell2", IE_Pressed, this, &APlayableCharacter::castSpell<1>);
+        PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpell<2>);
+        PlayerInputComponent->BindAction("Spell4", IE_Pressed, this, &APlayableCharacter::castSpell<3>);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -561,7 +570,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 
             bHasNewFocus = true;
         }
-        // Assigner le nouveau focus (peut être nul )
+        // Assigner le nouveau focus (peut être nul)
         focusedPickupActor = usable;
         // Démarrer un nouveau focus si Usable != null;
         if(usable)
@@ -570,8 +579,8 @@ void APlayableCharacter::Tick(float DeltaTime)
             {
                 usable->OnBeginFocus();
                 bHasNewFocus = false;
-                // Pour débogage, vous pourrez l'oter par la suite
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Focus"));
+                // only debug utility
+                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
             }
         }
     }
@@ -593,7 +602,9 @@ APickupActor* APlayableCharacter::GetUsableInView()
     TraceParams.bTraceComplex = true;
     FHitResult Hit(ForceInit);
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
+
     //TODO: Comment or remove once implemented in post-process.
-    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
+    //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
+
     return Cast<APickupActor>(Hit.GetActor());
 }

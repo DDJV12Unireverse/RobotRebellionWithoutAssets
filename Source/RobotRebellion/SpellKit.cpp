@@ -2,34 +2,53 @@
 
 #include "RobotRebellion.h"
 #include "SpellKit.h"
-
+#include "Spell.h" 
 
 // Sets default values for this component's properties
 USpellKit::USpellKit()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+    // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+    // off to improve performance if you don't need them.
+    PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+    // ...
 }
 
 
 // Called when the game starts
 void USpellKit::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
+    // ...
 
-	// ...
-	
+    for(int i = 0; i < m_spellsClass.Num(); ++i)
+    {
+        USpell* tempSpell = NewObject<USpell>(this, m_spellsClass[i]);
+        if(tempSpell)
+        {
+            m_spells.Emplace(tempSpell);
+        }
+    }
 }
 
 
 // Called every frame
-void USpellKit::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+void USpellKit::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+    // ...
 }
 
+void USpellKit::cast(int32 index)
+{
+    if(index < m_spells.Num())
+    {
+        m_spells[index]->cast();
+    }
+}
+
+void USpellKit::initializeSpells()
+{
+
+}
