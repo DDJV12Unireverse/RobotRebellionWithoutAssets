@@ -14,7 +14,11 @@ class ROBOTREBELLION_API UCheckEnnemyNearBTService : public UBTService
 	GENERATED_BODY()
 	
 public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Check Radius Settings")
+        float m_radiusRange;
+
     UCheckEnnemyNearBTService();
+	
     /** Will be called at each tick update */
     virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
                           float DeltaSeconds) override;

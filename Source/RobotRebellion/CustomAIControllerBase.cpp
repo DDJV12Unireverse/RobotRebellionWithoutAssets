@@ -2,6 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "CustomAIControllerBase.h"
+#include "RobotRebellionCharacter.h"
 
 
 EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
