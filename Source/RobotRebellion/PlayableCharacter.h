@@ -174,6 +174,16 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+
+    //DEATH
+    
+    //Function to call in BP, can't do it with macro
+    UFUNCTION(BlueprintCallable, Category = "General")
+        bool isDeadBP();
+    
+
+
+    //Type
     UFUNCTION(BlueprintCallable, Category = "General")
         EClassType getType() const USE_NOEXCEPT;
 
