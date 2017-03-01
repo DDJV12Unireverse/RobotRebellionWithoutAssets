@@ -8,5 +8,7 @@ ATrainingDummyCharacter::ATrainingDummyCharacter() : ANonPlayableCharacter()
 {
     // fill it
 
+    GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Robots");
+    //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel3);
 }
 
