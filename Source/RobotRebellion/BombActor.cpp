@@ -5,4 +5,11 @@
 
 
 
+void ABombActor::OnPickup(APawn* InstigatorPawn)
+{
+    //Nothing. To be derived.
+    PRINT_MESSAGE_ON_SCREEN(FColor::Purple, TEXT("Bomb PickedUp"));
+
+    Destroy();
+}
 

@@ -13,7 +13,11 @@ class ROBOTREBELLION_API AManaPotionActor : public APickupActor
 {
 	GENERATED_BODY()
 	
-	
-	
+public:
+    void OnPickup(APawn* InstigatorPawn) override;
+    virtual EObjectType getObjectType() const USE_NOEXCEPT override
+    {
+        return EObjectType::MANA_POTION;
+    }
 	
 };

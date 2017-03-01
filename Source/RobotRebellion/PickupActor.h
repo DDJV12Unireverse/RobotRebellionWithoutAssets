@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "ObjectTypes.h"
 #include "PickupActor.generated.h"
 
 UCLASS()
@@ -22,7 +23,20 @@ public:
 
     virtual void OnBeginFocus();
     virtual void OnEndFocus();
+    
     virtual void OnPickup(APawn* InstigatorPawn);
+
+    virtual void Pickup(APawn* InstigatorPawn);
+
+    virtual EObjectType getObjectType() const USE_NOEXCEPT
+    {
+        return EObjectType::NONE;
+    }
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void ServerOnPickup(APawn* InstigatorPawn);
+    UFUNCTION()
+        void OnRep_OnPickup(APawn* InstigatorPawn);
 
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")
         UStaticMeshComponent* MeshComp;
