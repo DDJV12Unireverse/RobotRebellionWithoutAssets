@@ -32,7 +32,7 @@ private:
 public:
     USpell();
     
-    virtual void cast() PURE_VIRTUAL(USpell::cast, );
+    virtual void cast() ;
 
     virtual void BeginPlay() override;
 };

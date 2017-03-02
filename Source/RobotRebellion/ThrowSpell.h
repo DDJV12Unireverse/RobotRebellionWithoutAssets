@@ -17,9 +17,15 @@ public:
     // False if we just use the impact position
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         bool m_isTargetThrow;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
+        float m_liftOffset;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
+        float m_projectileInitialSpeed;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
+        FVector m_muzzleOffset;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
-        TSubclassOf<class UProjectileEffect> m_projectileClass;
+        TSubclassOf<class AProjectileEffect> m_projectileClass;
     
     virtual void cast() override;
 

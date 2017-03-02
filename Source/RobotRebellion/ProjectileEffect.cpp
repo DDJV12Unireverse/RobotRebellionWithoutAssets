@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "ProjectileEffect.h"
 
-#include "Effect.h"
+#include "ThrowSpell.h"
 
 
 AProjectileEffect::AProjectileEffect() : AProjectile()
@@ -21,12 +21,12 @@ void AProjectileEffect::initMovement(const FVector& shootDirection, float speed)
     }
 }
 
-void AProjectileEffect::setParent(UEffect* effect)
+void AProjectileEffect::setParent(UThrowSpell* effect)
 {
-    m_parentEffect = effect;
+    m_parentSpell = effect;
 }
 
 void AProjectileEffect::OnHit(UPrimitiveComponent* ThisComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    m_parentEffect->onHit(ThisComp, OtherActor, OtherComp, NormalImpulse, Hit);
+    m_parentSpell->onHit(ThisComp, OtherActor, OtherComp, NormalImpulse, Hit);
 }

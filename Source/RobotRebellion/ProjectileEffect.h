@@ -13,14 +13,14 @@ class ROBOTREBELLION_API AProjectileEffect : public AProjectile
 {
     GENERATED_BODY()
 private:
-    class UEffect* m_parentEffect;
+    class UThrowSpell* m_parentSpell;
 
 public:
     AProjectileEffect();
 
     void initMovement(const FVector& shootDirection, float speed);
 
-    void setParent(UEffect *effect);
+    void setParent(UThrowSpell *spell);
 
     virtual void OnHit(UPrimitiveComponent* ThisComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 };

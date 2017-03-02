@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "SpellKit.h"
 #include "Spell.h" 
+#include "ThrowSpell.h"
 #include "UtilitaryFunctionLibrary.h"
 
 // Sets default values for this component's properties
@@ -26,12 +27,13 @@ void USpellKit::BeginPlay()
     {
         USpell* tempSpell;
 
-        UUtilitaryFunctionLibrary::createObjectFromDefault<USpell>(
-            &tempSpell,
-            m_spellsClass[i],
-            this,
-            TEXT("Spell")
-            );
+//         UUtilitaryFunctionLibrary::createObjectFromDefault<USpell>(
+//             &tempSpell,
+//             m_spellsClass[i],
+//             this,
+//             TEXT("Spell")
+//             );
+        tempSpell = NewObject<USpell>(this, m_spellsClass[i]);
 
         if(tempSpell)
         {

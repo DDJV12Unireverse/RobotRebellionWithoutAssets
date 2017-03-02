@@ -32,3 +32,6 @@ void USpell::BeginPlay()
         }
     }
 }
+
+void USpell::cast()
+{}
