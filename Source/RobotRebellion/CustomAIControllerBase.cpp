@@ -13,5 +13,5 @@ EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
 
 bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 {
-    return this->hasTarget() && !m_targetToFollow->isDead();
+    return this->hasTarget() && !m_targetToFollow->IsActorBeingDestroyed() && !m_targetToFollow->isDead();
 }
