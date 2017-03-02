@@ -97,11 +97,16 @@ void ARobotRebellionCharacter::displayAnimatedText(const FString& textToDisplay,
 
 void ARobotRebellionCharacter::createTextBillboard()
 {
-    auto camera = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->FollowCamera;
+    this->createTextBillboardWithThisCamera(Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->FollowCamera);
+}
 
+void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponent* camera)
+{
     if (UUtilitaryFunctionLibrary::createObjectFromDefault<UTextBillboardComponent>(&m_textBillboardInstance, m_textBillboardDefault, camera, RF_Dynamic))
     {
-        m_textBillboardInstance->AttachToComponent(camera, FAttachmentTransformRules::KeepWorldTransform);
+        m_textBillboardInstance->AttachToComponent(camera, FAttachmentTransformRules::KeepRelativeTransform);
+        m_textBillboardInstance->SetRelativeTransform({});
+        camera->UpdateChildTransforms();
         m_textBillboardInstance->Activate();
 
         m_textBillboardInstance->RegisterComponent();
