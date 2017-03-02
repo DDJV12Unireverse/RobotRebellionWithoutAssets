@@ -14,7 +14,9 @@ class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 {
 	GENERATED_BODY()
 	
-        enum EINVENTORY
+
+public:
+    enum EINVENTORY
     {
         HEALTH_POTION_START = 10,
         HEALTH_POTION_MAX = 10,
@@ -43,15 +45,17 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
 
+
+    ////INVENTORY////
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
         int m_healthPotionsCount;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
         int m_manaPotionsCount;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
         int m_bombCount;
-//     ////Weapon Inventory/////
-//     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-//         class UWeaponInventory* m_weaponInventory;
+
 
         /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -67,6 +71,8 @@ public:
     // Distance maximale de focus sur les objets.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
+
+
 
     // Seulement vrai lors de la première image avec un nouveau focus.
     bool bHasNewFocus;
@@ -254,11 +260,15 @@ public:
 
     //////INVENTORY///////
     void useHealthPotion();
+
     UFUNCTION(Reliable, Server, WithValidation)
     void serverUseHealthPotion();
+
     void useManaPotion();
+
     UFUNCTION(Reliable, Server, WithValidation)
     void serverUseManaPotion();
+
     //Remove later
     void looseMana()
     {
@@ -268,6 +278,7 @@ public:
             setMana(0.f);
         }
     }
+
     void giveBombToDrone()
     {}
     
