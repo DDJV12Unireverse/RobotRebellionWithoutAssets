@@ -142,8 +142,8 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_SkipOwner);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_SkipOwner);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
 }
 
 // UWeaponBase* APlayableCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
@@ -382,19 +382,7 @@ void APlayableCharacter::interact()
         APickupActor* Usable = GetUsableInView();
         if (Usable)
         {
-            if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
-            {
-                if (m_healthPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
-                {
-                    clientInteract(Usable);
-                    ++m_healthPotionsCount;
-                }
-                else
-                {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
-                }
-            }
-            else if (Usable->getObjectType() == EObjectType::MANA_POTION)
+            if (Usable->getObjectType() == EObjectType::MANA_POTION)
             {
                 if (m_manaPotionsCount < EINVENTORY::MANA_POTION_MAX)
                 {
@@ -404,6 +392,18 @@ void APlayableCharacter::interact()
                 else
                 {
                     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
+                }
+            }
+            else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
+            {
+                if (m_healthPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
+                {
+                    clientInteract(Usable);
+                    ++m_healthPotionsCount;
+                }
+                else
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
                 }
             }
             else if (Usable->getObjectType() == EObjectType::BOMB)
@@ -537,7 +537,8 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //USE OBJECTS
         PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
         PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
-        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::looseMana);
+        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::loseMana);
+        PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::loseBomb);
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
@@ -635,6 +636,7 @@ void APlayableCharacter::Tick(float DeltaTime)
             }
         }
     }
+
 }
 
 APickupActor* APlayableCharacter::GetUsableInView()
@@ -661,20 +663,21 @@ APickupActor* APlayableCharacter::GetUsableInView()
 //////INVENTORY///////
 void APlayableCharacter::useHealthPotion()
 {
-    if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
-    {
-        setHealth(getHealth() + EINVENTORY::HP_BY_POTION);
-        if (getHealth() > getMaxHealth())
-        {
-            setHealth(getMaxHealth());
-        }
-        --m_healthPotionsCount;
-        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Health potions = %u"), m_healthPotionsCount));
-    }
     if (Role < ROLE_Authority)
     {
         serverUseHealthPotion();
     }
+    else
+        if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
+        {
+            --m_healthPotionsCount;
+            setHealth(getHealth() + EINVENTORY::HP_BY_POTION);
+            if (getHealth() > getMaxHealth())
+            {
+                setHealth(getMaxHealth());
+            }
+            PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Health potions = %u"), m_healthPotionsCount));
+        }
 }
 void APlayableCharacter::serverUseHealthPotion_Implementation()
 {
@@ -686,20 +689,21 @@ bool APlayableCharacter::serverUseHealthPotion_Validate()
 }
 void APlayableCharacter::useManaPotion()
 {
-    if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
-    {
-        setMana(getMana() + EINVENTORY::MP_BY_POTION);
-        if (getMana() > getMaxMana())
-        {
-            setMana(getMaxMana());
-        }
-        --m_manaPotionsCount;
-        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Mana potions = %u"), m_manaPotionsCount));
-    }
     if (Role < ROLE_Authority)
     {
         serverUseManaPotion();
     }
+    else
+        if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
+        {
+            --m_manaPotionsCount;
+            setMana(getMana() + EINVENTORY::MP_BY_POTION);
+            if (getMana() > getMaxMana())
+            {
+                setMana(getMaxMana());
+            }
+            PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Mana potions = %u"), m_manaPotionsCount));
+        }
 }
 
 void APlayableCharacter::serverUseManaPotion_Implementation()
@@ -711,23 +715,24 @@ bool APlayableCharacter::serverUseManaPotion_Validate()
     return true;
 }
 
-void APlayableCharacter::setManaPotionCount(int nbPotion)
+void APlayableCharacter::setManaPotionCount(int nbPotions)
 {
-    if (nbPotion > EINVENTORY::MANA_POTION_MAX)
+    if (nbPotions > EINVENTORY::MANA_POTION_MAX)
     {
         m_manaPotionsCount = EINVENTORY::MANA_POTION_MAX;
     }
     else
-        m_manaPotionsCount = nbPotion;
+        m_manaPotionsCount = nbPotions;
 }
-void APlayableCharacter::setHealthPotionCount(int nbPotion)
+
+void APlayableCharacter::setHealthPotionCount(int nbPotions)
 {
-    if (nbPotion > EINVENTORY::HEALTH_POTION_MAX)
+    if (nbPotions > EINVENTORY::HEALTH_POTION_MAX)
     {
         m_healthPotionsCount = EINVENTORY::HEALTH_POTION_MAX;
     }
     else
-        m_healthPotionsCount = nbPotion;
+        m_healthPotionsCount = nbPotions;
 }
 
 void APlayableCharacter::setBombCount(int nbBombs)
@@ -738,4 +743,44 @@ void APlayableCharacter::setBombCount(int nbBombs)
     }
     else
         m_bombCount = nbBombs;
+}
+
+void APlayableCharacter::loseMana()
+{
+    setMana(getMana() - 150.f);
+    if (getMana() < 0.f)
+    {
+        setMana(0.f);
+    }
+    if (Role < ROLE_Authority)
+    {
+        serverLoseMana();
+    }
+}
+void APlayableCharacter::serverLoseMana_Implementation()
+{
+    loseMana();
+}
+bool APlayableCharacter::serverLoseMana_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::loseBomb()
+{
+    m_bombCount = 0;
+    PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, TEXT("BombLost"));
+
+    if (Role < ROLE_Authority)
+    {
+        serverLoseBomb();
+    }
+}
+void APlayableCharacter::serverLoseBomb_Implementation()
+{
+    loseBomb();
+}
+bool APlayableCharacter::serverLoseBomb_Validate()
+{
+    return true;
 }
