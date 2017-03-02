@@ -141,7 +141,7 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
 }
@@ -158,10 +158,7 @@ void APlayableCharacter::ExecuteCommand(FString command) const
     if (MyPC)
     {
         MyPC->ConsoleCommand(command, true);
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, command);
-        }
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, command);
     }
 }
 
@@ -632,7 +629,7 @@ void APlayableCharacter::Tick(float DeltaTime)
                 usable->OnBeginFocus();
                 bHasNewFocus = false;
                 // Pour débogage, vous pourrez l'oter par la suite
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Focus"));
+                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
             }
         }
     }
