@@ -46,12 +46,12 @@ public:
 
     // On hit function called every collision
     UFUNCTION()
-        void OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
+        virtual void OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
             OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
     
     /** Initialize velocity */
-    void InitVelocity(const FVector& shootDirection);
+    virtual void InitVelocity(const FVector& shootDirection);
 
     //ON HIT
    /* UFUNCTION()
