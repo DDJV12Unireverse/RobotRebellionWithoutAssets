@@ -37,9 +37,9 @@ APlayableCharacter::APlayableCharacter()
     BaseLookUpRate = 45.f;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
-     bUseControllerRotationPitch = false;
-     bUseControllerRotationYaw = false;
-     bUseControllerRotationRoll = false;
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
 
     // Configure character movement
     GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
@@ -57,7 +57,7 @@ APlayableCharacter::APlayableCharacter()
     CameraBoom->SocketOffset = FVector(0, 35, 0);
     CameraBoom->TargetOffset = FVector(0, 0, 55);
 
-                                                // Create a follow camera
+    // Create a follow camera
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
@@ -71,6 +71,10 @@ APlayableCharacter::APlayableCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
+
+    m_manaPotionsCount = EINVENTORY::MANA_POTION_START;
+    m_bombCount = EINVENTORY::BOMB_START;
+    m_healthPotionsCount = EINVENTORY::HEALTH_POTION_START;
 
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
@@ -104,7 +108,7 @@ void APlayableCharacter::LookUpAtRate(float Rate)
 
 void APlayableCharacter::MoveForward(float Value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if ((Controller != NULL) && (Value != 0.0f))
     {
         // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
@@ -118,7 +122,7 @@ void APlayableCharacter::MoveForward(float Value)
 
 void APlayableCharacter::MoveRight(float Value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if ((Controller != NULL) && (Value != 0.0f))
     {
         // find out which way is right
         const FRotator Rotation = Controller->GetControlRotation();
@@ -148,10 +152,10 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 void APlayableCharacter::ExecuteCommand(FString command) const
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
-    if(MyPC)
+    if (MyPC)
     {
         MyPC->ConsoleCommand(command, true);
-        if(GEngine)
+        if (GEngine)
         {
             GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, command);
         }
@@ -161,7 +165,7 @@ void APlayableCharacter::ExecuteCommand(FString command) const
 ///// JUMP
 void APlayableCharacter::OnStartJump()
 {
-    if(m_bPressedCrouch)
+    if (m_bPressedCrouch)
     {
         OnCrouchToggle();
     }
@@ -178,7 +182,7 @@ void APlayableCharacter::OnStopJump()
 ///// SPRINT
 void APlayableCharacter::OnStartSprint()
 {
-    if(m_bPressedCrouch)
+    if (m_bPressedCrouch)
     {
         OnCrouchToggle();
     }
@@ -188,7 +192,7 @@ void APlayableCharacter::OnStartSprint()
         m_moveSpeed = 1.0f;
         m_bPressedRun = true;
 
-        if(Role < ROLE_Authority)
+        if (Role < ROLE_Authority)
         {
             ServerSprintActivate(m_bPressedRun);
         }
@@ -201,7 +205,7 @@ void APlayableCharacter::OnStopSprint()
     m_moveSpeed = 0.3;
     m_bPressedRun = false;
     // Si nous sommes sur un client
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         ServerSprintActivate(m_bPressedRun);
     }
@@ -209,7 +213,7 @@ void APlayableCharacter::OnStopSprint()
 
 void APlayableCharacter::ServerSprintActivate_Implementation(bool NewRunning)
 {
-    if(NewRunning)
+    if (NewRunning)
     {
         OnStartSprint();
     }
@@ -225,7 +229,7 @@ bool APlayableCharacter::ServerSprintActivate_Validate(bool NewRunning)
 
 void APlayableCharacter::OnRep_SprintButtonDown()
 {
-    if(m_bPressedRun == true)
+    if (m_bPressedRun == true)
     {
         OnStartSprint();
     }
@@ -252,7 +256,7 @@ bool APlayableCharacter::ServerCrouchToggle_Validate(bool NewCrouching)
 void APlayableCharacter::OnRep_CrouchButtonDown()
 {
 
-    if(m_bPressedCrouch == true)
+    if (m_bPressedCrouch == true)
     {
         Crouch();
     }
@@ -265,9 +269,9 @@ void APlayableCharacter::OnRep_CrouchButtonDown()
 void APlayableCharacter::OnCrouchToggle()
 {
     // Not crouched and not running -> can Crouch
-    if(!IsRunning())
+    if (!IsRunning())
     {
-        if(!m_bPressedCrouch)
+        if (!m_bPressedCrouch)
         {
             m_bPressedCrouch = true;
             m_moveSpeed = 0.1f;
@@ -281,7 +285,7 @@ void APlayableCharacter::OnCrouchToggle()
         }
     }
     // Si nous sommes sur un client
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         ServerCrouchToggle(true); // le param n'a pas d'importance pour l'instant
     }
@@ -291,7 +295,7 @@ void APlayableCharacter::OnCrouchToggle()
 void APlayableCharacter::mainFire()
 {
     // Essayer de tirer un projectile
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         serverMainFire(); // le param n'a pas d'importance pour l'instant
     }
@@ -335,7 +339,7 @@ void APlayableCharacter::openLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
 
-    if(MyPC)
+    if (MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->DisplayWidget(myHud->LobbyImpl);
@@ -352,7 +356,7 @@ void APlayableCharacter::openLobbyWidget()
 ///////// SWITCH WEAPON
 void APlayableCharacter::switchWeapon()
 {
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
     }
@@ -371,11 +375,51 @@ void APlayableCharacter::switchWeapon()
 void APlayableCharacter::interact()
 {
     APickupActor* Usable = GetUsableInView();
-    if(Usable)
+    if (Usable)
     {
-        Usable->OnPickup(this);
+        if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
+        {
+            if (m_manaPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
+            {
+                Usable->OnPickup(this);
+                ++m_healthPotionsCount;
+            }
+            else
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
+            }
+        }
+        else if (Usable->getObjectType() == EObjectType::MANA_POTION)
+        {
+            if (m_manaPotionsCount < EINVENTORY::MANA_POTION_MAX)
+            {
+                Usable->OnPickup(this);
+                ++m_manaPotionsCount;
+            }
+            else
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
+            }
+        }
+        else if (Usable->getObjectType() == EObjectType::BOMB)
+        {
+            if (m_bombCount < EINVENTORY::BOMB_MAX)
+            {
+                Usable->OnPickup(this);
+                ++m_bombCount;
+            }
+            else
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL BOMB"));
+            }
+        }
+        else
+        {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
+        }
+
     }
-    if (Role<ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         serverInteract();
     }
@@ -478,6 +522,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
 
+        //USE OBJECTS
+        PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
+        PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
+        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::looseMana);
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
@@ -527,11 +575,11 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
-   // FVector currentPosition = this->GetTransform().GetLocation();
-    //currentPosition.Z = 135.f;
+    // FVector currentPosition = this->GetTransform().GetLocation();
+     //currentPosition.Z = 135.f;
 
-    //this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
-   // this->SetActorLocation(currentPosition);
+     //this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
+    // this->SetActorLocation(currentPosition);
 
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
@@ -548,13 +596,13 @@ void APlayableCharacter::cppOnDeath()
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    if(Controller && Controller->IsLocalController())
+    if (Controller && Controller->IsLocalController())
     {
         APickupActor* usable = GetUsableInView();
         // Terminer le focus sur l'objet précédent
-        if(focusedPickupActor != usable)
+        if (focusedPickupActor != usable)
         {
-            if(focusedPickupActor)
+            if (focusedPickupActor)
             {
                 focusedPickupActor->OnEndFocus();
             }
@@ -564,9 +612,9 @@ void APlayableCharacter::Tick(float DeltaTime)
         // Assigner le nouveau focus (peut être nul )
         focusedPickupActor = usable;
         // Démarrer un nouveau focus si Usable != null;
-        if(usable)
+        if (usable)
         {
-            if(bHasNewFocus)
+            if (bHasNewFocus)
             {
                 usable->OnBeginFocus();
                 bHasNewFocus = false;
@@ -581,7 +629,7 @@ APickupActor* APlayableCharacter::GetUsableInView()
 {
     FVector CamLoc;
     FRotator CamRot;
-    if(Controller == NULL)
+    if (Controller == NULL)
         return NULL;
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
     const FVector TraceStart = CamLoc;
@@ -596,4 +644,57 @@ APickupActor* APlayableCharacter::GetUsableInView()
     //TODO: Comment or remove once implemented in post-process.
     DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
     return Cast<APickupActor>(Hit.GetActor());
+}
+
+//////INVENTORY///////
+void APlayableCharacter::useHealthPotion()
+{
+    if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
+    {
+        setHealth(getHealth() + EINVENTORY::HP_BY_POTION);
+        if (getHealth() > getMaxHealth())
+        {
+            setHealth(getMaxHealth());
+        }
+        --m_healthPotionsCount;
+        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Health potions = %u"), m_healthPotionsCount));
+    }
+    if (Role < ROLE_Authority)
+    {
+        serverUseHealthPotion();
+    }
+}
+void APlayableCharacter::serverUseHealthPotion_Implementation()
+{
+    useHealthPotion();
+}
+bool APlayableCharacter::serverUseHealthPotion_Validate()
+{
+    return true;
+}
+void APlayableCharacter::useManaPotion()
+{
+    if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
+    {
+        setMana(getMana() + EINVENTORY::MP_BY_POTION);
+        if (getMana() > getMaxMana())
+        {
+            setMana(getMaxMana());
+        }
+        --m_manaPotionsCount;
+        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Mana potions = %u"), m_manaPotionsCount));
+    }
+    if (Role < ROLE_Authority)
+    {
+        serverUseManaPotion();
+    }
+}
+
+void APlayableCharacter::serverUseManaPotion_Implementation()
+{
+    useManaPotion();
+}
+bool APlayableCharacter::serverUseManaPotion_Validate()
+{
+    return true;
 }
