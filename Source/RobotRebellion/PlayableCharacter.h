@@ -31,7 +31,7 @@ public:
 public:
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-    class USpringArmComponent* CameraBoom;
+        class USpringArmComponent* CameraBoom;
 
     /** Follow camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -47,17 +47,16 @@ public:
 
 
     ////INVENTORY////
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
         int m_healthPotionsCount;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
         int m_manaPotionsCount;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
         int m_bombCount;
 
-
-        /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+            /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseTurnRate;
 
@@ -125,7 +124,7 @@ public:
         return FollowCamera;
     }
 
-//    class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
+    //    class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
 
     virtual void BeginPlay() override;
 
@@ -208,11 +207,11 @@ public:
 
 
     //DEATH
-    
+
     //Function to call in BP, can't do it with macro
     UFUNCTION(BlueprintCallable, Category = "General")
         bool isDeadBP();
-    
+
 
 
     //Type
@@ -243,15 +242,17 @@ public:
     UFUNCTION()
         void switchWeapon();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSwitchWeapon();
+
     UFUNCTION()
         void interact();
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverInteract();
 
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverSwitchWeapon();
-
+    UFUNCTION(NetMulticast, Reliable)
+        void clientInteract(APickupActor* Usable);
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 
@@ -259,27 +260,50 @@ public:
 
 
     //////INVENTORY///////
+
     void useHealthPotion();
 
     UFUNCTION(Reliable, Server, WithValidation)
-    void serverUseHealthPotion();
+        void serverUseHealthPotion();
 
     void useManaPotion();
 
     UFUNCTION(Reliable, Server, WithValidation)
-    void serverUseManaPotion();
+        void serverUseManaPotion();
+
 
     //Remove later
-    void looseMana()
+    void loseMana();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverLoseMana();
+
+    void loseBomb();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverLoseBomb();
+
+    void giveBombToDrone() //Do Later
+    {}
+
+    int getManaPotionCount()
     {
-        setMana(getMana()-150.f);
-        if (getMana()<0)
-        {
-            setMana(0.f);
-        }
+        return m_manaPotionsCount;
     }
 
-    void giveBombToDrone()
-    {}
-    
+    int getHealthPotionCount()
+    {
+        return m_healthPotionsCount;
+    }
+
+    int getBombCount()
+    {
+        return m_bombCount;
+    }
+
+    void setManaPotionCount(int nbPotion);
+
+    void setHealthPotionCount(int nbPotion);
+
+    void setBombCount(int nbBombs);
+
+    ////END INVENTORY
 };
