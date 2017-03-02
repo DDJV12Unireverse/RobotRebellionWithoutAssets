@@ -112,6 +112,7 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
             );
 
             receiver->inflictDamage(currentDamage);
+            receiver->displayAnimatedIntegerValue(currentDamage, FColor::Red);
 
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, FString::Printf(TEXT("Damage = %u"), currentDamage));
 
