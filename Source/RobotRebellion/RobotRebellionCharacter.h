@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "Attributes.h"
+#include "ELivingTextAnimMode.h"
 #include "GameFramework/Character.h"
 
 #include "RobotRebellionCharacter.generated.h"
@@ -76,10 +77,10 @@ public:
         void createTextBillboard();
 
     UFUNCTION(BlueprintCallable, Category = "Billboard - Living Text")
-        void displayAnimatedIntegerValue(int32 valueToDisplay, const FColor& color);
+        void displayAnimatedIntegerValue(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
     UFUNCTION(BlueprintCallable, Category = "Billboard - Living Text")
-        void displayAnimatedTextValue(const FString& textToDisplay, const FColor& color);
+        void displayAnimatedText(const FString& textToDisplay, const FColor& color, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
 
 

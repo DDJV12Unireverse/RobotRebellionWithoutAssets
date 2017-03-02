@@ -10,10 +10,10 @@ ULivingTextRenderComponent::ULivingTextRenderComponent() : UTextRenderComponent(
 
     bAutoActivate = true;
 
-    m_updateMethod = &ULivingTextRenderComponent::doesNothing;
+    this->m_updateMethod = &ULivingTextRenderComponent::doesNothing;
 }
 
-void ULivingTextRenderComponent::initializeWithText(const FVector& actorPosition, const FString& textToDisplay, const FColor& colorToDisplay)
+void ULivingTextRenderComponent::initializeWithText(const FVector& actorPosition, const FString& textToDisplay, const FColor& colorToDisplay, ELivingTextAnimMode mode)
 {
     //set the current time to 0
     m_currentTime = 0.f;
@@ -34,15 +34,15 @@ void ULivingTextRenderComponent::initializeWithText(const FVector& actorPosition
     m_zTranslationSpeed = m_heightEndRelativeToBeginHeight / m_lifeTime;
 
     //Now that everything is ready, we can begin to really update everything until this component dies...
-    this->m_updateMethod = &ULivingTextRenderComponent::updateEverything;
+    this->setDelegateAccordingToAnimMode(mode);
 
     //Registration. Important !!
     this->RegisterComponent();
 }
 
-void ULivingTextRenderComponent::initializeWithInt(const FVector& actorPosition, int32 numberToDisplay, const FColor& colorToDisplay)
+void ULivingTextRenderComponent::initializeWithInt(const FVector& actorPosition, int32 numberToDisplay, const FColor& colorToDisplay, ELivingTextAnimMode mode)
 {
-    this->initializeWithText(actorPosition, FString::FromInt(numberToDisplay), colorToDisplay);
+    this->initializeWithText(actorPosition, FString::FromInt(numberToDisplay), colorToDisplay, mode);
 }
 
 void ULivingTextRenderComponent::updateEverything(float deltaTime)
@@ -67,11 +67,43 @@ void ULivingTextRenderComponent::updateEverything(float deltaTime)
     }
 }
 
+void ULivingTextRenderComponent::updateWithoutMoving(float deltaTime)
+{
+    if (IsPendingKillOrUnreachable())
+    {
+        return;
+    }
+
+    m_currentTime += deltaTime;
+
+    if (m_currentTime < m_lifeTime)
+    {
+        this->SetWorldLocation(m_savedBeginPosition);
+    }
+    else
+    {
+        this->UnregisterComponent();
+        this->DestroyComponent();
+    }
+}
+
 void ULivingTextRenderComponent::copyFrom(const ULivingTextRenderComponent& objectToCopyFrom)
 {
     m_lifeTime = objectToCopyFrom.m_lifeTime;
     m_heightBeginRelativeToDamagedActor = objectToCopyFrom.m_heightBeginRelativeToDamagedActor;
     m_heightEndRelativeToBeginHeight = objectToCopyFrom.m_heightEndRelativeToBeginHeight;
 
-    this->m_updateMethod = &ULivingTextRenderComponent::doesNothing;
+    setDelegateAccordingToAnimMode(ELivingTextAnimMode::TEXT_ANIM_NOT_READY);
+}
+
+void ULivingTextRenderComponent::setDelegateAccordingToAnimMode(ELivingTextAnimMode mode)
+{
+    static void(ULivingTextRenderComponent::*const delegateArrayMapperLookUpTable[])(float) = 
+    {
+        &ULivingTextRenderComponent::doesNothing,
+        &ULivingTextRenderComponent::updateEverything,
+        &ULivingTextRenderComponent::updateWithoutMoving
+    };
+
+    this->m_updateMethod = delegateArrayMapperLookUpTable[static_cast<uint8>(mode)];
 }

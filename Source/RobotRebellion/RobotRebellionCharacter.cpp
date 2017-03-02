@@ -8,6 +8,7 @@
 #include "WeaponInventory.h"
 
 #include "TextBillboardComponent.h"
+#include "LivingTextRenderComponent.h"
 #include "PlayableCharacter.h"
 
 
@@ -84,14 +85,14 @@ bool ARobotRebellionCharacter::clientOnDeath_Validate()
 void ARobotRebellionCharacter::cppOnRevive()
 {}
 
-void ARobotRebellionCharacter::displayAnimatedIntegerValue(int32 valueToDisplay, const FColor& color)
+void ARobotRebellionCharacter::displayAnimatedIntegerValue(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode)
 {
-    m_textBillboardInstance->beginDisplayingInteger(this->GetActorLocation(), valueToDisplay, color);
+    m_textBillboardInstance->beginDisplayingInteger(this->GetActorLocation(), valueToDisplay, color, mode);
 }
 
-void ARobotRebellionCharacter::displayAnimatedTextValue(const FString& textToDisplay, const FColor& color)
+void ARobotRebellionCharacter::displayAnimatedText(const FString& textToDisplay, const FColor& color, ELivingTextAnimMode mode)
 {
-    m_textBillboardInstance->beginDisplayingText(this->GetActorLocation(), textToDisplay, color);
+    m_textBillboardInstance->beginDisplayingText(this->GetActorLocation(), textToDisplay, color, mode);
 }
 
 void ARobotRebellionCharacter::createTextBillboard()

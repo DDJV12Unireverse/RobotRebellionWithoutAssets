@@ -71,20 +71,29 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 ARobotRebellionCharacter* receiver = static_cast<ARobotRebellionCharacter*>(hit.GetActor());
                 if (!alreadyHit)
                 {
-                    DamageCoefficientLogic coeff;
+                    if (!receiver->isImmortal())
+                    {
 
-                    Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), receiver };
-                    Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
+                        DamageCoefficientLogic coeff;
 
-                    receiver->inflictDamage(damageValue);
-                    receiver->displayAnimatedIntegerValue(damageValue, FColor::Red);
+                        Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), receiver };
+                        Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
+
+                        receiver->inflictDamage(damageValue);
+                        receiver->displayAnimatedIntegerValue(damageValue, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+
+                        if (receiver->isDead())
+                        {
+                            receiver->onDeath();
+                        }
+                    }
+                    else
+                    {
+                        receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+                    }
 
                     alreadyHit = true;
-
-                    if (receiver->isDead())
-                    {
-                        receiver->onDeath();
-                    }
                 }
             }
         }

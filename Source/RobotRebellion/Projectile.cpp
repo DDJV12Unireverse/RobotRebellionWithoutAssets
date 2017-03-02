@@ -89,9 +89,11 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
         if (receiver && m_owner != receiver)
         {
-            DamageCoefficientLogic coeff;
+            if (!receiver->isImmortal())
+            {
+                DamageCoefficientLogic coeff;
 
-            /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
+                /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
                 true,
                 coeff,
                 &DamageCoefficientLogic::criticalHit,
@@ -100,25 +102,28 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                 &DamageCoefficientLogic::lessEfficient,
                 &DamageCoefficientLogic::multipleHit,
                 &DamageCoefficientLogic::graze
-            );
+                );
 
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
 
-            Damage damage{ m_owner, receiver };
-            
-            Damage::DamageValue currentDamage = damage(
-                &UGlobalDamageMethod::normalHitWithWeaponComputed, 
-                coeff.getCoefficientValue()
-            );
+                Damage damage{ m_owner, receiver };
 
-            receiver->inflictDamage(currentDamage);
-            receiver->displayAnimatedIntegerValue(currentDamage, FColor::Red);
+                Damage::DamageValue currentDamage = damage(
+                    &UGlobalDamageMethod::normalHitWithWeaponComputed,
+                    coeff.getCoefficientValue()
+                );
 
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, FString::Printf(TEXT("Damage = %u"), currentDamage));
+                receiver->inflictDamage(currentDamage);
+                receiver->displayAnimatedIntegerValue(currentDamage, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
-            if (receiver->isDead())
+                if (receiver->isDead())
+                {
+                    receiver->onDeath();
+                }
+            }
+            else
             {
-                receiver->onDeath();
+                receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
             }
         }
         

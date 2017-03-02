@@ -3,7 +3,9 @@
 #pragma once
 
 #include "Components/TextRenderComponent.h"
+#include "ELivingTextAnimMode.h"
 #include "LivingTextRenderComponent.generated.h"
+
 
 /**
  * 
@@ -12,8 +14,8 @@ UCLASS(Blueprintable)
 class ROBOTREBELLION_API ULivingTextRenderComponent : public UTextRenderComponent
 {
 	GENERATED_BODY()
-	
-	
+
+
 public:
     /************************************************************************/
     /* PROPERTY                                                             */
@@ -67,6 +69,11 @@ protected:
 
     void updateEverything(float deltaTime);
 
+    void updateWithoutMoving(float deltaTime);
+
+
+    void setDelegateAccordingToAnimMode(ELivingTextAnimMode mode);
+
 
 
 public:
@@ -76,11 +83,11 @@ public:
     
     //General method. Initialize this widget with a text. Must be called once for this component to be ready.
     UFUNCTION(BlueprintCallable, Category = "General")
-        void initializeWithText(const FVector& actorPosition, const FString& textToDisplay, const FColor& colorToDisplay);
+        void initializeWithText(const FVector& actorPosition, const FString& textToDisplay, const FColor& colorToDisplay, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
     //Specific method. Initialize this widget with an integer. Must be called once for this component to be ready.
     UFUNCTION(BlueprintCallable, Category = "General")
-        void initializeWithInt(const FVector& actorPosition, int32 numberToDisplay, const FColor& colorToDisplay);
+        void initializeWithInt(const FVector& actorPosition, int32 numberToDisplay, const FColor& colorToDisplay, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
     /*
     Main method. Must be called regularly to refresh the displaying animation of this object. 

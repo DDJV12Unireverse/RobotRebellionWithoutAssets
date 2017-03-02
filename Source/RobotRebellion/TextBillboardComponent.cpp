@@ -12,7 +12,7 @@ UTextBillboardComponent::UTextBillboardComponent() : UBillboardComponent()
     bAutoActivate = true;
 }
 
-void UTextBillboardComponent::beginDisplayingText(const FVector& actorPositionInWorld, const FString& text, const FColor& colorToDisplay)
+void UTextBillboardComponent::beginDisplayingText(const FVector& actorPositionInWorld, const FString& text, const FColor& colorToDisplay, ELivingTextAnimMode mode)
 {
     ULivingTextRenderComponent* intermediary;
 
@@ -25,13 +25,13 @@ void UTextBillboardComponent::beginDisplayingText(const FVector& actorPositionIn
         intermediary->Activate();
 
         m_damageRenderedTextArray.Add(intermediary);
-        m_damageRenderedTextArray.Top()->initializeWithText(actorPositionInWorld, text, colorToDisplay);
+        m_damageRenderedTextArray.Top()->initializeWithText(actorPositionInWorld, text, colorToDisplay, mode);
     }
 }
 
-void UTextBillboardComponent::beginDisplayingInteger(const FVector& actorPositionInWorld, int32 integerValue, const FColor& colorToDisplay)
+void UTextBillboardComponent::beginDisplayingInteger(const FVector& actorPositionInWorld, int32 integerValue, const FColor& colorToDisplay, ELivingTextAnimMode mode)
 {
-    this->beginDisplayingText(actorPositionInWorld, FString::FromInt(integerValue), colorToDisplay);
+    this->beginDisplayingText(actorPositionInWorld, FString::FromInt(integerValue), colorToDisplay, mode);
 }
 
 void UTextBillboardComponent::update(float deltaTime)

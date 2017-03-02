@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Components/BillboardComponent.h"
+#include "ELivingTextAnimMode.h"
 #include "TextBillboardComponent.generated.h"
 
 /**
@@ -46,13 +47,13 @@ public:
     General method. create and begin displaying a living (animated) text (given by text) at the specified location.
     */
     UFUNCTION(BlueprintCallable, Category = "CUSTOM BillBoard Component")
-        void beginDisplayingText(const FVector& actorPositionInWorld, const FString& text, const FColor& colorToDisplay);
+        void beginDisplayingText(const FVector& actorPositionInWorld, const FString& text, const FColor& colorToDisplay, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
     /*
     Specific method. create and begin displaying a living (animated) text (given by the integerValue) at the specified location.
     */
     UFUNCTION(BlueprintCallable, Category = "CUSTOM BillBoard Component")
-        void beginDisplayingInteger(const FVector& actorPositionInWorld, int32 integerValue, const FColor& colorToDisplay);
+        void beginDisplayingInteger(const FVector& actorPositionInWorld, int32 integerValue, const FColor& colorToDisplay, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
     /*
     Main method. Called to refresh all animation and living text. Must be called regularly
