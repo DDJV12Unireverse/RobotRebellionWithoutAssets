@@ -21,14 +21,18 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
         float m_cooldown;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
+        TArray<TSubclassOf<class UEffect>> m_effectsClass;
+
 private:
     float m_nextAllowedCastTimer;
 
+    TArray<UEffect *> m_effects;
 
 public:
     USpell();
+    
+    virtual void cast() PURE_VIRTUAL(USpell::cast, );
 
-
-    void cast();
-
+    virtual void BeginPlay() override;
 };

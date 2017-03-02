@@ -3,13 +3,32 @@
 #include "RobotRebellion.h"
 #include "Spell.h"
 
+#include "UtilitaryFunctionLibrary.h"
+#include "Effect.h"
 
 USpell::USpell()
 {
     // TODO
 }
 
-void USpell::cast()
+void USpell::BeginPlay()
 {
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, FString::Printf(TEXT("Spell cast : %s "), *m_name));
+    Super::BeginPlay();
+
+    for(int i = 0; i < m_effectsClass.Num(); ++i)
+    {
+        UEffect* tempEffect;
+
+        UUtilitaryFunctionLibrary::createObjectFromDefault<UEffect>(
+            &tempEffect,
+            m_effectsClass[i],
+            this,
+            TEXT("Effect")
+            );
+
+        if(tempEffect)
+        {
+            m_effects.Emplace(tempEffect);
+        }
+    }
 }
