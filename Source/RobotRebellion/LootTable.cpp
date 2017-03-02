@@ -59,7 +59,7 @@ void ULootTable::dropItem(const FVector &pos)
         {
             if (GEngine)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Black, "Drop " + FString::FromInt(i));
+                PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Drop " + FString::FromInt(i));
             }
             world->SpawnActor<AActor>(m_objects[i], pos, FRotator());
             break;

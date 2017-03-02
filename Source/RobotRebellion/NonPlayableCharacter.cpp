@@ -24,7 +24,10 @@ void ANonPlayableCharacter::dropLoot()
         m_lootTable->dropItem(GetActorLocation());
     }
     else
+    {
         serverDropLoot();
+    }
+        
 }
 void ANonPlayableCharacter::serverDropLoot_Implementation()
 {

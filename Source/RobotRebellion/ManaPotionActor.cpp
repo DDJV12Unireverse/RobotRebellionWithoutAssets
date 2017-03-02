@@ -8,7 +8,9 @@ void AManaPotionActor::OnPickup(APawn* InstigatorPawn)
     //Nothing. To be derived.
     PRINT_MESSAGE_ON_SCREEN(FColor::Purple, TEXT("Mana potion PickedUp"));
     if (Role == ROLE_Authority)
-    Destroy();
+    {
+        Destroy();
+    }
 }
 
 
