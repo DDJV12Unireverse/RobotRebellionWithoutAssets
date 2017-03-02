@@ -90,8 +90,6 @@ void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 void APlayableCharacter::BeginPlay()
 {
     Super::BeginPlay();
-
-    m_spellKit->initializeSpells();
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)

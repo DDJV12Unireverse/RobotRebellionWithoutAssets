@@ -32,8 +32,5 @@ public:
 
     // cast the spell matching the index if it exists
     void cast(int32 index);
-
-    //Initialize spells list
-    void initializeSpells();
 	
 };

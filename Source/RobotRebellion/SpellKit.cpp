@@ -47,8 +47,3 @@ void USpellKit::cast(int32 index)
         m_spells[index]->cast();
     }
 }
-
-void USpellKit::initializeSpells()
-{
-
-}
