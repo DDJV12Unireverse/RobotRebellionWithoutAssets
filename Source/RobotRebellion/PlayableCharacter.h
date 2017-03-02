@@ -43,9 +43,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", ReplicatedUsing = OnRep_HealthPotionUsed)
         int m_healthPotionsCount;
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", ReplicatedUsing = OnRep_ManaPotionUsed)
         int m_manaPotionsCount;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
         int m_bombCount;
@@ -272,5 +272,37 @@ public:
     }
     void giveBombToDrone() //Do Later
     {}
+
+    int getManaPotionCount()
+    {
+        return m_manaPotionsCount;
+    }
+
+    int getHealthPotionCount()
+    {
+        return m_healthPotionsCount;
+    }
     
+    int getBombCount()
+    {
+        return m_bombCount;
+    }
+
+    void setManaPotionCount(int nbPotion);
+    
+    void setHealthPotionCount(int nbPotion);
+    
+    void setBombCount(int nbBombs);
+    
+    UFUNCTION()
+    void OnRep_ManaPotionUsed()
+    {
+        setManaPotionCount(m_manaPotionsCount);
+    }
+    UFUNCTION()
+    void OnRep_HealthPotionUsed()
+    {
+        setHealthPotionCount(m_healthPotionsCount);
+    }
+
 };

@@ -384,12 +384,12 @@ void APlayableCharacter::interact()
         {
             if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
-                //if (m_healthPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
+                if (m_healthPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
                 }
-                //else
+                else
                 {
                     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
                 }
@@ -709,4 +709,33 @@ void APlayableCharacter::serverUseManaPotion_Implementation()
 bool APlayableCharacter::serverUseManaPotion_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::setManaPotionCount(int nbPotion)
+{
+    if (nbPotion > EINVENTORY::MANA_POTION_MAX)
+    {
+        m_manaPotionsCount = EINVENTORY::MANA_POTION_MAX;
+    }
+    else
+        m_manaPotionsCount = nbPotion;
+}
+void APlayableCharacter::setHealthPotionCount(int nbPotion)
+{
+    if (nbPotion > EINVENTORY::HEALTH_POTION_MAX)
+    {
+        m_healthPotionsCount = EINVENTORY::HEALTH_POTION_MAX;
+    }
+    else
+        m_healthPotionsCount = nbPotion;
+}
+
+void APlayableCharacter::setBombCount(int nbBombs)
+{
+    if (nbBombs > EINVENTORY::BOMB_MAX)
+    {
+        m_bombCount = EINVENTORY::BOMB_MAX;
+    }
+    else
+        m_bombCount = nbBombs;
 }
