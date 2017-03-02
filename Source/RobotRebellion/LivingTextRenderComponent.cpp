@@ -82,8 +82,7 @@ void ULivingTextRenderComponent::updateWithoutMoving(float deltaTime)
     }
     else
     {
-        this->UnregisterComponent();
-        this->DestroyComponent();
+        this->destroyLivingText();
     }
 }
 
@@ -106,4 +105,10 @@ void ULivingTextRenderComponent::setDelegateAccordingToAnimMode(ELivingTextAnimM
     };
 
     this->m_updateMethod = delegateArrayMapperLookUpTable[static_cast<uint8>(mode)];
+}
+
+void ULivingTextRenderComponent::destroyLivingText()
+{
+    this->UnregisterComponent();
+    this->DestroyComponent();
 }

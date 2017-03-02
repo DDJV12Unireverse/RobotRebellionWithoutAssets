@@ -100,6 +100,9 @@ public:
         (this->*m_updateMethod)(deltaTime);
     }
 
+    UFUNCTION(BlueprintCallable, Category = "General")
+        void destroyLivingText();
+
     //say if this instance is ready to be displayed and animated
     UFUNCTION(BlueprintCallable, Category = "General")
         FORCEINLINE bool isReady() const noexcept
