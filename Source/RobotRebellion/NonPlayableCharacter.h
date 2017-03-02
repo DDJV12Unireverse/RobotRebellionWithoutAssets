@@ -3,6 +3,7 @@
 #pragma once
 
 #include "RobotRebellionCharacter.h"
+#include "LootTable.h"
 #include "NonPlayableCharacter.generated.h"
 
 /**
@@ -15,6 +16,10 @@ class ROBOTREBELLION_API ANonPlayableCharacter : public ARobotRebellionCharacter
 
 public:
     ANonPlayableCharacter();
-	
+    //Loot Probability
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        ULootTable* m_lootTable;
+
+    void dropLoot();
     virtual void cppOnDeath() override;
 };
