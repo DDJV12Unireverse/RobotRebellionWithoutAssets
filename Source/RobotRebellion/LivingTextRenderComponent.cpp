@@ -37,34 +37,12 @@ void ULivingTextRenderComponent::initializeWithText(const FVector& actorPosition
     this->m_updateMethod = &ULivingTextRenderComponent::updateEverything;
 
     //Registration. Important !!
-    this->Register();
+    this->RegisterComponent();
 }
 
 void ULivingTextRenderComponent::initializeWithInt(const FVector& actorPosition, int32 numberToDisplay, const FColor& colorToDisplay)
 {
-    //set the current time to 0
-    m_currentTime = 0.f;
-
-    //set the damage in the text
-    this->SetText(FText::FromString(FString::FromInt(numberToDisplay)));
-
-    this->SetTextRenderColor(colorToDisplay);
-
-    //put the component at the position to display the text
-    m_savedBeginPosition = actorPosition;
-    m_savedBeginPosition.Z += m_heightBeginRelativeToDamagedActor;
-    this->SetWorldLocation(actorPosition);
-    this->SetRelativeRotation(FRotator(0.f, 180.f, 0.f));
-
-    //Now speeds. For those in Unireverse that are not familiar with speed computation
-    // v = d / t
-    m_zTranslationSpeed = m_heightEndRelativeToBeginHeight / m_lifeTime;
-
-    //Now that everything is ready, we can begin to really update everything until this component dies...
-    this->m_updateMethod = &ULivingTextRenderComponent::updateEverything;
-
-    //Registration. Important !!
-    this->Register();
+    this->initializeWithText(actorPosition, FString::FromInt(numberToDisplay), colorToDisplay);
 }
 
 void ULivingTextRenderComponent::updateEverything(float deltaTime)
