@@ -21,5 +21,7 @@ public:
         ULootTable* m_lootTable;
 
     void dropLoot();
+    UFUNCTION(Server, Reliable, WithValidation)
+        void serverDropLoot();
     virtual void cppOnDeath() override;
 };

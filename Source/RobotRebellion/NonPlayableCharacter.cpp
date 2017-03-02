@@ -18,9 +18,19 @@ void ANonPlayableCharacter::cppOnDeath()
 
 void ANonPlayableCharacter::dropLoot()
 {
-    if (GEngine)
+    if (Role == ROLE_Authority)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Black, "Drop!");
+        PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Drop!");
+        m_lootTable->dropItem(GetActorLocation());
     }
-    m_lootTable->dropItem(GetActorLocation());
+    else
+        serverDropLoot();
+}
+void ANonPlayableCharacter::serverDropLoot_Implementation()
+{
+    dropLoot();
+}
+bool ANonPlayableCharacter::serverDropLoot_Validate()
+{
+    return true;
 }
