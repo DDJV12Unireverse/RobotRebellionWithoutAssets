@@ -8,9 +8,16 @@ ULivingTextRenderComponent::ULivingTextRenderComponent() : UTextRenderComponent(
 {
     PrimaryComponentTick.bCanEverTick = true;
 
+    bReplicates = true;
+
     bAutoActivate = true;
 
     this->m_updateMethod = &ULivingTextRenderComponent::doesNothing;
+}
+
+void ULivingTextRenderComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void ULivingTextRenderComponent::initializeWithText(const FVector& actorPosition, const FString& textToDisplay, const FColor& colorToDisplay, ELivingTextAnimMode mode)

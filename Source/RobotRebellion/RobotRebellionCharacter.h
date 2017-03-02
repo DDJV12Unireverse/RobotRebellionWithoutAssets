@@ -86,6 +86,12 @@ public:
         void displayAnimatedText(const FString& textToDisplay, const FColor& color, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
 
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void netMultidisplayAnimatedIntegerValue(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode);
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void netMultidisplayAnimatedText(const FString& textToDisplay, const FColor& color, ELivingTextAnimMode mode);
+
 
 // Attributs relatives functions added by macro
 public:

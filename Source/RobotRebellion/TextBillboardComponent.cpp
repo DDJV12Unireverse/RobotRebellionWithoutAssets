@@ -10,6 +10,13 @@
 UTextBillboardComponent::UTextBillboardComponent() : UBillboardComponent()
 {
     bAutoActivate = true;
+
+    bReplicates = true;
+}
+
+void UTextBillboardComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void UTextBillboardComponent::beginDisplayingText(const FVector& actorPositionInWorld, const FString& text, const FColor& colorToDisplay, ELivingTextAnimMode mode)

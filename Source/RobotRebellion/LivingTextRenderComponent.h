@@ -8,12 +8,12 @@
 
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class ROBOTREBELLION_API ULivingTextRenderComponent : public UTextRenderComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 
 public:
@@ -57,6 +57,8 @@ public:
     ULivingTextRenderComponent();
 
 
+    virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+
     //copy the parameter. Warning : only the properties will be copied. 
     //It doesn't initialize the object => you must call initializeWith... to use the widget 
     void copyFrom(const ULivingTextRenderComponent& objectToCopyFrom);
@@ -80,7 +82,7 @@ public:
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
-    
+
     //General method. Initialize this widget with a text. Must be called once for this component to be ready.
     UFUNCTION(BlueprintCallable, Category = "General")
         void initializeWithText(const FVector& actorPosition, const FString& textToDisplay, const FColor& colorToDisplay, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
@@ -90,7 +92,7 @@ public:
         void initializeWithInt(const FVector& actorPosition, int32 numberToDisplay, const FColor& colorToDisplay, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
     /*
-    Main method. Must be called regularly to refresh the displaying animation of this object. 
+    Main method. Must be called regularly to refresh the displaying animation of this object.
     This object will be destroyed at the end of its live.
     Does nothing until isReady return true.
     */
