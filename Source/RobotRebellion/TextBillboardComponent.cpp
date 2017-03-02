@@ -16,7 +16,7 @@ void UTextBillboardComponent::beginDisplayingText(const FVector& actorPositionIn
 {
     ULivingTextRenderComponent* intermediary;
 
-    if (UUtilitaryFunctionLibrary::createObjectFromDefault<ULivingTextRenderComponent>(&intermediary, m_defaultRenderText, this))
+    if (UUtilitaryFunctionLibrary::createObjectFromDefault<ULivingTextRenderComponent>(&intermediary, m_defaultRenderText, this, RF_Dynamic))
     {
         intermediary->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 
