@@ -43,11 +43,11 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
         int m_healthPotionsCount;
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
         int m_manaPotionsCount;
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
         int m_bombCount;
 //     ////Weapon Inventory/////
 //     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -236,6 +236,9 @@ public:
 
     UFUNCTION()
         void switchWeapon();
+        
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSwitchWeapon();
 
     UFUNCTION()
         void interact();
@@ -243,9 +246,8 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverInteract();
 
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverSwitchWeapon();
-
+    UFUNCTION(NetMulticast, Reliable)
+        void clientInteract(APickupActor* Usable);
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 
@@ -268,7 +270,7 @@ public:
             setMana(0.f);
         }
     }
-    void giveBombToDrone()
+    void giveBombToDrone() //Do Later
     {}
     
 };

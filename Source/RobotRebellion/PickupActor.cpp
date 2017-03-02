@@ -48,7 +48,19 @@ void APickupActor::OnPickup(APawn * InstigatorPawn)
 {
     //Nothing. To be derived.
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("PickedUp"));
+    if (Role==ROLE_Authority)
     Destroy();
-       
+   /*    if (Role < ROLE_Authority)
+       {
+           serverOnPickup(InstigatorPawn);
+       }*/
     //UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
 }
+//void APickupActor::serverOnPickup_Implementation(APawn * InstigatorPawn)
+//{
+//    OnPickup(InstigatorPawn);
+//}
+//bool APickupActor::serverOnPickup_Validate(APawn * InstigatorPawn)
+//{
+//    return true;
+//}

@@ -141,6 +141,9 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_SkipOwner);
 }
 
 // UWeaponBase* APlayableCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
@@ -374,59 +377,63 @@ void APlayableCharacter::switchWeapon()
 
 void APlayableCharacter::interact()
 {
-    APickupActor* Usable = GetUsableInView();
-    if (Usable)
+    if (Role == ROLE_Authority)
     {
-        if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
+        APickupActor* Usable = GetUsableInView();
+        if (Usable)
         {
-            if (m_manaPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
+            if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
-                Usable->OnPickup(this);
-                ++m_healthPotionsCount;
+                //if (m_healthPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
+                {
+                    clientInteract(Usable);
+                    ++m_healthPotionsCount;
+                }
+                //else
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
+                }
+            }
+            else if (Usable->getObjectType() == EObjectType::MANA_POTION)
+            {
+                if (m_manaPotionsCount < EINVENTORY::MANA_POTION_MAX)
+                {
+                    clientInteract(Usable);
+                    ++m_manaPotionsCount;
+                }
+                else
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
+                }
+            }
+            else if (Usable->getObjectType() == EObjectType::BOMB)
+            {
+                if (m_bombCount < EINVENTORY::BOMB_MAX)
+                {
+                    clientInteract(Usable);
+                    ++m_bombCount;
+                }
+                else
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL BOMB"));
+                }
             }
             else
             {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
             }
         }
-        else if (Usable->getObjectType() == EObjectType::MANA_POTION)
-        {
-            if (m_manaPotionsCount < EINVENTORY::MANA_POTION_MAX)
-            {
-                Usable->OnPickup(this);
-                ++m_manaPotionsCount;
-            }
-            else
-            {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
-            }
-        }
-        else if (Usable->getObjectType() == EObjectType::BOMB)
-        {
-            if (m_bombCount < EINVENTORY::BOMB_MAX)
-            {
-                Usable->OnPickup(this);
-                ++m_bombCount;
-            }
-            else
-            {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL BOMB"));
-            }
-        }
-        else
-        {
-            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
-        }
-
     }
-    if (Role < ROLE_Authority)
+    else
     {
         serverInteract();
     }
 }
+
+
 void APlayableCharacter::serverInteract_Implementation()
 {
-    interact();
+    this->interact();
 }
 
 bool APlayableCharacter::serverInteract_Validate()
@@ -437,6 +444,11 @@ bool APlayableCharacter::serverInteract_Validate()
 void APlayableCharacter::serverSwitchWeapon_Implementation()
 {
     this->switchWeapon();
+}
+
+void APlayableCharacter::clientInteract_Implementation(APickupActor* Usable)
+{
+    Usable->OnPickup(this);
 }
 
 bool APlayableCharacter::serverSwitchWeapon_Validate()
