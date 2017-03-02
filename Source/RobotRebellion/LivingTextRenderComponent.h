@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ROBOTREBELLION_API ULivingTextRenderComponent : public UTextRenderComponent
 {
 	GENERATED_BODY()
