@@ -68,18 +68,22 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
             {
                 FHitResult hit = OutHits[noEnnemy];
 
-                ARobotRebellionCharacter* ennemy = static_cast<ARobotRebellionCharacter*>(hit.GetActor());
+                ARobotRebellionCharacter* receiver = static_cast<ARobotRebellionCharacter*>(hit.GetActor());
                 if (!alreadyHit)
                 {
                     DamageCoefficientLogic coeff;
 
-                    Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), ennemy };
-                    ennemy->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue()));
+                    Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), receiver };
+                    Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
+
+                    receiver->inflictDamage(damageValue);
+                    receiver->displayAnimatedIntegerValue(damageValue, FColor::Red);
+
                     alreadyHit = true;
 
-                    if (ennemy->isDead())
+                    if (receiver->isDead())
                     {
-                        ennemy->onDeath();
+                        receiver->onDeath();
                     }
                 }
             }

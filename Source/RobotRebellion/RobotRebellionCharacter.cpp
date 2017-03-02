@@ -24,8 +24,6 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
-
-    m_textBillboardDefault = CreateDefaultSubobject<UTextBillboardComponent>(TEXT("Default Billboard Component"));
 }
 
 void ARobotRebellionCharacter::BeginPlay()

@@ -25,7 +25,7 @@ public:
 
     ////Billboard on character////
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BillBoard")
-        class UTextBillboardComponent* m_textBillboardDefault;
+        TSubclassOf<class UTextBillboardComponent> m_textBillboardDefault;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BillBoard")
         class UTextBillboardComponent* m_textBillboardInstance;
