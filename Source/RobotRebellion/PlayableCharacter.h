@@ -12,8 +12,8 @@
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
         enum EINVENTORY
     {
         HEALTH_POTION_START = 10,
@@ -29,7 +29,7 @@ class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 public:
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-    class USpringArmComponent* CameraBoom;
+        class USpringArmComponent* CameraBoom;
 
     /** Follow camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -43,17 +43,17 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_healthPotionsCount;
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_manaPotionsCount;
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_bombCount;
-//     ////Weapon Inventory/////
-//     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-//         class UWeaponInventory* m_weaponInventory;
+    //     ////Weapon Inventory/////
+    //     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+    //         class UWeaponInventory* m_weaponInventory;
 
-        /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+            /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseTurnRate;
 
@@ -119,7 +119,7 @@ public:
         return FollowCamera;
     }
 
-//    class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
+    //    class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
 
     virtual void BeginPlay() override;
 
@@ -202,11 +202,11 @@ public:
 
 
     //DEATH
-    
+
     //Function to call in BP, can't do it with macro
     UFUNCTION(BlueprintCallable, Category = "General")
         bool isDeadBP();
-    
+
 
 
     //Type
@@ -237,15 +237,17 @@ public:
     UFUNCTION()
         void switchWeapon();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSwitchWeapon();
+
     UFUNCTION()
         void interact();
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverInteract();
 
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverSwitchWeapon();
-
+    UFUNCTION(NetMulticast, Reliable)
+        void clientInteract(APickupActor* Usable);
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 
@@ -253,22 +255,50 @@ public:
 
 
     //////INVENTORY///////
+
     void useHealthPotion();
+
     UFUNCTION(Reliable, Server, WithValidation)
-    void serverUseHealthPotion();
+        void serverUseHealthPotion();
+
     void useManaPotion();
+
     UFUNCTION(Reliable, Server, WithValidation)
-    void serverUseManaPotion();
+        void serverUseManaPotion();
+
+
     //Remove later
-    void looseMana()
-    {
-        setMana(getMana()-150.f);
-        if (getMana()<0)
-        {
-            setMana(0.f);
-        }
-    }
-    void giveBombToDrone()
+    void loseMana();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverLoseMana();
+
+    void loseBomb();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverLoseBomb();
+
+    void giveBombToDrone() //Do Later
     {}
-    
+
+    int getManaPotionCount()
+    {
+        return m_manaPotionsCount;
+    }
+
+    int getHealthPotionCount()
+    {
+        return m_healthPotionsCount;
+    }
+
+    int getBombCount()
+    {
+        return m_bombCount;
+    }
+
+    void setManaPotionCount(int nbPotion);
+
+    void setHealthPotionCount(int nbPotion);
+
+    void setBombCount(int nbBombs);
+
+    ////END INVENTORY
 };

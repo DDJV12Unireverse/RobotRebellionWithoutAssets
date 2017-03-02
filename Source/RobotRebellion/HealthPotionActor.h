@@ -19,6 +19,5 @@ public:
     {
         return EObjectType::HEALTH_POTION;
     }
-	
-	
+		
 };

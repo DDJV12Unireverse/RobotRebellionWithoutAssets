@@ -25,8 +25,9 @@ public:
     virtual void OnEndFocus();
     
     virtual void OnPickup(APawn* InstigatorPawn);
-
-
+    /*UFUNCTION(Reliable, Server, WithValidation)
+        void serverOnPickup(APawn* InstigatorPawn);
+*/
     virtual EObjectType getObjectType() const USE_NOEXCEPT
     {
         return EObjectType::NONE;
