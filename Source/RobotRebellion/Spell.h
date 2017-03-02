@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "UObject/NoExportTypes.h"
+#include "Components/ActorComponent.h"
 #include "Spell.generated.h"
 
 /**
  *
  */
 UCLASS(Blueprintable)
-class ROBOTREBELLION_API USpell : public UObject
+class ROBOTREBELLION_API USpell : public UActorComponent
 {
     GENERATED_BODY()
 
