@@ -647,13 +647,10 @@ void APlayableCharacter::useHealthPotion()
 {
     if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
     {
-        setHealth(getHealth() + EINVENTORY::HP_BY_POTION);
-        if (getHealth() > getMaxHealth())
-        {
-            setHealth(getMaxHealth());
-        }
+        restoreHealth(EINVENTORY::HP_BY_POTION);
+        displayAnimatedIntegerValue(EINVENTORY::HP_BY_POTION, FColor::Green, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
         --m_healthPotionsCount;
-        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Health potions = %u"), m_healthPotionsCount));
     }
     if (Role < ROLE_Authority)
     {
@@ -676,12 +673,10 @@ void APlayableCharacter::useManaPotion()
     if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
     {
         setMana(getMana() + EINVENTORY::MP_BY_POTION);
-        if (getMana() > getMaxMana())
-        {
-            setMana(getMaxMana());
-        }
+        
+        displayAnimatedIntegerValue(EINVENTORY::MP_BY_POTION, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
         --m_manaPotionsCount;
-        PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Mana potions = %u"), m_manaPotionsCount));
     }
     if (Role < ROLE_Authority)
     {
