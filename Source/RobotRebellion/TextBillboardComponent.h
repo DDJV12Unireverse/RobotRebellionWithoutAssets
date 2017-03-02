@@ -61,6 +61,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "CUSTOM BillBoard Component")
         void update(float deltaTime);
 
+    /*
+    Clear all texts and remove them
+    */
+    UFUNCTION(BlueprintCallable, Category = "CUSTOM BillBoard Component")
+        void clearAllLivingTexts();
+
     //Gives the number of living text this billboard currently has to render.
     UFUNCTION(BlueprintCallable, Category = "CUSTOM BillBoard Component")
         FORCEINLINE int32 livingTextCountToRender() const USE_NOEXCEPT

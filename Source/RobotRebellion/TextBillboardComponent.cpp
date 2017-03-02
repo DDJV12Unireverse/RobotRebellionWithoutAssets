@@ -57,3 +57,13 @@ void UTextBillboardComponent::update(float deltaTime)
 
     this->UpdateChildTransforms();
 }
+
+void UTextBillboardComponent::clearAllLivingTexts()
+{
+    for (auto iter = 0; iter < m_damageRenderedTextArray.Num(); ++iter)
+    {
+        m_damageRenderedTextArray[iter]->destroyLivingText();
+    }
+
+    m_damageRenderedTextArray.Empty();
+}
