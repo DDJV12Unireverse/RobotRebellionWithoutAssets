@@ -21,16 +21,13 @@ void USpell::BeginPlay()
 void USpell::cast()
 {}
 
+void USpell::initializeSpell()
+{
     for(int i = 0; i < m_effectsClass.Num(); ++i)
     {
         UEffect* tempEffect;
 
-        UUtilitaryFunctionLibrary::createObjectFromDefault<UEffect>(
-            &tempEffect,
-            m_effectsClass[i],
-            this,
-            TEXT("Effect")
-            );
+        tempEffect = NewObject<UEffect>(this, m_effectsClass[i]);
 
         if(tempEffect)
         {
@@ -39,5 +36,3 @@ void USpell::cast()
     }
 }
 
-void USpell::cast()
-{}

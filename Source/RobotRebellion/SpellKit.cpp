@@ -37,6 +37,7 @@ void USpellKit::BeginPlay()
 
         if(tempSpell)
         {
+            tempSpell->initializeSpell();
             m_spells.Emplace(tempSpell);
         }
     }

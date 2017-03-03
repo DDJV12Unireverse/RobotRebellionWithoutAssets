@@ -35,4 +35,6 @@ public:
     virtual void cast() ;
 
     virtual void BeginPlay() override;
+
+    void initializeSpell();
 };
