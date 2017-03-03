@@ -23,8 +23,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
         TArray<TSubclassOf<class UEffect>> m_effectsClass;
-
-private:
+protected:
     float m_nextAllowedCastTimer;
 
     TArray<UEffect *> m_effects;
@@ -37,4 +36,6 @@ public:
     virtual void BeginPlay() override;
 
     void initializeSpell();
+
+    bool canCast();
 };

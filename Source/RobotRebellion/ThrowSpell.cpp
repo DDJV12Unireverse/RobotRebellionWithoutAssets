@@ -21,6 +21,14 @@ void UThrowSpell::BeginPlay()
 
 void UThrowSpell::cast()
 {
+    if(!canCast())
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Emerald,
+                                "Cooldown : " + FString::FromInt(m_nextAllowedCastTimer -FPlatformTime::Seconds()));
+        return;
+    }
+    m_nextAllowedCastTimer = FPlatformTime::Seconds() + m_cooldown;
+
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("Cast Throw Spell"));
     ARobotRebellionCharacter* caster = Cast<ARobotRebellionCharacter>(GetOwner());
     UWorld* const world = caster->GetWorld();
@@ -49,7 +57,6 @@ void UThrowSpell::cast()
         if(projectile)
         {
             projectile->setOwner(caster);
-            PRINT_MESSAGE_TO_TEST_OBJECT_NULLITY(Cast<USpell>(this), FColor::Emerald);
             projectile->setParent(this);
             const FVector fireDirection = muzzleRotation.Vector();
             projectile->initMovement(fireDirection, m_projectileInitialSpeed);

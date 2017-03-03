@@ -5,6 +5,7 @@
 
 #include "UtilitaryFunctionLibrary.h"
 #include "Effect.h"
+#include "RobotRebellion.h"
 
 USpell::USpell()
 {
@@ -36,3 +37,8 @@ void USpell::initializeSpell()
     }
 }
 
+bool USpell::canCast()
+{
+    return (FPlatformTime::Seconds() > m_nextAllowedCastTimer) 
+        && Cast<ARobotRebellionCharacter>(GetOwner())->getMana() > m_manaCost;
+}
