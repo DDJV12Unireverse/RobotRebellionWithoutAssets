@@ -29,10 +29,8 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
-    // The behavior of the effect (spawn the grenade, launch a raycast, etc.)
-    virtual void exec() PURE_VIRTUAL(UEffect::exec, );
-
-    // When the effect touch something
-    virtual void onHit(class UPrimitiveComponent*, class AActor*, class UPrimitiveComponent*, FVector, const FHitResult&) PURE_VIRTUAL(UEffect::onHit, );
-	
+    // The behavior of the effect when it's a targeted effect
+    virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) PURE_VIRTUAL(UEffect::exec, );
+    // The behavior of the effect when it's point effect
+    virtual void exec(const FVector impactPoint) PURE_VIRTUAL(UEffect::exec, );
 };

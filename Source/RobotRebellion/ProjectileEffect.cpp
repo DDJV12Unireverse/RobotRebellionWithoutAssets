@@ -28,5 +28,13 @@ void AProjectileEffect::setParent(UThrowSpell* effect)
 
 void AProjectileEffect::OnHit(UPrimitiveComponent* ThisComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    m_parentSpell->onHit(ThisComp, OtherActor, OtherComp, NormalImpulse, Hit);
+    if(Role == ROLE_Authority)
+    {
+        m_parentSpell->onHit(ThisComp, OtherActor, OtherComp, NormalImpulse, Hit);
+        Destroy();
+    }
+    else
+    {
+        Destroy();
+    }
 }
