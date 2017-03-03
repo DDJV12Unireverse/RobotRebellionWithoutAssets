@@ -767,11 +767,8 @@ void APlayableCharacter::setBombCount(int nbBombs)
 
 void APlayableCharacter::loseMana()
 {
-    setMana(getMana() - 150.f);
-    if (getMana() < 0.f)
-    {
-        setMana(0.f);
-    }
+    this->consumeMana(150.f);
+
     if (Role < ROLE_Authority)
     {
         serverLoseMana();

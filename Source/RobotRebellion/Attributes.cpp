@@ -54,9 +54,9 @@ void UAttributes::setMaxMana(float newValue) USE_NOEXCEPT
 {
     m_maxMana = newValue;
 
-    if (newValue < m_maxMana)
+    if (m_maxMana < m_mana)
     {
-        m_maxMana = m_maxMana;
+        m_mana = m_maxMana;
     }
 }
 
@@ -64,7 +64,7 @@ void UAttributes::setMaxHealth(float newValue) USE_NOEXCEPT
 {
     m_maxHealth = newValue;
 
-    if (newValue < m_health)
+    if (m_maxHealth < m_health)
     {
         m_health = m_maxHealth;
     }
