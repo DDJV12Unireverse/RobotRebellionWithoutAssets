@@ -83,12 +83,6 @@ protected:
     */
     void LookUpAtRate(float Rate);
 
-    // spell cast function
-    template<int32 index>
-    void castSpell()
-    {
-        m_spellKit->cast(index);
-    }
 
 public:
 
@@ -192,6 +186,25 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+    //CAST SPELL
+    template<int32 index>
+    void castSpellInputHanlder()
+    {
+        if(Role < ROLE_Authority)
+        {
+            castSpellServer(index); // le param n'a pas d'importance pour l'instant
+        }
+        else
+        {
+            castSpell(index);
+        }
+    }
+
+    UFUNCTION()
+        void castSpell(int32 index);
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void castSpellServer(int32 index);
 
     //DEATH
     

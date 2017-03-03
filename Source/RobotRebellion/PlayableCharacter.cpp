@@ -320,6 +320,21 @@ bool APlayableCharacter::isDeadBP()
     return isDead();
 }
 
+////// SPELL CAST /////
+bool APlayableCharacter::castSpellServer_Validate(int32 index)
+{
+    return true;
+}
+void APlayableCharacter::castSpellServer_Implementation(int32 index)
+{
+    castSpell(index);
+}
+void APlayableCharacter::castSpell(int32 index)
+{
+    m_spellKit->cast(index);
+}
+
+
 //TYPE
 EClassType APlayableCharacter::getClassType() const USE_NOEXCEPT
 {
@@ -480,10 +495,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
 
         // SPELLS
-        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpell<0>);
-        PlayerInputComponent->BindAction("Spell2", IE_Pressed, this, &APlayableCharacter::castSpell<1>);
-        PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpell<2>);
-        PlayerInputComponent->BindAction("Spell4", IE_Pressed, this, &APlayableCharacter::castSpell<3>);
+        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<0>);
+        PlayerInputComponent->BindAction("Spell2", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<1>);
+        PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<2>);
+        PlayerInputComponent->BindAction("Spell4", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<3>);
 
         /************************************************************************/
         /* DEBUG                                                                */
