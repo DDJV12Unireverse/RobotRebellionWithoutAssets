@@ -71,11 +71,7 @@ APlayableCharacter::APlayableCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
-
-    m_manaPotionsCount = m_nbManaPotionStart;
-    m_bombCount = m_nbBombStart;
-    m_healthPotionsCount = m_nbHealthPotionStart;
-
+    
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
@@ -92,6 +88,10 @@ void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 void APlayableCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    m_manaPotionsCount = m_nbManaPotionStart;
+    m_bombCount = m_nbBombStart;
+    m_healthPotionsCount = m_nbHealthPotionStart;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
