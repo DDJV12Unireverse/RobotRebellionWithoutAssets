@@ -62,10 +62,11 @@ public:
     /************************************************************************/
 
     UFUNCTION(BlueprintCallable, Category = "General")
-        EWeaponRange getWeaponRange() const USE_NOEXCEPT
+        virtual EWeaponRange getWeaponRange() const USE_NOEXCEPT
     {
         return EWeaponRange::INVALID_RANGE_WEAPON;
     }
+    
 
     UFUNCTION(BlueprintCallable, Category = "General")
         FString toFString() const USE_NOEXCEPT
@@ -100,7 +101,6 @@ public:
     virtual FString rangeToFString() const USE_NOEXCEPT;
 
     virtual FString toDebugFString() const USE_NOEXCEPT;
-
 
 
     UWeaponBase();

@@ -12,20 +12,18 @@ Damage::DamageValue UGlobalDamageMethod::normalHit(const ARobotRebellionCharacte
         intermediary = 1.f;
     }
 
-    return static_cast<Damage::DamageValue>(assailant->getAgility() / receiver->getAgility() * intermediary);
+    intermediary *= FMath::Sqrt(assailant->getAgility() / receiver->getAgility());
+
+    return static_cast<Damage::DamageValue>(intermediary);
 }
 
 
 Damage::DamageValue UGlobalDamageMethod::normalHitWithWeaponComputed(const ARobotRebellionCharacter* assailant, const ARobotRebellionCharacter* receiver)
 {
-    float intermediary = assailant->getStrength() - receiver->getDefense();
-    if (intermediary < 1.f)
-    {
-        intermediary = 1.f;
-    }
-
+    Damage::DamageValue intermediary = UGlobalDamageMethod::normalHit(assailant, receiver);
+    
     intermediary *= assailant->getCurrentEquippedWeapon()->m_weaponDamageCoefficient;
     intermediary += assailant->getCurrentEquippedWeapon()->m_weaponBaseDamage;
 
-    return static_cast<Damage::DamageValue>(assailant->getAgility() / receiver->getAgility() * intermediary);
+    return static_cast<Damage::DamageValue>(intermediary);
 }

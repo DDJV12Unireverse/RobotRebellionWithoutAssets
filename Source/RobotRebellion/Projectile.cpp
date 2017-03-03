@@ -5,6 +5,8 @@
 #include "Projectile.h"
 #include "Damage.h"
 #include "GlobalDamageMethod.h"
+#include "DamageCoefficientLogic.h"
+#include "UtilitaryFunctionLibrary.h"
 
 
 
@@ -81,18 +83,52 @@ void AProjectile::setOwner(ARobotRebellionCharacter *newOwner)
 void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
     OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Hit"));
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Hit"));
     if (Role == ROLE_Authority)
     {
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
         if (receiver && m_owner != receiver)
         {
-            Damage damage{ m_owner, receiver };
-            receiver->inflictDamage(damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, 7.f));
+            if (!receiver->isImmortal())
+            {
+                DamageCoefficientLogic coeff;
+
+                /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
+                true,
+                coeff,
+                &DamageCoefficientLogic::criticalHit,
+                &DamageCoefficientLogic::engagementHit,
+                &DamageCoefficientLogic::superEfficient,
+                &DamageCoefficientLogic::lessEfficient,
+                &DamageCoefficientLogic::multipleHit,
+                &DamageCoefficientLogic::graze
+                );
+
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
+
+                Damage damage{ m_owner, receiver };
+
+                Damage::DamageValue currentDamage = damage(
+                    &UGlobalDamageMethod::normalHitWithWeaponComputed,
+                    coeff.getCoefficientValue()
+                );
+
+                receiver->inflictDamage(currentDamage);
+                receiver->displayAnimatedIntegerValue(currentDamage, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+                if (receiver->isDead())
+                {
+                    receiver->onDeath();
+                }
+            }
+            else
+            {
+                receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+            }
         }
         
         Destroy();
         
-        //GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Destroy on Server"));
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Destroy on Server"));
     }
 }

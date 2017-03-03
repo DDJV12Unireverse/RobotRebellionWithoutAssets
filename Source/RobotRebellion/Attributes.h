@@ -24,7 +24,10 @@ void setDefense(float newValue)  USE_NOEXCEPT { attributeName##operator##setDefe
 void setAgility(float newValue)  USE_NOEXCEPT { attributeName##operator##setAgility(newValue); } \
 void inflictDamage(float damage) USE_NOEXCEPT { attributeName##operator##inflictDamage(damage); } \
 void restoreHealth(float valueToRestore) USE_NOEXCEPT { attributeName##operator##restoreHealth(valueToRestore); } \
-bool isDead() const USE_NOEXCEPT { return attributeName##operator##isDead(); }
+bool isDead() const USE_NOEXCEPT { return !attributeName##operator##isImmortal() && attributeName##operator##isDead(); } \
+void setImmortal(bool isImmortal) const USE_NOEXCEPT { attributeName##operator##setImmortal(isImmortal); } \
+bool isImmortal() const USE_NOEXCEPT { return attributeName##operator##isImmortal(); } \
+void consumeMana(float manaAmount) USE_NOEXCEPT { return attributeName##operator##consumeMana(manaAmount); }
 
 
 
@@ -35,6 +38,11 @@ class ROBOTREBELLION_API UAttributes : public UActorComponent
 
 
 protected:
+    /************************************************************************/
+    /* UPROPERTY                                                            */
+    /************************************************************************/
+
+
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
     float m_health;
 
@@ -57,11 +65,27 @@ protected:
     float m_agility;
 
 
+
+    /************************************************************************/
+    /* PROPERTY                                                             */
+    /************************************************************************/
+
+
+    void(UAttributes::*m_inflictDamageDelegate)(float);
+    void(UAttributes::*m_restoreHealthDelegate)(float);
+
+
 public:
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
+
+
 	// Sets default values for this component's properties
 	UAttributes();
         
-public:
+
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
@@ -70,7 +94,7 @@ public:
 
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
-public:
+
     /************************************************************************/
     /*                          GETTER                                      */
     /************************************************************************/
@@ -169,14 +193,19 @@ public:
     /************************************************************************/
     /*                          UTILITARY                                   */
     /************************************************************************/
-public:
+
     //Inflict damage, reduce the current health value and if damage > health, health goes to 0
-    void inflictDamage(float damage) USE_NOEXCEPT;
+    void inflictDamage(float damage)
+    {
+        (this->*m_inflictDamageDelegate)(damage);
+    }
+
+    void consumeMana(float manaAmount);
 
     //restore current health value and if the value to restore is over max_health, health goes to max_health
-    void restoreHealth(float valueToRestore) USE_NOEXCEPT
+    void restoreHealth(float valueToRestore)
     {
-        setHealth(m_health + valueToRestore);
+        (this->*m_restoreHealthDelegate)(valueToRestore);
     }
 
     //return true if the player's current health is 0, false otherwise.
@@ -185,8 +214,21 @@ public:
         return m_health == 0;
     }
 
+    void setImmortal(bool isImmortal) USE_NOEXCEPT;
 
-    //Déserialization and serialization methods
-public:
+    bool isImmortal() const USE_NOEXCEPT;
 
+
+private:
+    void inflictDamageMortal(float damage);
+
+    void restoreHealthMortal(float restoreValue)
+    {
+        setHealth(m_health + restoreValue);
+    }
+
+    void immortalMethod(float) 
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Magenta, "IMMORTAL OBJECT");
+    }
 };

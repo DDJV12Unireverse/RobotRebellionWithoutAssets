@@ -70,3 +70,4 @@ Intermediate/*
 DerivedDataCache/*
 
 enc_temp_folder/*
+*.TMP

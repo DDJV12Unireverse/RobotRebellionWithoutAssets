@@ -3,7 +3,10 @@
 #include "RobotRebellion.h"
 #include "Assassin.h"
 
-AAssassin::AAssassin():ARobotRebellionCharacter()
+AAssassin::AAssassin() :APlayableCharacter()
 {}
 
-
+//void AAssassin::BeginPlay()
+//{
+//    Super::BeginPlay();
+//}

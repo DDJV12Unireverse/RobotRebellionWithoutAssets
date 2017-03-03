@@ -2,20 +2,22 @@
 
 #pragma once
 
-#include "RobotRebellionCharacter.h"
+#include "PlayableCharacter.h"
 #include "Assassin.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ROBOTREBELLION_API AAssassin : public ARobotRebellionCharacter
+class ROBOTREBELLION_API AAssassin : public APlayableCharacter
 {
 	GENERATED_BODY()
 	
 
 public:
     AAssassin();
+
+    //virtual void BeginPlay() override;
 
     EClassType getClassType() const USE_NOEXCEPT override
     {
