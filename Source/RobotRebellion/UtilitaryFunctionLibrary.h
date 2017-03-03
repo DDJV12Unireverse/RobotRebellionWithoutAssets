@@ -70,6 +70,42 @@ public:
     }
 
     /*
+    Create an object (exact copy) from a default object. PTR version
+    ex :
+    while(!UUtilitaryFunctionLibrary::createObjectFromDefault<objInstanceType>(&objInstance, objDefaultStatic, this, TEXT("youhou")))
+    {
+    //...
+    }
+    */
+    template<class Casted, class Object>
+    static bool createObjectFromDefault(Object** out, Object* in, UObject* objectAttachedTo, FName name, EObjectFlags RF_flag = RF_Dynamic | RF_ArchetypeObject)
+    {
+        Casted* castedIn = Cast<Casted>(in);
+
+        if (castedIn)
+        {
+            Object* intermediary = NewObject<Casted>(objectAttachedTo, name, RF_flag, castedIn);
+
+            if (intermediary != NULL)
+            {
+                *out = intermediary;
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /*
+    Create an object (exact copy) from a default object. Nameless version
+    */
+    template<class Casted, class Object>
+    static bool createObjectFromDefault(Object** out, Object* in, UObject* objectAttachedTo, EObjectFlags RF_flag = RF_Dynamic | RF_ArchetypeObject)
+    {
+        return createObjectFromDefault<Casted, Object>(out, in, objectAttachedTo, NAME_None, RF_flag);
+    }
+
+    /*
     Randomly applies an effect method from those specified with the parameters equal or above the 3rd parameters
     params :
     - printMessage : bool => true to print what is the effect (in the order passed by parameter)

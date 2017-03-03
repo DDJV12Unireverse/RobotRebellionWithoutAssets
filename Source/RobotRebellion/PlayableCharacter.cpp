@@ -146,11 +146,6 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
 }
 
-// UWeaponBase* APlayableCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
-// {
-//     return m_weaponInventory->getCurrentWeapon();
-// }
-
 
 void APlayableCharacter::ExecuteCommand(FString command) const
 {
@@ -585,12 +580,6 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
-    // FVector currentPosition = this->GetTransform().GetLocation();
-     //currentPosition.Z = 135.f;
-
-     //this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
-    // this->SetActorLocation(currentPosition);
-
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
     if (playerController && playerController->InputComponent)
@@ -640,20 +629,27 @@ APickupActor* APlayableCharacter::GetUsableInView()
 {
     FVector CamLoc;
     FRotator CamRot;
+
     if (Controller == NULL)
         return NULL;
+
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
+
     const FVector TraceStart = CamLoc;
     const FVector Direction = CamRot.Vector();
     const FVector TraceEnd = TraceStart + (Direction * MaxUseDistance);
+
     FCollisionQueryParams TraceParams(FName(TEXT("TraceUsableActor")), true, this);
     TraceParams.bTraceAsyncScene = true;
     TraceParams.bReturnPhysicalMaterial = false;
     TraceParams.bTraceComplex = true;
+
     FHitResult Hit(ForceInit);
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
+
     //TODO: Comment or remove once implemented in post-process.
     DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
+
     return Cast<APickupActor>(Hit.GetActor());
 }
 
@@ -664,49 +660,46 @@ void APlayableCharacter::useHealthPotion()
     {
         serverUseHealthPotion();
     }
-    else
-        if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
-        {
-            --m_healthPotionsCount;
-            setHealth(getHealth() + EINVENTORY::HP_BY_POTION);
-            if (getHealth() > getMaxHealth())
-            {
-                setHealth(getMaxHealth());
-            }
-            PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Health potions = %u"), m_healthPotionsCount));
-        }
+    else if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
+    {
+        restoreHealth(EINVENTORY::HP_BY_POTION);
+        displayAnimatedIntegerValue(EINVENTORY::HP_BY_POTION, FColor::Green, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+        --m_healthPotionsCount;
+    }
 }
+
 void APlayableCharacter::serverUseHealthPotion_Implementation()
 {
     useHealthPotion();
 }
+
 bool APlayableCharacter::serverUseHealthPotion_Validate()
 {
     return true;
 }
+
 void APlayableCharacter::useManaPotion()
 {
     if (Role < ROLE_Authority)
     {
         serverUseManaPotion();
     }
-    else
-        if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
-        {
-            --m_manaPotionsCount;
-            setMana(getMana() + EINVENTORY::MP_BY_POTION);
-            if (getMana() > getMaxMana())
-            {
-                setMana(getMaxMana());
-            }
-            PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, FString::Printf(TEXT("Mana potions = %u"), m_manaPotionsCount));
-        }
+    else if(m_manaPotionsCount > 0 && getMana() < getMaxMana())
+    {
+        setMana(getMana() + EINVENTORY::MP_BY_POTION);
+
+        displayAnimatedIntegerValue(EINVENTORY::MP_BY_POTION, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+        --m_manaPotionsCount;
+    }
 }
 
 void APlayableCharacter::serverUseManaPotion_Implementation()
 {
     useManaPotion();
 }
+
 bool APlayableCharacter::serverUseManaPotion_Validate()
 {
     return true;
@@ -719,7 +712,9 @@ void APlayableCharacter::setManaPotionCount(int nbPotions)
         m_manaPotionsCount = EINVENTORY::MANA_POTION_MAX;
     }
     else
+    {
         m_manaPotionsCount = nbPotions;
+    }
 }
 
 void APlayableCharacter::setHealthPotionCount(int nbPotions)
@@ -729,7 +724,9 @@ void APlayableCharacter::setHealthPotionCount(int nbPotions)
         m_healthPotionsCount = EINVENTORY::HEALTH_POTION_MAX;
     }
     else
+    {
         m_healthPotionsCount = nbPotions;
+    }
 }
 
 void APlayableCharacter::setBombCount(int nbBombs)
@@ -739,7 +736,9 @@ void APlayableCharacter::setBombCount(int nbBombs)
         m_bombCount = EINVENTORY::BOMB_MAX;
     }
     else
+    {
         m_bombCount = nbBombs;
+    }
 }
 
 void APlayableCharacter::loseMana()
@@ -754,10 +753,12 @@ void APlayableCharacter::loseMana()
         serverLoseMana();
     }
 }
+
 void APlayableCharacter::serverLoseMana_Implementation()
 {
     loseMana();
 }
+
 bool APlayableCharacter::serverLoseMana_Validate()
 {
     return true;
@@ -773,10 +774,12 @@ void APlayableCharacter::loseBomb()
         serverLoseBomb();
     }
 }
+
 void APlayableCharacter::serverLoseBomb_Implementation()
 {
     loseBomb();
 }
+
 bool APlayableCharacter::serverLoseBomb_Validate()
 {
     return true;
