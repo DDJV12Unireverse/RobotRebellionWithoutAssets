@@ -84,6 +84,18 @@ void UAttributes::inflictDamageMortal(float damage)
     PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, TEXT("PV = " + FString::FromInt(m_health)));
 }
 
+void UAttributes::consumeMana(float manaAmount)
+{
+    if(manaAmount < m_mana)
+    {
+        m_mana -= manaAmount;
+    }
+    else
+    {
+        m_mana = 0;
+    }
+}
+
 void UAttributes::setImmortal(bool isImmortal) USE_NOEXCEPT
 {
     if (isImmortal)

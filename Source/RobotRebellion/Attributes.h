@@ -199,6 +199,8 @@ public:
         (this->*m_inflictDamageDelegate)(damage);
     }
 
+    void consumeMana(float manaAmount);
+
     //restore current health value and if the value to restore is over max_health, health goes to max_health
     void restoreHealth(float valueToRestore)
     {

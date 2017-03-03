@@ -32,6 +32,7 @@ void UThrowSpell::cast()
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("Cast Throw Spell"));
     ARobotRebellionCharacter* caster = Cast<ARobotRebellionCharacter>(GetOwner());
     UWorld* const world = caster->GetWorld();
+    caster->consumeMana(m_manaCost);
 
     if(caster)
     {

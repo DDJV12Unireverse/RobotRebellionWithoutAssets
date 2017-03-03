@@ -20,6 +20,8 @@ public:
         float m_range;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
         float m_cooldown;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
+        float m_manaCost;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
         TArray<TSubclassOf<class UEffect>> m_effectsClass;
