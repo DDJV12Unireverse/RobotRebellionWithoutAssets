@@ -38,5 +38,5 @@ void USpell::initializeSpell()
 bool USpell::canCast()
 {
     return (FPlatformTime::Seconds() > m_nextAllowedCastTimer) 
-        && Cast<ARobotRebellionCharacter>(GetOwner())->getMana() > m_manaCost;
+        && Cast<ARobotRebellionCharacter>(GetOwner())->getMana() >= m_manaCost;
 }

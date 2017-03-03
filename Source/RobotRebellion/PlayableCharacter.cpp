@@ -37,9 +37,9 @@ APlayableCharacter::APlayableCharacter()
     BaseLookUpRate = 45.f;
 
     // Don't rotate when the controller rotates. Let that just affect the camera.
-     bUseControllerRotationPitch = false;
-     bUseControllerRotationYaw = false;
-     bUseControllerRotationRoll = false;
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationRoll = false;
 
     // Configure character movement
     GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
@@ -57,7 +57,7 @@ APlayableCharacter::APlayableCharacter()
     CameraBoom->SocketOffset = FVector(0, 35, 0);
     CameraBoom->TargetOffset = FVector(0, 0, 55);
 
-                                                // Create a follow camera
+    // Create a follow camera
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
     FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
@@ -73,7 +73,7 @@ APlayableCharacter::APlayableCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
-
+    
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
@@ -90,6 +90,10 @@ void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 void APlayableCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    m_manaPotionsCount = m_nbManaPotionStart;
+    m_bombCount = m_nbBombStart;
+    m_healthPotionsCount = m_nbHealthPotionStart;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -106,7 +110,7 @@ void APlayableCharacter::LookUpAtRate(float Rate)
 
 void APlayableCharacter::MoveForward(float Value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if ((Controller != NULL) && (Value != 0.0f))
     {
         // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
@@ -120,7 +124,7 @@ void APlayableCharacter::MoveForward(float Value)
 
 void APlayableCharacter::MoveRight(float Value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if ((Controller != NULL) && (Value != 0.0f))
     {
         // find out which way is right
         const FRotator Rotation = Controller->GetControlRotation();
@@ -139,31 +143,26 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
 }
-
-// UWeaponBase* APlayableCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
-// {
-//     return m_weaponInventory->getCurrentWeapon();
-// }
 
 
 void APlayableCharacter::ExecuteCommand(FString command) const
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
-    if(MyPC)
+    if (MyPC)
     {
         MyPC->ConsoleCommand(command, true);
-        if(GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, command);
-        }
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, command);
     }
 }
 
 ///// JUMP
 void APlayableCharacter::OnStartJump()
 {
-    if(m_bPressedCrouch)
+    if (m_bPressedCrouch)
     {
         OnCrouchToggle();
     }
@@ -180,7 +179,7 @@ void APlayableCharacter::OnStopJump()
 ///// SPRINT
 void APlayableCharacter::OnStartSprint()
 {
-    if(m_bPressedCrouch)
+    if (m_bPressedCrouch)
     {
         OnCrouchToggle();
     }
@@ -190,7 +189,7 @@ void APlayableCharacter::OnStartSprint()
         m_moveSpeed = 1.0f;
         m_bPressedRun = true;
 
-        if(Role < ROLE_Authority)
+        if (Role < ROLE_Authority)
         {
             ServerSprintActivate(m_bPressedRun);
         }
@@ -203,7 +202,7 @@ void APlayableCharacter::OnStopSprint()
     m_moveSpeed = 0.3;
     m_bPressedRun = false;
     // Si nous sommes sur un client
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         ServerSprintActivate(m_bPressedRun);
     }
@@ -211,7 +210,7 @@ void APlayableCharacter::OnStopSprint()
 
 void APlayableCharacter::ServerSprintActivate_Implementation(bool NewRunning)
 {
-    if(NewRunning)
+    if (NewRunning)
     {
         OnStartSprint();
     }
@@ -227,7 +226,7 @@ bool APlayableCharacter::ServerSprintActivate_Validate(bool NewRunning)
 
 void APlayableCharacter::OnRep_SprintButtonDown()
 {
-    if(m_bPressedRun == true)
+    if (m_bPressedRun == true)
     {
         OnStartSprint();
     }
@@ -254,7 +253,7 @@ bool APlayableCharacter::ServerCrouchToggle_Validate(bool NewCrouching)
 void APlayableCharacter::OnRep_CrouchButtonDown()
 {
 
-    if(m_bPressedCrouch == true)
+    if (m_bPressedCrouch == true)
     {
         Crouch();
     }
@@ -267,9 +266,9 @@ void APlayableCharacter::OnRep_CrouchButtonDown()
 void APlayableCharacter::OnCrouchToggle()
 {
     // Not crouched and not running -> can Crouch
-    if(!IsRunning())
+    if (!IsRunning())
     {
-        if(!m_bPressedCrouch)
+        if (!m_bPressedCrouch)
         {
             m_bPressedCrouch = true;
             m_moveSpeed = 0.1f;
@@ -283,7 +282,7 @@ void APlayableCharacter::OnCrouchToggle()
         }
     }
     // Si nous sommes sur un client
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         ServerCrouchToggle(true); // le param n'a pas d'importance pour l'instant
     }
@@ -293,7 +292,7 @@ void APlayableCharacter::OnCrouchToggle()
 void APlayableCharacter::mainFire()
 {
     // Essayer de tirer un projectile
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         serverMainFire(); // le param n'a pas d'importance pour l'instant
     }
@@ -352,7 +351,7 @@ void APlayableCharacter::openLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
 
-    if(MyPC)
+    if (MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->DisplayWidget(myHud->LobbyImpl);
@@ -369,7 +368,7 @@ void APlayableCharacter::openLobbyWidget()
 ///////// SWITCH WEAPON
 void APlayableCharacter::switchWeapon()
 {
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
     }
@@ -387,19 +386,63 @@ void APlayableCharacter::switchWeapon()
 
 void APlayableCharacter::interact()
 {
-    APickupActor* Usable = GetUsableInView();
-    if(Usable)
+    if (Role == ROLE_Authority)
     {
-        Usable->OnPickup(this);
+        APickupActor* Usable = GetUsableInView();
+        if (Usable)
+        {
+            if (Usable->getObjectType() == EObjectType::MANA_POTION)
+            {
+                if (m_manaPotionsCount < m_nbManaPotionMax)
+                {
+                    clientInteract(Usable);
+                    ++m_manaPotionsCount;
+                }
+                else
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
+                }
+            }
+            else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
+            {
+                if (m_healthPotionsCount < m_nbHealthPotionMax)
+                {
+                    clientInteract(Usable);
+                    ++m_healthPotionsCount;
+                }
+                else
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
+                }
+            }
+            else if (Usable->getObjectType() == EObjectType::BOMB)
+            {
+                if (m_bombCount < m_nbBombMax)
+                {
+                    clientInteract(Usable);
+                    ++m_bombCount;
+                }
+                else
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL BOMB"));
+                }
+            }
+            else
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
+            }
+        }
     }
-    if (Role<ROLE_Authority)
+    else
     {
         serverInteract();
     }
 }
+
+
 void APlayableCharacter::serverInteract_Implementation()
 {
-    interact();
+    this->interact();
 }
 
 bool APlayableCharacter::serverInteract_Validate()
@@ -410,6 +453,11 @@ bool APlayableCharacter::serverInteract_Validate()
 void APlayableCharacter::serverSwitchWeapon_Implementation()
 {
     this->switchWeapon();
+}
+
+void APlayableCharacter::clientInteract_Implementation(APickupActor* Usable)
+{
+    Usable->OnPickup(this);
 }
 
 bool APlayableCharacter::serverSwitchWeapon_Validate()
@@ -501,6 +549,12 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<2>);
         PlayerInputComponent->BindAction("Spell4", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<3>);
 
+        //USE OBJECTS
+        PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
+        PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
+        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::loseMana);
+        PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::loseBomb);
+
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
@@ -549,12 +603,6 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
-   // FVector currentPosition = this->GetTransform().GetLocation();
-    //currentPosition.Z = 135.f;
-
-    //this->SetActorRotation(FRotator{ 90.0f, 0.0f, 0.0f });
-   // this->SetActorLocation(currentPosition);
-
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
     if (playerController && playerController->InputComponent)
@@ -570,13 +618,13 @@ void APlayableCharacter::cppOnDeath()
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    if(Controller && Controller->IsLocalController())
+    if (Controller && Controller->IsLocalController())
     {
         APickupActor* usable = GetUsableInView();
         // Terminer le focus sur l'objet précédent
-        if(focusedPickupActor != usable)
+        if (focusedPickupActor != usable)
         {
-            if(focusedPickupActor)
+            if (focusedPickupActor)
             {
                 focusedPickupActor->OnEndFocus();
             }
@@ -586,33 +634,40 @@ void APlayableCharacter::Tick(float DeltaTime)
         // Assigner le nouveau focus (peut être nul)
         focusedPickupActor = usable;
         // Démarrer un nouveau focus si Usable != null;
-        if(usable)
+        if (usable)
         {
-            if(bHasNewFocus)
+            if (bHasNewFocus)
             {
                 usable->OnBeginFocus();
                 bHasNewFocus = false;
+
                 // only debug utility
                 PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
             }
         }
     }
+
 }
 
 APickupActor* APlayableCharacter::GetUsableInView()
 {
     FVector CamLoc;
     FRotator CamRot;
-    if(Controller == NULL)
+
+    if (Controller == NULL)
         return NULL;
+
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
+
     const FVector TraceStart = CamLoc;
     const FVector Direction = CamRot.Vector();
     const FVector TraceEnd = TraceStart + (Direction * MaxUseDistance);
+
     FCollisionQueryParams TraceParams(FName(TEXT("TraceUsableActor")), true, this);
     TraceParams.bTraceAsyncScene = true;
     TraceParams.bReturnPhysicalMaterial = false;
     TraceParams.bTraceComplex = true;
+
     FHitResult Hit(ForceInit);
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
 
@@ -620,4 +675,136 @@ APickupActor* APlayableCharacter::GetUsableInView()
     //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
 
     return Cast<APickupActor>(Hit.GetActor());
+}
+
+//////INVENTORY///////
+void APlayableCharacter::useHealthPotion()
+{
+    if (Role < ROLE_Authority)
+    {
+        serverUseHealthPotion();
+    }
+    else if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
+    {
+        restoreHealth(m_healthPerPotion);
+        displayAnimatedIntegerValue(m_healthPerPotion, FColor::Green, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+        --m_healthPotionsCount;
+    }
+}
+
+void APlayableCharacter::serverUseHealthPotion_Implementation()
+{
+    useHealthPotion();
+}
+
+bool APlayableCharacter::serverUseHealthPotion_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::useManaPotion()
+{
+    if (Role < ROLE_Authority)
+    {
+        serverUseManaPotion();
+    }
+    else if(m_manaPotionsCount > 0 && getMana() < getMaxMana())
+    {
+        setMana(getMana() + m_manaPerPotion);
+
+        displayAnimatedIntegerValue(m_manaPerPotion, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+        --m_manaPotionsCount;
+    }
+}
+
+void APlayableCharacter::serverUseManaPotion_Implementation()
+{
+    useManaPotion();
+}
+
+bool APlayableCharacter::serverUseManaPotion_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::setManaPotionCount(int nbPotions)
+{
+    if (nbPotions > m_nbManaPotionMax)
+    {
+        m_manaPotionsCount = m_nbManaPotionMax;
+    }
+    else
+    {
+        m_manaPotionsCount = nbPotions;
+    }
+}
+
+void APlayableCharacter::setHealthPotionCount(int nbPotions)
+{
+    if (nbPotions > m_nbHealthPotionMax)
+    {
+        m_healthPotionsCount = m_nbHealthPotionMax;
+    }
+    else
+    {
+        m_healthPotionsCount = nbPotions;
+    }
+}
+
+void APlayableCharacter::setBombCount(int nbBombs)
+{
+    if (nbBombs > m_nbBombMax)
+    {
+        m_bombCount = m_nbBombMax;
+    }
+    else
+    {
+        m_bombCount = nbBombs;
+    }
+}
+
+void APlayableCharacter::loseMana()
+{
+    setMana(getMana() - 150.f);
+    if (getMana() < 0.f)
+    {
+        setMana(0.f);
+    }
+    if (Role < ROLE_Authority)
+    {
+        serverLoseMana();
+    }
+}
+
+void APlayableCharacter::serverLoseMana_Implementation()
+{
+    loseMana();
+}
+
+bool APlayableCharacter::serverLoseMana_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::loseBomb()
+{
+    m_bombCount = 0;
+    PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, TEXT("BombLost"));
+
+    if (Role < ROLE_Authority)
+    {
+        serverLoseBomb();
+    }
+}
+
+void APlayableCharacter::serverLoseBomb_Implementation()
+{
+    loseBomb();
+}
+
+bool APlayableCharacter::serverLoseBomb_Validate()
+{
+    return true;
 }

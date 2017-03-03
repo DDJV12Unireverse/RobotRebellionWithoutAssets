@@ -47,8 +47,10 @@ void APickupActor::OnEndFocus()
 void APickupActor::OnPickup(APawn * InstigatorPawn)
 {
     //Nothing. To be derived.
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("PickedUp"));
-    Destroy();
-       
-    //UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
+    PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, TEXT("PickedUp"));
+    if (Role == ROLE_Authority)
+    {
+        Destroy();
+    }
+   
 }

@@ -13,10 +13,9 @@
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 {
-    GENERATED_BODY()
-
-private:
-    // COMPONENT
+	GENERATED_BODY()
+	
+public:
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
         class USpringArmComponent* CameraBoom;
@@ -36,7 +35,41 @@ public:
     ////CROUCH////
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
+
+    ////INVENTORY
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
+        int m_healthPotionsCount;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
+        int m_manaPotionsCount;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
+        int m_bombCount;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbHealthPotionStart;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbManaPotionStart;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbBombStart;
+        
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbHealthPotionMax;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbManaPotionMax;
     
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbBombMax;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        float m_healthPerPotion;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        float m_manaPerPotion;
+
     /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseTurnRate;
@@ -197,7 +230,6 @@ public:
         void castSpellServer(int32 index);
 
     //DEATH
-
     //Function to call in BP, can't do it with macro
     UFUNCTION(BlueprintCallable, Category = "General")
         bool isDeadBP();
@@ -229,17 +261,67 @@ public:
     UFUNCTION()
         void switchWeapon();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSwitchWeapon();
+
     UFUNCTION()
         void interact();
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverInteract();
 
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverSwitchWeapon();
-
+    UFUNCTION(NetMulticast, Reliable)
+        void clientInteract(APickupActor* Usable);
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 
     class APickupActor* GetUsableInView();
+
+    //////INVENTORY///////
+
+    void useHealthPotion();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverUseHealthPotion();
+
+    void useManaPotion();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverUseManaPotion();
+
+
+    //Remove later
+    void loseMana();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverLoseMana();
+
+    void loseBomb();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverLoseBomb();
+
+    void giveBombToDrone() //Do Later
+    {}
+
+    int getManaPotionCount()
+    {
+        return m_manaPotionsCount;
+    }
+
+    int getHealthPotionCount()
+    {
+        return m_healthPotionsCount;
+    }
+
+    int getBombCount()
+    {
+        return m_bombCount;
+    }
+
+    void setManaPotionCount(int nbPotion);
+
+    void setHealthPotionCount(int nbPotion);
+
+    void setBombCount(int nbBombs);
+
+    ////END INVENTORY
 };
