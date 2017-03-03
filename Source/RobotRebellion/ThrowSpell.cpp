@@ -4,6 +4,20 @@
 #include "ThrowSpell.h"
 #include "RobotRebellionCharacter.h"
 #include "ProjectileEffect.h"
+#include "Effect.h"
+
+UThrowSpell::UThrowSpell() : USpell()
+{
+
+}
+
+void UThrowSpell::BeginPlay()
+{
+
+    PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("Cast Throw Spell"));
+    Super::BeginPlay();
+}
+
 
 void UThrowSpell::cast()
 {
@@ -50,19 +64,25 @@ void UThrowSpell::onHit(UPrimitiveComponent*, AActor* target, UPrimitiveComponen
         ARobotRebellionCharacter* hitChar = Cast<ARobotRebellionCharacter>(target);
         if(hitChar)
         {
-            applicateEffect(hitChar);
+            applyEffect(hitChar);
         }
     }
     else
     {
-        applicateEffect(hitResult.ImpactPoint);
+        applyEffect(hitResult.ImpactPoint);
     }
 }
 
-void UThrowSpell::applicateEffect(ARobotRebellionCharacter* affectedTarget)
+void UThrowSpell::applyEffect(ARobotRebellionCharacter* affectedTarget)
 {
+    PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on target"));
+    for(int i = 0; i < m_effects.Num(); ++i)
+    {
+        m_effects[i]->exec(Cast<ARobotRebellionCharacter>(GetOwner()), affectedTarget);
+    }
 }
 
-void UThrowSpell::applicateEffect(FVector impactPoint)
+void UThrowSpell::applyEffect(FVector impactPoint)
 {
+    PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on point"));
 }

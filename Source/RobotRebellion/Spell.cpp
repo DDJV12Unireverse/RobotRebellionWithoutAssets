@@ -15,6 +15,12 @@ void USpell::BeginPlay()
 {
     Super::BeginPlay();
 
+    
+}
+
+void USpell::cast()
+{}
+
     for(int i = 0; i < m_effectsClass.Num(); ++i)
     {
         UEffect* tempEffect;

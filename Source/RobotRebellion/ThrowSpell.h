@@ -27,11 +27,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         TSubclassOf<class AProjectileEffect> m_projectileClass;
     
+
+public:
+    UThrowSpell();
+    virtual void BeginPlay() override;
+
     virtual void cast() override;
 
     void onHit(class UPrimitiveComponent*, class AActor*, class UPrimitiveComponent*, FVector, const FHitResult&);
 
-    void applicateEffect(class ARobotRebellionCharacter* affectedTarget);
-    void applicateEffect(FVector impactPoint);
+    void applyEffect(class ARobotRebellionCharacter* affectedTarget);
+    void applyEffect(FVector impactPoint);
 	
 };
