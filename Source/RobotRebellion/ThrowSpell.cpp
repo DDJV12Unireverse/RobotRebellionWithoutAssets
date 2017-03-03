@@ -7,17 +7,12 @@
 #include "Effect.h"
 
 UThrowSpell::UThrowSpell() : USpell()
-{
-
-}
+{}
 
 void UThrowSpell::BeginPlay()
 {
-
-    PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("Cast Throw Spell"));
     Super::BeginPlay();
 }
-
 
 void UThrowSpell::cast()
 {
@@ -27,12 +22,9 @@ void UThrowSpell::cast()
                                 "Cooldown : " + FString::FromInt(m_nextAllowedCastTimer -FPlatformTime::Seconds()));
         return;
     }
-    m_nextAllowedCastTimer = FPlatformTime::Seconds() + m_cooldown;
 
-    PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("Cast Throw Spell"));
     ARobotRebellionCharacter* caster = Cast<ARobotRebellionCharacter>(GetOwner());
     UWorld* const world = caster->GetWorld();
-    caster->consumeMana(m_manaCost);
 
     if(caster)
     {
@@ -47,7 +39,7 @@ void UThrowSpell::cast()
         spawnParams.Owner = caster;
         spawnParams.Instigator = caster->Instigator;
 
-        // spawn a projectile
+        // spawn the effect projectile
         AProjectileEffect* const projectile = world->SpawnActor<AProjectileEffect>(
             m_projectileClass,
             MuzzleLocation,
@@ -57,10 +49,14 @@ void UThrowSpell::cast()
 
         if(projectile)
         {
+            const FVector fireDirection = muzzleRotation.Vector();
             projectile->setOwner(caster);
             projectile->setParent(this);
-            const FVector fireDirection = muzzleRotation.Vector();
             projectile->initMovement(fireDirection, m_projectileInitialSpeed);
+
+            // the spell is successfully cast consumme mana and launch CD
+            caster->consumeMana(m_manaCost);
+            m_nextAllowedCastTimer = FPlatformTime::Seconds() + m_cooldown;
         }
     }
 }
@@ -93,4 +89,8 @@ void UThrowSpell::applyEffect(ARobotRebellionCharacter* affectedTarget)
 void UThrowSpell::applyEffect(FVector impactPoint)
 {
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on point"));
+    for(int i = 0; i < m_effects.Num(); ++i)
+    {
+        m_effects[i]->exec(impactPoint);
+    }
 }

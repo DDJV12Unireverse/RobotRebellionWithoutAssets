@@ -15,8 +15,6 @@ USpell::USpell()
 void USpell::BeginPlay()
 {
     Super::BeginPlay();
-
-    
 }
 
 void USpell::cast()
