@@ -26,7 +26,8 @@ void inflictDamage(float damage) USE_NOEXCEPT { attributeName##operator##inflict
 void restoreHealth(float valueToRestore) USE_NOEXCEPT { attributeName##operator##restoreHealth(valueToRestore); } \
 bool isDead() const USE_NOEXCEPT { return !attributeName##operator##isImmortal() && attributeName##operator##isDead(); } \
 void setImmortal(bool isImmortal) const USE_NOEXCEPT { attributeName##operator##setImmortal(isImmortal); } \
-bool isImmortal() const USE_NOEXCEPT { return attributeName##operator##isImmortal(); } 
+bool isImmortal() const USE_NOEXCEPT { return attributeName##operator##isImmortal(); } \
+void consumeMana(float manaAmount) USE_NOEXCEPT { return attributeName##operator##consumeMana(manaAmount); }
 
 
 
