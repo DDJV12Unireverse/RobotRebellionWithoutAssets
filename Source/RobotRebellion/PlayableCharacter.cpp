@@ -65,8 +65,10 @@ APlayableCharacter::APlayableCharacter()
                                                    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
                                                    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
+    
     m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
     m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
+    m_spellKit = CreateDefaultSubobject<USpellKit>(TEXT("SpellKit"));
 
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
@@ -311,11 +313,26 @@ bool APlayableCharacter::serverMainFire_Validate()
 }
 
 //DEAD
-
 //Function to call in BP, can't do it with macro
 bool APlayableCharacter::isDeadBP()
 {
     return isDead();
+}
+
+////// SPELL CAST /////
+bool APlayableCharacter::castSpellServer_Validate(int32 index)
+{
+    return true;
+}
+
+void APlayableCharacter::castSpellServer_Implementation(int32 index)
+{
+    castSpell(index);
+}
+
+void APlayableCharacter::castSpell(int32 index)
+{
+    m_spellKit->cast(index);
 }
 
 //TYPE
@@ -523,14 +540,21 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
-        //SWITCH WEAPON
+        //INTERACT
         PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
+
+        //SPELLS
+        PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<0>);
+        PlayerInputComponent->BindAction("Spell2", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<1>);
+        PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<2>);
+        PlayerInputComponent->BindAction("Spell4", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<3>);
 
         //USE OBJECTS
         PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
         PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
         PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::loseMana);
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::loseBomb);
+
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
@@ -544,7 +568,6 @@ void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponen
     {
         //ESCAPE
         PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
-
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -608,7 +631,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 
             bHasNewFocus = true;
         }
-        // Assigner le nouveau focus (peut être nul )
+        // Assigner le nouveau focus (peut être nul)
         focusedPickupActor = usable;
         // Démarrer un nouveau focus si Usable != null;
         if (usable)
@@ -617,7 +640,8 @@ void APlayableCharacter::Tick(float DeltaTime)
             {
                 usable->OnBeginFocus();
                 bHasNewFocus = false;
-                // Pour débogage, vous pourrez l'oter par la suite
+
+                // only debug utility
                 PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
             }
         }
@@ -648,7 +672,7 @@ APickupActor* APlayableCharacter::GetUsableInView()
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
 
     //TODO: Comment or remove once implemented in post-process.
-    DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
+    //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
 
     return Cast<APickupActor>(Hit.GetActor());
 }
