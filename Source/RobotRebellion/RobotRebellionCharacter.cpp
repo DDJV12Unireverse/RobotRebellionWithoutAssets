@@ -30,6 +30,9 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 void ARobotRebellionCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    this->m_timedDestroyDelegate = &ARobotRebellionCharacter::noDestroyForNow;
+    this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::disablingEverything;
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)
@@ -44,6 +47,68 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     {
         this->createTextBillboard();
     }
+
+    (this->*m_timedDestroyDelegate)(deltaTime);
+}
+
+void ARobotRebellionCharacter::disablingEverything()
+{
+    this->bHidden = true;
+
+    if (Controller)
+    {
+        Controller->UnPossess();
+    }
+
+    this->SetActorEnableCollision(false);
+
+    this->UnregisterAllComponents();
+    
+    GetCapsuleComponent()->DestroyComponent();
+
+    this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::endDisabling;
+}
+
+void ARobotRebellionCharacter::startTimedDestroy() USE_NOEXCEPT
+{
+    this->m_timedDestroyDelegate = &ARobotRebellionCharacter::destroyNow;
+}
+
+void ARobotRebellionCharacter::destroyNow(float deltaTime)
+{
+    (this->*m_disableBeforeDestroyDelegate)();
+
+
+    //All conditions are met for destroying
+    //To add a condition for destroying, add it to this if.
+    //The destruction will occur when all conditions will be met
+    if (m_textBillboardInstance->nothingToRender())
+    {
+        //We have made everything important before destroying. Now we can destroy safely.
+        this->m_timedDestroyDelegate = &ARobotRebellionCharacter::noDestroyForNow;
+
+        if (Role >= ROLE_Authority)
+        {
+            netMultiKill();
+        }
+        else if (!this->IsPendingKillOrUnreachable())
+        {
+            this->Destroy();
+        }
+    }
+}
+
+void ARobotRebellionCharacter::netMultiKill_Implementation()
+{
+    if (!this->IsPendingKillOrUnreachable())
+    {
+        this->ConditionalBeginDestroy();
+    }
+}
+
+bool ARobotRebellionCharacter::netMultiKill_Validate()
+{
+    return true;
 }
 
 ///// SERVER

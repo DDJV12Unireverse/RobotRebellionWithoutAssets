@@ -105,9 +105,15 @@ public:
     UFUNCTION(BlueprintCallable, Category = "General")
         void destroyLivingText();
 
+    UFUNCTION(BlueprintCallable, Category = "General")
+        bool isAtEndOfLife() const USE_NOEXCEPT
+    {
+        return m_currentTime > m_lifeTime;
+    }
+
     //say if this instance is ready to be displayed and animated
     UFUNCTION(BlueprintCallable, Category = "General")
-        FORCEINLINE bool isReady() const noexcept
+        FORCEINLINE bool isReady() const USE_NOEXCEPT
     {
         return this->m_updateMethod != &ULivingTextRenderComponent::doesNothing && this->IsRegistered();
     }

@@ -14,14 +14,9 @@ ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 
 void ANonPlayableCharacter::cppOnDeath()
 {
-    if (this->m_textBillboardInstance)
-    {
-        this->m_textBillboardInstance->clearAllLivingTexts();
-    }
-
     dropLoot();
 
-    this->Destroy();
+    this->startTimedDestroy();
 }
 
 void ANonPlayableCharacter::dropLoot()
