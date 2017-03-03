@@ -72,9 +72,9 @@ APlayableCharacter::APlayableCharacter()
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
-    m_manaPotionsCount = EINVENTORY::MANA_POTION_START;
-    m_bombCount = EINVENTORY::BOMB_START;
-    m_healthPotionsCount = EINVENTORY::HEALTH_POTION_START;
+    m_manaPotionsCount = m_nbManaPotionStart;
+    m_bombCount = m_nbBombStart;
+    m_healthPotionsCount = m_nbHealthPotionStart;
 
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
@@ -381,7 +381,7 @@ void APlayableCharacter::interact()
         {
             if (Usable->getObjectType() == EObjectType::MANA_POTION)
             {
-                if (m_manaPotionsCount < EINVENTORY::MANA_POTION_MAX)
+                if (m_manaPotionsCount < m_nbManaPotionMax)
                 {
                     clientInteract(Usable);
                     ++m_manaPotionsCount;
@@ -393,7 +393,7 @@ void APlayableCharacter::interact()
             }
             else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
-                if (m_healthPotionsCount < EINVENTORY::HEALTH_POTION_MAX)
+                if (m_healthPotionsCount < m_nbHealthPotionMax)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
@@ -405,7 +405,7 @@ void APlayableCharacter::interact()
             }
             else if (Usable->getObjectType() == EObjectType::BOMB)
             {
-                if (m_bombCount < EINVENTORY::BOMB_MAX)
+                if (m_bombCount < m_nbBombMax)
                 {
                     clientInteract(Usable);
                     ++m_bombCount;
@@ -668,7 +668,7 @@ void APlayableCharacter::useHealthPotion()
         if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
         {
             --m_healthPotionsCount;
-            setHealth(getHealth() + EINVENTORY::HP_BY_POTION);
+            setHealth(getHealth() + m_healthPerPotion);
             if (getHealth() > getMaxHealth())
             {
                 setHealth(getMaxHealth());
@@ -694,7 +694,7 @@ void APlayableCharacter::useManaPotion()
         if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
         {
             --m_manaPotionsCount;
-            setMana(getMana() + EINVENTORY::MP_BY_POTION);
+            setMana(getMana() + m_manaPerPotion);
             if (getMana() > getMaxMana())
             {
                 setMana(getMaxMana());
@@ -714,9 +714,9 @@ bool APlayableCharacter::serverUseManaPotion_Validate()
 
 void APlayableCharacter::setManaPotionCount(int nbPotions)
 {
-    if (nbPotions > EINVENTORY::MANA_POTION_MAX)
+    if (nbPotions > m_nbManaPotionMax)
     {
-        m_manaPotionsCount = EINVENTORY::MANA_POTION_MAX;
+        m_manaPotionsCount = m_nbManaPotionMax;
     }
     else
         m_manaPotionsCount = nbPotions;
@@ -724,9 +724,9 @@ void APlayableCharacter::setManaPotionCount(int nbPotions)
 
 void APlayableCharacter::setHealthPotionCount(int nbPotions)
 {
-    if (nbPotions > EINVENTORY::HEALTH_POTION_MAX)
+    if (nbPotions > m_nbHealthPotionMax)
     {
-        m_healthPotionsCount = EINVENTORY::HEALTH_POTION_MAX;
+        m_healthPotionsCount = m_nbHealthPotionMax;
     }
     else
         m_healthPotionsCount = nbPotions;
@@ -734,9 +734,9 @@ void APlayableCharacter::setHealthPotionCount(int nbPotions)
 
 void APlayableCharacter::setBombCount(int nbBombs)
 {
-    if (nbBombs > EINVENTORY::BOMB_MAX)
+    if (nbBombs > m_nbBombMax)
     {
-        m_bombCount = EINVENTORY::BOMB_MAX;
+        m_bombCount = m_nbBombMax;
     }
     else
         m_bombCount = nbBombs;
