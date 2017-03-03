@@ -23,8 +23,6 @@ void UTextBillboardComponent::beginDisplayingText(const FVector& actorPositionIn
 {
     ULivingTextRenderComponent* intermediary;
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "BEGIN DISPLAY UTextBillboardComponent");
-
     if (UUtilitaryFunctionLibrary::createObjectFromDefault<ULivingTextRenderComponent>(&intermediary, m_defaultRenderText, this, RF_Dynamic))
     {
         intermediary->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
@@ -69,7 +67,10 @@ void UTextBillboardComponent::clearAllLivingTexts()
 {
     for (auto iter = 0; iter < m_damageRenderedTextArray.Num(); ++iter)
     {
-        m_damageRenderedTextArray[iter]->destroyLivingText();
+        if (!m_damageRenderedTextArray[iter]->IsPendingKillOrUnreachable())
+        {
+            m_damageRenderedTextArray[iter]->destroyLivingText();
+        }
     }
 
     m_damageRenderedTextArray.Empty();

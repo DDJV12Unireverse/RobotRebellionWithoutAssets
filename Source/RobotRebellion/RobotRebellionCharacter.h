@@ -37,6 +37,16 @@ protected:
         UAttributes* m_attribute;
 
 
+
+    /************************************************************************/
+    /* PROPERTY                                                             */
+    /************************************************************************/
+    void(ARobotRebellionCharacter::* m_timedDestroyDelegate)(float deltaTime);
+    void(ARobotRebellionCharacter::* m_disableBeforeDestroyDelegate)();
+
+
+
+
 public:
     /************************************************************************/
     /* METHODS                                                              */
@@ -62,7 +72,23 @@ public:
     virtual void cppOnDeath();
 
 
+    void startTimedDestroy() USE_NOEXCEPT;
 
+
+
+protected:
+    FORCEINLINE void noDestroyForNow(float deltaTime)
+    {}
+
+    void destroyNow(float deltaTime);
+
+    FORCEINLINE void endDisabling()
+    {}
+
+    void disablingEverything();
+
+
+public:
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
@@ -91,6 +117,10 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void netMultidisplayAnimatedText(const FString& textToDisplay, const FColor& color, ELivingTextAnimMode mode);
+
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void netMultiKill();
 
 
 // Attributs relatives functions added by macro

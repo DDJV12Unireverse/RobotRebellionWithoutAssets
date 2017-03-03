@@ -61,7 +61,7 @@ void ULivingTextRenderComponent::updateEverything(float deltaTime)
 
     m_currentTime += deltaTime;
 
-    if (m_currentTime < m_lifeTime)
+    if (!this->isAtEndOfLife())
     {
         m_savedBeginPosition.Z += m_zTranslationSpeed * deltaTime;
 
@@ -69,8 +69,7 @@ void ULivingTextRenderComponent::updateEverything(float deltaTime)
     }
     else
     {
-        this->UnregisterComponent();
-        this->DestroyComponent();
+        destroyLivingText();
     }
 }
 
@@ -83,7 +82,7 @@ void ULivingTextRenderComponent::updateWithoutMoving(float deltaTime)
 
     m_currentTime += deltaTime;
 
-    if (m_currentTime < m_lifeTime)
+    if (!this->isAtEndOfLife())
     {
         this->SetWorldLocation(m_savedBeginPosition);
     }
