@@ -12,8 +12,8 @@
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 {
-    GENERATED_BODY()
-
+	GENERATED_BODY()
+	
 
 
 public:
@@ -67,9 +67,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         float m_manaPerPotion;
 
-    //     ////Weapon Inventory/////
-    //     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-    //         class UWeaponInventory* m_weaponInventory;
 
             /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -85,6 +82,8 @@ public:
     // Distance maximale de focus sur les objets.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
+
+
 
     // Seulement vrai lors de la première image avec un nouveau focus.
     bool bHasNewFocus;

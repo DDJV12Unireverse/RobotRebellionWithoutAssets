@@ -3,6 +3,8 @@
 #include "RobotRebellion.h"
 #include "NonPlayableCharacter.h"
 
+#include "TextBillboardComponent.h"
+
 ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 {
     // fill it
@@ -12,7 +14,13 @@ ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 
 void ANonPlayableCharacter::cppOnDeath()
 {
+    if (this->m_textBillboardInstance)
+    {
+        this->m_textBillboardInstance->clearAllLivingTexts();
+    }
+
     dropLoot();
+
     this->Destroy();
 }
 
@@ -33,6 +41,7 @@ void ANonPlayableCharacter::serverDropLoot_Implementation()
 {
     dropLoot();
 }
+
 bool ANonPlayableCharacter::serverDropLoot_Validate()
 {
     return true;

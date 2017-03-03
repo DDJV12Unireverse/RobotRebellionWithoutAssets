@@ -97,9 +97,13 @@ void URobotRobellionSpawnerClass::spawnAndReplace(APlayableCharacter* owner, ECl
 
             owner->Controller->Possess(intermediary);
 
-            owner->cppOnRevive();
+            //TODO : Find a way to switch camera
 
             owner->Destroy();
+
+            intermediary->cppOnRevive();
+            
+            intermediary->createTextBillboardWithThisCamera(owner->FollowCamera);
 
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Black, "Spawn");
         }
