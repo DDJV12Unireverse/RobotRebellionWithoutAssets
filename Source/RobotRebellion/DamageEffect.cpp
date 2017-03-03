@@ -19,11 +19,15 @@ void UDamageEffect::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 void UDamageEffect::exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
 {
-    PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "exec with target");
+    // Very simple way to deals damage
     float damage = m_flatDamage;
     damage += target->getMaxHealth() * m_hpPercent;
-    //PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "deal : "+ FString::FromInt(damage));
+    float coef = caster->getStrength() / target->getDefense();
+    coef = coef > 1.0f ? 1.0f : coef;
+    damage += coef * m_reducedDamage;
+
     target->inflictDamage(damage);
+    
     if(target->isDead())
     {
         target->onDeath();

@@ -6,7 +6,7 @@
 #include "Spell.generated.h"
 
 /**
- *
+ * Spell Base class implement shared methode like initializeSpell and canCast
  */
 UCLASS(Blueprintable)
 class ROBOTREBELLION_API USpell : public UActorComponent
@@ -32,11 +32,12 @@ protected:
 
 public:
     USpell();
-    
-    virtual void cast() ;
+
+    virtual void cast();
 
     virtual void BeginPlay() override;
 
+    // Must be called to initialize effect list with Blueprint specified class
     void initializeSpell();
 
     bool canCast();

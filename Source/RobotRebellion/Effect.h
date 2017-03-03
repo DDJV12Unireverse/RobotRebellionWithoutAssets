@@ -5,11 +5,13 @@
 #include "Components/ActorComponent.h"
 #include "Effect.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+/*
+ * Interface class for all effects
+ */
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ROBOTREBELLION_API UEffect : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
@@ -19,15 +21,15 @@ public:
     //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
     //    ANIMATION m_animation;
 
+public:
+    // Sets default values for this component's properties
+    UEffect();
 
-	// Sets default values for this component's properties
-	UEffect();
+    // Called when the game starts
+    virtual void BeginPlay() override;
 
-	// Called when the game starts
-	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+    // Called every frame
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
     // The behavior of the effect when it's a targeted effect
     virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) PURE_VIRTUAL(UEffect::exec, );

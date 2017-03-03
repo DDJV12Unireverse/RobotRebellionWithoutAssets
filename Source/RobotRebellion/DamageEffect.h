@@ -15,7 +15,7 @@ class ROBOTREBELLION_API UDamageEffect : public UEffect
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageEffect)
-        float m_hpPercent;
+        float m_hpPercent; // deal damage based on target max hp
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageEffect)
         float m_flatDamage; // ignore defense
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageEffect)

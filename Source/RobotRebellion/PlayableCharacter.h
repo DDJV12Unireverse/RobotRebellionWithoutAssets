@@ -13,13 +13,13 @@
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 private:
     // COMPONENT
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-    class USpringArmComponent* CameraBoom;
+        class USpringArmComponent* CameraBoom;
     /** Follow camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
         class UCameraComponent* FollowCamera;
@@ -36,12 +36,8 @@ public:
     ////CROUCH////
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
-
-//     ////Weapon Inventory/////
-//     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-//         class UWeaponInventory* m_weaponInventory;
-
-        /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+    
+    /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseTurnRate;
 
@@ -105,8 +101,6 @@ public:
         return FollowCamera;
     }
 
-//    class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
-
     virtual void BeginPlay() override;
 
     ////Server
@@ -166,10 +160,8 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void ServerCrouchToggle(bool NewCrouching);
 
-
     UFUNCTION()
         void OnRep_CrouchButtonDown();
-
 
     ///// WORLD INFO
     UFUNCTION(BlueprintCallable, Category = "World Info")
@@ -181,8 +173,6 @@ public:
     /////FIRE
     UFUNCTION()
         void mainFire();
-
-
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
@@ -207,17 +197,14 @@ public:
         void castSpellServer(int32 index);
 
     //DEATH
-    
+
     //Function to call in BP, can't do it with macro
     UFUNCTION(BlueprintCallable, Category = "General")
         bool isDeadBP();
-    
-
 
     //Type
     UFUNCTION(BlueprintCallable, Category = "General")
         EClassType getType() const USE_NOEXCEPT;
-
 
     //Parse the class type to a string
     UFUNCTION(BlueprintCallable, Category = "Debug")

@@ -325,15 +325,16 @@ bool APlayableCharacter::castSpellServer_Validate(int32 index)
 {
     return true;
 }
+
 void APlayableCharacter::castSpellServer_Implementation(int32 index)
 {
     castSpell(index);
 }
+
 void APlayableCharacter::castSpell(int32 index)
 {
     m_spellKit->cast(index);
 }
-
 
 //TYPE
 EClassType APlayableCharacter::getClassType() const USE_NOEXCEPT
@@ -494,7 +495,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //INTERACT
         PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
 
-        // SPELLS
+        //SPELLS
         PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<0>);
         PlayerInputComponent->BindAction("Spell2", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<1>);
         PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<2>);
@@ -513,7 +514,6 @@ void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponen
     {
         //ESCAPE
         PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
-
 
         /************************************************************************/
         /* DEBUG                                                                */
