@@ -15,18 +15,6 @@ class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
 	GENERATED_BODY()
 	
 
-public:
-    enum EINVENTORY
-    {
-        HEALTH_POTION_START = 10,
-        HEALTH_POTION_MAX = 10,
-        MANA_POTION_START = 10,
-        MANA_POTION_MAX = 10,
-        BOMB_START = 1,
-        BOMB_MAX = 1,
-        HP_BY_POTION = 100, //Health points earned with 1 potion
-        MP_BY_POTION = 100 //Mana points earned with 1 potion
-    };
 
 public:
     /** Camera boom positioning the camera behind the character */
@@ -45,16 +33,40 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
 
-
-    ////INVENTORY////
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
+    ////INVENTORY
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_healthPotionsCount;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_manaPotionsCount;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", Replicated)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_bombCount;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbHealthPotionStart;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbManaPotionStart;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbBombStart;
+        
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbHealthPotionMax;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbManaPotionMax;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        int m_nbBombMax;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        float m_healthPerPotion;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+        float m_manaPerPotion;
+
 
             /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
