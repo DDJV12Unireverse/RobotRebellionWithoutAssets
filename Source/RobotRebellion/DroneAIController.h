@@ -41,6 +41,10 @@ private:
     //the next time we update the movement of the drone.
     float m_nextMovementUpdateTime;
 
+    
+    //Position to follow
+    FVector m_destination;
+
 
 public:
     /************************************************************************/
