@@ -41,7 +41,6 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
 
     FVector dronePosition = owner->GetActorTransform().GetLocation();
-    //FVector directionToTarget = m_targetToFollow->GetActorLocation() - dronePosition;
     FVector directionToTarget = m_destination - dronePosition;
     directionToTarget.Z = m_targetedHeight - dronePosition.Z;
 
@@ -77,17 +76,13 @@ void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
 
 void ADroneAIController::updateTargetedTarget()
 {
-    /*if (this->hasALivingTarget())
-    {
-        return;
-    }*/
+  
     int livingPlayers = 0;
     m_destination = FVector(0, 0, 0);
     int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
 
     for (int32 iter = 0; iter < playerCount; ++iter)
     {
-        //m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
         ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
         if (!currentPlayer->isDead())
         {
@@ -95,17 +90,12 @@ void ADroneAIController::updateTargetedTarget()
             ++livingPlayers;
         }
 
-        //if (this->hasALivingTarget())
-        //{
-        //    //good, we've found a new living character to follow...
-        //    break;
-        //}
+       
     }
     if (livingPlayers>0)
     {
         m_destination /= livingPlayers;
     }
-   // m_targetToFollow->SetActorLocation(m_destination);
 }
 
 void ADroneAIController::IAUpdate(float deltaTime)
