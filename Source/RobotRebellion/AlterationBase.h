@@ -11,16 +11,34 @@ class ROBOTREBELLION_API UAlterationBase : public UActorComponent
 {
 	GENERATED_BODY()
 
+
+public:
+    /************************************************************************/
+    /* UPROPERTY                                                            */
+    /************************************************************************/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
+        float m_lifeTime;
+
+
+
+
+    /************************************************************************/
+    /* PROPERTY                                                             */
+    /************************************************************************/
+    float m_currentTime;
+
+    
+
+
 public:	
 	// Sets default values for this component's properties
 	UAlterationBase();
 
-	// Called when the game starts
-	virtual void BeginPlay() override;
 	
-	// Called every frame
-	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
-
-		
-	
+    virtual void update(float deltaTime);
+    
+    virtual void destroyItself();
+    
+    virtual void onCreate() 
+    {}
 };

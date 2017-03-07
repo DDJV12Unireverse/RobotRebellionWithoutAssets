@@ -9,27 +9,23 @@ UAlterationBase::UAlterationBase()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
 
 
-// Called when the game starts
-void UAlterationBase::BeginPlay()
+void UAlterationBase::update(float deltaTime)
 {
-	Super::BeginPlay();
+    m_currentTime += deltaTime;
 
-	// ...
-	
+    if (m_currentTime > m_lifeTime)
+    {
+        destroyItself();
+    }
 }
 
-
-// Called every frame
-void UAlterationBase::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+void UAlterationBase::destroyItself()
 {
-	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
-
-	// ...
+    this->DestroyComponent();
 }
-
