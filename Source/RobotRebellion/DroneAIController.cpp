@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "DroneAIController.h"
-
+#include "King.h"
 #include "RobotRebellionCharacter.h"
 #include "NonPlayableCharacter.h"
 
@@ -80,21 +80,32 @@ void ADroneAIController::updateTargetedTarget()
     int livingPlayers = 0;
     m_destination = FVector(0, 0, 0);
     int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
-
-    for (int32 iter = 0; iter < playerCount; ++iter)
+    TArray<AActor*> kings;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
+    if (kings.Num()>0) //The king is here
     {
-        ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-        if (!currentPlayer->isDead())
-        {
-            m_destination += currentPlayer->GetActorLocation();
-            ++livingPlayers;
-        }
+        //auto king = (kings.FindByKey(0));
+        auto king = kings.Top();
+        m_destination = king->GetActorLocation();
 
-       
     }
-    if (livingPlayers>0)
+    else //There is no king, follow players
     {
-        m_destination /= livingPlayers;
+        for (int32 iter = 0; iter < playerCount; ++iter)
+        {
+            ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+            if (!currentPlayer->isDead())
+            {
+                m_destination += currentPlayer->GetActorLocation();
+                ++livingPlayers;
+            }
+
+
+        }
+        if (livingPlayers > 0)
+        {
+            m_destination /= livingPlayers;
+        }
     }
 }
 

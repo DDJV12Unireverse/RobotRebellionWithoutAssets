@@ -44,7 +44,9 @@ private:
     
     //Position to follow
     FVector m_destination;
-
+    //King
+    UPROPERTY(EditDefaultsOnly, Category = King)
+        TSubclassOf<class AKing> m_kingClass;
 
 public:
     /************************************************************************/
