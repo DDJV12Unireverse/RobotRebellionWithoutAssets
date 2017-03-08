@@ -51,7 +51,7 @@ void UAlterationController::TickComponent( float DeltaTime, ELevelTick TickType,
 
 void UAlterationController::update(float deltaTime)
 {
-    m_alterationsArray.RemoveAllSwap([](UAlterationBase* current) { return current->IsPendingKillOrUnreachable(); });
+    m_alterationsArray.RemoveAll([](UAlterationBase* current) { return current->IsPendingKillOrUnreachable(); });
 
     for (int32 iter = 0; iter < m_alterationsArray.Num(); ++iter)
     {
@@ -73,7 +73,7 @@ UAlterationBase** UAlterationController::findByID(int32 id)
 }
 
 
-GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR_WITH_CLIENT_IMPL_GEN(m_inflictMethod, UAlterationController, void, addAlteration, serverAddAlteration, UAlterationBase*);
+GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR_WITH_CLIENT_IMPL_GEN(m_inflictMethod, UAlterationController, void, addAlteration, serverAddAlteration, UAlterationBase*, alteredOwner);
 
 
 void UAlterationController::addAlterationServerImp(UAlterationBase* newAlteration)

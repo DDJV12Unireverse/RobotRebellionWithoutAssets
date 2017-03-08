@@ -13,11 +13,7 @@ UAlterationBase::ID UInvisibilityAlteration::m_id;
 
 void UInvisibilityAlteration::destroyItself()
 {
-    UMeshComponent* characterMesh = m_alteredOwner->FindComponentByClass<UMeshComponent>();
-    if (characterMesh)
-    {
-        characterMesh->SetVisibility(true);
-    }
+    m_alteredOwner->setInvisible(false);
 
     this->DestroyComponent();
 }
@@ -26,14 +22,5 @@ void UInvisibilityAlteration::onCreate(ARobotRebellionCharacter* alteredOwner)
 {
     m_alteredOwner = alteredOwner;
 
-    UMeshComponent* characterMesh = m_alteredOwner->FindComponentByClass<UMeshComponent>();
-    if (characterMesh)
-    {
-        characterMesh->SetVisibility(false);
-    }
-    else
-    {
-        this->DestroyComponent();
-    }
+    alteredOwner->setInvisible(true);
 }
-
