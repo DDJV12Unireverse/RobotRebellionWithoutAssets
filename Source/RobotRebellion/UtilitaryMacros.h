@@ -43,9 +43,9 @@ bool className::funcName##_Validate(__VA_ARGS__) \
     return true; \
 } \
 
-#define GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(returnType, className, funcName, ...) \
+#define GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(className, funcName, ...) \
 GENERATE_DEFAULT_VALIDATION_METHOD(className, funcName, __VA_ARGS__) \
-returnType className::funcName##_Implementation(__VA_ARGS__)
+void className::funcName##_Implementation(__VA_ARGS__)
 
 
 
@@ -53,27 +53,27 @@ returnType className::funcName##_Implementation(__VA_ARGS__)
 /* CLIENT                                                               */
 /************************************************************************/
 
-#define GENERATE_PROTOTYPE_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER(MethodPtrName, className, returnType, funcName, argument) protected: \
-    returnType (className::* MethodPtrName)(argument); \
-    returnType funcName##ClientImp(argument); \
-    returnType funcName##ServerImp(argument);
+#define GENERATE_PROTOTYPE_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER(MethodPtrName, className, funcName, argument) protected: \
+    void (className::* MethodPtrName)(argument); \
+    void funcName##ClientImp(argument); \
+    void funcName##ServerImp(argument);
 
 
-#define GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR(methodPtrName, className, returnType, uPropFuncName, serverFuncName, argumentType, argumentName) \
+#define GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR(methodPtrName, className, uPropFuncName, serverFuncName, argumentType, argumentName) \
 GENERATE_DEFAULT_VALIDATION_METHOD(className, serverFuncName, argumentType) \
-returnType className::serverFuncName##_Implementation(argumentType argumentName) \
+void className::serverFuncName##_Implementation(argumentType argumentName) \
 { \
     (this->*methodPtrName)(argumentName); \
 } \
-returnType className::uPropFuncName(argumentType argumentName) \
+void className::uPropFuncName(argumentType argumentName) \
 { \
     (this->*methodPtrName)(argumentName); \
 } \
 
 
-#define GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR_WITH_CLIENT_IMPL_GEN(methodPtrName, className, returnType, uPropFuncName, serverFuncName, argumentType, argumentName) \
-GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR(methodPtrName, className, returnType, uPropFuncName, serverFuncName, argumentType, argumentName) \
-returnType className::uPropFuncName##ClientImp(argumentType argumentName) \
+#define GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR_WITH_CLIENT_IMPL_GEN(methodPtrName, className, uPropFuncName, serverFuncName, argumentType, argumentName) \
+GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR(methodPtrName, className, uPropFuncName, serverFuncName, argumentType, argumentName) \
+void className::uPropFuncName##ClientImp(argumentType argumentName) \
 { \
     serverFuncName(argumentName); \
 }

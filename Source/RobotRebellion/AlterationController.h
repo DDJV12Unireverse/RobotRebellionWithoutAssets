@@ -57,5 +57,5 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverAddAlteration(class UAlterationBase* newAlteration);
 
-    GENERATE_PROTOTYPE_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER(m_inflictMethod, UAlterationController, void, addAlteration, class UAlterationBase*);
+    GENERATE_PROTOTYPE_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER(m_inflictMethod, UAlterationController, addAlteration, class UAlterationBase*);
 };
