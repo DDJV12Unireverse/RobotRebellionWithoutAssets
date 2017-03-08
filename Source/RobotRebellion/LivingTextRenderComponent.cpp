@@ -3,6 +3,8 @@
 #include "RobotRebellion.h"
 #include "LivingTextRenderComponent.h"
 
+#define PI_MUL_3 9.42477796077f
+
 
 ULivingTextRenderComponent::ULivingTextRenderComponent() : UTextRenderComponent()
 {
@@ -92,6 +94,33 @@ void ULivingTextRenderComponent::updateWithoutMoving(float deltaTime)
     }
 }
 
+void ULivingTextRenderComponent::updateBoingBoing(float deltaTime)
+{
+    if (IsPendingKillOrUnreachable())
+    {
+        return;
+    }
+
+    m_currentTime += deltaTime;
+
+    if (!this->isAtEndOfLife())
+    {
+        float animationTransfertMethod = m_currentTime * PI_MUL_3 / m_lifeTime; //normalized time over 3pi
+
+        //sin(u)/u make it boing boing ^^
+        animationTransfertMethod = FMath::Sin(animationTransfertMethod) / animationTransfertMethod;
+        animationTransfertMethod /= 64.f; //vertical scaling
+
+        m_savedBeginPosition.Z += m_zTranslationSpeed * animationTransfertMethod;
+
+        this->SetWorldLocation(m_savedBeginPosition);
+    }
+    else
+    {
+        this->destroyLivingText();
+    }
+}
+
 void ULivingTextRenderComponent::copyFrom(const ULivingTextRenderComponent& objectToCopyFrom)
 {
     m_lifeTime = objectToCopyFrom.m_lifeTime;
@@ -107,7 +136,8 @@ void ULivingTextRenderComponent::setDelegateAccordingToAnimMode(ELivingTextAnimM
     {
         &ULivingTextRenderComponent::doesNothing,
         &ULivingTextRenderComponent::updateEverything,
-        &ULivingTextRenderComponent::updateWithoutMoving
+        &ULivingTextRenderComponent::updateWithoutMoving,
+        &ULivingTextRenderComponent::updateBoingBoing
     };
 
     this->m_updateMethod = delegateArrayMapperLookUpTable[static_cast<uint8>(mode)];

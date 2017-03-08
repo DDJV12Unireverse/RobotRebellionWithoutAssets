@@ -5,6 +5,8 @@
 
 #include "AlterationBase.h"
 
+#include "RobotRebellionCharacter.h"
+
 #include "UtilitaryFunctionLibrary.h"
 
 // Sets default values for this component's properties
@@ -101,14 +103,14 @@ void UAlterationController::addAlterationServerImp(UAlterationBase* newAlteratio
     {
         if (!this->findByID(newAlteration->getID().m_value))
         {
-            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Inflict new Alteration " + newAlteration->toDebugString());
-
             m_alterationsArray.Add(newAlteration);
             newAlteration->onCreate(Cast<ARobotRebellionCharacter>(GetOwner()));
-        }
-        else
-        {
-            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Already altered " + newAlteration->toDebugString());
+
+            auto character = Cast<ARobotRebellionCharacter>(GetOwner());
+            if (character)
+            {
+                character->displayAnimatedText(newAlteration->toDebugString(), FColor::Silver, ELivingTextAnimMode::TEXT_ANIM_BOING_BOING);
+            }
         }
     }
 }
