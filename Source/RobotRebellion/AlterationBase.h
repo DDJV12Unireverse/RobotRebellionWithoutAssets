@@ -41,6 +41,8 @@ public:
 
     class ARobotRebellionCharacter* m_alteredOwner;
 
+
+private:
     static ID m_id;
 
 
@@ -61,5 +63,11 @@ public:
     virtual FString toDebugString() const USE_NOEXCEPT
     {
         return "Base Alteration";
+    }
+
+    //No, it isn't the way Patrice taught us but I don't have the time luxury to implement it the correct way.
+    virtual ID getID() const USE_NOEXCEPT
+    {
+        return UAlterationBase::m_id;
     }
 };

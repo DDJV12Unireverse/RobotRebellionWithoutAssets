@@ -30,4 +30,10 @@ public:
     {
         return "Stun";
     }
+
+    //No, it isn't the way Patrice taught us but I don't have the time luxury to implement it the correct way.
+    virtual ID getID() const USE_NOEXCEPT override
+    {
+        return UStunAlteration::m_id;
+    }
 };
