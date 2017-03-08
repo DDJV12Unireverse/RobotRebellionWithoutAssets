@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "DroneAIController.h"
-
+#include "King.h"
 #include "RobotRebellionCharacter.h"
 #include "NonPlayableCharacter.h"
 
@@ -16,13 +16,15 @@ void ADroneAIController::BeginPlay()
     Super::BeginPlay();
 
     m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
-
+    
     m_currentTime = 0.f;
 
     m_nextMovementUpdateTime = m_updateMovementTime;
     m_nextUpdatePropertyTime = m_updatePropertyTime;
 
     m_state = DRONE_MOVING; //for testing
+
+    setFollowGroup();
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -41,8 +43,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
 
     FVector dronePosition = owner->GetActorTransform().GetLocation();
-    FVector directionToTarget = m_targetToFollow->GetActorLocation() - dronePosition;
-
+    FVector directionToTarget = m_destination - dronePosition;
     directionToTarget.Z = m_targetedHeight - dronePosition.Z;
 
     float length = directionToTarget.SizeSquared();
@@ -77,23 +78,7 @@ void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
 
 void ADroneAIController::updateTargetedTarget()
 {
-    if (this->hasALivingTarget())
-    {
-        return;
-    }
-
-    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
-
-    for (int32 iter = 0; iter < playerCount; ++iter)
-    {
-        m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-
-        if (this->hasALivingTarget())
-        {
-            //good, we've found a new living character to follow...
-            break;
-        }
-    }
+    (this->*m_updateTarget)();
 }
 
 void ADroneAIController::IAUpdate(float deltaTime)
@@ -129,4 +114,52 @@ void ADroneAIController::IALoop(float deltaTime)
     case DRONE_COMBAT:
         break;
     }
+}
+
+void ADroneAIController::followKing()
+{
+    TArray<AActor*> kings;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
+    if (kings.Num() > 0) //The king is here
+    {
+        auto king = kings.Top();
+        m_destination = king->GetActorLocation();
+    }
+}
+
+void ADroneAIController::followGroup()
+{
+    int livingPlayers = 0;
+    m_destination = FVector(0, 0, 0);
+    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+    for (int32 iter = 0; iter < playerCount; ++iter)
+    {
+        ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+        if (!currentPlayer->isDead())
+        {
+            m_destination += currentPlayer->GetActorLocation();
+            ++livingPlayers;
+        }
+    }
+    if (livingPlayers > 0)
+    {
+        m_destination /= livingPlayers;
+    }
+}
+
+
+void ADroneAIController::setFollowGroup()
+{
+    this->m_updateTarget = &ADroneAIController::followGroup;
+}
+void ADroneAIController::setFollowKing()
+{
+    TArray<AActor*> kings;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
+    if (kings.Num() > 0) //The king is here
+    {
+        m_king = static_cast<AKing*>(kings.Top());
+        this->m_updateTarget = &ADroneAIController::followKing;
+    }
+    else setFollowGroup(); //if no king, stay with group
 }
