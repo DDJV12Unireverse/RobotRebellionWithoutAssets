@@ -55,7 +55,15 @@ void UAlterationController::update(float deltaTime)
 
     for (int32 iter = 0; iter < m_alterationsArray.Num(); ++iter)
     {
-        m_alterationsArray[iter]->update(deltaTime);
+        if (!m_alterationsArray[iter]->IsPendingKillOrUnreachable())
+        {
+            m_alterationsArray[iter]->update(deltaTime);
+        }
+        else
+        {
+            m_alterationsArray.RemoveAt(iter);
+            --iter;
+        }
     }
 }
 
@@ -70,6 +78,15 @@ UAlterationBase** UAlterationController::findByID(int32 id)
     }
 
     return nullptr;
+}
+
+void UAlterationController::removeAllAlteration()
+{
+    while (m_alterationsArray.Num() != 0)
+    {
+        UAlterationBase* alterationToDestroy = m_alterationsArray.Pop(false);
+        alterationToDestroy->destroyItself();
+    }
 }
 
 

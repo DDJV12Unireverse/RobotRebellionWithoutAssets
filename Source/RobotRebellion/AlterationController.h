@@ -39,6 +39,8 @@ public:
 
     class UAlterationBase** findByID(int32 id);
 
+    void removeAllAlteration();
+
 
 private:
     void doesNothing(float) {}
