@@ -21,8 +21,6 @@ public:
 
 
 public:
-    virtual void BeginPlay() override;
-
     void destroyItself() override;
 
     void onCreate(class ARobotRebellionCharacter* alteredOwner) override;

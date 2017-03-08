@@ -9,10 +9,6 @@
 
 UAlterationBase::ID UStunAlteration::m_id;
 
-void UStunAlteration::BeginPlay()
-{
-    
-}
 
 void UStunAlteration::destroyItself()
 {
