@@ -27,7 +27,9 @@ public:
     /************************************************************************/
     float m_currentTime;
 
-    
+    bool m_isNPC;
+
+    class ARobotRebellionCharacter* m_alteredOwner;
 
 
 public:	
@@ -39,6 +41,8 @@ public:
     
     virtual void destroyItself();
     
-    virtual void onCreate() 
-    {}
+    virtual void onCreate(class ARobotRebellionCharacter* alteredOwner)
+    {
+        m_alteredOwner = alteredOwner;
+    }
 };
