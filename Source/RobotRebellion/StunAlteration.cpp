@@ -24,7 +24,7 @@ void UStunAlteration::destroyItself()
     {
         auto playableOwner = Cast<APlayableCharacter>(m_alteredOwner);
 
-        playableOwner->EnablePlayInput();
+        playableOwner->EnablePlayInput(true);
     }
 
     this->DestroyComponent();
@@ -42,7 +42,7 @@ void UStunAlteration::onCreate(ARobotRebellionCharacter* alteredOwner)
     {
         m_isNPC = false;
 
-        playableOwner->DisablePlayInput();
+        playableOwner->EnablePlayInput(false);
     }
     else
     {

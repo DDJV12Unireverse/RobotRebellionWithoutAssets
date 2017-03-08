@@ -142,8 +142,7 @@ public:
     virtual void cppOnRevive() override;
     virtual void cppOnDeath() override;
 
-    void DisablePlayInput();
-    void EnablePlayInput();
+    void EnablePlayInput(bool enable);
 
     void inputOnLiving(class UInputComponent* playerInput);
     void inputOnDying(class UInputComponent* playerInput);

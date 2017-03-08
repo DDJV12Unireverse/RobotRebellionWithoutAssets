@@ -473,7 +473,7 @@ bool APlayableCharacter::serverSwitchWeapon_Validate()
 
 FString APlayableCharacter::typeToString() const USE_NOEXCEPT
 {
-    static const FString typeLookUpTable[EClassType::TYPE_COUNT] = {
+    static const FString typeLookUpTable[] = {
         TYPE_PARSING(None),
         TYPE_PARSING(Soldier),
         TYPE_PARSING(Assassin),
@@ -587,41 +587,35 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
 
 void APlayableCharacter::cppOnRevive()
 {
-    this->EnablePlayInput();
+    this->EnablePlayInput(true);
 
     //TODO - Continue the Revive method
 }
 
 void APlayableCharacter::cppOnDeath()
 {
-    this->DisablePlayInput();
+    this->EnablePlayInput(false);
 
     this->m_alterationController->removeAllAlteration();
 }
 
-void APlayableCharacter::DisablePlayInput()
+
+void APlayableCharacter::EnablePlayInput(bool enable)
 {
     APlayerController* playerController = Cast<APlayerController>(GetController());
-
+    
     if (playerController && playerController->InputComponent)
     {
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
 
-        inputOnDying(newPlayerController);
-
-        playerController->InputComponent = newPlayerController;
-    }
-}
-
-void APlayableCharacter::EnablePlayInput()
-{
-    APlayerController* playerController = Cast<APlayerController>(GetController());
-
-    if (playerController && playerController->InputComponent)
-    {
-        UInputComponent* newPlayerController = CreatePlayerInputComponent();
-
-        inputOnLiving(newPlayerController);
+        if (enable)
+        {
+            inputOnLiving(newPlayerController);
+        }
+        else
+        {
+            inputOnDying(newPlayerController);
+        }
 
         playerController->InputComponent = newPlayerController;
     }
