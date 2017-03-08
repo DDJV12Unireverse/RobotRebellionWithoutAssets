@@ -59,18 +59,37 @@ void UAlterationController::update(float deltaTime)
     }
 }
 
+UAlterationBase** UAlterationController::findByID(int32 id)
+{
+    for (auto iter = 0; iter < m_alterationsArray.Num(); ++iter)
+    {
+        if (m_alterationsArray[iter]->m_id.m_value == id)
+        {
+            return &m_alterationsArray[iter];
+        }
+    }
+
+    return nullptr;
+}
 
 
 GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR_WITH_CLIENT_IMPL_GEN(m_inflictMethod, UAlterationController, void, addAlteration, serverAddAlteration, UAlterationBase*);
 
 
-void UAlterationController::addAlterationServerImp(class UAlterationBase* newAlteration)
+void UAlterationController::addAlterationServerImp(UAlterationBase* newAlteration)
 {
     if (newAlteration)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Inflict new Alteration");
+        if (!this->findByID(newAlteration->m_id.m_value))
+        {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Inflict new Alteration " + newAlteration->toDebugString());
 
-        m_alterationsArray.Add(newAlteration);
-        newAlteration->onCreate(Cast<ARobotRebellionCharacter>(GetOwner()));
+            m_alterationsArray.Add(newAlteration);
+            newAlteration->onCreate(Cast<ARobotRebellionCharacter>(GetOwner()));
+        }
+        else
+        {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Already altered " + newAlteration->toDebugString());
+        }
     }
 }

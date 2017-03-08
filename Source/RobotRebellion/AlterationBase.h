@@ -13,6 +13,18 @@ class ROBOTREBELLION_API UAlterationBase : public UActorComponent
 
 
 public:
+    struct ID
+    {
+    public:
+        int32 m_value;
+
+        static int32 attributor;
+
+        ID() USE_NOEXCEPT : m_value{ attributor++ } {}
+    };
+
+
+public:
     /************************************************************************/
     /* UPROPERTY                                                            */
     /************************************************************************/
@@ -31,6 +43,8 @@ public:
 
     class ARobotRebellionCharacter* m_alteredOwner;
 
+    static ID m_id;
+
 
 public:	
 	// Sets default values for this component's properties
@@ -44,5 +58,10 @@ public:
     virtual void onCreate(class ARobotRebellionCharacter* alteredOwner)
     {
         m_alteredOwner = alteredOwner;
+    }
+
+    virtual FString toDebugString() const USE_NOEXCEPT
+    {
+        return "Base Alteration";
     }
 };

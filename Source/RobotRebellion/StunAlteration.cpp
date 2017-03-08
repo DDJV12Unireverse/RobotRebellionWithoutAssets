@@ -7,11 +7,15 @@
 #include "PlayableCharacter.h"
 #include "AIController.h"
 
+UAlterationBase::ID UStunAlteration::m_id;
+
+void UStunAlteration::BeginPlay()
+{
+    
+}
 
 void UStunAlteration::destroyItself()
 {
-    PRINT_MESSAGE_ON_SCREEN(FColor::Black, "Destroy alteration");
-
     if (m_isNPC)
     {
         auto nonPlayableOwner = Cast<ANonPlayableCharacter>(m_alteredOwner);

@@ -4,6 +4,9 @@
 #include "AlterationBase.h"
 
 
+int32 UAlterationBase::ID::attributor = 0;
+UAlterationBase::ID UAlterationBase::m_id;
+
 // Sets default values for this component's properties
 UAlterationBase::UAlterationBase()
 {
