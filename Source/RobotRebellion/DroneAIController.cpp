@@ -23,7 +23,7 @@ void ADroneAIController::BeginPlay()
     m_nextUpdatePropertyTime = m_updatePropertyTime;
 
     m_state = DRONE_MOVING; //for testing
-
+    m_coeffKing = 3.f;
     setFollowGroup();
 }
 
@@ -130,8 +130,8 @@ void ADroneAIController::followKing()
                 ++livingPlayers;
             }
         }
-        m_destination += 3 * m_king->GetActorLocation();
-        m_destination /= (livingPlayers+3);
+        m_destination += m_coeffKing * m_king->GetActorLocation();
+        m_destination /= (livingPlayers+ m_coeffKing);
 }
 
 void ADroneAIController::followGroup()
