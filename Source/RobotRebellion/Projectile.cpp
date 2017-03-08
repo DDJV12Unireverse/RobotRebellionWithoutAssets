@@ -116,17 +116,19 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                 receiver->inflictDamage(currentDamage);
                 receiver->displayAnimatedIntegerValue(currentDamage, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
-                UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
-                    true,
-                    *receiver,
-                    &ARobotRebellionCharacter::inflictStun,
-                    &ARobotRebellionCharacter::inflictInvisibility,
-                    &ARobotRebellionCharacter::doesNothing
-                );
-
                 if (receiver->isDead())
                 {
                     receiver->onDeath();
+                }
+                else
+                {
+                    UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
+                        true,
+                        *receiver,
+                        &ARobotRebellionCharacter::inflictStun,
+                        &ARobotRebellionCharacter::inflictInvisibility,
+                        &ARobotRebellionCharacter::doesNothing
+                    );
                 }
             }
             else
