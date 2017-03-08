@@ -215,16 +215,33 @@ void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponen
 
 void ARobotRebellionCharacter::inflictStun()
 {
-    UStunAlteration* stunAlteration = NewObject<UStunAlteration>();
-    stunAlteration->m_lifeTime = 5.f;
-    m_alterationController->addAlteration(stunAlteration);
+    if (!this->isImmortal())
+    {
+        UStunAlteration* stunAlteration;
+
+        if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
+            &stunAlteration,
+            m_alterationController->m_stunDefault
+        ))
+        {
+            m_alterationController->addAlteration(stunAlteration);
+        }
+    }
 }
 
 void ARobotRebellionCharacter::inflictInvisibility()
 {
-    UInvisibilityAlteration* invisibilityAlteration = NewObject<UInvisibilityAlteration>();
-    invisibilityAlteration->m_lifeTime = 5.f;
-    m_alterationController->addAlteration(invisibilityAlteration);
+    if (!this->isImmortal())
+    {
+        UInvisibilityAlteration* invisibilityAlteration;
+        if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UInvisibilityAlteration>(
+            &invisibilityAlteration,
+            m_alterationController->m_invisibilityDefault
+        ))
+        {
+            m_alterationController->addAlteration(invisibilityAlteration);
+        }
+    }
 }
 
 

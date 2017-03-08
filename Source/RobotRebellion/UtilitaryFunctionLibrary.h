@@ -106,6 +106,24 @@ public:
     }
 
     /*
+    Create an object (exact copy) from a default object. No attachement here. Nameless version
+    */
+    template<class Casted, class Object>
+    static bool createObjectFromDefaultWithoutAttach(Object** out, UClass* in, FName name = NAME_None)
+    {
+        Object* intermediary = NewObject<Casted>((UObject*)GetTransientPackage(), in, name);
+
+        if (intermediary != NULL)
+        {
+            *out = intermediary;
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /*
     Randomly applies an effect method from those specified with the parameters equal or above the 3rd parameters
     params :
     - printMessage : bool => true to print what is the effect (in the order passed by parameter)
