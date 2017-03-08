@@ -14,6 +14,11 @@ AKing::AKing() : ANonPlayableCharacter()
     this->GetCharacterMovement()->GravityScale = 0.f;
 }
 
+void AKing::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
 void AKing::Tick(float deltaTime)
 {
     Super::Tick(deltaTime);

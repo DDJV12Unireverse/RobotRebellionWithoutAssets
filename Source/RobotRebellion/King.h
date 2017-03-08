@@ -16,7 +16,7 @@ class ROBOTREBELLION_API AKing : public ANonPlayableCharacter
 public:
     AKing();
 
-
+    virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
 	
 	

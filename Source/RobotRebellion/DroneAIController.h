@@ -44,9 +44,9 @@ private:
     
     //Position to follow
     FVector m_destination;
-    //King
-    UPROPERTY(EditDefaultsOnly, Category = King)
-        TSubclassOf<class AKing> m_kingClass;
+
+    class AKing* m_king;
+    void(ADroneAIController::* m_updateTarget)();
 
 public:
     /************************************************************************/
@@ -68,6 +68,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateMovementTime;
 
+    //King
+    UPROPERTY(EditDefaultsOnly, Category = King)
+        TSubclassOf<class AKing> m_kingClass;
     
 
     /************************************************************************/
@@ -99,4 +102,13 @@ public:
 
     //update the player the drone must follows. Temporary for now because the drone will only go follow a living target.
     void updateTargetedTarget();
+
+    void followKing();
+    
+    void followGroup();
+    
+    void setFollowGroup();
+    
+    void setFollowKing();
+    
 };

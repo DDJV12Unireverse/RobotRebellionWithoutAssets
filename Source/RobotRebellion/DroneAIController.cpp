@@ -23,6 +23,9 @@ void ADroneAIController::BeginPlay()
     m_nextUpdatePropertyTime = m_updatePropertyTime;
 
     m_state = DRONE_MOVING; //for testing
+
+        setFollowKing();
+        //setFollowGroup();
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -76,37 +79,35 @@ void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
 
 void ADroneAIController::updateTargetedTarget()
 {
-  
-    int livingPlayers = 0;
-    m_destination = FVector(0, 0, 0);
-    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
-    TArray<AActor*> kings;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
-    if (kings.Num()>0) //The king is here
-    {
-        //auto king = (kings.FindByKey(0));
-        auto king = kings.Top();
-        m_destination = king->GetActorLocation();
+    (this->*m_updateTarget)();
+    //int livingPlayers = 0;
+    //m_destination = FVector(0, 0, 0);
+    //int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+    //TArray<AActor*> kings;
+    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
+    //if (kings.Num()>0) //The king is here
+    //{
+    //    //auto king = (kings.FindByKey(0));
+    //    auto king = kings.Top();
+    //    m_destination = king->GetActorLocation();
 
-    }
-    else //There is no king, follow players
-    {
-        for (int32 iter = 0; iter < playerCount; ++iter)
-        {
-            ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-            if (!currentPlayer->isDead())
-            {
-                m_destination += currentPlayer->GetActorLocation();
-                ++livingPlayers;
-            }
-
-
-        }
-        if (livingPlayers > 0)
-        {
-            m_destination /= livingPlayers;
-        }
-    }
+    //}
+    //else //There is no king, follow players
+    //{
+    //    for (int32 iter = 0; iter < playerCount; ++iter)
+    //    {
+    //        ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+    //        if (!currentPlayer->isDead())
+    //        {
+    //            m_destination += currentPlayer->GetActorLocation();
+    //            ++livingPlayers;
+    //        }
+    //    }
+    //    if (livingPlayers > 0)
+    //    {
+    //        m_destination /= livingPlayers;
+    //    }
+    //}
 }
 
 void ADroneAIController::IAUpdate(float deltaTime)
@@ -142,4 +143,56 @@ void ADroneAIController::IALoop(float deltaTime)
     case DRONE_COMBAT:
         break;
     }
+}
+
+void ADroneAIController::followKing()
+{
+    TArray<AActor*> kings;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
+    if (kings.Num() > 0) //The king is here
+    {
+        //auto king = (kings.FindByKey(0));
+        auto king = kings.Top();
+        m_destination = king->GetActorLocation();
+
+    }
+}
+
+void ADroneAIController::followGroup()
+{
+    int livingPlayers = 0;
+    m_destination = FVector(0, 0, 0);
+    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+    for (int32 iter = 0; iter < playerCount; ++iter)
+    {
+        ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+        if (!currentPlayer->isDead())
+        {
+            m_destination += currentPlayer->GetActorLocation();
+            ++livingPlayers;
+        }
+
+
+    }
+    if (livingPlayers > 0)
+    {
+        m_destination /= livingPlayers;
+    }
+}
+
+
+void ADroneAIController::setFollowGroup()
+{
+    this->m_updateTarget = &ADroneAIController::followGroup;
+}
+void ADroneAIController::setFollowKing()
+{
+    TArray<AActor*> kings;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
+    if (kings.Num() > 0) //The king is here
+    {
+        m_king = static_cast<AKing*>(kings.Top());
+        this->m_updateTarget = &ADroneAIController::followKing;
+    }
+    else setFollowGroup(); //if no king, stay with group
 }
