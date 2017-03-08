@@ -154,6 +154,13 @@ public:
         return first;
     }
 
+
+    template<class OwnerType, class PtrMethodType>
+    static void bindServerClientMethodPtr(OwnerType owner, PtrMethodType& ptr, PtrMethodType serverMethod, PtrMethodType clientMethod)
+    {
+        ptr = ((owner->Role < ROLE_Authority) ? clientMethod : serverMethod);
+    }
+
     
 
     /************************************************************************/

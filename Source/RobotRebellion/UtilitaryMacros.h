@@ -31,3 +31,32 @@
 #define PRINT_MESSAGE_TO_TEST_OBJECT_NULLITY_WITH_PREMESSAGE(message, object, color)
 
 #endif //ENABLE_PRINT_ON_SCREEN
+
+
+#define GENERATE_PROTOTYPE_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER(MethodPtrName, className, returnType, funcName, argument) protected: \
+    returnType (className::* MethodPtrName)(argument); \
+    returnType funcName##ClientImp(argument); \
+    returnType funcName##ServerImp(argument);
+
+
+#define GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR(methodPtrName, className, returnType, uPropFuncName, serverFuncName, argumentType) \
+returnType className::uPropFuncName(argumentType argumentName) \
+{ \
+    (this->*methodPtrName)(argumentName); \
+} \
+returnType className::serverFuncName##_Implementation(argumentType argumentName) \
+{ \
+    (this->*methodPtrName)(argumentName); \
+} \
+bool className::serverFuncName##_Validate(argumentType argumentName) \
+{ \
+    return true; \
+} \
+
+
+#define GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR_WITH_CLIENT_IMPL_GEN(methodPtrName, className, returnType, uPropFuncName, serverFuncName, argumentType) \
+GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR(methodPtrName, className, returnType, uPropFuncName, serverFuncName, argumentType) \
+returnType className::uPropFuncName##ClientImp(argumentType argumentName) \
+{ \
+    serverFuncName(argumentName); \
+}
