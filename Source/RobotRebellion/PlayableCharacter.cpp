@@ -587,21 +587,17 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
 
 void APlayableCharacter::cppOnRevive()
 {
-    APlayerController* playerController = Cast<APlayerController>(GetController());
-
-    if (playerController && playerController->InputComponent)
-    {
-        UInputComponent* newPlayerController = CreatePlayerInputComponent();
-
-        inputOnLiving(newPlayerController);
-
-        playerController->InputComponent = newPlayerController;
-    }
+    this->EnablePlayInput();
 
     //TODO - Continue the Revive method
 }
 
 void APlayableCharacter::cppOnDeath()
+{
+    this->DisablePlayInput();
+}
+
+void APlayableCharacter::DisablePlayInput()
 {
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
@@ -610,6 +606,20 @@ void APlayableCharacter::cppOnDeath()
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
 
         inputOnDying(newPlayerController);
+
+        playerController->InputComponent = newPlayerController;
+    }
+}
+
+void APlayableCharacter::EnablePlayInput()
+{
+    APlayerController* playerController = Cast<APlayerController>(GetController());
+
+    if (playerController && playerController->InputComponent)
+    {
+        UInputComponent* newPlayerController = CreatePlayerInputComponent();
+
+        inputOnLiving(newPlayerController);
 
         playerController->InputComponent = newPlayerController;
     }
