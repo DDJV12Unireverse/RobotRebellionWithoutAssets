@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "Attributes.h"
+#include "AlterationController.h"
 #include "ELivingTextAnimMode.h"
 #include "GameFramework/Character.h"
 
@@ -35,6 +36,9 @@ public:
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
         UAttributes* m_attribute;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
+        UAlterationController* m_alterationController;
 
 
 
@@ -73,6 +77,8 @@ public:
 
 
     void startTimedDestroy() USE_NOEXCEPT;
+
+    void inflictStun();
 
 
 

@@ -15,6 +15,8 @@
 #include "UtilitaryMacros.h"
 #include "UtilitaryFunctionLibrary.h"
 
+#include "StunAlteration.h"
+
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -25,6 +27,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
+
+    m_alterationController = CreateDefaultSubobject<UAlterationController>(TEXT("AlterationController"));
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -206,4 +210,11 @@ void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponen
 
         m_textBillboardInstance->RegisterComponent();
     }
+}
+
+void ARobotRebellionCharacter::inflictStun()
+{
+    UStunAlteration* stunAlteration = NewObject<UStunAlteration>();
+    stunAlteration->m_lifeTime = 5.f;
+    m_alterationController->addAlteration(stunAlteration);
 }
