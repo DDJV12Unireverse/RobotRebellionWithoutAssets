@@ -14,10 +14,19 @@ class ROBOTREBELLION_API UAlterationController : public UActorComponent
 
 public:
     /************************************************************************/
-    /* PROPERTY                                                             */
+    /* UPROPERTY                                                            */
     /************************************************************************/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Defaults")
     TSubclassOf<class UAlterationBase> m_stunDefault;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Defaults")
+    TSubclassOf<class UAlterationBase> m_invisibilityDefault;
+
+
+
+    /************************************************************************/
+    /* PROPERTY                                                             */
+    /************************************************************************/
     TArray<class UAlterationBase*> m_alterationsArray;
 
     void (UAlterationController::* m_updateMethod)(float);

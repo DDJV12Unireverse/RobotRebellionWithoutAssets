@@ -65,6 +65,8 @@ void UAlterationController::update(float deltaTime)
             --iter;
         }
     }
+
+    m_alterationsArray.RemoveAll([](UAlterationBase* current) { return current->IsPendingKillOrUnreachable(); });
 }
 
 UAlterationBase** UAlterationController::findByID(int32 id)
