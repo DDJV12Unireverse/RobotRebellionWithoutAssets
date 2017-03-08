@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ROBOTREBELLION_API UInvisibilityAlteration : public UAlterationBase
 {
 	GENERATED_BODY()
