@@ -226,3 +226,27 @@ void ARobotRebellionCharacter::inflictInvisibility()
     invisibilityAlteration->m_lifeTime = 5.f;
     m_alterationController->addAlteration(invisibilityAlteration);
 }
+
+
+void ARobotRebellionCharacter::setInvisible(bool isInvisible)
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if (characterMesh)
+    {
+        characterMesh->SetVisibility(!isInvisible);
+    }
+
+    if (Role >= ROLE_Authority)
+    {
+        multiSetInvisible(isInvisible);
+    }
+}
+
+GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(void, ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if (characterMesh)
+    {
+        characterMesh->SetVisibility(!isInvisible);
+    }
+}

@@ -131,6 +131,12 @@ public:
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void netMultiKill();
 
+    UFUNCTION()
+        void setInvisible(bool isInvisible);
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSetInvisible(bool isInvisible);
+
 
 // Attributs relatives functions added by macro
 public:
