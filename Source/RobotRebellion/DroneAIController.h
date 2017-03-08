@@ -46,6 +46,7 @@ private:
     FVector m_destination;
 
     class AKing* m_king;
+    float m_coeffKing;
     void(ADroneAIController::* m_updateTarget)();
 
 public:

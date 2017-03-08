@@ -23,7 +23,7 @@ void ADroneAIController::BeginPlay()
     m_nextUpdatePropertyTime = m_updatePropertyTime;
 
     m_state = DRONE_MOVING; //for testing
-
+    m_coeffKing = 3.f;
     setFollowGroup();
 }
 
@@ -118,13 +118,20 @@ void ADroneAIController::IALoop(float deltaTime)
 
 void ADroneAIController::followKing()
 {
-    TArray<AActor*> kings;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
-    if (kings.Num() > 0) //The king is here
-    {
-        auto king = kings.Top();
-        m_destination = king->GetActorLocation();
-    }
+        int livingPlayers = 0;
+        m_destination = FVector(0, 0, 0);
+        int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+        for (int32 iter = 0; iter < playerCount; ++iter)
+        {
+            ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+            if (!currentPlayer->isDead())
+            {
+                m_destination += currentPlayer->GetActorLocation();
+                ++livingPlayers;
+            }
+        }
+        m_destination += m_coeffKing * m_king->GetActorLocation();
+        m_destination /= (livingPlayers+ m_coeffKing);
 }
 
 void ADroneAIController::followGroup()
