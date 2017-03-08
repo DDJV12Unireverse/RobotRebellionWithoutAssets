@@ -15,9 +15,13 @@ class ROBOTREBELLION_API AKing : public ANonPlayableCharacter
 	
 public:
     AKing();
-
     virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
-	
-	
+    virtual void cppOnDeath() override;
+    
+    //////////////////////////////////////UPROPERTY////////////////////
+    
+    //King
+    UPROPERTY(EditDefaultsOnly, Category = drone)
+        TSubclassOf<class ADroneAIController> m_droneControllerClass;
 };
