@@ -116,6 +116,8 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                 receiver->inflictDamage(currentDamage);
                 receiver->displayAnimatedIntegerValue(currentDamage, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
+                receiver->inflictStun();
+
                 if (receiver->isDead())
                 {
                     receiver->onDeath();
