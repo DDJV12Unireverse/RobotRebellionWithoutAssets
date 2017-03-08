@@ -15,5 +15,6 @@ class ROBOTREBELLION_API ABeastCharacter : public ANonPlayableCharacter
 	
 public:
     ABeastCharacter();
+
 	
 };

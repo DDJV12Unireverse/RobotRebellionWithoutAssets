@@ -14,8 +14,8 @@ class ROBOTREBELLION_API AEnnemiAIController : public ACustomAIControllerBase
     GENERATED_BODY()
 
 public:
-    void CheckEnnemyNear(float range);
+    void CheckEnnemyNear(float range) override;
 
-    void AttackTarget() const;
+    void AttackTarget() const override;
 	
 };

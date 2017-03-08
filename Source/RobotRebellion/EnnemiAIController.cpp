@@ -11,8 +11,6 @@
 #include "WeaponBase.h"
 
 
-//ctr ptr method
-
 void AEnnemiAIController::CheckEnnemyNear(float range)
 {
     APawn *currentPawn = GetPawn();
@@ -21,6 +19,7 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
     TArray<AActor*> ActorsToIgnore;
     ActorsToIgnore.Add(currentPawn);
     TArray<FHitResult> OutHits;
@@ -34,9 +33,6 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
                                                                    EDrawDebugTrace::ForDuration,
                                                                    OutHits,
                                                                    true);
-    //UBlackboardComponent* BlackboardComponent = BrainComponent->GetBlackboardComponent();
-    //BlackboardComponent->SetValueAsObject("TargetActorToFollow", NULL);
-
 
     m_targetToFollow = NULL;
 

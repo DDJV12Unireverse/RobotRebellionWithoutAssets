@@ -23,11 +23,18 @@ public:
     {
         return m_targetToFollow != NULL;
     }
-	
+
     ARobotRebellionCharacter* getTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow;
     }
-	
+
     bool hasALivingTarget() const USE_NOEXCEPT;
+
+    /*
+     * VIRTUAL METHODS
+     */
+    virtual void CheckEnnemyNear(float range) PURE_VIRTUAL(ACustomAIControllerBase::CheckEnnemyNear, );
+
+    virtual void AttackTarget() const PURE_VIRTUAL(ACustomAIControllerBase::AttackTarget, );
 };
