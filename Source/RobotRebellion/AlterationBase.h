@@ -39,8 +39,6 @@ public:
     /************************************************************************/
     float m_currentTime;
 
-    bool m_isNPC;
-
     class ARobotRebellionCharacter* m_alteredOwner;
 
     static ID m_id;

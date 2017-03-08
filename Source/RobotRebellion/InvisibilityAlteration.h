@@ -3,22 +3,19 @@
 #pragma once
 
 #include "AlterationBase.h"
-#include "StunAlteration.generated.h"
+#include "InvisibilityAlteration.generated.h"
 
 /**
  * 
  */
-UCLASS(Blueprintable)
-class ROBOTREBELLION_API UStunAlteration : public UAlterationBase
+UCLASS()
+class ROBOTREBELLION_API UInvisibilityAlteration : public UAlterationBase
 {
 	GENERATED_BODY()
 	
+	
 public:
     static UAlterationBase::ID m_id;
-
-
-    bool m_isNPC;
-    class AController* m_alteredActorController;
 
 
 public:
@@ -28,6 +25,6 @@ public:
 
     virtual FString toDebugString() const USE_NOEXCEPT
     {
-        return "Stun";
+        return "Invisibility";
     }
 };

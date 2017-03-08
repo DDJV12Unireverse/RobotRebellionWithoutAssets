@@ -16,6 +16,7 @@
 #include "UtilitaryFunctionLibrary.h"
 
 #include "StunAlteration.h"
+#include "InvisibilityAlteration.h"
 
 
 
@@ -217,4 +218,11 @@ void ARobotRebellionCharacter::inflictStun()
     UStunAlteration* stunAlteration = NewObject<UStunAlteration>();
     stunAlteration->m_lifeTime = 5.f;
     m_alterationController->addAlteration(stunAlteration);
+}
+
+void ARobotRebellionCharacter::inflictInvisibility()
+{
+    UInvisibilityAlteration* invisibilityAlteration = NewObject<UInvisibilityAlteration>();
+    invisibilityAlteration->m_lifeTime = 5.f;
+    m_alterationController->addAlteration(invisibilityAlteration);
 }

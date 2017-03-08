@@ -80,6 +80,9 @@ public:
 
     void inflictStun();
 
+    void inflictInvisibility();
+
+    void doesNothing() {}
 
 
 protected:
