@@ -619,6 +619,32 @@ void APlayableCharacter::EnablePlayInput(bool enable)
 
         playerController->InputComponent = newPlayerController;
     }
+
+    if (Role >= ROLE_Authority)
+    {
+        clientEnableInput(enable);
+    }
+}
+
+GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter, clientEnableInput, bool enableInput)
+{
+    APlayerController* playerController = Cast<APlayerController>(GetController());
+
+    if (playerController && playerController->InputComponent)
+    {
+        UInputComponent* newPlayerController = CreatePlayerInputComponent();
+
+        if (enableInput)
+        {
+            inputOnLiving(newPlayerController);
+        }
+        else
+        {
+            inputOnDying(newPlayerController);
+        }
+
+        playerController->InputComponent = newPlayerController;
+    }
 }
 
 void APlayableCharacter::Tick(float DeltaTime)

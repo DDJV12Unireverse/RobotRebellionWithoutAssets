@@ -274,6 +274,10 @@ public:
 
     UFUNCTION(NetMulticast, Reliable)
         void clientInteract(APickupActor* Usable);
+
+    UFUNCTION(Reliable, Client, WithValidation)
+        void clientEnableInput(bool enableInput);
+
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 
