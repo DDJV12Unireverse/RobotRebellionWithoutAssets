@@ -15,6 +15,7 @@ ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 void ANonPlayableCharacter::cppOnDeath()
 {
     dropLoot();
+    this->m_alterationController->removeAllAlteration();
 
     this->startTimedDestroy();
 }

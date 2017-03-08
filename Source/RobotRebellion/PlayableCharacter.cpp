@@ -595,6 +595,8 @@ void APlayableCharacter::cppOnRevive()
 void APlayableCharacter::cppOnDeath()
 {
     this->DisablePlayInput();
+
+    this->m_alterationController->removeAllAlteration();
 }
 
 void APlayableCharacter::DisablePlayInput()
