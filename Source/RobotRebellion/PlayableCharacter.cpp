@@ -50,7 +50,6 @@ APlayableCharacter::APlayableCharacter()
     // Create a camera boom (pulls in towards the player if there is a collision)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
     CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
     // Slight camera offset to aid with object selection
@@ -94,6 +93,10 @@ void APlayableCharacter::BeginPlay()
     m_manaPotionsCount = m_nbManaPotionStart;
     m_bombCount = m_nbBombStart;
     m_healthPotionsCount = m_nbHealthPotionStart;
+
+    CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
+
+    m_tpsMode = true;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -537,6 +540,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //ESCAPE
         PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
@@ -553,7 +557,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
         PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
         PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::loseMana);
-        PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::loseBomb);
+
+        //VIEW
+        PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
+        
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -807,4 +814,11 @@ void APlayableCharacter::serverLoseBomb_Implementation()
 bool APlayableCharacter::serverLoseBomb_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::switchView()
+{
+    CameraBoom->TargetArmLength = m_tpsMode ? m_FPSCameraDistance : m_TPSCameraDistance;
+
+    m_tpsMode = !m_tpsMode;
 }
