@@ -62,7 +62,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 true
          ))
         {
-            ARobotRebellionCharacter* exReceiver = nullptr;
+            ARobotRebellionCharacter** exReceiver = nullptr;
             int32 outCount = OutHits.Num();
             
             for (int32 noEnnemy = 0; noEnnemy < outCount; ++noEnnemy)
@@ -70,7 +70,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 FHitResult hit = OutHits[noEnnemy];
 
                 ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(hit.GetActor());
-                if (receiver && receiver != exReceiver && !receiver->isDead())
+                if (receiver && exReceiver != &receiver && !receiver->isDead())
                 {
                     if (!receiver->isImmortal())
                     {
@@ -93,7 +93,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                         receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
                     }
 
-                    exReceiver = receiver;
+                    exReceiver = &receiver;
                 }
             }
         }
