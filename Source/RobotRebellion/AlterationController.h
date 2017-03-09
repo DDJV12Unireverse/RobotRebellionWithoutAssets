@@ -14,17 +14,6 @@ class ROBOTREBELLION_API UAlterationController : public UActorComponent
 
 public:
     /************************************************************************/
-    /* UPROPERTY                                                            */
-    /************************************************************************/
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Defaults")
-    TSubclassOf<class UAlterationBase> m_stunDefault;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Defaults")
-    TSubclassOf<class UAlterationBase> m_invisibilityDefault;
-
-
-
-    /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
     TArray<class UAlterationBase*> m_alterationsArray;
