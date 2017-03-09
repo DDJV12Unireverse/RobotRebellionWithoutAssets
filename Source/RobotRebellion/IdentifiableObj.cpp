@@ -3,10 +3,6 @@
 #include "RobotRebellion.h"
 #include "IdentifiableObj.h"
 
-IdentifiableObj::IdentifiableObj()
-{
-}
 
-IdentifiableObj::~IdentifiableObj()
-{
-}
+uint32 Identifiable::ID::accumulator = 0;
+
