@@ -58,3 +58,5 @@ public:
 };
 
 template<class ObjectType> Identifiable::ID IdentifiableObject<ObjectType>::ID;
+
+
