@@ -47,36 +47,33 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
         ActorsToIgnore.Add(user);
 
         //Result
-
         TArray<FHitResult> OutHits;
 
-        bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(
-            user->GetWorld(),
-            MultiSphereStart,
-            MultiSphereEnd,
-            m_weaponForwardRange * user->GetActorForwardVector().Size(),
-            ObjectTypes,
-            false,
-            ActorsToIgnore,
-            EDrawDebugTrace::None,
-            OutHits,
-            true
-        );
-
-
-        if (Result)
+        if (UKismetSystemLibrary::SphereTraceMultiForObjects(
+                user->GetWorld(),
+                MultiSphereStart,
+                MultiSphereEnd,
+                m_weaponForwardRange * user->GetActorForwardVector().Size(),
+                ObjectTypes,
+                false,
+                ActorsToIgnore,
+                EDrawDebugTrace::None,
+                OutHits,
+                true
+         ))
         {
-            //CAN BE OPTIMIZED
-            for (int32 noEnnemy = 0; noEnnemy < OutHits.Num(); ++noEnnemy)
+            ARobotRebellionCharacter* exReceiver = nullptr;
+            int32 outCount = OutHits.Num();
+            
+            for (int32 noEnnemy = 0; noEnnemy < outCount; ++noEnnemy)
             {
                 FHitResult hit = OutHits[noEnnemy];
 
-                ARobotRebellionCharacter* receiver = static_cast<ARobotRebellionCharacter*>(hit.GetActor());
-                if (!alreadyHit)
+                ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(hit.GetActor());
+                if (receiver && receiver != exReceiver && !receiver->isDead())
                 {
                     if (!receiver->isImmortal())
                     {
-
                         DamageCoefficientLogic coeff;
 
                         Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), receiver };
@@ -96,7 +93,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                         receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
                     }
 
-                    alreadyHit = true;
+                    exReceiver = receiver;
                 }
             }
         }
