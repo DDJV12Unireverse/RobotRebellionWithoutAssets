@@ -89,7 +89,7 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
     if (Role == ROLE_Authority)
     {
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
-        if (receiver && m_owner != receiver)
+        if (receiver && m_owner != receiver && !receiver->isDead())
         {
             if (!receiver->isImmortal())
             {
