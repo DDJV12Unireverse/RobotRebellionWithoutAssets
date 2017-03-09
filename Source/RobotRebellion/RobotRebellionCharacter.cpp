@@ -18,6 +18,7 @@
 #include "StunAlteration.h"
 #include "InvisibilityAlteration.h"
 
+#include "GameInstaller.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -221,7 +222,7 @@ void ARobotRebellionCharacter::inflictStun()
 
         if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
             &stunAlteration,
-            m_alterationController->m_stunDefault
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
         ))
         {
             m_alterationController->addAlteration(stunAlteration);
@@ -236,7 +237,7 @@ void ARobotRebellionCharacter::inflictInvisibility()
         UInvisibilityAlteration* invisibilityAlteration;
         if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UInvisibilityAlteration>(
             &invisibilityAlteration,
-            m_alterationController->m_invisibilityDefault
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UInvisibilityAlteration>()
         ))
         {
             m_alterationController->addAlteration(invisibilityAlteration);

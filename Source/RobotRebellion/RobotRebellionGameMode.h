@@ -8,8 +8,19 @@ class ARobotRebellionGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Default")
+        TSubclassOf<class UAlterationBase> m_invisibleDefault;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Default")
+        TSubclassOf<class UAlterationBase> m_stunDefault;
+
+
 public:
 	ARobotRebellionGameMode();
+
+    virtual void BeginPlay() override;
 };
 
 
