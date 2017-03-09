@@ -2,13 +2,16 @@
 
 #include "RobotRebellion.h"
 #include "ShortRangeWeapon.h"
-#include "../Character/RobotRebellionCharacter.h"
+
+#include "../../Character/RobotRebellionCharacter.h"
+#include "../../Global/GlobalDamageMethod.h"
+
+#include "../Damage/Damage.h"
+#include "../Damage/DamageCoefficientLogic.h"
+
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "UObjectGlobals.h"
-#include "../Global/GlobalDamageMethod.h"
-#include "Damage.h"
-#include "DamageCoefficientLogic.h"
 
 /************************************************************************/
 /*                  CONSTRUCTORS                                        */

@@ -3,10 +3,10 @@
 #include "RobotRebellion.h"
 #include "IsTargetInRangeBTTaskNode.h"
 
-#include "EnnemiAIController.h"
-#include "../Character/RobotRebellionCharacter.h"
-#include "../Gameplay/WeaponInventory.h"
-#include "../Gameplay/WeaponBase.h"
+#include "../Controller/EnnemiAIController.h"
+#include "../../Character/RobotRebellionCharacter.h"
+#include "../../Gameplay/Weapon/WeaponInventory.h"
+#include "../../Gameplay/Weapon/WeaponBase.h"
 
 
 UIsTargetInRangeBTTaskNode::UIsTargetInRangeBTTaskNode()

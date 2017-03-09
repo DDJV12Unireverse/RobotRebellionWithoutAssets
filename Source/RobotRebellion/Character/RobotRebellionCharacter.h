@@ -1,7 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "../Gameplay/Attributes.h"
-#include "../Gameplay/AlterationController.h"
+#include "../Gameplay/Attributes/Attributes.h"
+#include "../Gameplay/Alteration/AlterationController.h"
 #include "../UI/ELivingTextAnimMode.h"
 #include "GameFramework/Character.h"
 

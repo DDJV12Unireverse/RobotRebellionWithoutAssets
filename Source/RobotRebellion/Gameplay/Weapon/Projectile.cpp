@@ -3,12 +3,12 @@
 #include "RobotRebellion.h"
 #include "Projectile.h"
 
-#include "../Character/RobotRebellionCharacter.h"
-#include "Damage.h"
-#include "DamageCoefficientLogic.h"
+#include "../../Character/RobotRebellionCharacter.h"
+#include "../Damage/Damage.h"
+#include "../Damage/DamageCoefficientLogic.h"
 
-#include "../Global/GlobalDamageMethod.h"
-#include "../Tool/UtilitaryFunctionLibrary.h"
+#include "../../Global/GlobalDamageMethod.h"
+#include "../../Tool/UtilitaryFunctionLibrary.h"
 
 
 

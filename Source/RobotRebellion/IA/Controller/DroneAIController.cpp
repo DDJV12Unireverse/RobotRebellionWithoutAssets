@@ -2,9 +2,9 @@
 
 #include "RobotRebellion.h"
 #include "DroneAIController.h"
-#include "../Character/King.h"
-#include "../Character/RobotRebellionCharacter.h"
-#include "../Character/NonPlayableCharacter.h"
+#include "../../Character/King.h"
+#include "../../Character/RobotRebellionCharacter.h"
+#include "../../Character/NonPlayableCharacter.h"
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
 {

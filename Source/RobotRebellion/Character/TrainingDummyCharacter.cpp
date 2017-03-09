@@ -3,8 +3,8 @@
 #include "RobotRebellion.h"
 #include "TrainingDummyCharacter.h"
 
-#include "../Gameplay/WeaponBase.h"
-#include "../Gameplay/WeaponInventory.h"
+#include "../Gameplay/Weapon/WeaponBase.h"
+#include "../Gameplay/Weapon/WeaponInventory.h"
 
 
 ATrainingDummyCharacter::ATrainingDummyCharacter() : ANonPlayableCharacter()

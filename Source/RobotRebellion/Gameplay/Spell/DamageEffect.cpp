@@ -3,9 +3,9 @@
 #include "RobotRebellion.h"
 #include "DamageEffect.h"
 
-#include "Damage.h"
-#include "../Tool/Algorithm.h"
-#include "../Character/RobotRebellionCharacter.h"
+#include "../Damage/Damage.h"
+#include "../../Tool/Algorithm.h"
+#include "../../Character/RobotRebellionCharacter.h"
 
 void UDamageEffect::BeginPlay()
 {

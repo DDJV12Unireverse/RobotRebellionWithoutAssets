@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
-#include "../Character/ClassType.h"
+#include "../../Character/ClassType.h"
 #include "RobotRobellionSpawnerClass.generated.h"
 
 

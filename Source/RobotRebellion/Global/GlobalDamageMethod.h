@@ -3,9 +3,9 @@
 #pragma once
 
 #include "../Tool/IsSingleton.h"
-#include "../Gameplay/Damage.h"
+#include "../Gameplay/Damage/Damage.h"
+#include "../Gameplay/Weapon/WeaponBase.h"
 #include "../Character/RobotRebellionCharacter.h"
-#include "../Gameplay/WeaponBase.h"
 
 /**
  * 

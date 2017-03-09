@@ -2,8 +2,8 @@
 
 #include "RobotRebellion.h"
 #include "AttackTargetBTTaskNode.h"
-#include "EnnemiAIController.h"
-#include "../Character/NonPlayableCharacter.h"
+#include "../Controller/EnnemiAIController.h"
+#include "../../Character/NonPlayableCharacter.h"
 
 
 UAttackTargetBTTaskNode::UAttackTargetBTTaskNode()

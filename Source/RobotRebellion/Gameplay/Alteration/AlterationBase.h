@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
-#include "../Tool/IdentifiableObj.h"
+#include "../../Tool/IdentifiableObj.h"
 #include "AlterationBase.generated.h"
 
 

@@ -4,7 +4,7 @@
 #include "LongRangeWeapon.h"
 #include "Projectile.h"
 
-#include "../Character/RobotRebellionCharacter.h"
+#include "../../Character/RobotRebellionCharacter.h"
 
 
 ULongRangeWeapon::ULongRangeWeapon() :

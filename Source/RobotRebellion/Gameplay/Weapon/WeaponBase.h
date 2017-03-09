@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Components/PrimitiveComponent.h"
-#include "../Tool/UtilitaryMacros.h"
+#include "../../Tool/UtilitaryMacros.h"
 #include "Engine/EngineTypes.h"
 #include "WeaponBase.generated.h"
 

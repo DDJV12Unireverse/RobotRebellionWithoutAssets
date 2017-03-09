@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "CheckEnnemyNearBTService.h"
 
-#include "EnnemiAIController.h"
+#include "../Controller/EnnemiAIController.h"
 
 
 UCheckEnnemyNearBTService::UCheckEnnemyNearBTService(): m_radiusRange{700}

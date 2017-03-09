@@ -2,13 +2,13 @@
 
 #include "RobotRebellion.h"
 #include "WeaponInventory.h"
+
 #include "WeaponBase.h"
-
-#include "../Tool/UtilitaryFunctionLibrary.h"
-
-#include "../Tool/UtilitaryMacros.h"
 #include "LongRangeWeapon.h"
 #include "ShortRangeWeapon.h"
+
+#include "../../Tool/UtilitaryFunctionLibrary.h"
+#include "../../Tool/UtilitaryMacros.h"
 
 
 // Sets default values for this component's properties

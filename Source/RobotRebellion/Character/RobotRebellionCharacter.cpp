@@ -1,22 +1,22 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #include "RobotRebellion.h"
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "RobotRebellionCharacter.h"
 
-#include "../Gameplay/WeaponBase.h"
-#include "../Gameplay/WeaponInventory.h"
+#include "PlayableCharacter.h"
+#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+
+#include "../Gameplay/Weapon/WeaponBase.h"
+#include "../Gameplay/Weapon/WeaponInventory.h"
+
+#include "../Gameplay/Alteration/StunAlteration.h"
+#include "../Gameplay/Alteration/InvisibilityAlteration.h"
 
 #include "../UI/TextBillboardComponent.h"
 #include "../UI/LivingTextRenderComponent.h"
-#include "PlayableCharacter.h"
-
 
 #include "../Tool/UtilitaryMacros.h"
 #include "../Tool/UtilitaryFunctionLibrary.h"
-
-#include "../Gameplay/StunAlteration.h"
-#include "../Gameplay/InvisibilityAlteration.h"
 
 #include "../Global/GameInstaller.h"
 

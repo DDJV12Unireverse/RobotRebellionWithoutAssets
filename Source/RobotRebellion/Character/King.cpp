@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "King.h"
-#include "../IA/DroneAIController.h"
+#include "../IA/Controller/DroneAIController.h"
 
 
 AKing::AKing() : ANonPlayableCharacter()

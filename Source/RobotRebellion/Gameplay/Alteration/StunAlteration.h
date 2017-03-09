@@ -3,7 +3,7 @@
 #pragma once
 
 #include "AlterationBase.h"
-#include "../Tool/IdentifiableObj.h"
+#include "../../Tool/IdentifiableObj.h"
 #include "StunAlteration.generated.h"
 
 /**

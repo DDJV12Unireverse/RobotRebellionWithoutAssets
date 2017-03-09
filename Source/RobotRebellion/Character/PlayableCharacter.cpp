@@ -6,15 +6,15 @@
 
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 
-#include "../Gameplay/Damage.h"
+#include "../Gameplay/Damage/Damage.h"
 #include "../Global/GlobalDamageMethod.h"
 #include "../UI/GameMenu.h"
-#include "../Gameplay/WeaponBase.h"
-#include "../Gameplay/WeaponInventory.h"
+#include "../Gameplay/Weapon/WeaponBase.h"
+#include "../Gameplay/Weapon/WeaponInventory.h"
 #include "CustomPlayerController.h"
-#include "../Gameplay/PickupActor.h"
+#include "../Gameplay/Item/PickupActor.h"
 
-#include "../Gameplay/RobotRobellionSpawnerClass.h"
+#include "../Gameplay/Debug/RobotRobellionSpawnerClass.h"
 
 #include "Assassin.h"
 #include "Wizard.h"

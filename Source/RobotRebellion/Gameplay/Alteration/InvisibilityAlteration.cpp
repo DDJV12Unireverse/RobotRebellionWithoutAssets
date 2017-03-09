@@ -4,8 +4,8 @@
 #include "InvisibilityAlteration.h"
 
 
-#include "../Character/NonPlayableCharacter.h"
-#include "../Character/PlayableCharacter.h"
+#include "../../Character/NonPlayableCharacter.h"
+#include "../../Character/PlayableCharacter.h"
 
 
 UInvisibilityAlteration::UInvisibilityAlteration() :

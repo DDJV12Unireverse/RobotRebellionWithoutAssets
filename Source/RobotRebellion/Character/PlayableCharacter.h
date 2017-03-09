@@ -4,7 +4,7 @@
 
 #include "RobotRebellionCharacter.h"
 #include "ClassType.h"
-#include "../Gameplay/SpellKit.h" 
+#include "../Gameplay/Spell/SpellKit.h" 
 #include "PlayableCharacter.generated.h"
 
 /**

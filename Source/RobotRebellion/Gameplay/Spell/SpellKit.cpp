@@ -4,7 +4,7 @@
 #include "SpellKit.h"
 #include "Spell.h" 
 #include "ThrowSpell.h"
-#include "../Tool/UtilitaryFunctionLibrary.h"
+#include "../../Tool/UtilitaryFunctionLibrary.h"
 
 // Sets default values for this component's properties
 USpellKit::USpellKit()
