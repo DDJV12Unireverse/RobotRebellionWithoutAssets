@@ -75,7 +75,7 @@ UAlterationBase** UAlterationController::findByID(int32 id)
 {
     for (auto iter = 0; iter < m_alterationsArray.Num(); ++iter)
     {
-        if (m_alterationsArray[iter]->getID().m_value == id)
+        if (m_alterationsArray[iter]->m_id.m_value == id)
         {
             return &m_alterationsArray[iter];
         }
@@ -101,7 +101,7 @@ void UAlterationController::addAlterationServerImp(UAlterationBase* newAlteratio
 {
     if (newAlteration)
     {
-        if (!this->findByID(newAlteration->getID().m_value))
+        if (!this->findByID(newAlteration->m_id.m_value))
         {
             m_alterationsArray.Add(newAlteration);
             newAlteration->onCreate(Cast<ARobotRebellionCharacter>(GetOwner()));

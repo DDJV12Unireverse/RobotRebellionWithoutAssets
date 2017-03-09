@@ -3,6 +3,7 @@
 #pragma once
 
 #include "AlterationBase.h"
+#include "IdentifiableObj.h"
 #include "InvisibilityAlteration.generated.h"
 
 /**
@@ -14,11 +15,10 @@ class ROBOTREBELLION_API UInvisibilityAlteration : public UAlterationBase
 	GENERATED_BODY()
 	
 	
-private:
-    static UAlterationBase::ID m_id;
-
-
 public:
+    UInvisibilityAlteration();
+
+
     void destroyItself() override;
 
     void onCreate(class ARobotRebellionCharacter* alteredOwner) override;
@@ -26,11 +26,5 @@ public:
     virtual FString toDebugString() const USE_NOEXCEPT
     {
         return "Invisibility";
-    }
-
-    //No, it isn't the way Patrice taught us but I don't have the time luxury to implement it the correct way.
-    virtual ID getID() const USE_NOEXCEPT override
-    {
-        return UInvisibilityAlteration::m_id;
     }
 };

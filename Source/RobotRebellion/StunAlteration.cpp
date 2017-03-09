@@ -7,8 +7,13 @@
 #include "PlayableCharacter.h"
 #include "AIController.h"
 
-UAlterationBase::ID UStunAlteration::m_id;
 
+
+UStunAlteration::UStunAlteration() :
+    UAlterationBase()
+{
+    m_id = IdentifiableObject<UStunAlteration>::ID;
+}
 
 void UStunAlteration::destroyItself()
 {

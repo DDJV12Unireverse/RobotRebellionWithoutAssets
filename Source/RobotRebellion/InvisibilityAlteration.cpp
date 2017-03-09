@@ -8,8 +8,11 @@
 #include "PlayableCharacter.h"
 
 
-UAlterationBase::ID UInvisibilityAlteration::m_id;
-
+UInvisibilityAlteration::UInvisibilityAlteration() :
+    UAlterationBase()
+{
+    m_id = IdentifiableObject<UInvisibilityAlteration>::ID;
+}
 
 void UInvisibilityAlteration::destroyItself()
 {
