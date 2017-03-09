@@ -594,6 +594,8 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
+    this->activatePhysics(false);
+
     this->EnablePlayInput(false);
 
     this->m_alterationController->removeAllAlteration();
@@ -836,4 +838,33 @@ void APlayableCharacter::serverLoseBomb_Implementation()
 bool APlayableCharacter::serverLoseBomb_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::activatePhysics(bool mustActive)
+{
+    if (mustActive)
+    {
+        this->GetCapsuleComponent()->RegisterComponent();
+    }
+    else
+    {
+        this->GetCapsuleComponent()->UnregisterComponent();
+    }
+
+    if (Role >= ROLE_Authority)
+    {
+        multiActivatePhysics(mustActive);
+    }
+}
+
+GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter, multiActivatePhysics, bool mustActive)
+{
+    if (mustActive)
+    {
+        this->GetCapsuleComponent()->RegisterComponent();
+    }
+    else
+    {
+        this->GetCapsuleComponent()->UnregisterComponent();
+    }
 }
