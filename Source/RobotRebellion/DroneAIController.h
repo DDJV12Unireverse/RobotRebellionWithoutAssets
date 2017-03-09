@@ -41,6 +41,13 @@ private:
     //the next time we update the movement of the drone.
     float m_nextMovementUpdateTime;
 
+    
+    //Position to follow
+    FVector m_destination;
+
+    class AKing* m_king;
+    float m_coeffKing;
+    void(ADroneAIController::* m_updateTarget)();
 
 public:
     /************************************************************************/
@@ -62,6 +69,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateMovementTime;
 
+    //King
+    UPROPERTY(EditDefaultsOnly, Category = King)
+        TSubclassOf<class AKing> m_kingClass;
     
 
     /************************************************************************/
@@ -93,4 +103,13 @@ public:
 
     //update the player the drone must follows. Temporary for now because the drone will only go follow a living target.
     void updateTargetedTarget();
+
+    void followKing();
+    
+    void followGroup();
+    
+    void setFollowGroup();
+    
+    void setFollowKing();
+    
 };
