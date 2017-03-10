@@ -17,6 +17,6 @@ public:
 
     void CheckEnnemyNear(float range) override;
 
-    void AttackTarget() const override;	
+    void AttackTarget() const override;
 	
 };

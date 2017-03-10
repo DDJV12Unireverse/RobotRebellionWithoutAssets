@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "IsTargetInRangeBTTaskNode.h"
 
-#include "EnnemiAIController.h"
+#include "CustomAIControllerBase.h"
 #include "RobotRebellionCharacter.h"
 #include "WeaponInventory.h"
 #include "WeaponBase.h"
@@ -15,16 +15,16 @@ UIsTargetInRangeBTTaskNode::UIsTargetInRangeBTTaskNode()
 
 EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
+    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
 
     EBTNodeResult::Type NodeResult = EBTNodeResult::Failed;
 
     // If the controller doesn't have a target, the task is a fail
-    if(ennemiAIController->hasALivingTarget())
+    if(AIController->hasALivingTarget())
     {
-        FVector currentTargetLocation = ennemiAIController->getTarget()->GetActorLocation();
-        FVector ennemiLocation = ennemiAIController->GetPawn()->GetActorLocation();
-        ARobotRebellionCharacter* ennemiCharacter = Cast<ARobotRebellionCharacter>(ennemiAIController->GetCharacter());
+        FVector currentTargetLocation = AIController->getTarget()->GetActorLocation();
+        FVector ennemiLocation = AIController->GetPawn()->GetActorLocation();
+        ARobotRebellionCharacter* ennemiCharacter = Cast<ARobotRebellionCharacter>(AIController->GetCharacter());
 
         FVector distanceBetween = currentTargetLocation - ennemiLocation;
 
@@ -40,11 +40,11 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 
 void UIsTargetInRangeBTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-    AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
-    if(ennemiAIController->hasALivingTarget())
+    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
+    if(AIController->hasALivingTarget())
     {
-        FVector currentTargetLocation = ennemiAIController->getTarget()->GetActorLocation();
-        FVector ennemiLocation = ennemiAIController->GetPawn()->GetActorLocation();
+        FVector currentTargetLocation = AIController->getTarget()->GetActorLocation();
+        FVector ennemiLocation = AIController->GetPawn()->GetActorLocation();
 
         FVector distanceBetween = currentTargetLocation - ennemiLocation;
     }

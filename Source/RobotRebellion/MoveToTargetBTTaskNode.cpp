@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "MoveToTargetBTTaskNode.h"
-#include "EnnemiAIController.h"
+#include "CustomAIControllerBase.h"
 
 
 
@@ -15,15 +15,15 @@ UMoveToTargetBTTaskNode::UMoveToTargetBTTaskNode()
 EBTNodeResult::Type UMoveToTargetBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8*
                                                          NodeMemory)
 {
-    AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
+    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
 
     EBTNodeResult::Type NodeResult = EBTNodeResult::Failed;
 
     // If the controller doesn't have a target, the task is a fail
-    if(ennemiAIController->hasTarget())
+    if(AIController->hasALivingTarget())
     {
         NodeResult = EBTNodeResult::Succeeded;
-        EPathFollowingRequestResult::Type MoveToActorResult = ennemiAIController->MoveToTarget();
+        EPathFollowingRequestResult::Type MoveToActorResult = AIController->MoveToTarget();
     }
 
     return NodeResult;
@@ -32,10 +32,10 @@ EBTNodeResult::Type UMoveToTargetBTTaskNode::ExecuteTask(UBehaviorTreeComponent&
 void UMoveToTargetBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
                                        float DeltaSeconds)
 {
-    AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
-    if(ennemiAIController->hasTarget())
+    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
+    if(AIController->hasTarget())
     {
-        EPathFollowingRequestResult::Type MoveToActorResult = ennemiAIController->MoveToTarget();
+        EPathFollowingRequestResult::Type MoveToActorResult = AIController->MoveToTarget();
         if(MoveToActorResult == EPathFollowingRequestResult::AlreadyAtGoal)
         {
             FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
