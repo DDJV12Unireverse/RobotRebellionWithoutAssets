@@ -305,6 +305,14 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverLoseBomb();
 
+    //Activate the collision physic if true, deactivate otherwise
+    UFUNCTION(BlueprintCallable, Category = "Physics")
+        void activatePhysics(bool mustActive);
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiActivatePhysics(bool mustActive);
+
+
     void giveBombToDrone() //Do Later
     {}
 
@@ -328,6 +336,5 @@ public:
     void setHealthPotionCount(int nbPotion);
 
     void setBombCount(int nbBombs);
-
     ////END INVENTORY
 };
