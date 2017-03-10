@@ -120,6 +120,16 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                 {
                     receiver->onDeath();
                 }
+                else
+                {
+                    UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
+                        true,
+                        *receiver,
+                        &ARobotRebellionCharacter::inflictStun,
+                        &ARobotRebellionCharacter::inflictInvisibility,
+                        &ARobotRebellionCharacter::doesNothing
+                    );
+                }
             }
             else
             {

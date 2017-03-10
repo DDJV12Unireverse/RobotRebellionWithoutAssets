@@ -473,7 +473,7 @@ bool APlayableCharacter::serverSwitchWeapon_Validate()
 
 FString APlayableCharacter::typeToString() const USE_NOEXCEPT
 {
-    static const FString typeLookUpTable[EClassType::TYPE_COUNT] = {
+    static const FString typeLookUpTable[] = {
         TYPE_PARSING(None),
         TYPE_PARSING(Soldier),
         TYPE_PARSING(Assassin),
@@ -587,21 +587,46 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
 
 void APlayableCharacter::cppOnRevive()
 {
-    APlayerController* playerController = Cast<APlayerController>(GetController());
-
-    if (playerController && playerController->InputComponent)
-    {
-        UInputComponent* newPlayerController = CreatePlayerInputComponent();
-
-        inputOnLiving(newPlayerController);
-
-        playerController->InputComponent = newPlayerController;
-    }
+    this->EnablePlayInput(true);
 
     //TODO - Continue the Revive method
 }
 
 void APlayableCharacter::cppOnDeath()
+{
+    this->EnablePlayInput(false);
+
+    this->m_alterationController->removeAllAlteration();
+}
+
+
+void APlayableCharacter::EnablePlayInput(bool enable)
+{
+    APlayerController* playerController = Cast<APlayerController>(GetController());
+    
+    if (playerController && playerController->InputComponent)
+    {
+        UInputComponent* newPlayerController = CreatePlayerInputComponent();
+
+        if (enable)
+        {
+            inputOnLiving(newPlayerController);
+        }
+        else
+        {
+            inputOnDying(newPlayerController);
+        }
+
+        playerController->InputComponent = newPlayerController;
+    }
+
+    if (Role >= ROLE_Authority)
+    {
+        clientEnableInput(enable);
+    }
+}
+
+GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter, clientEnableInput, bool enableInput)
 {
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
@@ -609,7 +634,14 @@ void APlayableCharacter::cppOnDeath()
     {
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
 
-        inputOnDying(newPlayerController);
+        if (enableInput)
+        {
+            inputOnLiving(newPlayerController);
+        }
+        else
+        {
+            inputOnDying(newPlayerController);
+        }
 
         playerController->InputComponent = newPlayerController;
     }
@@ -767,11 +799,8 @@ void APlayableCharacter::setBombCount(int nbBombs)
 
 void APlayableCharacter::loseMana()
 {
-    setMana(getMana() - 150.f);
-    if (getMana() < 0.f)
-    {
-        setMana(0.f);
-    }
+    this->consumeMana(150.f);
+
     if (Role < ROLE_Authority)
     {
         serverLoseMana();

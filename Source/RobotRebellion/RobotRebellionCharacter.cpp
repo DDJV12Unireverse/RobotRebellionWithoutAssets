@@ -15,6 +15,10 @@
 #include "UtilitaryMacros.h"
 #include "UtilitaryFunctionLibrary.h"
 
+#include "StunAlteration.h"
+#include "InvisibilityAlteration.h"
+
+#include "GameInstaller.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -25,6 +29,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
+
+    m_alterationController = CreateDefaultSubobject<UAlterationController>(TEXT("AlterationController"));
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -205,5 +211,60 @@ void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponen
         m_textBillboardInstance->Activate();
 
         m_textBillboardInstance->RegisterComponent();
+    }
+}
+
+void ARobotRebellionCharacter::inflictStun()
+{
+    if (!this->isImmortal())
+    {
+        UStunAlteration* stunAlteration;
+
+        if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
+            &stunAlteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
+        ))
+        {
+            m_alterationController->addAlteration(stunAlteration);
+        }
+    }
+}
+
+void ARobotRebellionCharacter::inflictInvisibility()
+{
+    if (!this->isImmortal())
+    {
+        UInvisibilityAlteration* invisibilityAlteration;
+        if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UInvisibilityAlteration>(
+            &invisibilityAlteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UInvisibilityAlteration>()
+        ))
+        {
+            m_alterationController->addAlteration(invisibilityAlteration);
+        }
+    }
+}
+
+
+void ARobotRebellionCharacter::setInvisible(bool isInvisible)
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if (characterMesh)
+    {
+        characterMesh->SetVisibility(!isInvisible);
+    }
+
+    if (Role >= ROLE_Authority)
+    {
+        multiSetInvisible(isInvisible);
+    }
+}
+
+GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if (characterMesh)
+    {
+        characterMesh->SetVisibility(!isInvisible);
     }
 }

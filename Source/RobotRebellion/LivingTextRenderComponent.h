@@ -73,6 +73,8 @@ protected:
 
     void updateWithoutMoving(float deltaTime);
 
+    void updateBoingBoing(float deltaTime);
+
 
     void setDelegateAccordingToAnimMode(ELivingTextAnimMode mode);
 

@@ -142,6 +142,8 @@ public:
     virtual void cppOnRevive() override;
     virtual void cppOnDeath() override;
 
+    void EnablePlayInput(bool enable);
+
     void inputOnLiving(class UInputComponent* playerInput);
     void inputOnDying(class UInputComponent* playerInput);
 
@@ -272,6 +274,10 @@ public:
 
     UFUNCTION(NetMulticast, Reliable)
         void clientInteract(APickupActor* Usable);
+
+    UFUNCTION(Reliable, Client, WithValidation)
+        void clientEnableInput(bool enableInput);
+
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 

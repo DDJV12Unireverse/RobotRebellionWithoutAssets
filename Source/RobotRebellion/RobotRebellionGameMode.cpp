@@ -4,6 +4,8 @@
 #include "RobotRebellionGameMode.h"
 #include "RobotRebellionCharacter.h"
 
+#include "GameInstaller.h"
+
 ARobotRebellionGameMode::ARobotRebellionGameMode()
 {
 	// set default pawn class to our Blueprinted character
@@ -12,4 +14,12 @@ ARobotRebellionGameMode::ARobotRebellionGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+}
+
+void ARobotRebellionGameMode::BeginPlay()
+{
+    Super::BeginPlay();
+
+    GameAlterationInstaller::getInstance().installAlteration<UStunAlteration>(&m_stunDefault);
+    GameAlterationInstaller::getInstance().installAlteration<UInvisibilityAlteration>(&m_invisibleDefault);
 }

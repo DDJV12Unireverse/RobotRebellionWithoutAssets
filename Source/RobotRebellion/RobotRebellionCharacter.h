@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "Attributes.h"
+#include "AlterationController.h"
 #include "ELivingTextAnimMode.h"
 #include "GameFramework/Character.h"
 
@@ -35,6 +36,9 @@ public:
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
         UAttributes* m_attribute;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
+        UAlterationController* m_alterationController;
 
 
 
@@ -74,6 +78,11 @@ public:
 
     void startTimedDestroy() USE_NOEXCEPT;
 
+    void inflictStun();
+
+    void inflictInvisibility();
+
+    void doesNothing() {}
 
 
 protected:
@@ -121,6 +130,12 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void netMultiKill();
+
+    UFUNCTION()
+        void setInvisible(bool isInvisible);
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSetInvisible(bool isInvisible);
 
 
 // Attributs relatives functions added by macro

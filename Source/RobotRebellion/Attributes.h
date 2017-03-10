@@ -152,7 +152,7 @@ public:
     //set the current health
     void setHealth(float newValue) USE_NOEXCEPT
     {
-        m_health = (newValue > m_maxHealth) ? m_maxHealth : newValue;
+        m_health = (newValue > m_maxHealth) ? m_maxHealth : ((newValue < 0.f) ? 0.f : newValue);
     }
 
     //set the maximum value of health
@@ -162,7 +162,7 @@ public:
     // set the current mana value
     void setMana(float newValue) USE_NOEXCEPT
     {
-        m_mana = (newValue > m_maxMana) ? m_maxMana : newValue;
+        m_mana = (newValue > m_maxMana) ? m_maxMana : ((newValue < 0.f) ? 0.f : newValue);
     }
 
     //set the maximum mana value

@@ -12,6 +12,4 @@ enum class EClassType : uint8
     ASSASSIN    UMETA(DisplayName = "Assassin"),
     HEALER      UMETA(DisplayName = "Healer"),
     WIZARD      UMETA(DisplayName = "Wizard"),
-
-    TYPE_COUNT
 };
