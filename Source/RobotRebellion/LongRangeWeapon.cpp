@@ -25,7 +25,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
         // m_muzzleOffset is in camera space coordinate => must be transformed to world space coordinate.
         const FVector MuzzleLocation = cameraLocation + FTransform(muzzleRotation).TransformVector(m_muzzleOffset);
-        muzzleRotation.Pitch += LIFT_OFFSET; // lift the fire a little 
+        //muzzleRotation.Pitch += LIFT_OFFSET; // lift the fire a little 
         UWorld* const World = user->GetWorld();
         if (World)
         {
