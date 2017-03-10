@@ -26,6 +26,8 @@ public:
         class URobotRobellionSpawnerClass* m_spawner;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", meta = (AllowPrivateAccess = "true"))
         USpellKit* m_spellKit;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
+        class USkeletalMeshComponent* m_fpsMesh;
 
 public:
     ////Sprint////

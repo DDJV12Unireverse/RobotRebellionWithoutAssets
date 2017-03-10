@@ -54,7 +54,7 @@ APlayableCharacter::APlayableCharacter()
 
     // Slight camera offset to aid with object selection
     //CameraBoom->SocketOffset = FVector(0, 35, 0);
-    CameraBoom->TargetOffset = FVector(0, 0, 55);
+    CameraBoom->TargetOffset = FVector(0, 0, 70);
 
     // Create a follow camera
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -77,6 +77,10 @@ APlayableCharacter::APlayableCharacter()
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
     GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
+
+    m_fpsMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPS Mesh"));
+    m_fpsMesh->SetupAttachment(GetCapsuleComponent());
+    m_fpsMesh->SetVisibility(false);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -833,5 +837,6 @@ void APlayableCharacter::switchView()
     if (characterMesh)
     {
         characterMesh->SetVisibility(m_tpsMode);
+        m_fpsMesh->SetVisibility(!m_tpsMode);
     }
 }
