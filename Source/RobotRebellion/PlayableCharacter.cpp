@@ -53,7 +53,7 @@ APlayableCharacter::APlayableCharacter()
     CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
     // Slight camera offset to aid with object selection
-    CameraBoom->SocketOffset = FVector(0, 35, 0);
+    //CameraBoom->SocketOffset = FVector(0, 35, 0);
     CameraBoom->TargetOffset = FVector(0, 0, 55);
 
     // Create a follow camera
@@ -818,7 +818,20 @@ bool APlayableCharacter::serverLoseBomb_Validate()
 
 void APlayableCharacter::switchView()
 {
-    CameraBoom->TargetArmLength = m_tpsMode ? m_FPSCameraDistance : m_TPSCameraDistance;
+    if (m_tpsMode)
+    {
+        CameraBoom->TargetArmLength = m_FPSCameraDistance;
+    }
+    else
+    {
+        CameraBoom->TargetArmLength = m_TPSCameraDistance;
+    }
 
     m_tpsMode = !m_tpsMode;
+
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if (characterMesh)
+    {
+        characterMesh->SetVisibility(m_tpsMode);
+    }
 }
