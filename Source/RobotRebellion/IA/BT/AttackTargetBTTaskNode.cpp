@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "AttackTargetBTTaskNode.h"
-#include "../Controller/EnnemiAIController.h"
+#include "../Controller/CustomAIControllerBase.h"
 #include "../../Character/NonPlayableCharacter.h"
 
 
@@ -15,11 +15,11 @@ UAttackTargetBTTaskNode::UAttackTargetBTTaskNode()
 EBTNodeResult::Type UAttackTargetBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8*
                                                          NodeMemory)
 {
-    AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
+    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
 
     EBTNodeResult::Type NodeResult = EBTNodeResult::Succeeded;
 
-    ennemiAIController->AttackTarget();
+    AIController->AttackTarget();
 
     return NodeResult;
 }
@@ -27,8 +27,8 @@ EBTNodeResult::Type UAttackTargetBTTaskNode::ExecuteTask(UBehaviorTreeComponent&
 void UAttackTargetBTTaskNode::TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
                                        float DeltaSeconds)
 {
-    AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
-    ennemiAIController->AttackTarget();
+    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
+    AIController->AttackTarget();
 }
 FString UAttackTargetBTTaskNode::GetStaticDescription() const
 {

@@ -17,17 +17,24 @@ protected:
     class ARobotRebellionCharacter *m_targetToFollow;
 
 public:
-    virtual EPathFollowingRequestResult::Type MoveToTarget();
-
     FORCEINLINE bool hasTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow != NULL;
     }
-	
+
     ARobotRebellionCharacter* getTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow;
     }
-	
+
     bool hasALivingTarget() const USE_NOEXCEPT;
+
+    /*
+     * VIRTUAL METHODS
+     */
+    virtual EPathFollowingRequestResult::Type MoveToTarget();
+
+    virtual void CheckEnnemyNear(float range) PURE_VIRTUAL(ACustomAIControllerBase::CheckEnnemyNear, );
+
+    virtual void AttackTarget() const PURE_VIRTUAL(ACustomAIControllerBase::AttackTarget, );
 };

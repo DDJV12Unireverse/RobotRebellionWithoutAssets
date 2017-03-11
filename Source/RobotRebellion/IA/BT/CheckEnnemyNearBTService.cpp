@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "CheckEnnemyNearBTService.h"
 
-#include "../Controller/EnnemiAIController.h"
+#include "../Controller/CustomAIControllerBase.h"
 
 
 UCheckEnnemyNearBTService::UCheckEnnemyNearBTService(): m_radiusRange{700}
@@ -19,7 +19,7 @@ void UCheckEnnemyNearBTService::TickNode(UBehaviorTreeComponent & OwnerComp, uin
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-    AEnnemiAIController* ennemiAIController = Cast<AEnnemiAIController>(OwnerComp.GetOwner());
+    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
 
-    ennemiAIController->CheckEnnemyNear(m_radiusRange);
+    AIController->CheckEnnemyNear(m_radiusRange);
 }
