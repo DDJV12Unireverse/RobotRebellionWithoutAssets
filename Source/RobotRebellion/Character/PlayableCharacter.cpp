@@ -50,12 +50,11 @@ APlayableCharacter::APlayableCharacter()
     // Create a camera boom (pulls in towards the player if there is a collision)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
     CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
     // Slight camera offset to aid with object selection
-    CameraBoom->SocketOffset = FVector(0, 35, 0);
-    CameraBoom->TargetOffset = FVector(0, 0, 55);
+    //CameraBoom->SocketOffset = FVector(0, 35, 0);
+    CameraBoom->TargetOffset = FVector(0, 0, 70);
 
     // Create a follow camera
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -78,6 +77,10 @@ APlayableCharacter::APlayableCharacter()
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
     GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
+
+    m_fpsMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPS Mesh"));
+    m_fpsMesh->SetupAttachment(GetCapsuleComponent());
+    m_fpsMesh->SetVisibility(false);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -94,6 +97,10 @@ void APlayableCharacter::BeginPlay()
     m_manaPotionsCount = m_nbManaPotionStart;
     m_bombCount = m_nbBombStart;
     m_healthPotionsCount = m_nbHealthPotionStart;
+
+    CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
+
+    m_tpsMode = true;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -537,6 +544,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //ESCAPE
         PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
@@ -553,7 +561,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
         PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
         PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::loseMana);
-        PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::loseBomb);
+
+        //VIEW
+        PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
+        
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -840,6 +851,27 @@ bool APlayableCharacter::serverLoseBomb_Validate()
     return true;
 }
 
+void APlayableCharacter::switchView()
+{
+    if (m_tpsMode)
+    {
+        CameraBoom->TargetArmLength = m_FPSCameraDistance;
+    }
+    else
+    {
+        CameraBoom->TargetArmLength = m_TPSCameraDistance;
+    }
+
+    m_tpsMode = !m_tpsMode;
+
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if (characterMesh)
+    {
+        characterMesh->SetVisibility(m_tpsMode);
+        m_fpsMesh->SetVisibility(!m_tpsMode);
+    }
+}
+
 void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if (mustActive)
@@ -857,7 +889,12 @@ void APlayableCharacter::activatePhysics(bool mustActive)
     }
 }
 
-GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter, multiActivatePhysics, bool mustActive)
+bool APlayableCharacter::multiActivatePhysics_Validate(bool mustActive)
+{
+    return true;
+}
+
+void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if (mustActive)
     {

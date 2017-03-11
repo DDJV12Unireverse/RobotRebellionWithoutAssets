@@ -26,6 +26,8 @@ public:
         class URobotRobellionSpawnerClass* m_spawner;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", meta = (AllowPrivateAccess = "true"))
         USpellKit* m_spellKit;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
+        class USkeletalMeshComponent* m_fpsMesh;
 
 public:
     ////Sprint////
@@ -78,13 +80,24 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseLookUpRate;
 
-    // Distance maximale de focus sur les objets.
+    //camera broom distance from player pawn while in tps mode
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+        float m_TPSCameraDistance;
+
+    //camera broom distance from player pawn while in fps mode
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+        float m_FPSCameraDistance;
+
+    // Maximal Focus distance on items.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
+
 
     // Seulement vrai lors de la première image avec un nouveau focus.
     bool bHasNewFocus;
     class APickupActor* focusedPickupActor;
+
+    bool m_tpsMode;
 
 public:
     APlayableCharacter();
@@ -336,5 +349,6 @@ public:
     void setHealthPotionCount(int nbPotion);
 
     void setBombCount(int nbBombs);
-    ////END INVENTORY
+
+    void switchView();
 };
