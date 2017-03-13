@@ -76,7 +76,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                     {
                         DamageCoefficientLogic coeff;
 
-                        Damage damage{ static_cast<ARobotRebellionCharacter*>(m_owner), receiver };
+                        Damage damage{ Cast<ARobotRebellionCharacter>(m_owner), receiver };
                         Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
 
                         receiver->inflictDamage(damageValue);

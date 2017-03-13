@@ -123,7 +123,7 @@ void ADroneAIController::followKing()
         int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
         for (int32 iter = 0; iter < playerCount; ++iter)
         {
-            ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+            ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
             if (!currentPlayer->isDead())
             {
                 m_destination += currentPlayer->GetActorLocation();
@@ -141,7 +141,7 @@ void ADroneAIController::followGroup()
     int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
     for (int32 iter = 0; iter < playerCount; ++iter)
     {
-        ARobotRebellionCharacter* currentPlayer = static_cast<ARobotRebellionCharacter*>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+        ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
         if (!currentPlayer->isDead())
         {
             m_destination += currentPlayer->GetActorLocation();
@@ -165,7 +165,7 @@ void ADroneAIController::setFollowKing()
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_kingClass, kings);
     if (kings.Num() > 0) //The king is here
     {
-        m_king = static_cast<AKing*>(kings.Top());
+        m_king = Cast<AKing>(kings.Top());
         this->m_updateTarget = &ADroneAIController::followKing;
     }
     else setFollowGroup(); //if no king, stay with group
