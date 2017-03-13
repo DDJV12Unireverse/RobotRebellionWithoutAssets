@@ -25,16 +25,16 @@ void UStunAlteration::destroyItself()
         if(m_alteredActorController)
         {
             m_alteredActorController->SetPawn(nonPlayableOwner);
-        }
 
-        AAIController* controller = Cast<AAIController>(m_alteredOwner->Controller);
-        if(controller)
-        {
-            auto brain = controller->GetBrainComponent();
-
-            if(brain)
+            AAIController* controller = Cast<AAIController>(m_alteredActorController);
+            if(controller)
             {
-                brain->RestartLogic();
+                auto brain = controller->GetBrainComponent();
+
+                if(brain)
+                {
+                    brain->RestartLogic();
+                }
             }
         }
     }
