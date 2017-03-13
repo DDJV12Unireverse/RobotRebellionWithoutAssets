@@ -18,18 +18,21 @@ UStunAlteration::UStunAlteration() :
 
 void UStunAlteration::destroyItself()
 {
-    if (m_isNPC)
+    if(m_isNPC)
     {
         auto nonPlayableOwner = Cast<ANonPlayableCharacter>(m_alteredOwner);
 
-        m_alteredActorController->SetPawn(nonPlayableOwner);
+        if(m_alteredActorController)
+        {
+            m_alteredActorController->SetPawn(nonPlayableOwner);
+        }
 
         AAIController* controller = Cast<AAIController>(m_alteredOwner->Controller);
-        if (controller)
+        if(controller)
         {
             auto brain = controller->GetBrainComponent();
 
-            if (brain)
+            if(brain)
             {
                 brain->RestartLogic();
             }
@@ -53,7 +56,7 @@ void UStunAlteration::onCreate(ARobotRebellionCharacter* alteredOwner)
 
     auto playableOwner = Cast<APlayableCharacter>(alteredOwner);
 
-    if (playableOwner)
+    if(playableOwner)
     {
         m_isNPC = false;
 
@@ -63,16 +66,16 @@ void UStunAlteration::onCreate(ARobotRebellionCharacter* alteredOwner)
     {
         auto nonPlayableOwner = Cast<ANonPlayableCharacter>(alteredOwner);
 
-        if (nonPlayableOwner)
+        if(nonPlayableOwner)
         {
             m_isNPC = true;
 
             AAIController* controller = Cast<AAIController>(m_alteredOwner->Controller);
-            if (controller)
+            if(controller)
             {
                 auto brain = controller->GetBrainComponent();
 
-                if (brain)
+                if(brain)
                 {
                     brain->StopLogic("");
                 }
