@@ -7,9 +7,7 @@
 AGameMenu::AGameMenu()
 {
     AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
-    AudioComp->bAutoActivate = true;
-    AudioComp->Activate();
-    AudioComp->Play();
+    AudioComp->bAutoActivate = false;
     AudioComp->bAutoDestroy = false; ///TEST true
     AudioComp->SetupAttachment(RootComponent);
 }
@@ -24,7 +22,24 @@ void AGameMenu::BeginPlay()
     LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
     LobbyImpl->initialiseOnliSubsystem();
     HideWidget(LobbyImpl);
+}
+void AGameMenu::Tick(float deltaTime)
+{
+    Super::Tick(deltaTime);
+    if (LobbyImpl->Visibility==ESlateVisibility::Hidden && AudioComp->IsPlaying())
+    {
+        AudioComp->Stop();
+    }
+}
 
+void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
+{
+    WidgetRef->SetVisibility(ESlateVisibility::Visible);
     AudioComp->SetSound(MenuLoop);
     AudioComp->Play();
+}
+
+void AGameMenu::HideWidget(UUserWidget* WidgetRef)
+{
+    WidgetRef->SetVisibility(ESlateVisibility::Hidden);
 }
