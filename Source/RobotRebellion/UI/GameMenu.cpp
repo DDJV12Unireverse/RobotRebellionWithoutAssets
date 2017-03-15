@@ -5,7 +5,14 @@
 #include "GameMenu.h"
 
 AGameMenu::AGameMenu()
-{}
+{
+    AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
+    AudioComp->bAutoActivate = true;
+    AudioComp->Activate();
+    AudioComp->Play();
+    AudioComp->bAutoDestroy = false; ///TEST true
+    AudioComp->SetupAttachment(RootComponent);
+}
 
 void AGameMenu::BeginPlay()
 {
@@ -17,4 +24,7 @@ void AGameMenu::BeginPlay()
     LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
     LobbyImpl->initialiseOnliSubsystem();
     HideWidget(LobbyImpl);
+
+    AudioComp->SetSound(MenuLoop);
+    AudioComp->Play();
 }

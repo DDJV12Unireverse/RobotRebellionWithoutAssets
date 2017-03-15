@@ -15,6 +15,12 @@ class ROBOTREBELLION_API AGameMenu : public AHUD
 {
     GENERATED_BODY()
 
+private:
+    UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+        USoundCue* MenuLoop;
+
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* AudioComp;
 public:
     AGameMenu();
     virtual void BeginPlay() override;
