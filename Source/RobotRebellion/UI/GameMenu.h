@@ -26,6 +26,7 @@ public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
         USoundCue* MenuLoop;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Game Menu Lobby Widget")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
     ULobbyUIWidget* LobbyImpl;
