@@ -565,6 +565,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
         
+        //CHANGE MAP
+        PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
+        PlayerInputComponent->BindAction("Debug_GotoRuins", IE_Released, this, &APlayableCharacter::gotoRuins);
+        PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -850,6 +854,26 @@ bool APlayableCharacter::serverLoseBomb_Validate()
 {
     return true;
 }
+
+
+void APlayableCharacter::gotoDesert()
+{
+    if (Role == ROLE_Authority)
+    UGameplayStatics::OpenLevel(GetWorld(), "Desert?listen",false,"");
+}
+
+void APlayableCharacter::gotoRuins()
+{
+    if (Role == ROLE_Authority)
+    UGameplayStatics::OpenLevel(GetWorld(),"Ruins?listen",false,"");
+}
+
+void APlayableCharacter::gotoGym()
+{
+    if (Role==ROLE_Authority)
+    UGameplayStatics::OpenLevel(GetWorld(),"ThirdPersonExampleMap?listen",false,"");
+}
+
 
 void APlayableCharacter::switchView()
 {
