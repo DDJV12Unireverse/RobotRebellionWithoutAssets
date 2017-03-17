@@ -22,4 +22,7 @@ void USpawnEffect::exec(class ARobotRebellionCharacter* caster, ARobotRebellionC
 void USpawnEffect::exec(const FVector impactPoint)
 {
     // TODO - Spawn the actor!
+    // update position
+    FVector spawnLocation = impactPoint + m_offsetFromImpactPoint;
+    GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
 }

@@ -14,14 +14,14 @@
  *   If it has lifetime
  *   the duration if it has life time
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ROBOTREBELLION_API USpawnEffect : public UEffect
 {
 	GENERATED_BODY()
 	
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
-        TSubclassOf<AActor> m_actorToSpawn;
+        TSubclassOf<AActor> m_actorClassToSpawn;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         FVector m_offsetFromImpactPoint;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
