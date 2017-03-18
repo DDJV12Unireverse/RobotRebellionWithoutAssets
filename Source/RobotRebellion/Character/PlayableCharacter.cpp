@@ -859,19 +859,25 @@ bool APlayableCharacter::serverLoseBomb_Validate()
 void APlayableCharacter::gotoDesert()
 {
     if (Role == ROLE_Authority)
-    UGameplayStatics::OpenLevel(GetWorld(), "Desert?listen",false,"");
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert");
+    }
 }
 
 void APlayableCharacter::gotoRuins()
 {
     if (Role == ROLE_Authority)
-    UGameplayStatics::OpenLevel(GetWorld(),"Ruins?listen",false,"");
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins");
+    }
 }
 
 void APlayableCharacter::gotoGym()
 {
-    if (Role==ROLE_Authority)
-    UGameplayStatics::OpenLevel(GetWorld(),"ThirdPersonExampleMap?listen",false,"");
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap");
+    }
 }
 
 
