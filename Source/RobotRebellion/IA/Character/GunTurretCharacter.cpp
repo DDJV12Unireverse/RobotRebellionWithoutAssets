@@ -4,6 +4,8 @@
 #include "GunTurretCharacter.h"
 
 
+#include "../../Gameplay/Weapon/WeaponInventory.h"
+
 AGunTurretCharacter::AGunTurretCharacter()
 {
     // Use same collision as player to allow hostiles to attack
