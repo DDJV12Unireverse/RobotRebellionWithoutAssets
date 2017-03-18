@@ -13,9 +13,6 @@ class ROBOTREBELLION_API ATrainingDummyCharacter : public ANonPlayableCharacter
 {
     GENERATED_BODY()
 
-
 public:
         ATrainingDummyCharacter();
-	
-	
 };
