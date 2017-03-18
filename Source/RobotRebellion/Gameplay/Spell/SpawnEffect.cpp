@@ -14,7 +14,7 @@ void USpawnEffect::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void USpawnEffect::exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
+void USpawnEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
 {
     // TODO
 }
