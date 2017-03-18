@@ -32,8 +32,8 @@ void AGameMenu::Tick(float deltaTime)
     Super::Tick(deltaTime);
     if (LobbyImpl->Visibility == ESlateVisibility::Hidden && AudioComp->IsPlaying())
     {
-        if (GEngine)
-        {
+        //if (GEngine)
+        //{
             auto sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
             //GEngine->GetActiveAudioDevice()->PauseActiveSound();
             // GEngine->GetActiveAudioDevice()->
@@ -42,8 +42,11 @@ void AGameMenu::Tick(float deltaTime)
                 UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
                 if (audioComp->GetAudioComponentID() != AudioComp->GetAudioComponentID())
                     //audioComp->Stop();
-                    GEngine->GetActiveAudioDevice()->PauseActiveSound(audioComp->GetAudioComponentID(), false);
-            }
+                {
+                    audioComp->SetVolumeMultiplier(1.f);
+                }
+                    //GEngine->GetActiveAudioDevice()->PauseActiveSound(audioComp->GetAudioComponentID(), false);
+          //  }
         }
         AudioComp->Stop();
     }
@@ -62,8 +65,9 @@ void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
         {
             UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
             if (audioComp->GetAudioComponentID() !=AudioComp->GetAudioComponentID())
-            //audioComp->Stop();
-            GEngine->GetActiveAudioDevice()->PauseActiveSound(audioComp->GetAudioComponentID(),true);
+            {
+                audioComp->SetVolumeMultiplier(0.f);
+            }
         }
     }
     AudioComp->SetSound(MenuLoop);
