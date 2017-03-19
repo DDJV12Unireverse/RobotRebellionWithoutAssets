@@ -34,11 +34,15 @@ void URayCastSpell::cast()
         FVector cameraLocation;
         FRotator muzzleRotation;
         caster->GetActorEyesViewPoint(cameraLocation, muzzleRotation);
-        //DrawDebugLine(world)
+        
+        FVector aimDir = getRealAimingVector(caster);
 
         // Initialize Location
-        const FVector endLocation = cameraLocation + (muzzleRotation.Vector() * m_range);
-        const FVector startLocation = caster->GetActorLocation();
+        const FVector endLocation = caster->GetActorLocation() + (aimDir * m_range);
+        // offset the shoot to avoid collision with the capsule of the player
+        const FVector startLocation = caster->GetActorLocation() + (aimDir * 100.f); 
+        //Draw debug line
+        DrawDebugLine(world, startLocation, endLocation, FColor::Red, false, 5.f);
 
         // Cast the RAY!
         FHitResult hitActors(ForceInit);
@@ -46,7 +50,7 @@ void URayCastSpell::cast()
         TraceParams.bTraceAsyncScene = true;
         TraceParams.bReturnPhysicalMaterial = true;
         // atm only should only proc on static mesh
-        world->LineTraceSingleByChannel(hitActors, cameraLocation, endLocation, ECC_WorldStatic, TraceParams);
+        world->LineTraceSingleByChannel(hitActors, startLocation, endLocation, ECC_WorldStatic, TraceParams);
         // hit Actors countains hit actors now
         processHitActor(hitActors);
     }
@@ -90,4 +94,29 @@ void URayCastSpell::processHitActor(const FHitResult& hitResult)
             applyEffect(hitResult.ImpactPoint);
         }
     }
+}
+
+// void processStartLocAndAimVector(const FVector &camLoc, const FVector &camDir, const FVector &playerLoc,
+//                                  FVector &startLoc, FVector &aimDirection)
+// {
+//     FVector camToPlayer = playerLoc - camLoc;
+//     camToPlayer.Normalize();
+//     camDir.Normalize();
+// }
+
+FVector URayCastSpell::getRealAimingVector(const ARobotRebellionCharacter* caster)
+{
+    APlayerController* playerController = Cast<APlayerController>(caster->Controller);
+    if(playerController)
+    {
+        FVector CamLoc;
+        FRotator CamRot;
+        playerController->GetPlayerViewPoint(CamLoc, CamRot);
+        return CamRot.Vector();
+    }
+    else if(caster->Instigator)
+    {
+        return caster->GetBaseAimRotation().Vector();
+    }
+    return FVector::ZeroVector;
 }

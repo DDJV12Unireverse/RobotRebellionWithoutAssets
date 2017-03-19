@@ -33,4 +33,11 @@ public:
 
 private:
     void processHitActor(const FHitResult& hitResult);
+
+    // from the camera position, rotation, and character position 
+    // fill startLoc and aimDirection with the right location and unit vector
+    //void processStartLocAndAimVector(const FVector &camLoc, const FVector &camDir, const FVector &playerLoc,
+    //                                 FVector &startLoc, FVector &aimDirection);
+
+    FVector getRealAimingVector(const ARobotRebellionCharacter* caster);
 };
