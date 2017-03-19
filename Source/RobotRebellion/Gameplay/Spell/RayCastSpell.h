@@ -15,9 +15,9 @@ class ROBOTREBELLION_API URayCastSpell : public USpell
     GENERATED_BODY()
 
 public:
-
+    /** if true the spell need to land on a subclass of RobotRebellionCharacter if not it does nothing */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Raycast Settings")
-        bool m_isTargetThrow;
+        bool m_isTargetedSpell;
 
 public:
     URayCastSpell();
@@ -31,4 +31,6 @@ public:
     // Aplly Effects on a specific location
     void applyEffect(FVector impactPoint);
 
+private:
+    void processHitActor(const FHitResult& hitResult);
 };
