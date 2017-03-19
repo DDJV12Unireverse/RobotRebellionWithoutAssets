@@ -55,8 +55,3 @@ void AGunTurretAIController::AttackTarget() const
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
 }
-
-void AGunTurretAIController::BeginPlay()
-{
-    Super::BeginPlay();
-}
