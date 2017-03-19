@@ -8,7 +8,6 @@
 
 void AGunTurretAIController::CheckEnnemyNear(float range)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "tests");
     APawn *currentPawn = GetPawn();
     FVector MultiSphereStart = currentPawn->GetActorLocation();
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);

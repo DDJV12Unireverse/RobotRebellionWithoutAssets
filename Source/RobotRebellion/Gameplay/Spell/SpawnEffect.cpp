@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RobotRebellion.h"
+
+#include "../../Character/NonPlayableCharacter.h"
 #include "SpawnEffect.h"
+
 
 
 void USpawnEffect::BeginPlay()
@@ -27,13 +30,13 @@ void USpawnEffect::exec(const FVector impactPoint)
     AActor* temp = GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
     temp->SetLifeSpan(m_actorLifeTime);
 
+    // If actor is a pawn with controller we need to manually spawn it
     if(m_hasDefaultAIController)
     {
         // try to cast to NonPlayableCharacter
         ANonPlayableCharacter* npc = Cast<ANonPlayableCharacter>(temp);
         if(npc)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, "Spawn actor with controller");
             npc->SpawnDefaultController();
         }
     }
