@@ -8,11 +8,12 @@
 
 void AGunTurretAIController::CheckEnnemyNear(float range)
 {
+    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "tests");
     APawn *currentPawn = GetPawn();
     FVector MultiSphereStart = currentPawn->GetActorLocation();
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Beast
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beast
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
     TArray<AActor*> ActorsToIgnore;
     ActorsToIgnore.Add(currentPawn);
@@ -53,4 +54,9 @@ void AGunTurretAIController::AttackTarget() const
 {
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+}
+
+void AGunTurretAIController::BeginPlay()
+{
+    Super::BeginPlay();
 }

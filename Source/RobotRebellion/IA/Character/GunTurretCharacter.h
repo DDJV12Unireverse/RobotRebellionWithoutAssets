@@ -15,5 +15,4 @@ class ROBOTREBELLION_API AGunTurretCharacter : public ANonPlayableCharacter
 
 public:
     AGunTurretCharacter();
-	
 };

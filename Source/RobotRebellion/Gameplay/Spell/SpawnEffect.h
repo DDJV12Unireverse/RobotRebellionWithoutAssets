@@ -27,7 +27,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         FVector  m_startSpeed;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
-        bool m_hasLifeTime;
+        bool m_hasDefaultAIController;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         float m_actorLifeTime;
 	

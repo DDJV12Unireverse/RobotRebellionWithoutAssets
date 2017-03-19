@@ -26,4 +26,15 @@ void USpawnEffect::exec(const FVector impactPoint)
     FVector spawnLocation = impactPoint + m_offsetFromImpactPoint;
     AActor* temp = GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
     temp->SetLifeSpan(m_actorLifeTime);
+
+    if(m_hasDefaultAIController)
+    {
+        // try to cast to NonPlayableCharacter
+        ANonPlayableCharacter* npc = Cast<ANonPlayableCharacter>(temp);
+        if(npc)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, "Spawn actor with controller");
+            npc->SpawnDefaultController();
+        }
+    }
 }
