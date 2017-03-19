@@ -10,9 +10,10 @@
  * This effect spawn a new AActor at the impact point + an offset
  * you can set
  *   the offset, 
- *   the base speed of the actor
+ *   the base speed of the actor // the actor must have a projectileMovement component
  *   If it has lifetime
  *   the duration if it has life time
+ *   if the ator should be controlled by AI controller -seems incompatible with initial speed :)
  */
 UCLASS(Blueprintable)
 class ROBOTREBELLION_API USpawnEffect : public UEffect
@@ -22,12 +23,19 @@ class ROBOTREBELLION_API USpawnEffect : public UEffect
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         TSubclassOf<AActor> m_actorClassToSpawn;
+    /** the actor will be spawned at the hit point translated by this offset*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         FVector m_offsetFromImpactPoint;
+    /** Initiale speed, include the speed value not only the direction. The actor must have projectileMovementComponent to work*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         FVector  m_startSpeed;
+    /** Maximal speed*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
+        float m_MaxSpeed;
+    /** Enabled spawning default controller*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         bool m_hasDefaultAIController;
+    /** set the life time in second*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpawnEffect)
         float m_actorLifeTime;
 	

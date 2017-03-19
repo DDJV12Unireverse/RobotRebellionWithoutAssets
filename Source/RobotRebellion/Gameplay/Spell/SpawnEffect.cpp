@@ -40,4 +40,13 @@ void USpawnEffect::exec(const FVector impactPoint)
             npc->SpawnDefaultController();
         }
     }
+    TArray<UProjectileMovementComponent*> movementComp;
+    temp->GetComponents<UProjectileMovementComponent>(movementComp);
+    if(movementComp.Num() > 0) // then we could set initiale speed
+    {
+        movementComp[0]->MaxSpeed = m_MaxSpeed;
+        movementComp[0]->Velocity = m_startSpeed;
+        auto test = 0;
+        test++;
+    }
 }
