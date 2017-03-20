@@ -42,4 +42,5 @@ public:
     void initializeSpell();
 
     bool canCast();
+
 };

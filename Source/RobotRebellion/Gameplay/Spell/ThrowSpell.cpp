@@ -52,7 +52,7 @@ void UThrowSpell::cast()
             const FVector fireDirection = muzzleRotation.Vector();
             projectile->setOwner(caster);
             projectile->setParent(this);
-            projectile->initMovement(fireDirection, m_projectileInitialSpeed);
+            projectile->initMovement(fireDirection);
 
             // the spell is successfully cast consumme mana and launch CD
             caster->consumeMana(m_manaCost);

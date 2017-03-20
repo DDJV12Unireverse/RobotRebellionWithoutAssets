@@ -12,12 +12,12 @@ AProjectileEffect::AProjectileEffect() : AProjectile()
     m_collisionComp->OnComponentHit.AddDynamic(this, &AProjectileEffect::OnHit);
 }
 
-void AProjectileEffect::initMovement(const FVector& shootDirection, float speed)
+void AProjectileEffect::initMovement(const FVector& shootDirection)
 {
     if(m_projectileMovement)
     {
         // Adjust velocity with direction
-        m_projectileMovement->Velocity = shootDirection * speed;
+        m_projectileMovement->Velocity = shootDirection * m_projectileMovement->InitialSpeed;
     }
 }
 
@@ -37,4 +37,10 @@ void AProjectileEffect::OnHit(UPrimitiveComponent* ThisComp, AActor* OtherActor,
     {
         Destroy();
     }
+}
+
+void AProjectileEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    //DOREPLIFETIME(AProjectile, m_owner);
 }

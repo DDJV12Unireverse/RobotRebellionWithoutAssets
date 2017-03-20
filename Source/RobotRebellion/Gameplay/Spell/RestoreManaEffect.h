@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class ROBOTREBELLION_API URestoreManaEffect : public UEffect
 {
 	GENERATED_BODY()

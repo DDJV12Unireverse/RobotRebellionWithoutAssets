@@ -18,9 +18,11 @@ private:
 public:
     AProjectileEffect();
 
-    void initMovement(const FVector& shootDirection, float speed);
+    void initMovement(const FVector& shootDirection);
 
     void setParent(UThrowSpell *spell);
 
     virtual void OnHit(UPrimitiveComponent* ThisComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+    
+    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 };

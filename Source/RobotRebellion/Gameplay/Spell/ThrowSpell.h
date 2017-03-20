@@ -25,8 +25,6 @@ public:
         float m_liftOffset;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         FVector m_muzzleOffset;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
-        float m_projectileInitialSpeed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         TSubclassOf<class AProjectileEffect> m_projectileClass;
