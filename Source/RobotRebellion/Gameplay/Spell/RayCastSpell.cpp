@@ -29,7 +29,6 @@ void URayCastSpell::cast()
 
     if(caster)
     {
-        // TODO - perform ray cast.
         // Get player location and where hes looking
         FVector cameraLocation;
         FRotator muzzleRotation;
