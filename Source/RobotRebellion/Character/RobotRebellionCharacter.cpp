@@ -216,15 +216,32 @@ void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponen
 
 void ARobotRebellionCharacter::inflictStun()
 {
-    if (!this->isImmortal())
+    if(!this->isImmortal())
     {
         UStunAlteration* stunAlteration;
 
-        if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
             &stunAlteration,
             *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
-        ))
+            ))
         {
+            m_alterationController->addAlteration(stunAlteration);
+        }
+    }
+}
+
+void ARobotRebellionCharacter::inflictStun(float duration)
+{
+    if(!this->isImmortal())
+    {
+        UStunAlteration* stunAlteration;
+
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
+            &stunAlteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
+            ))
+        {
+            stunAlteration->m_lifeTime = duration;
             m_alterationController->addAlteration(stunAlteration);
         }
     }

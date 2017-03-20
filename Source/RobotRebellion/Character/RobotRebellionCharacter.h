@@ -79,6 +79,7 @@ public:
     void startTimedDestroy() USE_NOEXCEPT;
 
     void inflictStun();
+    void inflictStun(float duration);
 
     void inflictInvisibility();
 

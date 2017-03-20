@@ -127,7 +127,6 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                     UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
                         true,
                         *receiver,
-                        &ARobotRebellionCharacter::inflictStun,
                         &ARobotRebellionCharacter::inflictInvisibility,
                         &ARobotRebellionCharacter::doesNothing
                     );
