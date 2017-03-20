@@ -23,4 +23,31 @@ void UStunEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacte
 
 void UStunEffect::exec(const FVector impactPoint)
 {
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beast
+    TArray<AActor*> ActorsToIgnore{};
+    TArray<FHitResult> hitActors;
+    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
+                                                                   impactPoint,
+                                                                   impactPoint,
+                                                                   m_zoneRadius,
+                                                                   ObjectTypes,
+                                                                   false,
+                                                                   ActorsToIgnore,
+                                                                   EDrawDebugTrace::ForDuration,
+                                                                   hitActors,
+                                                                   true);
+    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Stun applyed on : " 
+                                     + FString::FromInt(hitActors.Num()) + " actors");
+    for(FHitResult& currentHit : hitActors)
+    {
+        ARobotRebellionCharacter* temp = Cast<ARobotRebellionCharacter>(currentHit.GetActor());
+        if(temp)
+        {
+            temp->inflictStun(m_duration);
+        }
+    }
 }
