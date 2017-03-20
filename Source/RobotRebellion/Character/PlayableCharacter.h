@@ -331,6 +331,12 @@ public:
         void gotoRuins();
     UFUNCTION()
         void gotoGym();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoDesert();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoRuins();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoGym();
 
     void giveBombToDrone() //Do Later
     {}

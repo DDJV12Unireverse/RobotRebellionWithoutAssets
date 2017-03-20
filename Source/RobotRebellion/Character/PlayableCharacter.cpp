@@ -860,7 +860,11 @@ void APlayableCharacter::gotoDesert()
 {
     if (Role == ROLE_Authority)
     {
-        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert");
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true,true);
+    }
+    else
+    {
+        serverGotoDesert();
     }
 }
 
@@ -868,7 +872,11 @@ void APlayableCharacter::gotoRuins()
 {
     if (Role == ROLE_Authority)
     {
-        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins");
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true,true);
+    }
+    else
+    {
+        serverGotoRuins();
     }
 }
 
@@ -876,10 +884,42 @@ void APlayableCharacter::gotoGym()
 {
     if (Role == ROLE_Authority)
     {
-        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap");
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true,true);
+    }
+    else
+    {
+        serverGotoGym();
     }
 }
+void APlayableCharacter::serverGotoDesert_Implementation()
+{
+    gotoDesert();
+}
 
+bool APlayableCharacter::serverGotoDesert_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoGym_Implementation()
+{
+    gotoGym();
+}
+
+bool APlayableCharacter::serverGotoGym_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoRuins_Implementation()
+{
+    gotoRuins();
+}
+
+bool APlayableCharacter::serverGotoRuins_Validate()
+{
+    return true;
+}
 
 void APlayableCharacter::switchView()
 {
