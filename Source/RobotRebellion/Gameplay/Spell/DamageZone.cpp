@@ -37,6 +37,7 @@ void ADamageZone::Tick( float DeltaTime )
         ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
         ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
         ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
+        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beast
         TArray<AActor*> ActorsToIgnore;
         ActorsToIgnore.Add(this);
         TArray<FHitResult> hitActors;
