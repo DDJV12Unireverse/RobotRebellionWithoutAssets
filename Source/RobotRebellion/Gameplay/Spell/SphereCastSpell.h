@@ -19,7 +19,7 @@ public:
         float m_length;
 
     /** radius of the casted shpere*/
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SphereCastSpell)
         float m_sphereRadius;
 
 public:
@@ -34,4 +34,6 @@ public:
     // Aplly Effects on a specific location
     void applyEffect(FVector impactPoint);
 	
+private:
+    FVector getRealAimingVector(const ARobotRebellionCharacter* caster);
 };
