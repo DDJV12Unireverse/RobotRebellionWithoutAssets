@@ -52,6 +52,10 @@ void URayCastSpell::cast()
         world->LineTraceSingleByChannel(hitActors, startLocation, endLocation, ECC_WorldStatic, TraceParams);
         // hit Actors countains hit actors now
         processHitActor(hitActors);
+
+        // the spell is successfully cast consumme mana and launch CD
+        caster->consumeMana(m_manaCost);
+        m_nextAllowedCastTimer = FPlatformTime::Seconds() + m_cooldown;
     }
 }
 
