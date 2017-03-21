@@ -25,7 +25,6 @@ void USphereCastSpell::cast()
     }
 
     ARobotRebellionCharacter* caster = Cast<ARobotRebellionCharacter>(GetOwner());
-    UWorld* const world = caster->GetWorld();
 
     if(caster)
     {
@@ -36,8 +35,9 @@ void USphereCastSpell::cast()
 
         // Initialize Location & aim direction
         FVector aimDir = getRealAimingVector(caster);
-        FVector endLocation = caster->GetActorLocation() + (aimDir * m_range);
-        FVector startLocation = caster->GetActorLocation();
+        FVector baseEyeHeight = FVector(0.f, 0.f, caster->BaseEyeHeight);
+        FVector endLocation = caster->GetActorLocation() + (aimDir * m_range) + baseEyeHeight;
+        FVector startLocation = caster->GetActorLocation() + baseEyeHeight;
         // offset start location to fit with camera hight
         startLocation.Z = cameraLocation.Z;
 

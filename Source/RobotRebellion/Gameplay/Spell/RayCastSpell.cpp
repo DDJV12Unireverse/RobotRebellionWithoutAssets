@@ -33,13 +33,13 @@ void URayCastSpell::cast()
         FVector cameraLocation;
         FRotator muzzleRotation;
         caster->GetActorEyesViewPoint(cameraLocation, muzzleRotation);
-        
+
         FVector aimDir = getRealAimingVector(caster);
 
         // Initialize Location
         const FVector endLocation = caster->GetActorLocation() + (aimDir * m_range);
         // offset the shoot to avoid collision with the capsule of the player
-        const FVector startLocation = caster->GetActorLocation() + (aimDir * 100.f); 
+        const FVector startLocation = caster->GetActorLocation() + (aimDir * 100.f) + FVector(0.f, 0.f, caster->BaseEyeHeight);
         //Draw debug line
         DrawDebugLine(world, startLocation, endLocation, FColor::Red, false, 5.f);
 

@@ -20,6 +20,7 @@ void UTeleportationEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellio
     // Get new position
     FVector targetLoc = target->GetActorLocation();
     FVector targetFrontVector = target->GetActorForwardVector();
+
     // Process offset base on the max collision box extent between x and y (dont bother with height) of both actor
     FVector targetCollisionCylinder = target->GetSimpleCollisionCylinderExtent();
     float offset = targetCollisionCylinder.X > targetCollisionCylinder.Y ? targetCollisionCylinder.X : targetCollisionCylinder.Y;
@@ -33,6 +34,7 @@ void UTeleportationEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellio
     // Inverse front vector and add offset
     GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, "targetPos = " + targetLoc.ToString()
                                      + " TeleportLocation = " + teleportationLoc.ToString());
+
     caster->SetActorLocation(teleportationLoc);
     caster->SetActorRotation(newRotation, ETeleportType::TeleportPhysics);
 }
