@@ -397,9 +397,13 @@ void APlayableCharacter::interact()
 {
     if (Role == ROLE_Authority)
     {
-        AActor* focusedActor = GetUsableInView();
+        AActor* focusedActor = focusedPickupActor;
         APickupActor* Usable = Cast<APickupActor>(focusedActor);
         APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
+        if (!focusedActor)// || focusedActor->GetName()=="Floor")
+        {
+            return;
+        }
         if (Usable) //focusedActor is an Usable Object
         {
             if (Usable->getObjectType() == EObjectType::MANA_POTION)
@@ -447,12 +451,12 @@ void APlayableCharacter::interact()
         {
             if (m_currentRevivingTime < m_requiredTimeToRevive) //Timer is not finished
             {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVING");
                 m_isReviving = true;
                 
             }
             else //Timer is finished
             {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVING");
                 deadBody->cppOnRevive();
             }
             
@@ -685,7 +689,7 @@ void APlayableCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     if (Controller && Controller->IsLocalController())
     {
-        APlayableCharacter* usable = Cast<APlayableCharacter>(GetUsableInView());
+        AActor* usable = Cast<APlayableCharacter>(GetUsableInView());
         // Terminer le focus sur l'objet précédent
         if (focusedPickupActor != usable)
         {
@@ -694,7 +698,7 @@ void APlayableCharacter::Tick(float DeltaTime)
             PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
             if (focusedPickupActor)
             {
-                focusedPickupActor->OnEndFocus();
+//                focusedPickupActor->OnEndFocus();
             }
 
             bHasNewFocus = true;
@@ -706,7 +710,7 @@ void APlayableCharacter::Tick(float DeltaTime)
         {
             if (bHasNewFocus)
             {
-                usable->OnBeginFocus();
+                //usable->OnBeginFocus();
                 bHasNewFocus = false;
 
                 // only debug utility
@@ -719,7 +723,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 
                 if (m_currentRevivingTime >= m_requiredTimeToRevive)
                 {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVEBEGIN");
+                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVEBEGIN");
                     m_isReviving = false;
                     m_currentRevivingTime = 0.f;
                 }
@@ -752,7 +756,7 @@ AActor* APlayableCharacter::GetUsableInView()
 
     FHitResult Hit(ForceInit);
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
-
+    
     //TODO: Comment or remove once implemented in post-process.
     //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
 
@@ -949,7 +953,8 @@ void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
 }
 void APlayableCharacter::interactEnd()
 {
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "ResAborted")
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "ResAborted");
+    displayAnimatedIntegerValue(m_currentRevivingTime, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
     m_isReviving = false;
     m_currentRevivingTime = 0.f;
 }

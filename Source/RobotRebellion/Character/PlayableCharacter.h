@@ -102,7 +102,7 @@ public:
 
     // Seulement vrai lors de la première image avec un nouveau focus.
     bool bHasNewFocus;
-    Focusable* focusedPickupActor;
+    AActor* focusedPickupActor;
 
     bool m_tpsMode;
 
