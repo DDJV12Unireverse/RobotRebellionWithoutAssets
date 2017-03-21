@@ -71,7 +71,6 @@ public:
     }
 
     void DisplayWidget(UUserWidget* WidgetRef);
-    
 
     void HideWidget(UUserWidget* WidgetRef);
  

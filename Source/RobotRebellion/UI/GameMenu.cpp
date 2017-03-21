@@ -12,7 +12,7 @@ AGameMenu::AGameMenu()
 {
     AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
     AudioComp->bAutoActivate = false;
-    AudioComp->bAutoDestroy = false; ///TEST true
+    AudioComp->bAutoDestroy = false; 
     AudioComp->SetupAttachment(RootComponent);
 }
 
@@ -32,25 +32,17 @@ void AGameMenu::Tick(float deltaTime)
     Super::Tick(deltaTime);
     if (LobbyImpl->Visibility == ESlateVisibility::Hidden && AudioComp->IsPlaying())
     {
-        //if (GEngine)
-        //{
-            auto sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
-            //GEngine->GetActiveAudioDevice()->PauseActiveSound();
-            // GEngine->GetActiveAudioDevice()->
+            const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
             for (auto sound : sounds)
             {
                 UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
                 if (audioComp->GetAudioComponentID() != AudioComp->GetAudioComponentID())
-                    //audioComp->Stop();
                 {
                     audioComp->SetVolumeMultiplier(1.f);
                 }
-                    //GEngine->GetActiveAudioDevice()->PauseActiveSound(audioComp->GetAudioComponentID(), false);
-          //  }
         }
         AudioComp->Stop();
     }
-   
 }
 
 void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
@@ -58,9 +50,7 @@ void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
     WidgetRef->SetVisibility(ESlateVisibility::Visible);
     if (GEngine)
     {
-        auto sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
-        //GEngine->GetActiveAudioDevice()->PauseActiveSound();
-       // GEngine->GetActiveAudioDevice()->
+        const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
         for (auto sound : sounds)
         {
             UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
@@ -72,7 +62,6 @@ void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
     }
     AudioComp->SetSound(MenuLoop);
     AudioComp->Play();
-
 }
 
 void AGameMenu::HideWidget(UUserWidget* WidgetRef)
