@@ -36,9 +36,12 @@ void AGameMenu::Tick(float deltaTime)
             for (auto sound : sounds)
             {
                 UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
-                if (audioComp->GetAudioComponentID() != AudioComp->GetAudioComponentID())
+                if(audioComp)
                 {
-                    audioComp->SetVolumeMultiplier(1.f);
+                    if(audioComp->GetAudioComponentID() != AudioComp->GetAudioComponentID())
+                    {
+                        audioComp->SetVolumeMultiplier(1.f);
+                    }
                 }
         }
         AudioComp->Stop();
@@ -54,9 +57,12 @@ void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
         for (auto sound : sounds)
         {
             UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
-            if (audioComp->GetAudioComponentID() !=AudioComp->GetAudioComponentID())
+            if(audioComp)
             {
-                audioComp->SetVolumeMultiplier(0.f);
+                if (audioComp->GetAudioComponentID() !=AudioComp->GetAudioComponentID())
+                {
+                    audioComp->SetVolumeMultiplier(0.f);
+                }
             }
         }
     }
