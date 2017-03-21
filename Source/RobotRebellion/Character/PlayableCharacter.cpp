@@ -81,6 +81,8 @@ APlayableCharacter::APlayableCharacter()
     m_fpsMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPS Mesh"));
     m_fpsMesh->SetupAttachment(GetCapsuleComponent());
     m_fpsMesh->SetVisibility(false);
+
+    m_isReviving = false;
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -395,8 +397,10 @@ void APlayableCharacter::interact()
 {
     if (Role == ROLE_Authority)
     {
-        APickupActor* Usable = GetUsableInView();
-        if (Usable)
+        AActor* focusedActor = GetUsableInView();
+        APickupActor* Usable = Cast<APickupActor>(focusedActor);
+        APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
+        if (Usable) //focusedActor is an Usable Object
         {
             if (Usable->getObjectType() == EObjectType::MANA_POTION)
             {
@@ -438,6 +442,20 @@ void APlayableCharacter::interact()
             {
                 PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
             }
+        }
+        else if (deadBody&&deadBody->isDead()) //Focused Actor is a corpse
+        {
+            if (m_currentRevivingTime < m_requiredTimeToRevive) //Timer is not finished
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVING");
+                m_isReviving = true;
+                
+            }
+            else //Timer is finished
+            {
+                deadBody->cppOnRevive();
+            }
+            
         }
     }
     else
@@ -550,6 +568,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //INTERACT
         PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
+        PlayerInputComponent->BindAction("Interact", IE_Released, this, &APlayableCharacter::interactEnd);
 
         //SPELLS
         PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<0>);
@@ -599,17 +618,18 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
 void APlayableCharacter::cppOnRevive()
 {
     this->EnablePlayInput(true);
-
+    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Onrevive"));
     //TODO - Continue the Revive method
 }
 
 void APlayableCharacter::cppOnDeath()
 {
-    this->activatePhysics(false);
+    //this->activatePhysics(false);
 
     this->EnablePlayInput(false);
 
     this->m_alterationController->removeAllAlteration();
+    this->m_currentRevivingTime = 0.f;
 }
 
 
@@ -665,10 +685,13 @@ void APlayableCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     if (Controller && Controller->IsLocalController())
     {
-        APickupActor* usable = GetUsableInView();
+        APlayableCharacter* usable = Cast<APlayableCharacter>(GetUsableInView());
         // Terminer le focus sur l'objet précédent
         if (focusedPickupActor != usable)
         {
+            m_isReviving = false;
+            m_currentRevivingTime = 0.f;
+            PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
             if (focusedPickupActor)
             {
                 focusedPickupActor->OnEndFocus();
@@ -688,19 +711,33 @@ void APlayableCharacter::Tick(float DeltaTime)
 
                 // only debug utility
                 PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
+                
+                }
+            if (m_isReviving)
+            {
+                m_currentRevivingTime += .1f;
+
+                if (m_currentRevivingTime >= m_requiredTimeToRevive)
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVEBEGIN");
+                    m_isReviving = false;
+                    m_currentRevivingTime = 0.f;
+                }
             }
         }
     }
 
 }
 
-APickupActor* APlayableCharacter::GetUsableInView()
+AActor* APlayableCharacter::GetUsableInView()
 {
     FVector CamLoc;
     FRotator CamRot;
 
     if (Controller == NULL)
+    {
         return NULL;
+    }
 
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
 
@@ -719,7 +756,7 @@ APickupActor* APlayableCharacter::GetUsableInView()
     //TODO: Comment or remove once implemented in post-process.
     //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
 
-    return Cast<APickupActor>(Hit.GetActor());
+    return (Hit.GetActor());
 }
 
 //////INVENTORY///////
@@ -906,7 +943,13 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     }
 }
 
-//void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
-//{
-//    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow,"focusActor")
-//}
+void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
+{
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow,"focusActor")
+}
+void APlayableCharacter::interactEnd()
+{
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "ResAborted")
+    m_isReviving = false;
+    m_currentRevivingTime = 0.f;
+}

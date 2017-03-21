@@ -4,14 +4,15 @@
 
 #include "RobotRebellionCharacter.h"
 #include "ClassType.h"
-#include "../Gameplay/Spell/SpellKit.h" 
+#include "../Gameplay/Spell/SpellKit.h"
+#include "../Focusable.h"
 #include "PlayableCharacter.generated.h"
 
 /**
  *  Playable Character for Robot Rebellion Game
  */
 UCLASS()
-class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter//, public AFocusable
+class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter, public Focusable
 {
 	GENERATED_BODY()
 	
@@ -72,6 +73,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         float m_manaPerPotion;
 
+    //Reviving Count
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
+        float m_requiredTimeToRevive;
+    float m_currentRevivingTime;
+    bool m_isReviving;
+
     /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
         float BaseTurnRate;
@@ -95,7 +102,7 @@ public:
 
     // Seulement vrai lors de la première image avec un nouveau focus.
     bool bHasNewFocus;
-    class APickupActor* focusedPickupActor;
+    Focusable* focusedPickupActor;
 
     bool m_tpsMode;
 
@@ -294,7 +301,7 @@ public:
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 
-    class APickupActor* GetUsableInView();
+    AActor* GetUsableInView();
 
     //////INVENTORY///////
 
@@ -352,5 +359,11 @@ public:
 
     void switchView();
 
-   // virtual void OnPickup(APawn* InstigatorPawn) override;
+    virtual void OnPickup(APawn* InstigatorPawn) override;
+
+    virtual void OnBeginFocus() override
+    {}
+    virtual void OnEndFocus() override
+    {}
+    void interactEnd();
 };

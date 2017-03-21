@@ -5,14 +5,14 @@
 /**
  * 
  */
-class ROBOTREBELLION_API Focusable
+class  Focusable
 {
 public:
-	Focusable();
-	~Focusable();
+//	Focusable();
+//	~Focusable();
 
-    virtual void OnBeginFocus();
-    virtual void OnEndFocus();
-    virtual void OnPickup(APawn* InstigatorPawn);
+    virtual void OnBeginFocus()=0;
+    virtual void OnEndFocus()=0;
+    virtual void OnPickup(APawn* InstigatorPawn)=0;
     
 };

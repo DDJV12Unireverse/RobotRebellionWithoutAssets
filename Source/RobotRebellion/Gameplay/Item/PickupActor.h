@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "ObjectTypes.h"
+#include "../../Focusable.h"
 #include "PickupActor.generated.h"
 
 UCLASS()
