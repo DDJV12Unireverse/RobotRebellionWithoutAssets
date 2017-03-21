@@ -2,24 +2,20 @@
 
 #pragma once
 
-#include "Effect.h"
-#include "DamageEffect.generated.h"
+#include "Gameplay/Spell/Effects/Effect.h"
+#include "RestoreManaEffect.generated.h"
 
 /**
  * 
  */
 UCLASS(Blueprintable)
-class ROBOTREBELLION_API UDamageEffect : public UEffect
+class ROBOTREBELLION_API URestoreManaEffect : public UEffect
 {
 	GENERATED_BODY()
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageEffect)
-        float m_hpPercent; // deal damage based on target max hp
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageEffect)
-        float m_flatDamage; // ignore defense
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageEffect)
-        float m_reducedDamage; // do not ignore defense
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ManaEffect)
+        float m_manaGiven;
 
 public:
     // Called when the game starts
@@ -31,4 +27,5 @@ public:
     virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) override;
     // The behavior of the effect when it's point effect
     virtual void exec(const FVector impactPoint) override;
+	
 };

@@ -3,19 +3,16 @@
 #pragma once
 
 #include "Gameplay/Spell/Effects/Effect.h"
-#include "TeleportationEffect.generated.h"
+#include "StunEffect.generated.h"
 
 /**
- * Effect that teleport cast into a new position
+ *
  */
 UCLASS(Blueprintable)
-class ROBOTREBELLION_API UTeleportationEffect : public UEffect
+class ROBOTREBELLION_API UStunEffect : public UEffect
 {
-	GENERATED_BODY()
-	
-
-    // Add attribut
-	
+    GENERATED_BODY()
+        
 public:
     // Called when the game starts
     virtual void BeginPlay() override;
@@ -26,5 +23,6 @@ public:
     virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) override;
     // The behavior of the effect when it's point effect
     virtual void exec(const FVector impactPoint) override;
-	
+
+
 };

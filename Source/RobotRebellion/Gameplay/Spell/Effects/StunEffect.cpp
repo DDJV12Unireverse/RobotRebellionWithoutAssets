@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "StunEffect.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 void UStunEffect::BeginPlay()

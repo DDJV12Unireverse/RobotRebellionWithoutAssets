@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "Projectile.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 #include "../Damage/Damage.h"
 #include "../Damage/DamageCoefficientLogic.h"
 

@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "RestoreManaEffect.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 void URestoreManaEffect::BeginPlay()
 {

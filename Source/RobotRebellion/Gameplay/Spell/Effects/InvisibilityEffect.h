@@ -2,17 +2,17 @@
 
 #pragma once
 
-#include "Gameplay/Spell/Effect.h"
-#include "StunEffect.generated.h"
+#include "Gameplay/Spell/Effects/Effect.h"
+#include "InvisibilityEffect.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS(Blueprintable)
-class ROBOTREBELLION_API UStunEffect : public UEffect
+class ROBOTREBELLION_API UInvisibilityEffect : public UEffect
 {
-    GENERATED_BODY()
-        
+	GENERATED_BODY()
+	
 public:
     // Called when the game starts
     virtual void BeginPlay() override;
@@ -22,7 +22,6 @@ public:
     // The behavior of the effect when it's a targeted effect
     virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) override;
     // The behavior of the effect when it's point effect
-    virtual void exec(const FVector impactPoint) override;
-
-
+    virtual void exec(const FVector impactPoint) override;	
+	
 };

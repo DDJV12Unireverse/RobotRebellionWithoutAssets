@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "SphereCastSpell.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 

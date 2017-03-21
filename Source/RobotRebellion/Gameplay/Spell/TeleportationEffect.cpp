@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "TeleportationEffect.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 void UTeleportationEffect::BeginPlay()
 {

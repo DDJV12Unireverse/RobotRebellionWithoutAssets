@@ -2,8 +2,8 @@
 
 #include "RobotRebellion.h"
 #include "RayCastSpell.h"
-#include "Effect.h"
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Gameplay/Spell/Effects/Effect.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 

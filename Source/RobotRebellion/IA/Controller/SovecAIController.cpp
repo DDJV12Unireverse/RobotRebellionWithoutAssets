@@ -4,7 +4,7 @@
 #include "SovecAIController.h"
 
 #include "Kismet/KismetSystemLibrary.h"
-#include "../../Character/NonPlayableCharacter.h"
+#include "Character/NonPlayableCharacter.h"
 #include "../../Gameplay/Weapon/WeaponInventory.h"
 #include "../../Gameplay/Weapon/WeaponBase.h"
 

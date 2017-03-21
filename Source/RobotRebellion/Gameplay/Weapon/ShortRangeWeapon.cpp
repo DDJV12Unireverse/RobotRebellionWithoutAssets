@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "ShortRangeWeapon.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 #include "../../Global/GlobalDamageMethod.h"
 
 #include "../Damage/Damage.h"

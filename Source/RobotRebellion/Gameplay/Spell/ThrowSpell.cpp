@@ -2,9 +2,9 @@
 
 #include "RobotRebellion.h"
 #include "ThrowSpell.h"
-#include "ProjectileEffect.h"
-#include "Effect.h"
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Gameplay/Spell/Effects/ProjectileEffect.h"
+#include "Gameplay/Spell/Effects/Effect.h"
+#include "Character/RobotRebellionCharacter.h"
 
 UThrowSpell::UThrowSpell() : USpell()
 {}

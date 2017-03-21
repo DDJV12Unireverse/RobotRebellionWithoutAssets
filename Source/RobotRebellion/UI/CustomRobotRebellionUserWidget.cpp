@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "CustomRobotRebellionUserWidget.h"
-#include "../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 void UCustomRobotRebellionUserWidget::getHealthRatio(float& ratio, float& health, float& maxHealth) const
