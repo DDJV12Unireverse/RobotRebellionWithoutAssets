@@ -7,8 +7,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Character/RobotRebellionCharacter.h"
 #include "Character/NonPlayableCharacter.h"
-#include "../../Gameplay/Weapon/WeaponInventory.h"
-#include "../../Gameplay/Weapon/WeaponBase.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
+#include "Gameplay/Weapon/WeaponBase.h"
 
 
 void AEnnemiAIController::CheckEnnemyNear(float range)
