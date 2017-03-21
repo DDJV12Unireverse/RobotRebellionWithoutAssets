@@ -677,7 +677,7 @@ void APlayableCharacter::Tick(float DeltaTime)
             bHasNewFocus = true;
         }
         // Assigner le nouveau focus (peut être nul)
-        focusedPickupActor = usable;
+        focusedPickupActor =usable;
         // Démarrer un nouveau focus si Usable != null;
         if (usable)
         {
@@ -905,3 +905,8 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
         this->GetCapsuleComponent()->UnregisterComponent();
     }
 }
+
+//void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
+//{
+//    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow,"focusActor")
+//}

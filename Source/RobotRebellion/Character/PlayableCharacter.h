@@ -11,7 +11,7 @@
  *  Playable Character for Robot Rebellion Game
  */
 UCLASS()
-class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
+class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter//, public AFocusable
 {
 	GENERATED_BODY()
 	
@@ -351,4 +351,6 @@ public:
     void setBombCount(int nbBombs);
 
     void switchView();
+
+   // virtual void OnPickup(APawn* InstigatorPawn) override;
 };

@@ -1,0 +1,17 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "RobotRebellion.h"
+#include "Focusable.h"
+
+Focusable::Focusable()
+{
+    
+}
+
+Focusable::~Focusable()
+{
+}
+void Focusable::OnBeginFocus()
+{}
+void Focusable::OnEndFocus()
+{}
