@@ -260,6 +260,17 @@ void ARobotRebellionCharacter::setInvisible(bool isInvisible)
     }
 }
 
+bool ARobotRebellionCharacter::isVisible()
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if(characterMesh)
+    {
+        return characterMesh->IsVisible();
+    }
+
+    return false;
+}
+
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
 {
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
