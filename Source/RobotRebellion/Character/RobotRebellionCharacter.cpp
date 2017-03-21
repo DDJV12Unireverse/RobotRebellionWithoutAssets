@@ -288,6 +288,29 @@ bool ARobotRebellionCharacter::isVisible()
     return false;
 }
 
+void ARobotRebellionCharacter::inflictDamage(float damage, ELivingTextAnimMode animType)
+{
+    m_attribute->inflictDamage(damage);
+    displayAnimatedIntegerValue(damage, FColor::Red, animType);
+
+    if(isDead())
+    {
+        onDeath();
+    }
+}
+
+void ARobotRebellionCharacter::restoreHealth(float value, ELivingTextAnimMode animType)
+{
+    m_attribute->restoreHealth(value);
+    displayAnimatedIntegerValue(value, FColor::Green, animType);
+}
+
+void ARobotRebellionCharacter::restoreMana(float value, ELivingTextAnimMode animType)
+{
+    m_attribute->restoreMana(value);
+    displayAnimatedIntegerValue(value, FColor::Blue, animType);
+}
+
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
 {
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();

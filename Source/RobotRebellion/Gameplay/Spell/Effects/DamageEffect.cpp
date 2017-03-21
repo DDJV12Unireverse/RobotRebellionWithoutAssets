@@ -27,11 +27,6 @@ void UDamageEffect::exec(class ARobotRebellionCharacter* caster, ARobotRebellion
     damage += coef * m_reducedDamage;
 
     target->inflictDamage(damage);
-    
-    if(target->isDead())
-    {
-        target->onDeath();
-    }
 }
 
 void UDamageEffect::exec(const FVector impactPoint)

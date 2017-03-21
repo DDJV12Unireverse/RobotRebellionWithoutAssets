@@ -15,15 +15,15 @@
 // Sets default values
 AProjectile::AProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
 
     // Create Sphere for collision shape
     m_collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
     m_collisionComp->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
     m_collisionComp->BodyInstance.SetCollisionProfileName("Projectile");
     m_collisionComp->InitSphereRadius(5.0f);
-    
+
     RootComponent = m_collisionComp;
     //Projectile Movement datas
     m_projectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
@@ -49,14 +49,14 @@ void AProjectile::BeginPlay()
 }
 
 // Called every frame
-void AProjectile::Tick( float DeltaTime )
+void AProjectile::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
+    Super::Tick(DeltaTime);
 }
 
 void AProjectile::InitVelocity(const FVector& shootDirection)
 {
-    if (m_projectileMovement)
+    if(m_projectileMovement)
     {
         // Adjust velocity with direction
         m_projectileMovement->Velocity = shootDirection * m_projectileMovement->InitialSpeed;
@@ -83,15 +83,15 @@ void AProjectile::setOwner(ARobotRebellionCharacter *newOwner)
 }
 
 void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
-    OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+                        OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Hit"));
-    if (Role == ROLE_Authority)
+    if(Role == ROLE_Authority)
     {
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
-        if (receiver && m_owner != receiver && !receiver->isDead())
+        if(receiver && m_owner != receiver && !receiver->isDead())
         {
-            if (!receiver->isImmortal())
+            if(!receiver->isImmortal())
             {
                 DamageCoefficientLogic coeff;
 
@@ -108,7 +108,7 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
 
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
 
-                Damage damage{ m_owner, receiver };
+                Damage damage{m_owner, receiver};
 
                 Damage::DamageValue currentDamage = damage(
                     &UGlobalDamageMethod::normalHitWithWeaponComputed,
@@ -116,30 +116,15 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                 );
 
                 receiver->inflictDamage(currentDamage);
-                receiver->displayAnimatedIntegerValue(currentDamage, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
-                if (receiver->isDead())
-                {
-                    receiver->onDeath();
-                }
-                else
-                {
-                    UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
-                        true,
-                        *receiver,
-                        &ARobotRebellionCharacter::inflictInvisibility,
-                        &ARobotRebellionCharacter::doesNothing
-                    );
-                }
             }
             else
             {
                 receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
             }
         }
-        
+
         Destroy();
-        
+
         //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Destroy on Server"));
     }
 }

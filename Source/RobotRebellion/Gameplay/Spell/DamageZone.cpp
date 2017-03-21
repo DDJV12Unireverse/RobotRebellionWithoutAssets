@@ -63,12 +63,6 @@ void ADamageZone::Tick( float DeltaTime )
                 // this is brut damage 
                 // TODO - use Damage class and more complexe damage calcul
                 temp->inflictDamage(m_damagePerTick);
-                temp->displayAnimatedIntegerValue(m_damagePerTick, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
-                if(temp->isDead())
-                {
-                    temp->onDeath();
-                }
             }
         }
     }

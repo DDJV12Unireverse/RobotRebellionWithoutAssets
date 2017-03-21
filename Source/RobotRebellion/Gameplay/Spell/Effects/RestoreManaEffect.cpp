@@ -17,8 +17,7 @@ void URestoreManaEffect::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void URestoreManaEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
 {
-    target->setMana(target->getMana() + m_manaGiven);
-    target->displayAnimatedIntegerValue(m_manaGiven, FColor::Blue);
+    target->restoreMana(m_manaGiven);
 }
 
 void URestoreManaEffect::exec(const FVector impactPoint)
@@ -47,8 +46,7 @@ void URestoreManaEffect::exec(const FVector impactPoint)
         ARobotRebellionCharacter* temp = Cast<ARobotRebellionCharacter>(currentHit.GetActor());
         if(temp)
         {
-            temp->setMana(temp->getMana() + m_manaGiven);
-            temp->displayAnimatedIntegerValue(m_manaGiven, FColor::Blue);
+            temp->restoreMana(m_manaGiven);
         }
     }
 }
