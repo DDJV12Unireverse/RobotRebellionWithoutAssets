@@ -135,6 +135,9 @@ public:
     UFUNCTION()
         void setInvisible(bool isInvisible);
 
+    UFUNCTION()
+        bool isVisible();
+
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiSetInvisible(bool isInvisible);
 

@@ -44,8 +44,7 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
             ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
             if(NULL != RRCharacter)
             {
-                //BlackboardComponent->SetValueAsObject("TargetActorToFollow", Character);
-                if(RRCharacter->isDead())
+                if(RRCharacter->isDead() || !RRCharacter->isVisible())
                 {
                     continue;
                 }
