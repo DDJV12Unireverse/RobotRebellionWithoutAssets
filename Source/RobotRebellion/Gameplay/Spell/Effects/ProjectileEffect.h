@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../Weapon/Projectile.h"
+#include "../../Weapon/Projectile.h"
 #include "ProjectileEffect.generated.h"
 
 /**

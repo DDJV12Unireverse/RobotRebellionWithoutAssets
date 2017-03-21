@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RobotRebellion.h"
-#include "../Character/RobotRebellionCharacter.h"
-#include "../Character/PlayableCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
+#include "Character/PlayableCharacter.h"
 #include "OnlineSubsystem.h"
 #include "LobbyUIWidget.h"
 

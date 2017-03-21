@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../../Character/NonPlayableCharacter.h"
+#include "Character/NonPlayableCharacter.h"
 #include "SovecCharacter.generated.h"
 
 /**

@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "InvisibilityEffect.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 void UInvisibilityEffect::BeginPlay()

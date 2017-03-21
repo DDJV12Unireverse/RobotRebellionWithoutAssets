@@ -4,7 +4,7 @@
 #include "IsTargetInRangeBTTaskNode.h"
 
 #include "../Controller/CustomAIControllerBase.h"
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 #include "../../Gameplay/Weapon/WeaponInventory.h"
 #include "../../Gameplay/Weapon/WeaponBase.h"
 

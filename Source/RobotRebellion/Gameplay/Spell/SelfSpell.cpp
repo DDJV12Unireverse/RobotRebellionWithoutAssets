@@ -2,8 +2,8 @@
 
 #include "RobotRebellion.h"
 #include "SelfSpell.h"
-#include "Effect.h"
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Gameplay/Spell/Effects/Effect.h"
+#include "Character/RobotRebellionCharacter.h"
 
 USelfSpell::USelfSpell() : USpell()
 {

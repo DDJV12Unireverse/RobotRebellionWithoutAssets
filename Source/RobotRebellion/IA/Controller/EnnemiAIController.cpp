@@ -5,8 +5,8 @@
 #include "runtime/AIModule/Classes/BehaviorTree/BlackboardComponent.h"
 #include "Runtime/AIModule/Classes/BrainComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "../../Character/RobotRebellionCharacter.h"
-#include "../../Character/NonPlayableCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
+#include "Character/NonPlayableCharacter.h"
 #include "../../Gameplay/Weapon/WeaponInventory.h"
 #include "../../Gameplay/Weapon/WeaponBase.h"
 

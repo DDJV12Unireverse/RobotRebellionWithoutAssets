@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "DamageZone.h"
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 // Sets default values

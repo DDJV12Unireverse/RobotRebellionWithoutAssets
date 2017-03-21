@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Effect.h"
+#include "Gameplay/Spell/Effects/Effect.h"
 #include "DamageEffect.generated.h"
 
 /**

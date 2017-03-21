@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "ProjectileEffect.h"
 
-#include "ThrowSpell.h"
+#include "Gameplay/Spell/ThrowSpell.h"
 
 
 AProjectileEffect::AProjectileEffect() : AProjectile()

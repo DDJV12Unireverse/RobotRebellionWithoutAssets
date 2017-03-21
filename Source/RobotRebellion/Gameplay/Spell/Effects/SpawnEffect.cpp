@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 
-#include "../../Character/NonPlayableCharacter.h"
+#include "Character/NonPlayableCharacter.h"
 #include "SpawnEffect.h"
 
 
