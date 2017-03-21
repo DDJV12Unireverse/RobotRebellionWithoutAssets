@@ -3,6 +3,8 @@
 #pragma once
 
 #include "WeaponBase.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "LongRangeWeapon.generated.h"
 
 /**
@@ -34,8 +36,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
         FVector m_muzzleOffset;
 
-
-
+    // Weapon Fire Sound
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_longRangeWeaponFireSound;
 
     /************************************************************************/
     /*                  UFUNCTION                                           */
@@ -55,8 +58,8 @@ public:
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
-    
-
 
     ULongRangeWeapon();
+
+    class UAudioComponent* playSound(USoundCue* sound, AActor* originator);
 };
