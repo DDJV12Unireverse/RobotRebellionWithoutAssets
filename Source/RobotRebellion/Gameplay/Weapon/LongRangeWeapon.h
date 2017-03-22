@@ -48,20 +48,10 @@ public:
     {
         return EWeaponRange::LONG_RANGE_WEAPON;
     }
-	
-
-
 
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
-    UFUNCTION(NetMulticast, Reliable)
-        void clientCppAttack(class ARobotRebellionCharacter* user);
-
-    virtual void clientCppAttack_Implementation(ARobotRebellionCharacter* user)
-    {
-        cppAttack(user);
-    }
 
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
@@ -69,5 +59,5 @@ public:
 
     ULongRangeWeapon();
 
-    class UAudioComponent* playSound(USoundCue* sound, AActor* originator);
+    void playSound(USoundCue* sound, AActor* originator);
 };

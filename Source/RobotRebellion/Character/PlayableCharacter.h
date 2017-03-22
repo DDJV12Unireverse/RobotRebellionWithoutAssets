@@ -224,6 +224,9 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+    UFUNCTION(NetMulticast, Reliable)
+        void clientMainFire();
+
     //CAST SPELL
     template<int32 index>
     void castSpellInputHanlder()

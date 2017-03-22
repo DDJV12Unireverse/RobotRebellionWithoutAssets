@@ -305,7 +305,8 @@ void APlayableCharacter::mainFire()
     }
     else
     {
-        m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+        //m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+        clientMainFire();
     }
 }
 
@@ -317,6 +318,11 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::clientMainFire_Implementation()
+{
+    m_weaponInventory->getCurrentWeapon()->cppAttack(this);
 }
 
 //DEAD
