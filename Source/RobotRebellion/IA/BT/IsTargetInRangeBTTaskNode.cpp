@@ -17,6 +17,20 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 {
     ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
 
+    ARobotRebellionCharacter* pawn = Cast<ARobotRebellionCharacter>(AIController->GetPawn());
+
+    if(pawn)
+    {
+        if(pawn->m_weaponInventory && pawn->m_weaponInventory->getCurrentWeapon())
+        {
+            float weaponRangeDistance = pawn->m_weaponInventory->getCurrentWeapon()->m_WeaponRadiusRange;
+            if(weaponRangeDistance != m_detectingRange)
+            {
+                m_detectingRange = weaponRangeDistance;
+            }
+        }
+    }
+
     EBTNodeResult::Type NodeResult = EBTNodeResult::Failed;
 
     // If the controller doesn't have a target, the task is a fail
@@ -44,6 +58,11 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 void UIsTargetInRangeBTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
+
+
+
+
+
     if(AIController->hasALivingTarget())
     {
         FVector currentTargetLocation = AIController->getTarget()->GetActorLocation();
