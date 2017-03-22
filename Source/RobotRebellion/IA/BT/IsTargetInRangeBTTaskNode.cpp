@@ -27,12 +27,15 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
         ARobotRebellionCharacter* ennemiCharacter = Cast<ARobotRebellionCharacter>(AIController->GetCharacter());
 
         FVector distanceBetween = currentTargetLocation - ennemiLocation;
-
-        if(distanceBetween.Size() < m_detectingRange // Ensure the target is at the correct distance
-            && ennemiCharacter->m_weaponInventory->getCurrentWeapon()->canAttack()) // Ensure the AI weapon are reloaded
+        if(ennemiCharacter->m_weaponInventory)
         {
-            NodeResult = EBTNodeResult::Succeeded;
+            if(distanceBetween.Size() < m_detectingRange // Ensure the target is at the correct distance
+               && ennemiCharacter->m_weaponInventory->getCurrentWeapon()->canAttack()) // Ensure the AI weapon are reloaded
+            {
+                NodeResult = EBTNodeResult::Succeeded;
+            }
         }
+
     }
 
     return NodeResult;

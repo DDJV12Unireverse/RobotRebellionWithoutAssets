@@ -124,10 +124,13 @@ void ADroneAIController::followKing()
         for (int32 iter = 0; iter < playerCount; ++iter)
         {
             ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-            if (!currentPlayer->isDead())
+            if(currentPlayer) // Protection when player leaves the game
             {
-                m_destination += currentPlayer->GetActorLocation();
-                ++livingPlayers;
+                if (!currentPlayer->isDead())
+                {
+                    m_destination += currentPlayer->GetActorLocation();
+                    ++livingPlayers;
+                }
             }
         }
         m_destination += m_coeffKing * m_king->GetActorLocation();
@@ -142,10 +145,13 @@ void ADroneAIController::followGroup()
     for (int32 iter = 0; iter < playerCount; ++iter)
     {
         ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-        if (!currentPlayer->isDead())
-        {
-            m_destination += currentPlayer->GetActorLocation();
-            ++livingPlayers;
+        if(currentPlayer) // Protection when player leaves the game
+        { 
+            if(!currentPlayer->isDead())
+            {
+                m_destination += currentPlayer->GetActorLocation();
+                ++livingPlayers;
+            }
         }
     }
     if (livingPlayers > 0)

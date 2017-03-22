@@ -45,9 +45,6 @@ public:
     {
         return EWeaponRange::LONG_RANGE_WEAPON;
     }
-	
-
-
 
     /************************************************************************/
     /*                  METHODS                                             */

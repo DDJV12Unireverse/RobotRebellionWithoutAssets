@@ -45,7 +45,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponBaseCadence;
 
-
+    //Projectile position Offset
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+        float m_WeaponRadiusRange;
 
 protected:
     /************************************************************************/
