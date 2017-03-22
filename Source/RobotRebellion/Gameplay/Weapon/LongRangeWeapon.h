@@ -55,6 +55,14 @@ public:
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
+    UFUNCTION(NetMulticast, Reliable)
+        void clientCppAttack(class ARobotRebellionCharacter* user);
+
+    virtual void clientCppAttack_Implementation(ARobotRebellionCharacter* user)
+    {
+        cppAttack(user);
+    }
+
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
     virtual FString rangeToFString() const USE_NOEXCEPT;

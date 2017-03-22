@@ -16,56 +16,63 @@ ULongRangeWeapon::ULongRangeWeapon() :
 
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
-    bool canFire = canAttack();
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "LongAtt");
-    if(canFire && m_projectileClass != NULL)
+    if(user->Role == ROLE_Authority)
     {
-        // Retrieve the camera location and rotation
-        FVector cameraLocation;
-        FRotator muzzleRotation;
-        user->GetActorEyesViewPoint(cameraLocation, muzzleRotation);
-
-        // m_muzzleOffset is in camera space coordinate => must be transformed to world space coordinate.
-        const FVector MuzzleLocation = cameraLocation + FTransform(muzzleRotation).TransformVector(m_muzzleOffset);
-        //muzzleRotation.Pitch += LIFT_OFFSET; // lift the fire a little 
-        UWorld* const World = user->GetWorld();
-        if(World)
+        bool canFire = canAttack();
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "LongAtt");
+        if(canFire && m_projectileClass != NULL)
         {
-            FActorSpawnParameters spawnParams;
-            spawnParams.Owner = user;
-            spawnParams.Instigator = user->Instigator;
+            // Retrieve the camera location and rotation
+            FVector cameraLocation;
+            FRotator muzzleRotation;
+            user->GetActorEyesViewPoint(cameraLocation, muzzleRotation);
 
-            // spawn a projectile
-            AProjectile* const projectile = World->SpawnActor<AProjectile>(
-                m_projectileClass,
-                MuzzleLocation,
-                muzzleRotation,
-                spawnParams
-                );
-
-            if(projectile)
+            // m_muzzleOffset is in camera space coordinate => must be transformed to world space coordinate.
+            const FVector MuzzleLocation = cameraLocation + FTransform(muzzleRotation).TransformVector(m_muzzleOffset);
+            //muzzleRotation.Pitch += LIFT_OFFSET; // lift the fire a little 
+            UWorld* const World = user->GetWorld();
+            if(World)
             {
-                projectile->setOwner(user);
+                FActorSpawnParameters spawnParams;
+                spawnParams.Owner = user;
+                spawnParams.Instigator = user->Instigator;
 
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
+                // spawn a projectile
+                AProjectile* const projectile = World->SpawnActor<AProjectile>(
+                    m_projectileClass,
+                    MuzzleLocation,
+                    muzzleRotation,
+                    spawnParams
+                    );
 
-                // Fire
-                const FVector fireDirection = muzzleRotation.Vector();
-                projectile->InitVelocity(fireDirection);
+                if(projectile)
+                {
+                    projectile->setOwner(user);
 
-                playSound(m_longRangeWeaponFireSound, user);
+                    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
 
-                reload();
+                    // Fire
+                    const FVector fireDirection = muzzleRotation.Vector();
+                    projectile->InitVelocity(fireDirection);
+
+                    playSound(m_longRangeWeaponFireSound, user);
+
+                    reload();
+                }
             }
         }
-    }
-    else if(!canFire)
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading");
+        else if(!canFire)
+        {
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading");
+        }
+        else
+        {
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
+        }
     }
     else
     {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
+        clientCppAttack(user);
     }
 }
 
