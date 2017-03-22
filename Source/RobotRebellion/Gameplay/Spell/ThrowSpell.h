@@ -8,7 +8,7 @@
 /**
  * Implement logic for spell which invoke a projectile with an initiale speed
  *      The projectil will trigger an onhit effect. 
-        this effect could be targeted or just use an impact
+ *      this effect could be targeted or just use an impact
  */
 UCLASS()
 class ROBOTREBELLION_API UThrowSpell : public USpell
@@ -20,13 +20,11 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         bool m_isTargetThrow;
 
-    // offset on the pitch rotation to emulate nade throw 
+    /** offset on the pitch rotation to emulate nade throw */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         float m_liftOffset;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         FVector m_muzzleOffset;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
-        float m_projectileInitialSpeed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throw Settings")
         TSubclassOf<class AProjectileEffect> m_projectileClass;

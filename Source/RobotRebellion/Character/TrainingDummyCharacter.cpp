@@ -5,5 +5,5 @@
 
 ATrainingDummyCharacter::ATrainingDummyCharacter() : ANonPlayableCharacter()
 {
-    // fill it
+    GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Robots");
 }

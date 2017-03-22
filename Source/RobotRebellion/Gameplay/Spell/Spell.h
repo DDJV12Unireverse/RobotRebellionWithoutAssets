@@ -7,6 +7,7 @@
 
 /**
  * Spell Base class implement shared methode like initializeSpell and canCast
+ * 
  */
 UCLASS(Blueprintable)
 class ROBOTREBELLION_API USpell : public UActorComponent
@@ -41,4 +42,5 @@ public:
     void initializeSpell();
 
     bool canCast();
+
 };

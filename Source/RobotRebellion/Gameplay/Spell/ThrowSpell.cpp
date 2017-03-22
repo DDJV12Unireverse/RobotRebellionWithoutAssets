@@ -2,9 +2,9 @@
 
 #include "RobotRebellion.h"
 #include "ThrowSpell.h"
-#include "ProjectileEffect.h"
-#include "Effect.h"
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Gameplay/Spell/Effects/ProjectileEffect.h"
+#include "Gameplay/Spell/Effects/Effect.h"
+#include "Character/RobotRebellionCharacter.h"
 
 UThrowSpell::UThrowSpell() : USpell()
 {}
@@ -52,7 +52,7 @@ void UThrowSpell::cast()
             const FVector fireDirection = muzzleRotation.Vector();
             projectile->setOwner(caster);
             projectile->setParent(this);
-            projectile->initMovement(fireDirection, m_projectileInitialSpeed);
+            projectile->initMovement(fireDirection);
 
             // the spell is successfully cast consumme mana and launch CD
             caster->consumeMana(m_manaCost);
