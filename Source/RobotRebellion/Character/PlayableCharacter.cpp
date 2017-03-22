@@ -305,8 +305,9 @@ void APlayableCharacter::mainFire()
     }
     else
     {
-        //m_weaponInventory->getCurrentWeapon()->cppAttack(this);
-        clientMainFire();
+        m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+        m_weaponInventory->getCurrentWeapon()->playSound(this);
+        clientMainFireSound();
     }
 }
 
@@ -320,9 +321,9 @@ bool APlayableCharacter::serverMainFire_Validate()
     return true;
 }
 
-void APlayableCharacter::clientMainFire_Implementation()
+void APlayableCharacter::clientMainFireSound_Implementation()
 {
-    m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+    m_weaponInventory->getCurrentWeapon()->playSound(this);
 }
 
 //DEAD
@@ -882,11 +883,12 @@ void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        //this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
     }
 
     if (Role >= ROLE_Authority)
@@ -904,10 +906,10 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
     }
 }

@@ -99,6 +99,11 @@ public:
         PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt");
     }
 
+    virtual void playSound(ARobotRebellionCharacter* user)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAttSound");
+    }
+
     virtual FString rangeToFString() const USE_NOEXCEPT;
 
     virtual FString toDebugFString() const USE_NOEXCEPT;

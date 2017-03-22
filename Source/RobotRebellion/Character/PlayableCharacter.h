@@ -225,7 +225,7 @@ public:
         void serverMainFire();
 
     UFUNCTION(NetMulticast, Reliable)
-        void clientMainFire();
+        void clientMainFireSound();
 
     //CAST SPELL
     template<int32 index>

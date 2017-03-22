@@ -55,6 +55,9 @@ public:
 
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
+    // Base class version
+    virtual void playSound(ARobotRebellionCharacter* user) override;
+
     virtual FString rangeToFString() const USE_NOEXCEPT;
 
     ULongRangeWeapon();

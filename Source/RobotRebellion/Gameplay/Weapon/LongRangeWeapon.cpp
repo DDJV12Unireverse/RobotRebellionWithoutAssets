@@ -53,7 +53,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 const FVector fireDirection = muzzleRotation.Vector();
                 projectile->InitVelocity(fireDirection);
 
-                playSound(m_longRangeWeaponFireSound, user);
+                //playSound(m_longRangeWeaponFireSound, user);
 
                 reload();
             }
@@ -73,6 +73,16 @@ FString ULongRangeWeapon::rangeToFString() const USE_NOEXCEPT
 {
     return "Long Range weapon";
 }
+
+void ULongRangeWeapon::playSound(ARobotRebellionCharacter* user)
+{
+    if(canAttack() && m_projectileClass != NULL)
+    {
+        playSound(m_longRangeWeaponFireSound, user);
+    }
+    reload();
+}
+
 
 void ULongRangeWeapon::playSound(USoundCue* sound, AActor* originator)
 {
