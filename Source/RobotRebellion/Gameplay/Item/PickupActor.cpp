@@ -30,9 +30,6 @@ void APickupActor::Tick( float DeltaTime )
 
 }
 
-
-
-
 void APickupActor::OnBeginFocus()
 {
     // Highlight PostProcess

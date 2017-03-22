@@ -82,7 +82,13 @@ APlayableCharacter::APlayableCharacter()
     m_fpsMesh->SetupAttachment(GetCapsuleComponent());
     m_fpsMesh->SetVisibility(false);
 
+
+    //Revive
+
     m_isReviving = false;
+    //m_revivingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("revivingBox"));
+    //m_revivingBox->SetupAttachment(GetCapsuleComponent());
+    //activatePhysics(m_revivingBox, false);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -398,12 +404,12 @@ void APlayableCharacter::interact()
     if (Role == ROLE_Authority)
     {
         AActor* focusedActor = focusedPickupActor;
-        APickupActor* Usable = Cast<APickupActor>(focusedActor);
-        APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
-        if (!focusedActor)// || focusedActor->GetName()=="Floor")
+        if (!focusedActor || focusedActor->GetName()=="Floor")
         {
             return;
         }
+        APickupActor* Usable = Cast<APickupActor>(focusedActor);
+        APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
         if (Usable) //focusedActor is an Usable Object
         {
             if (Usable->getObjectType() == EObjectType::MANA_POTION)
@@ -621,17 +627,18 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
 
 void APlayableCharacter::cppOnRevive()
 {
-    this->EnablePlayInput(true);
+    //this->EnablePlayInput(true);
     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Onrevive"));
+   // m_revivingBox->DestroyPhysicsState();
     //TODO - Continue the Revive method
 }
 
 void APlayableCharacter::cppOnDeath()
 {
-    //this->activatePhysics(false);
-
+    this->activatePhysics(this->GetCapsuleComponent(),false);
+//    this->activatePhysics(this->getRevivingBox(),true);
+    
     this->EnablePlayInput(false);
-
     this->m_alterationController->removeAllAlteration();
     this->m_currentRevivingTime = 0.f;
 }
@@ -687,15 +694,22 @@ GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter,
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    if (m_currentRevivingTime>0.f)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Green, "REVIVEEEE");
+    }
     if (Controller && Controller->IsLocalController())
     {
-        AActor* usable = Cast<APlayableCharacter>(GetUsableInView());
+        AActor* usable = Cast<AActor>(GetUsableInView());
         // Terminer le focus sur l'objet précédent
         if (focusedPickupActor != usable)
         {
             m_isReviving = false;
             m_currentRevivingTime = 0.f;
-            PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
+            if (focusedPickupActor && focusedPickupActor->GetName() != "Floor")
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
+            }
             if (focusedPickupActor)
             {
 //                focusedPickupActor->OnEndFocus();
@@ -706,7 +720,7 @@ void APlayableCharacter::Tick(float DeltaTime)
         // Assigner le nouveau focus (peut être nul)
         focusedPickupActor =usable;
         // Démarrer un nouveau focus si Usable != null;
-        if (usable)
+        if (usable && usable->GetName()!="Floor")
         {
             if (bHasNewFocus)
             {
@@ -753,7 +767,6 @@ AActor* APlayableCharacter::GetUsableInView()
     TraceParams.bTraceAsyncScene = true;
     TraceParams.bReturnPhysicalMaterial = false;
     TraceParams.bTraceComplex = true;
-
     FHitResult Hit(ForceInit);
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
     
@@ -913,37 +926,38 @@ void APlayableCharacter::switchView()
     }
 }
 
-void APlayableCharacter::activatePhysics(bool mustActive)
+void APlayableCharacter::activatePhysics(UShapeComponent* shape,bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->CreatePhysicsState();
+        shape->CreatePhysicsState();
+        
     }
     else
     {
-        this->GetCapsuleComponent()->DestroyPhysicsState();
+        shape->DestroyPhysicsState();
     }
 
     if (Role >= ROLE_Authority)
     {
-        multiActivatePhysics(mustActive);
+        multiActivatePhysics(shape,mustActive);
     }
 }
 
-bool APlayableCharacter::multiActivatePhysics_Validate(bool mustActive)
+bool APlayableCharacter::multiActivatePhysics_Validate(UShapeComponent* shape, bool mustActive)
 {
     return true;
 }
 
-void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
+void APlayableCharacter::multiActivatePhysics_Implementation(UShapeComponent* shape, bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->CreatePhysicsState();
+        shape->CreatePhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->DestroyPhysicsState();
+        shape->DestroyPhysicsState();
     }
 }
 

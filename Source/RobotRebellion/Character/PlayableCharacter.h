@@ -74,10 +74,14 @@ public:
         float m_manaPerPotion;
 
     //Reviving Count
+   /* UPROPERTY(EditDefaultsOnly, Category = "Reviving")
+        UBoxComponent* m_revivingBox;*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
         float m_requiredTimeToRevive;
-    float m_currentRevivingTime;
-    bool m_isReviving;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
+        float m_currentRevivingTime;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
+         bool m_isReviving;
 
     /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -327,10 +331,32 @@ public:
 
     //Activate the collision physic if true, deactivate otherwise
     UFUNCTION(BlueprintCallable, Category = "Physics")
-        void activatePhysics(bool mustActive);
+        void activatePhysics(UShapeComponent* shape, bool mustActive);
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
-        void multiActivatePhysics(bool mustActive);
+        void multiActivatePhysics(UShapeComponent* shape, bool mustActive);
+
+
+    UFUNCTION(BlueprintCallable,Category = "ReviveTimer")
+        float getReviveTimer()
+    {
+        return m_currentRevivingTime;
+    }
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+        float getRequiredReviveTime()
+    {
+        return m_requiredTimeToRevive;
+    }
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+        bool isReviving()
+    {
+        return m_isReviving;
+    }
+    //UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+    //    UBoxComponent* getRevivingBox()
+    //{
+    //    return (this->m_revivingBox);
+    //}
 
 
     void giveBombToDrone() //Do Later
