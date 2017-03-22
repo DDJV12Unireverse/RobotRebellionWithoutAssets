@@ -86,9 +86,8 @@ APlayableCharacter::APlayableCharacter()
     //Revive
 
     m_isReviving = false;
-    //m_revivingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("revivingBox"));
-    //m_revivingBox->SetupAttachment(GetCapsuleComponent());
-    //activatePhysics(m_revivingBox, false);
+    m_revivingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("revivingBox"));
+    m_revivingBox->AttachTo(RootComponent);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -629,14 +628,14 @@ void APlayableCharacter::cppOnRevive()
 {
     //this->EnablePlayInput(true);
     PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Onrevive"));
-   // m_revivingBox->DestroyPhysicsState();
+    m_revivingBox->DestroyPhysicsState();
     //TODO - Continue the Revive method
 }
 
 void APlayableCharacter::cppOnDeath()
 {
     this->activatePhysics(this->GetCapsuleComponent(),false);
-//    this->activatePhysics(this->getRevivingBox(),true);
+    this->activatePhysics(m_revivingBox,true);
     
     this->EnablePlayInput(false);
     this->m_alterationController->removeAllAlteration();
@@ -931,8 +930,7 @@ void APlayableCharacter::activatePhysics(UShapeComponent* shape,bool mustActive)
     if (mustActive)
     {
         shape->CreatePhysicsState();
-        
-    }
+     }
     else
     {
         shape->DestroyPhysicsState();

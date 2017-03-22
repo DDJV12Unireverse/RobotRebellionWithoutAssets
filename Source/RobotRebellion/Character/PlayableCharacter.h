@@ -74,8 +74,8 @@ public:
         float m_manaPerPotion;
 
     //Reviving Count
-   /* UPROPERTY(EditDefaultsOnly, Category = "Reviving")
-        UBoxComponent* m_revivingBox;*/
+    UPROPERTY(EditDefaultsOnly, Category = "Reviving")
+        UBoxComponent* m_revivingBox;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
         float m_requiredTimeToRevive;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
@@ -352,11 +352,11 @@ public:
     {
         return m_isReviving;
     }
-    //UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-    //    UBoxComponent* getRevivingBox()
-    //{
-    //    return (this->m_revivingBox);
-    //}
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+        UBoxComponent* getRevivingBox()
+    {
+        return (this->m_revivingBox);
+    }
 
 
     void giveBombToDrone() //Do Later
