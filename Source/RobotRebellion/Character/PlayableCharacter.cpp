@@ -695,7 +695,7 @@ void APlayableCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     if (m_currentRevivingTime>0.f)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Green, "REVIVEEEE");
+        PRINT_MESSAGE_ON_SCREEN(FColor::Green, "REVIVing");
     }
     if (Controller && Controller->IsLocalController())
     {
@@ -732,7 +732,7 @@ void APlayableCharacter::Tick(float DeltaTime)
                 }
             if (m_isReviving)
             {
-                m_currentRevivingTime += .1f;
+                m_currentRevivingTime += DeltaTime;
 
                 if (m_currentRevivingTime >= m_requiredTimeToRevive)
                 {
