@@ -5,7 +5,7 @@
 #include "RobotRebellionCharacter.h"
 #include "ClassType.h"
 #include "../Gameplay/Spell/SpellKit.h"
-#include "../Focusable.h"
+#include "../Gameplay/Item/Focusable.h"
 #include "PlayableCharacter.generated.h"
 
 /**
