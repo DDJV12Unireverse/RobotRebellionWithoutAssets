@@ -113,10 +113,7 @@ void APlayableCharacter::BeginPlay()
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    if(m_currentRevivingTime > 0.f)
-    {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Green, "REVIVing");
-    }
+   
     if(Controller && Controller->IsLocalController())
     {
         AActor* usable = Cast<AActor>(GetUsableInView());
@@ -125,14 +122,11 @@ void APlayableCharacter::Tick(float DeltaTime)
         {
             m_isReviving = false;
             m_currentRevivingTime = 0.f;
-            if(focusedPickupActor && focusedPickupActor->GetName() != "Floor")
-            {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
-            }
-            if(focusedPickupActor)
-            {
-                //                focusedPickupActor->OnEndFocus();
-            }
+            PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
+            //if(focusedPickupActor)
+            //{
+            //                    focusedPickupActor->OnEndFocus();
+            //}
 
             bHasNewFocus = true;
         }
@@ -455,15 +449,16 @@ void APlayableCharacter::switchWeapon()
     }
 }
 
-void APlayableCharacter::interact()
+void APlayableCharacter::interactBegin()
+{
+    interact(GetUsableInView());
+}
+
+void APlayableCharacter::interact(AActor* focusedActor)
 {
     if (Role == ROLE_Authority)
     {
-        AActor* focusedActor = focusedPickupActor;
-        if (!focusedActor || focusedActor->GetName()=="Floor")
-        {
-            return;
-        }
+        
         APickupActor* Usable = Cast<APickupActor>(focusedActor);
         APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
         if (Usable) //focusedActor is an Usable Object
@@ -511,25 +506,52 @@ void APlayableCharacter::interact()
         }
         else if (deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
+            clientRevive();
             m_isReviving = true;
         }
     }
-    else
-    {
-        serverInteract();
-    }
+     else
+     {
+         serverInteract(focusedActor);
+     }
 }
 
 
-void APlayableCharacter::serverInteract_Implementation()
+void APlayableCharacter::serverInteract_Implementation(AActor* focusedActor)
 {
-    this->interact();
+    this->interact(focusedActor);
 }
 
-bool APlayableCharacter::serverInteract_Validate()
+bool APlayableCharacter::serverInteract_Validate(AActor* focusedPickupActor)
 {
     return true;
 }
+
+void APlayableCharacter::interactEnd()
+{
+    if (Role==ROLE_Authority)
+    {
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "ResAborted");
+    displayAnimatedIntegerValue(m_currentRevivingTime, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+    m_isReviving = false;
+    m_currentRevivingTime = 0.f;
+    }
+    else
+    {
+        serverInteractEnd(); 
+    }
+}
+
+void APlayableCharacter::serverInteractEnd_Implementation()
+{
+    this->interactEnd();
+}
+bool APlayableCharacter::serverInteractEnd_Validate()
+{
+    return true;
+}
+
 
 void APlayableCharacter::serverSwitchWeapon_Implementation()
 {
@@ -539,6 +561,20 @@ void APlayableCharacter::serverSwitchWeapon_Implementation()
 void APlayableCharacter::clientInteract_Implementation(APickupActor* Usable)
 {
     Usable->OnPickup(this);
+}
+void APlayableCharacter::clientReviveEnd_Implementation()
+{
+    m_isReviving = false;
+}
+
+void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
+{
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
+}
+
+void APlayableCharacter::clientRevive_Implementation()
+{
+    m_isReviving = true;
 }
 
 bool APlayableCharacter::serverSwitchWeapon_Validate()
@@ -623,7 +659,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
         //INTERACT
-        PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
+        PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interactBegin);
         PlayerInputComponent->BindAction("Interact", IE_Released, this, &APlayableCharacter::interactEnd);
 
         //SPELLS
@@ -959,14 +995,3 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     }
 }
 
-void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
-{
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow,"focusActor")
-}
-void APlayableCharacter::interactEnd()
-{
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "ResAborted");
-    displayAnimatedIntegerValue(m_currentRevivingTime, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-    m_isReviving = false;
-    m_currentRevivingTime = 0.f;
-}

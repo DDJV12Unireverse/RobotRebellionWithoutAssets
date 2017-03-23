@@ -292,13 +292,29 @@ public:
         void serverSwitchWeapon();
 
     UFUNCTION()
-        void interact();
+        void interactBegin();
+
+    UFUNCTION()
+        void interact(AActor* focusedActor);
+
+    UFUNCTION()
+    void interactEnd();
 
     UFUNCTION(Reliable, Server, WithValidation)
-        void serverInteract();
+        void serverInteract(AActor* focusedActor);
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverInteractEnd();
 
     UFUNCTION(NetMulticast, Reliable)
         void clientInteract(APickupActor* Usable);
+    
+        
+    UFUNCTION(NetMulticast, Reliable)
+        void clientRevive();
+
+    UFUNCTION(NetMulticast, Reliable)
+        void clientReviveEnd();
 
     UFUNCTION(Reliable, Client, WithValidation)
         void clientEnableInput(bool enableInput);
@@ -392,5 +408,5 @@ public:
     {}
     virtual void OnEndFocus() override
     {}
-    void interactEnd();
+    
 };
