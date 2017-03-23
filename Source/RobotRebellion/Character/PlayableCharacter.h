@@ -163,6 +163,7 @@ public:
     ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
+    void cppPreRevive();
     virtual void cppOnRevive() override;
     virtual void cppOnDeath() override;
 
