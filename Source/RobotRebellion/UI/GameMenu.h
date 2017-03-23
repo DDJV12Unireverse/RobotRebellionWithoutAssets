@@ -4,6 +4,7 @@
 
 #include "GameFramework/HUD.h"
 #include "LobbyUIWidget.h"
+#include "ReviveTimerWidget.h"
 #include "CustomRobotRebellionUserWidget.h"
 #include "GameMenu.generated.h"
 
@@ -26,6 +27,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD Character Widget")
         TSubclassOf<UCustomRobotRebellionUserWidget> HUDCharacterWidget;
     UCustomRobotRebellionUserWidget* HUDCharacterImpl;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Revive Timer Widget")
+        TSubclassOf<UReviveTimerWidget> ReviveWidget;
+    UReviveTimerWidget* ReviveTimerWidgetImpl;
 
     template <class T>
     T* CreateCustomWidget(T *Widget)

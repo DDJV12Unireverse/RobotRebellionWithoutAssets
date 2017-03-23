@@ -13,7 +13,8 @@ class ROBOTREBELLION_API UReviveTimerWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	
-	
-	
+public:
+    //For blueprint : 3 output : ratio, health and maxHealth
+    UFUNCTION(BlueprintCallable, Category = "Update Methods")
+        void getTimerRatio(float& ratio, float& currentTime, float& requiredTime) const;
 };
