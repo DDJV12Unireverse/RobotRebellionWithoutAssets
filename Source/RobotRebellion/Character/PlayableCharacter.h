@@ -331,10 +331,10 @@ public:
 
     //Activate the collision physic if true, deactivate otherwise
     UFUNCTION(BlueprintCallable, Category = "Physics")
-        void activatePhysics(UShapeComponent* shape, bool mustActive);
+        void activatePhysics(bool mustActive);
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
-        void multiActivatePhysics(UShapeComponent* shape, bool mustActive);
+        void multiActivatePhysics(bool mustActive);
 
 
     UFUNCTION(BlueprintCallable,Category = "ReviveTimer")

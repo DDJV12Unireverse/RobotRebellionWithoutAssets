@@ -87,7 +87,7 @@ APlayableCharacter::APlayableCharacter()
 
     m_isReviving = false;
     m_revivingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("revivingBox"));
-    m_revivingBox->AttachTo(RootComponent);
+    m_revivingBox->SetupAttachment(RootComponent);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -634,8 +634,7 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
-    this->activatePhysics(this->GetCapsuleComponent(),false);
-    this->activatePhysics(m_revivingBox,true);
+    this->activatePhysics(false);
     
     this->EnablePlayInput(false);
     this->m_alterationController->removeAllAlteration();
@@ -925,37 +924,42 @@ void APlayableCharacter::switchView()
     }
 }
 
-void APlayableCharacter::activatePhysics(UShapeComponent* shape,bool mustActive)
+void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if (mustActive)
     {
-        shape->CreatePhysicsState();
+        this->GetCapsuleComponent()->CreatePhysicsState();
+        this->getRevivingBox()->DestroyPhysicsState();
      }
     else
     {
-        shape->DestroyPhysicsState();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
+        this->getRevivingBox()->CreatePhysicsState();
     }
 
     if (Role >= ROLE_Authority)
     {
-        multiActivatePhysics(shape,mustActive);
+        multiActivatePhysics(mustActive);
     }
 }
 
-bool APlayableCharacter::multiActivatePhysics_Validate(UShapeComponent* shape, bool mustActive)
+bool APlayableCharacter::multiActivatePhysics_Validate(bool mustActive)
 {
     return true;
 }
 
-void APlayableCharacter::multiActivatePhysics_Implementation(UShapeComponent* shape, bool mustActive)
+void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if (mustActive)
     {
-        shape->CreatePhysicsState();
+        this->GetCapsuleComponent()->CreatePhysicsState(); 
+        this->getRevivingBox()->DestroyPhysicsState();
+        
     }
     else
     {
-        shape->DestroyPhysicsState();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
+        this->getRevivingBox()->CreatePhysicsState();
     }
 }
 
