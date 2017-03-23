@@ -110,6 +110,63 @@ void APlayableCharacter::BeginPlay()
     m_tpsMode = true;
 }
 
+void APlayableCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    if(m_currentRevivingTime > 0.f)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Green, "REVIVing");
+    }
+    if(Controller && Controller->IsLocalController())
+    {
+        AActor* usable = Cast<AActor>(GetUsableInView());
+        // Terminer le focus sur l'objet précédent
+        if(focusedPickupActor != usable)
+        {
+            m_isReviving = false;
+            m_currentRevivingTime = 0.f;
+            if(focusedPickupActor && focusedPickupActor->GetName() != "Floor")
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
+            }
+            if(focusedPickupActor)
+            {
+                //                focusedPickupActor->OnEndFocus();
+            }
+
+            bHasNewFocus = true;
+        }
+        // Assigner le nouveau focus (peut être nul)
+        focusedPickupActor = usable;
+        // Démarrer un nouveau focus si Usable != null;
+        if(usable && usable->GetName() != "Floor")
+        {
+            if(bHasNewFocus)
+            {
+                //usable->OnBeginFocus();
+                bHasNewFocus = false;
+
+                // only debug utility
+                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
+
+            }
+            if(m_isReviving)
+            {
+                m_currentRevivingTime += DeltaTime;
+
+                if(m_currentRevivingTime >= m_requiredTimeToRevive)
+                {
+                    PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVEBEGIN");
+                    m_isReviving = false;
+                    m_currentRevivingTime = 0.f;
+
+                    Cast<APlayableCharacter>(focusedPickupActor)->cppPreRevive();
+                }
+            }
+        }
+    }
+}
+
 void APlayableCharacter::TurnAtRate(float Rate)
 {
     // calculate delta for this frame from the rate information
@@ -624,12 +681,17 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
 }
 
+void APlayableCharacter::cppPreRevive()
+{
+    this->restoreHealth(this->getMaxHealth() / 2);
+}
+
 void APlayableCharacter::cppOnRevive()
 {
-    //this->EnablePlayInput(true);
-    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Onrevive"));
-    m_revivingBox->DestroyPhysicsState();
-    //TODO - Continue the Revive method
+    this->EnablePlayInput(true);
+    this->activatePhysics(true);
+
+    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Revive"));
 }
 
 void APlayableCharacter::cppOnDeath()
@@ -687,62 +749,6 @@ GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter,
 
         playerController->InputComponent = newPlayerController;
     }
-}
-
-void APlayableCharacter::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-    if (m_currentRevivingTime>0.f)
-    {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Green, "REVIVing");
-    }
-    if (Controller && Controller->IsLocalController())
-    {
-        AActor* usable = Cast<AActor>(GetUsableInView());
-        // Terminer le focus sur l'objet précédent
-        if (focusedPickupActor != usable)
-        {
-            m_isReviving = false;
-            m_currentRevivingTime = 0.f;
-            if (focusedPickupActor && focusedPickupActor->GetName() != "Floor")
-            {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
-            }
-            if (focusedPickupActor)
-            {
-//                focusedPickupActor->OnEndFocus();
-            }
-
-            bHasNewFocus = true;
-        }
-        // Assigner le nouveau focus (peut être nul)
-        focusedPickupActor =usable;
-        // Démarrer un nouveau focus si Usable != null;
-        if (usable && usable->GetName()!="Floor")
-        {
-            if (bHasNewFocus)
-            {
-                //usable->OnBeginFocus();
-                bHasNewFocus = false;
-
-                // only debug utility
-                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
-                
-                }
-            if (m_isReviving)
-            {
-                m_currentRevivingTime += DeltaTime;
-
-                if (m_currentRevivingTime >= m_requiredTimeToRevive)
-                {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVEBEGIN");
-                    m_isReviving = false;
-                    m_currentRevivingTime = 0.f;
-                }
-            }
-        }
-    }
-
 }
 
 AActor* APlayableCharacter::GetUsableInView()
