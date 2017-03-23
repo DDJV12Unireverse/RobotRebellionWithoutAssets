@@ -53,7 +53,10 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 const FVector fireDirection = muzzleRotation.Vector();
                 projectile->InitVelocity(fireDirection);
 
-                //playSound(m_longRangeWeaponFireSound, user);
+                if(user->Role == ROLE_Authority)
+                {
+                    playSound(m_longRangeWeaponFireSound, user);
+                }
 
                 reload();
             }
@@ -89,6 +92,7 @@ void ULongRangeWeapon::playSound(USoundCue* sound, AActor* originator)
     UAudioComponent* audioComponent = nullptr;
     if(sound && originator)
     {
-        UGameplayStatics::PlaySoundAtLocation(originator, sound, originator->GetActorLocation());
+        //UGameplayStatics::PlaySoundAtLocation(originator, sound, originator->GetActorLocation());
+        UGameplayStatics::SpawnSoundAttached(sound, originator->GetRootComponent());
     }
 }

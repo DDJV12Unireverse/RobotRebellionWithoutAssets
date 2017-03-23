@@ -306,7 +306,6 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
-        m_weaponInventory->getCurrentWeapon()->playSound(this);
         clientMainFireSound();
     }
 }
