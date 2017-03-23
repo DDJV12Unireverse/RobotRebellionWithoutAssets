@@ -164,6 +164,7 @@ public:
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
     void cppPreRevive();
+    UFUNCTION(BlueprintCallable, Category="Reviving")
     virtual void cppOnRevive() override;
     virtual void cppOnDeath() override;
 
