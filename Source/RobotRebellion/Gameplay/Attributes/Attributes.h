@@ -22,8 +22,6 @@ void setMaxMana(float newValue)   USE_NOEXCEPT { attributeName##operator##setMax
 void setStrength(float newValue) USE_NOEXCEPT { attributeName##operator##setStrength(newValue); } \
 void setDefense(float newValue)  USE_NOEXCEPT { attributeName##operator##setDefense(newValue); } \
 void setAgility(float newValue)  USE_NOEXCEPT { attributeName##operator##setAgility(newValue); } \
-void inflictDamage(float damage) USE_NOEXCEPT { attributeName##operator##inflictDamage(damage); } \
-void restoreHealth(float valueToRestore) USE_NOEXCEPT { attributeName##operator##restoreHealth(valueToRestore); } \
 bool isDead() const USE_NOEXCEPT { return !attributeName##operator##isImmortal() && attributeName##operator##isDead(); } \
 void setImmortal(bool isImmortal) const USE_NOEXCEPT { attributeName##operator##setImmortal(isImmortal); } \
 bool isImmortal() const USE_NOEXCEPT { return attributeName##operator##isImmortal(); } \
@@ -73,6 +71,7 @@ protected:
 
     void(UAttributes::*m_inflictDamageDelegate)(float);
     void(UAttributes::*m_restoreHealthDelegate)(float);
+    void(UAttributes::*m_restoreManaDelegate)(float);
 
 
 public:
@@ -202,6 +201,12 @@ public:
 
     void consumeMana(float manaAmount);
 
+    //restore current mana value and if the value to restore is over max_mana, mana goes to max_mana
+    void restoreMana(float valueToRestore)
+    {
+        (this->*m_restoreManaDelegate)(valueToRestore);
+    }
+
     //restore current health value and if the value to restore is over max_health, health goes to max_health
     void restoreHealth(float valueToRestore)
     {
@@ -225,6 +230,11 @@ private:
     void restoreHealthMortal(float restoreValue)
     {
         setHealth(m_health + restoreValue);
+    }
+
+    void restoreManaMortal(float restoreValue)
+    {
+        setMana(m_mana + restoreValue);
     }
 
     void immortalMethod(float) 

@@ -3,9 +3,8 @@
 #include "RobotRebellion.h"
 #include "LongRangeWeapon.h"
 #include "Projectile.h"
-
 #include "Kismet/KismetMathLibrary.h"
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 ULongRangeWeapon::ULongRangeWeapon() :
@@ -119,9 +118,6 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
     {
         PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
     }
-
-
-
 }
 
 FString ULongRangeWeapon::rangeToFString() const USE_NOEXCEPT
