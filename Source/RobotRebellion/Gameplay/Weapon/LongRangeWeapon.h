@@ -51,6 +51,8 @@ public:
     /************************************************************************/
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
+    virtual void cppAttack(ARobotRebellionCharacter* instigator, ARobotRebellionCharacter* ennemy) override;
+
     virtual FString rangeToFString() const USE_NOEXCEPT;
     
 
