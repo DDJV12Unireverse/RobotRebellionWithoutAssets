@@ -3,8 +3,8 @@
 #include "RobotRebellion.h"
 #include "StunAlteration.h"
 
-#include "../../Character/NonPlayableCharacter.h"
-#include "../../Character/PlayableCharacter.h"
+#include "Character/NonPlayableCharacter.h"
+#include "Character/PlayableCharacter.h"
 #include "AIController.h"
 #include "Runtime/AIModule/Classes/BrainComponent.h"
 

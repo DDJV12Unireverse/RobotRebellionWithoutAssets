@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "CustomAIControllerBase.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 {

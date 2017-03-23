@@ -216,15 +216,32 @@ void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponen
 
 void ARobotRebellionCharacter::inflictStun()
 {
-    if (!this->isImmortal())
+    if(!this->isImmortal())
     {
         UStunAlteration* stunAlteration;
 
-        if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
             &stunAlteration,
             *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
-        ))
+            ))
         {
+            m_alterationController->addAlteration(stunAlteration);
+        }
+    }
+}
+
+void ARobotRebellionCharacter::inflictStun(float duration)
+{
+    if(!this->isImmortal())
+    {
+        UStunAlteration* stunAlteration;
+
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
+            &stunAlteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
+            ))
+        {
+            stunAlteration->m_lifeTime = duration;
             m_alterationController->addAlteration(stunAlteration);
         }
     }
@@ -258,6 +275,40 @@ void ARobotRebellionCharacter::setInvisible(bool isInvisible)
     {
         multiSetInvisible(isInvisible);
     }
+}
+
+bool ARobotRebellionCharacter::isVisible()
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    if(characterMesh)
+    {
+        return characterMesh->IsVisible();
+    }
+
+    return false;
+}
+
+void ARobotRebellionCharacter::inflictDamage(float damage, ELivingTextAnimMode animType)
+{
+    m_attribute->inflictDamage(damage);
+    displayAnimatedIntegerValue(damage, FColor::Red, animType);
+
+    if(isDead())
+    {
+        onDeath();
+    }
+}
+
+void ARobotRebellionCharacter::restoreHealth(float value, ELivingTextAnimMode animType)
+{
+    m_attribute->restoreHealth(value);
+    displayAnimatedIntegerValue(value, FColor::Green, animType);
+}
+
+void ARobotRebellionCharacter::restoreMana(float value, ELivingTextAnimMode animType)
+{
+    m_attribute->restoreMana(value);
+    displayAnimatedIntegerValue(value, FColor::Blue, animType);
 }
 
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)

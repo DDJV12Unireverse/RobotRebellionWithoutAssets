@@ -5,7 +5,7 @@
 
 #include "AlterationBase.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 #include "../../Tool/UtilitaryFunctionLibrary.h"
 

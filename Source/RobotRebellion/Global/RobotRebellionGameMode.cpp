@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "RobotRebellionGameMode.h"
-#include "../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 #include "GameInstaller.h"
 

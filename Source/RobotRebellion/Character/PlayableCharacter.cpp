@@ -738,8 +738,6 @@ void APlayableCharacter::useHealthPotion()
     else if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
     {
         restoreHealth(m_healthPerPotion);
-        displayAnimatedIntegerValue(m_healthPerPotion, FColor::Green, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
         --m_healthPotionsCount;
     }
 }
@@ -762,10 +760,7 @@ void APlayableCharacter::useManaPotion()
     }
     else if(m_manaPotionsCount > 0 && getMana() < getMaxMana())
     {
-        setMana(getMana() + m_manaPerPotion);
-
-        displayAnimatedIntegerValue(m_manaPerPotion, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
+        restoreMana(m_manaPerPotion);
         --m_manaPotionsCount;
     }
 }
@@ -882,7 +877,6 @@ void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if (mustActive)
     {
-        //this->GetCapsuleComponent()->RegisterComponent();
         this->GetCapsuleComponent()->CreatePhysicsState();
     }
     else

@@ -4,9 +4,9 @@
 #include "BeastAIController.h"
 
 #include "Kismet/KismetSystemLibrary.h"
-#include "../../Character/NonPlayableCharacter.h"
-#include "../../Gameplay/Weapon/WeaponInventory.h"
-#include "../../Gameplay/Weapon/WeaponBase.h"
+#include "Character/NonPlayableCharacter.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
+#include "Gameplay/Weapon/WeaponBase.h"
 
 
 void ABeastAIController::CheckEnnemyNear(float range)
@@ -42,7 +42,7 @@ void ABeastAIController::CheckEnnemyNear(float range)
             ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
             if(NULL != RRCharacter)
             {
-                if(RRCharacter->isDead())
+                if(RRCharacter->isDead() || !RRCharacter->isVisible())
                 {
                     continue;
                 }

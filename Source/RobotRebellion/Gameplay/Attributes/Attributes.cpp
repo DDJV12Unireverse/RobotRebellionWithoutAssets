@@ -7,12 +7,12 @@
 // Sets default values for this component's properties
 UAttributes::UAttributes()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+    // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+    // off to improve performance if you don't need them.
+    PrimaryComponentTick.bCanEverTick = false;
 
     bReplicates = true;
-	// ...
+    // ...
 
     setImmortal(false);
 }
@@ -33,28 +33,28 @@ void UAttributes::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 // Called when the game starts
 void UAttributes::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-    
 
-	// ...
-	
+
+    // ...
+
 }
 
 
 // Called every frame
-void UAttributes::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
+void UAttributes::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+    // ...
 }
 
 void UAttributes::setMaxMana(float newValue) USE_NOEXCEPT
 {
     m_maxMana = newValue;
 
-    if (m_maxMana < m_mana)
+    if(m_maxMana < m_mana)
     {
         m_mana = m_maxMana;
     }
@@ -64,7 +64,7 @@ void UAttributes::setMaxHealth(float newValue) USE_NOEXCEPT
 {
     m_maxHealth = newValue;
 
-    if (m_maxHealth < m_health)
+    if(m_maxHealth < m_health)
     {
         m_health = m_maxHealth;
     }
@@ -72,7 +72,7 @@ void UAttributes::setMaxHealth(float newValue) USE_NOEXCEPT
 
 void UAttributes::inflictDamageMortal(float damage)
 {
-    if (damage < m_health)
+    if(damage < m_health)
     {
         m_health -= damage;
     }
@@ -98,15 +98,17 @@ void UAttributes::consumeMana(float manaAmount)
 
 void UAttributes::setImmortal(bool isImmortal) USE_NOEXCEPT
 {
-    if (isImmortal)
+    if(isImmortal)
     {
         m_inflictDamageDelegate = &UAttributes::immortalMethod;
         m_restoreHealthDelegate = &UAttributes::immortalMethod;
+        m_restoreManaDelegate = &UAttributes::immortalMethod;
     }
     else
     {
         m_inflictDamageDelegate = &UAttributes::inflictDamageMortal;
         m_restoreHealthDelegate = &UAttributes::restoreHealthMortal;
+        m_restoreManaDelegate = &UAttributes::restoreManaMortal;
     }
 }
 
