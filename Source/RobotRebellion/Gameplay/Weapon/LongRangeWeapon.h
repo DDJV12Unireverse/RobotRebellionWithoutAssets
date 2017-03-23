@@ -45,14 +45,13 @@ public:
     {
         return EWeaponRange::LONG_RANGE_WEAPON;
     }
-	
-
-
 
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
+
+    virtual void cppAttack(ARobotRebellionCharacter* instigator, ARobotRebellionCharacter* ennemy) override;
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
     

@@ -58,5 +58,12 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
 void AEnnemiAIController::AttackTarget() const
 {
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
-    ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+    if(m_targetToFollow)
+    {
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, m_targetToFollow);
+    }
+    else
+    {
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+    }
 }

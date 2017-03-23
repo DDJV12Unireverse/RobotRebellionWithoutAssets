@@ -4,9 +4,10 @@
 #include "CheckEnnemyNearBTService.h"
 
 #include "../Controller/CustomAIControllerBase.h"
+#include "../Character/RobotsCharacter.h"
 
 
-UCheckEnnemyNearBTService::UCheckEnnemyNearBTService(): m_radiusRange{700}
+UCheckEnnemyNearBTService::UCheckEnnemyNearBTService() : m_radiusRange{700}
 {
     NodeName = "CheckEnnemyNear";
     // Interval update
@@ -20,6 +21,21 @@ void UCheckEnnemyNearBTService::TickNode(UBehaviorTreeComponent & OwnerComp, uin
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
     ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
+
+
+    ARobotRebellionCharacter* pawn = Cast<ARobotRebellionCharacter>(AIController->GetPawn());
+
+    if(pawn)
+    {
+        if(pawn->m_weaponInventory && pawn->m_weaponInventory->getCurrentWeapon())
+        {
+            float weaponRangeDistance = pawn->m_weaponInventory->getCurrentWeapon()->m_WeaponRadiusRange;
+            if(weaponRangeDistance != m_radiusRange)
+            {
+                m_radiusRange = weaponRangeDistance;
+            }
+        }
+    }
 
     AIController->CheckEnnemyNear(m_radiusRange);
 }

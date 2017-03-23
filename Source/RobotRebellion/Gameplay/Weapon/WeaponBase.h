@@ -45,7 +45,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponBaseCadence;
 
-
+    //Projectile position Offset
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+        float m_WeaponRadiusRange;
 
 protected:
     /************************************************************************/
@@ -96,6 +98,11 @@ public:
     virtual void cppAttack(ARobotRebellionCharacter* user)
     {
         PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt");
+    }
+
+    virtual void cppAttack(ARobotRebellionCharacter* user, ARobotRebellionCharacter* ennemy)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt instigator to ennemy");
     }
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
