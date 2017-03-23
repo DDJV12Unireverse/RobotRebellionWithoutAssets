@@ -4,9 +4,12 @@
 #include "LobbyUIWidget.h"
 //#include "ReviveTimerWidget.h"
 #include "GameMenu.h"
+#include "Character/PlayableCharacter.h"
 
 AGameMenu::AGameMenu()
-{}
+{
+    PrimaryActorTick.bCanEverTick = true;
+}
 
 void AGameMenu::BeginPlay()
 {
@@ -20,5 +23,19 @@ void AGameMenu::BeginPlay()
     HideWidget(LobbyImpl);
 
     ReviveTimerWidgetImpl = CreateCustomWidget<UReviveTimerWidget>(ReviveWidget.GetDefaultObject());
-    HUDCharacterImpl->SetVisibility(ESlateVisibility::Visible);
+    HideWidget(ReviveTimerWidgetImpl);
+    //HUDCharacterImpl->SetVisibility(ESlateVisibility::Visible);
+}
+void AGameMenu::Tick(float delta)
+{
+    APlayableCharacter* player = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
+    if (player->isReviving())
+    {
+        DisplayWidget(ReviveTimerWidgetImpl);
+    }
+    else
+    {
+        HideWidget(ReviveTimerWidgetImpl);
+    }
+    
 }

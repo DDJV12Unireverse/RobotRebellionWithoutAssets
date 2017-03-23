@@ -509,19 +509,9 @@ void APlayableCharacter::interact()
                 PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
             }
         }
-        else if (deadBody&&deadBody->isDead()) //Focused Actor is a corpse
+        else if (deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
-            if (m_currentRevivingTime < m_requiredTimeToRevive) //Timer is not finished
-            {
-                m_isReviving = true;
-                
-            }
-            else //Timer is finished
-            {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVING");
-                deadBody->cppOnRevive();
-            }
-            
+            m_isReviving = true;
         }
     }
     else

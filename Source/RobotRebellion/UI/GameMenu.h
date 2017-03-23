@@ -19,6 +19,7 @@ class ROBOTREBELLION_API AGameMenu : public AHUD
 public:
     AGameMenu();
     virtual void BeginPlay() override;
+    virtual void Tick(float delta) override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Game Menu Lobby Widget")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
