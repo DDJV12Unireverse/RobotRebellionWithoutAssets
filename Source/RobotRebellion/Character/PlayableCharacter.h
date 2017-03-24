@@ -169,6 +169,9 @@ public:
     //////UI
     void openLobbyWidget();
 
+    UFUNCTION(BlueprintCallable, Category = LobbyWidget)
+    void closeLobbyWidget();
+
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/

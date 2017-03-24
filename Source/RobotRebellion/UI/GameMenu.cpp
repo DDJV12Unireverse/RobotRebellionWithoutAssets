@@ -30,22 +30,6 @@ void AGameMenu::BeginPlay()
 void AGameMenu::Tick(float deltaTime)
 {
     Super::Tick(deltaTime);
-    if (LobbyImpl->Visibility == ESlateVisibility::Hidden && AudioComp->IsPlaying())
-    {
-            const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
-            for (auto sound : sounds)
-            {
-                UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
-                if(audioComp)
-                {
-                    if(audioComp->GetAudioComponentID() != AudioComp->GetAudioComponentID())
-                    {
-                        audioComp->SetVolumeMultiplier(1.f);
-                    }
-                }
-        }
-        AudioComp->Stop();
-    }
 }
 
 void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
@@ -73,4 +57,21 @@ void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
 void AGameMenu::HideWidget(UUserWidget* WidgetRef)
 {
     WidgetRef->SetVisibility(ESlateVisibility::Hidden);
+
+    if(AudioComp->IsPlaying())
+    {
+        const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
+        for(auto sound : sounds)
+        {
+            UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
+            if(audioComp)
+            {
+                if(audioComp->GetAudioComponentID() != AudioComp->GetAudioComponentID())
+                {
+                    audioComp->SetVolumeMultiplier(1.f);
+                }
+            }
+        }
+        AudioComp->Stop();
+    }
 }

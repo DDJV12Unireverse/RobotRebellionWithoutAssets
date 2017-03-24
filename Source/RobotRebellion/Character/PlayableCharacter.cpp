@@ -374,8 +374,22 @@ void APlayableCharacter::openLobbyWidget()
         MyPC->bShowMouseCursor = true;
         MyPC->SetInputMode(Mode);
     }
+}
 
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
+void APlayableCharacter::closeLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->LobbyImpl);
+        FInputModeGameAndUI Mode;
+        Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+        Mode.SetHideCursorDuringCapture(true);
+        MyPC->bShowMouseCursor = false;
+        MyPC->SetInputMode(Mode);
+    }
 }
 
 ///////// SWITCH WEAPON

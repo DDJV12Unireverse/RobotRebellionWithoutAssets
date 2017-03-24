@@ -70,8 +70,10 @@ public:
         }
     }
 
+    UFUNCTION(BlueprintCallable, Category = HUD)
     void DisplayWidget(UUserWidget* WidgetRef);
 
+    UFUNCTION(BlueprintCallable, Category = HUD)
     void HideWidget(UUserWidget* WidgetRef);
  
 };
