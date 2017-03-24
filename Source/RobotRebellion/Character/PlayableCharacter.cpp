@@ -64,7 +64,7 @@ APlayableCharacter::APlayableCharacter()
                                                    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
                                                    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
-    
+
     m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
     m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
     m_spellKit = CreateDefaultSubobject<USpellKit>(TEXT("SpellKit"));
@@ -72,7 +72,7 @@ APlayableCharacter::APlayableCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
-    
+
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
@@ -113,44 +113,35 @@ void APlayableCharacter::BeginPlay()
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-   
-    if(Controller && Controller->IsLocalController())
+
+    if (Controller && Controller->IsLocalController())
     {
         AActor* usable = Cast<AActor>(GetUsableInView());
         // Terminer le focus sur l'objet précédent
-        if(focusedPickupActor != usable)
+        if (focusedPickupActor != usable)
         {
             m_isReviving = false;
             m_currentRevivingTime = 0.f;
-            PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
-            //if(focusedPickupActor)
-            //{
-            //                    focusedPickupActor->OnEndFocus();
-            //}
-
+            //PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
             bHasNewFocus = true;
         }
         // Assigner le nouveau focus (peut être nul)
         focusedPickupActor = usable;
         // Démarrer un nouveau focus si Usable != null;
-        if(usable && usable->GetName() != "Floor")
+        if (usable && usable->GetName() != "Floor")
         {
-            if(bHasNewFocus)
+            if (bHasNewFocus)
             {
-                //usable->OnBeginFocus();
                 bHasNewFocus = false;
-
                 // only debug utility
-                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
-
+                //PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
             }
-            if(m_isReviving)
+            if (m_isReviving)
             {
                 m_currentRevivingTime += DeltaTime;
 
-                if(m_currentRevivingTime >= m_requiredTimeToRevive)
+                if (m_currentRevivingTime >= m_requiredTimeToRevive)
                 {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Red, "REVIVEBEGIN");
                     m_isReviving = false;
                     m_currentRevivingTime = 0.f;
 
@@ -456,9 +447,8 @@ void APlayableCharacter::interactBegin()
 
 void APlayableCharacter::interact(AActor* focusedActor)
 {
-    if (Role == ROLE_Authority)
+    if (Role >= ROLE_Authority)
     {
-        
         APickupActor* Usable = Cast<APickupActor>(focusedActor);
         APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
         if (Usable) //focusedActor is an Usable Object
@@ -511,10 +501,10 @@ void APlayableCharacter::interact(AActor* focusedActor)
             m_isReviving = true;
         }
     }
-     else
-     {
-         serverInteract(focusedActor);
-     }
+    else
+    {
+        serverInteract(focusedActor);
+    }
 }
 
 
@@ -530,26 +520,9 @@ bool APlayableCharacter::serverInteract_Validate(AActor* focusedActor)
 
 void APlayableCharacter::interactEnd()
 {
-    if (Role>=ROLE_Authority)
-    {
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "ResAborted");
-    displayAnimatedIntegerValue(m_currentRevivingTime, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
     m_isReviving = false;
     m_currentRevivingTime = 0.f;
-    return;
-    }
-        serverInteractEnd(); 
 }
-
-void APlayableCharacter::serverInteractEnd_Implementation()
-{
-    this->interactEnd();
-}
-bool APlayableCharacter::serverInteractEnd_Validate()
-{
-    return true;
-}
-
 
 void APlayableCharacter::serverSwitchWeapon_Implementation()
 {
@@ -562,10 +535,10 @@ void APlayableCharacter::clientInteract_Implementation(APickupActor* Usable)
 }
 
 
-void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
-{
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
-}
+ void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
+ {
+     PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
+ }
 
 void APlayableCharacter::clientRevive_Implementation()
 {
@@ -670,7 +643,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
-        
+
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -735,7 +708,7 @@ void APlayableCharacter::cppOnRevive()
 void APlayableCharacter::cppOnDeath()
 {
     this->activatePhysics(false);
-    
+
     this->EnablePlayInput(false);
     this->m_alterationController->removeAllAlteration();
     this->m_currentRevivingTime = 0.f;
@@ -745,7 +718,7 @@ void APlayableCharacter::cppOnDeath()
 void APlayableCharacter::EnablePlayInput(bool enable)
 {
     APlayerController* playerController = Cast<APlayerController>(GetController());
-    
+
     if (playerController && playerController->InputComponent)
     {
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
@@ -811,7 +784,7 @@ AActor* APlayableCharacter::GetUsableInView()
     TraceParams.bTraceComplex = true;
     FHitResult Hit(ForceInit);
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
-    
+
     //TODO: Comment or remove once implemented in post-process.
     //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
 
@@ -850,7 +823,7 @@ void APlayableCharacter::useManaPotion()
     {
         serverUseManaPotion();
     }
-    else if(m_manaPotionsCount > 0 && getMana() < getMaxMana())
+    else if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
     {
         setMana(getMana() + m_manaPerPotion);
 
@@ -974,7 +947,7 @@ void APlayableCharacter::activatePhysics(bool mustActive)
     {
         this->GetCapsuleComponent()->CreatePhysicsState();
         this->getRevivingBox()->DestroyPhysicsState();
-     }
+    }
     else
     {
         this->GetCapsuleComponent()->DestroyPhysicsState();
@@ -996,9 +969,9 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->CreatePhysicsState(); 
+        this->GetCapsuleComponent()->CreatePhysicsState();
         this->getRevivingBox()->DestroyPhysicsState();
-        
+
     }
     else
     {

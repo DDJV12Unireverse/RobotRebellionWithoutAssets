@@ -14,8 +14,8 @@
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter, public Focusable
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -57,13 +57,13 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbBombStart;
-        
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbHealthPotionMax;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbManaPotionMax;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbBombMax;
 
@@ -81,7 +81,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
         float m_currentRevivingTime;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
-         bool m_isReviving;
+        bool m_isReviving;
 
     /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -165,8 +165,8 @@ public:
 
 
     UFUNCTION()
-    void cppPreRevive(APlayableCharacter* characterToRevive);
-    
+        void cppPreRevive(APlayableCharacter* characterToRevive);
+
     UFUNCTION(Reliable, Server, WithValidation)
         virtual void serverCppPreRevive(APlayableCharacter* characterToRevive);
 
@@ -252,7 +252,7 @@ public:
     template<int32 index>
     void castSpellInputHanlder()
     {
-        if(Role < ROLE_Authority)
+        if (Role < ROLE_Authority)
         {
             castSpellServer(index); // le param n'a pas d'importance pour l'instant
         }
@@ -310,18 +310,15 @@ public:
         void interact(AActor* focusedActor);
 
     UFUNCTION()
-    void interactEnd();
+        void interactEnd();
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverInteract(AActor* focusedActor);
 
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverInteractEnd();
-
     UFUNCTION(NetMulticast, Reliable)
         void clientInteract(APickupActor* Usable);
-    
-        
+
+
     UFUNCTION(NetMulticast, Reliable)
         void clientRevive();
 
@@ -364,7 +361,7 @@ public:
         void multiActivatePhysics(bool mustActive);
 
 
-    UFUNCTION(BlueprintCallable,Category = "ReviveTimer")
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
         float getReviveTimer()
     {
         return m_currentRevivingTime;
@@ -418,5 +415,5 @@ public:
     {}
     virtual void OnEndFocus() override
     {}
-    
+
 };
