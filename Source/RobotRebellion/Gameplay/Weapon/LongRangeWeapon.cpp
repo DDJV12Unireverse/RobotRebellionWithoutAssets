@@ -142,8 +142,8 @@ void ULongRangeWeapon::playSound(ARobotRebellionCharacter* user)
     if(canAttack() && m_projectileClass != NULL)
     {
         playSound(m_longRangeWeaponFireSound, user);
+        reload();
     }
-    reload();
 }
 
 
