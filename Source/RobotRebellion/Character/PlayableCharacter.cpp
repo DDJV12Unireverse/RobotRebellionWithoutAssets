@@ -384,11 +384,7 @@ void APlayableCharacter::closeLobbyWidget()
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
-        FInputModeGameAndUI Mode;
-        Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-        Mode.SetHideCursorDuringCapture(true);
         MyPC->bShowMouseCursor = false;
-        MyPC->SetInputMode(Mode);
     }
 }
 
