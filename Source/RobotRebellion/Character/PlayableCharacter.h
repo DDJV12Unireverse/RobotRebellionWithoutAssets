@@ -163,8 +163,19 @@ public:
     ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
-    void cppPreRevive();
-    UFUNCTION(BlueprintCallable, Category="Reviving")
+
+    UFUNCTION()
+    void cppPreRevive(APlayableCharacter* characterToRevive);
+    
+    UFUNCTION(Reliable, Server, WithValidation)
+        virtual void serverCppPreRevive(APlayableCharacter* characterToRevive);
+
+    UFUNCTION(BlueprintCallable, Category = "Revive")
+        void revive()
+    {
+        this->cppOnRevive();
+    }
+
     virtual void cppOnRevive() override;
     virtual void cppOnDeath() override;
 
@@ -314,8 +325,6 @@ public:
     UFUNCTION(NetMulticast, Reliable)
         void clientRevive();
 
-    UFUNCTION(NetMulticast, Reliable)
-        void clientReviveEnd();
 
     UFUNCTION(Reliable, Client, WithValidation)
         void clientEnableInput(bool enableInput);

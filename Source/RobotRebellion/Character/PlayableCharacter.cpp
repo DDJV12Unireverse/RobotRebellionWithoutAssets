@@ -154,7 +154,7 @@ void APlayableCharacter::Tick(float DeltaTime)
                     m_isReviving = false;
                     m_currentRevivingTime = 0.f;
 
-                    Cast<APlayableCharacter>(focusedPickupActor)->cppPreRevive();
+                    cppPreRevive(Cast<APlayableCharacter>(focusedPickupActor));
                 }
             }
         }
@@ -523,24 +523,22 @@ void APlayableCharacter::serverInteract_Implementation(AActor* focusedActor)
     this->interact(focusedActor);
 }
 
-bool APlayableCharacter::serverInteract_Validate(AActor* focusedPickupActor)
+bool APlayableCharacter::serverInteract_Validate(AActor* focusedActor)
 {
     return true;
 }
 
 void APlayableCharacter::interactEnd()
 {
-    if (Role==ROLE_Authority)
+    if (Role>=ROLE_Authority)
     {
     PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "ResAborted");
     displayAnimatedIntegerValue(m_currentRevivingTime, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
     m_isReviving = false;
     m_currentRevivingTime = 0.f;
+    return;
     }
-    else
-    {
         serverInteractEnd(); 
-    }
 }
 
 void APlayableCharacter::serverInteractEnd_Implementation()
@@ -562,10 +560,7 @@ void APlayableCharacter::clientInteract_Implementation(APickupActor* Usable)
 {
     Usable->OnPickup(this);
 }
-void APlayableCharacter::clientReviveEnd_Implementation()
-{
-    m_isReviving = false;
-}
+
 
 void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
 {
@@ -707,9 +702,26 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
 }
 
-void APlayableCharacter::cppPreRevive()
+void APlayableCharacter::cppPreRevive(APlayableCharacter* characterToRevive)
 {
-    this->restoreHealth(this->getMaxHealth() / 2);
+    if (Role >= ROLE_Authority)
+    {
+        characterToRevive->restoreHealth(this->getMaxHealth() / 2);
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Prerevive");
+        return;
+    }
+
+    this->serverCppPreRevive(characterToRevive);
+}
+
+void APlayableCharacter::serverCppPreRevive_Implementation(APlayableCharacter* characterToRevive)
+{
+    cppPreRevive(characterToRevive);
+}
+
+bool APlayableCharacter::serverCppPreRevive_Validate(APlayableCharacter* characterToRevive)
+{
+    return true;
 }
 
 void APlayableCharacter::cppOnRevive()
