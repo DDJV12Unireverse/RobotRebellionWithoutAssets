@@ -35,12 +35,13 @@ void AGameMenu::BeginPlay()
     //HUDCharacterImpl->SetVisibility(ESlateVisibility::Visible);
 }
 
-void AGameMenu::Tick(float delta)
+void AGameMenu::Tick(float deltaTime)
 {
+    Super::Tick(deltaTime);
     APlayableCharacter* player = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
     if (player->isReviving())
     {
-        DisplayWidget(ReviveTimerWidgetImpl);
+        DisplayWidget(ReviveTimerWidgetImpl);        
     }
     else
     {
