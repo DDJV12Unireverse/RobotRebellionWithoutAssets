@@ -3,11 +3,11 @@
 #include "RobotRebellion.h"
 #include "RobotRobellionSpawnerClass.h"
 
-#include "../../Character/PlayableCharacter.h"
-#include "../../Character/Assassin.h"
-#include "../../Character/Wizard.h"
-#include "../../Character/Healer.h"
-#include "../../Character/Soldier.h"
+#include "Character/PlayableCharacter.h"
+#include "Character/Assassin.h"
+#include "Character/Wizard.h"
+#include "Character/Healer.h"
+#include "Character/Soldier.h"
 
 
 // Sets default values for this component's properties

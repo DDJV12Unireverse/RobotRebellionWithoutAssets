@@ -5,10 +5,10 @@
 #include "runtime/AIModule/Classes/BehaviorTree/BlackboardComponent.h"
 #include "Runtime/AIModule/Classes/BrainComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "../../Character/RobotRebellionCharacter.h"
-#include "../../Character/NonPlayableCharacter.h"
-#include "../../Gameplay/Weapon/WeaponInventory.h"
-#include "../../Gameplay/Weapon/WeaponBase.h"
+#include "Character/RobotRebellionCharacter.h"
+#include "Character/NonPlayableCharacter.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
+#include "Gameplay/Weapon/WeaponBase.h"
 
 
 void AEnnemiAIController::CheckEnnemyNear(float range)
@@ -58,5 +58,12 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
 void AEnnemiAIController::AttackTarget() const
 {
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
-    ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+    if(m_targetToFollow)
+    {
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, m_targetToFollow);
+    }
+    else
+    {
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+    }
 }

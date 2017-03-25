@@ -193,6 +193,9 @@ public:
     //////UI
     void openLobbyWidget();
 
+    UFUNCTION(BlueprintCallable, Category = LobbyWidget)
+    void closeLobbyWidget();
+
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
@@ -247,6 +250,9 @@ public:
         void mainFire();
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
+
+    UFUNCTION(NetMulticast, Reliable)
+        void clientMainFireSound();
 
     //CAST SPELL
     template<int32 index>

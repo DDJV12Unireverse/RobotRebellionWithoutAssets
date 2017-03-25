@@ -79,6 +79,7 @@ public:
     void startTimedDestroy() USE_NOEXCEPT;
 
     void inflictStun();
+    void inflictStun(float duration);
 
     void inflictInvisibility();
 
@@ -144,5 +145,14 @@ public:
 // Attributs relatives functions added by macro
 public:
     GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
+
+    UFUNCTION()
+        void inflictDamage(float damage, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+    UFUNCTION()
+        void restoreHealth(float value, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+    UFUNCTION()
+        void restoreMana(float value, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 };
 

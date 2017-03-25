@@ -355,6 +355,7 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+        clientMainFireSound();
     }
 }
 
@@ -366,6 +367,11 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::clientMainFireSound_Implementation()
+{
+    m_weaponInventory->getCurrentWeapon()->playSound(this);
 }
 
 //DEAD
@@ -417,8 +423,18 @@ void APlayableCharacter::openLobbyWidget()
         MyPC->bShowMouseCursor = true;
         MyPC->SetInputMode(Mode);
     }
+}
 
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
+void APlayableCharacter::closeLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->LobbyImpl);
+        MyPC->bShowMouseCursor = false;
+    }
 }
 
 ///////// SWITCH WEAPON
@@ -801,8 +817,6 @@ void APlayableCharacter::useHealthPotion()
     else if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
     {
         restoreHealth(m_healthPerPotion);
-        displayAnimatedIntegerValue(m_healthPerPotion, FColor::Green, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
         --m_healthPotionsCount;
     }
 }
@@ -825,10 +839,7 @@ void APlayableCharacter::useManaPotion()
     }
     else if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
     {
-        setMana(getMana() + m_manaPerPotion);
-
-        displayAnimatedIntegerValue(m_manaPerPotion, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
+        restoreMana(m_manaPerPotion);
         --m_manaPotionsCount;
     }
 }

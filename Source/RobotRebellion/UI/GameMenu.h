@@ -16,10 +16,17 @@ class ROBOTREBELLION_API AGameMenu : public AHUD
 {
     GENERATED_BODY()
 
+private:
+
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* AudioComp;
 public:
     AGameMenu();
     virtual void BeginPlay() override;
-    virtual void Tick(float delta) override;
+    virtual void Tick(float deltaTime) override;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* MenuLoop;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Game Menu Lobby Widget")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
@@ -68,13 +75,10 @@ public:
         }
     }
 
-    void DisplayWidget(UUserWidget* WidgetRef)
-    {
-        WidgetRef->SetVisibility(ESlateVisibility::Visible);
-    }
+    UFUNCTION(BlueprintCallable, Category = HUD)
+    void DisplayWidget(UUserWidget* WidgetRef);
 
-    void HideWidget(UUserWidget* WidgetRef)
-    {
-        WidgetRef->SetVisibility(ESlateVisibility::Hidden);
-    }
+    UFUNCTION(BlueprintCallable, Category = HUD)
+    void HideWidget(UUserWidget* WidgetRef);
+ 
 };

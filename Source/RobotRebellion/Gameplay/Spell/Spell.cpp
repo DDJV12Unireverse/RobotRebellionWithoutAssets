@@ -4,7 +4,8 @@
 #include "Spell.h"
 
 #include "../../Tool/UtilitaryFunctionLibrary.h"
-#include "Effect.h"
+#include "Gameplay/Spell/Effects/Effect.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 USpell::USpell()

@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "ShortRangeWeapon.h"
 
-#include "../../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 #include "../../Global/GlobalDamageMethod.h"
 
 #include "../Damage/Damage.h"
@@ -80,13 +80,6 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                         Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
 
                         receiver->inflictDamage(damageValue);
-                        receiver->displayAnimatedIntegerValue(damageValue, FColor::Red, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
-
-                        if (receiver->isDead())
-                        {
-                            receiver->onDeath();
-                        }
                     }
                     else
                     {

@@ -5,10 +5,18 @@
 //#include "ReviveTimerWidget.h"
 #include "GameMenu.h"
 #include "Character/PlayableCharacter.h"
+#include "EngineGlobals.h"
+#include "Engine/Engine.h"
+#include "AudioDevice.h"
+#include "ActiveSound.h"
 
 AGameMenu::AGameMenu()
 {
     PrimaryActorTick.bCanEverTick = true;
+    AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
+    AudioComp->bAutoActivate = false;
+    AudioComp->bAutoDestroy = false; 
+    AudioComp->SetupAttachment(RootComponent);
 }
 
 void AGameMenu::BeginPlay()
@@ -26,6 +34,7 @@ void AGameMenu::BeginPlay()
     HideWidget(ReviveTimerWidgetImpl);
     //HUDCharacterImpl->SetVisibility(ESlateVisibility::Visible);
 }
+
 void AGameMenu::Tick(float delta)
 {
     APlayableCharacter* player = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
@@ -38,4 +47,48 @@ void AGameMenu::Tick(float delta)
         HideWidget(ReviveTimerWidgetImpl);
     }
     
+}
+
+void AGameMenu::DisplayWidget(UUserWidget* WidgetRef)
+{
+    WidgetRef->SetVisibility(ESlateVisibility::Visible);
+    if (GEngine)
+    {
+        const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
+        for (auto sound : sounds)
+        {
+            UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
+            if(audioComp)
+            {
+                if (audioComp->GetAudioComponentID() !=AudioComp->GetAudioComponentID())
+                {
+                    audioComp->SetVolumeMultiplier(0.f);
+                }
+            }
+        }
+    }
+    AudioComp->SetSound(MenuLoop);
+    AudioComp->Play();
+}
+
+void AGameMenu::HideWidget(UUserWidget* WidgetRef)
+{
+    WidgetRef->SetVisibility(ESlateVisibility::Hidden);
+
+    if(AudioComp->IsPlaying())
+    {
+        const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
+        for(auto sound : sounds)
+        {
+            UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
+            if(audioComp)
+            {
+                if(audioComp->GetAudioComponentID() != AudioComp->GetAudioComponentID())
+                {
+                    audioComp->SetVolumeMultiplier(1.f);
+                }
+            }
+        }
+        AudioComp->Stop();
+    }
 }
