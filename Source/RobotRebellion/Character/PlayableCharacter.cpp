@@ -306,6 +306,7 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+        clientMainFireSound();
     }
 }
 
@@ -317,6 +318,11 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::clientMainFireSound_Implementation()
+{
+    m_weaponInventory->getCurrentWeapon()->playSound(this);
 }
 
 //DEAD
@@ -368,8 +374,18 @@ void APlayableCharacter::openLobbyWidget()
         MyPC->bShowMouseCursor = true;
         MyPC->SetInputMode(Mode);
     }
+}
 
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
+void APlayableCharacter::closeLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->LobbyImpl);
+        MyPC->bShowMouseCursor = false;
+    }
 }
 
 ///////// SWITCH WEAPON

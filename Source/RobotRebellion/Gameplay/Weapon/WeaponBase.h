@@ -17,19 +17,19 @@ enum class EWeaponRange : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable)
 class ROBOTREBELLION_API UWeaponBase : public UPrimitiveComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 
 public:
     /************************************************************************/
     /*                  UPROPERTY                                           */
     /************************************************************************/
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Owner")
         AActor* m_owner;
 
@@ -66,9 +66,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "General")
         virtual EWeaponRange getWeaponRange() const USE_NOEXCEPT
     {
+        //check(false); // To disable instanciation of base class.
         return EWeaponRange::INVALID_RANGE_WEAPON;
     }
-    
+
 
     UFUNCTION(BlueprintCallable, Category = "General")
         FString toFString() const USE_NOEXCEPT
@@ -104,6 +105,12 @@ public:
     {
         PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt instigator to ennemy");
     }
+
+    virtual void playSound(ARobotRebellionCharacter* user)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAttSound");
+    }
+
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
 
