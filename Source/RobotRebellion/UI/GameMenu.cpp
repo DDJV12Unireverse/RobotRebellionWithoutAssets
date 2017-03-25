@@ -41,7 +41,7 @@ void AGameMenu::Tick(float deltaTime)
     APlayableCharacter* player = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
     if (player->isReviving())
     {
-        DisplayWidget(ReviveTimerWidgetImpl);        
+        DisplayWidget(ReviveTimerWidgetImpl);
     }
     else
     {

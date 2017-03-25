@@ -107,6 +107,14 @@ void APlayableCharacter::BeginPlay()
 
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
 
+#ifdef WE_RE_ON_DEBUG
+        m_revivingBox->SetVisibility(true);
+        m_revivingBox->SetHiddenInGame(false);
+#else
+        m_revivingBox->SetVisibility(false);
+        m_revivingBox->SetHiddenInGame(true);
+#endif
+
     m_tpsMode = true;
 }
 
