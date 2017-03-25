@@ -946,11 +946,11 @@ void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
     }
 
     if (Role >= ROLE_Authority)
@@ -968,10 +968,10 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
     }
 }
