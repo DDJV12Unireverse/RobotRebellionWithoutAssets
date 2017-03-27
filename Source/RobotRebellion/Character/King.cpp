@@ -18,14 +18,14 @@ AKing::AKing() : ANonPlayableCharacter()
 void AKing::BeginPlay()
 {
     Super::BeginPlay();
-    TArray<AActor*> drones;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_droneControllerClass, drones);
-    if (drones.Num() > 0) //The king is here
-    {
-        ADroneAIController* drone = Cast<ADroneAIController>(drones.Top());
-        drone->setFollowKing(); //king is spawned, follow him.
+    //TArray<AActor*> drones;
+    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_droneControllerClass, drones);
+    //if (drones.Num() > 0) //The king is here
+    //{
+    //    ADroneAIController* drone = Cast<ADroneAIController>(drones.Top());
+    //    drone->setFollowKing(); //king is spawned, follow him.
 
-    }
+    //}
 }
 
 void AKing::Tick(float deltaTime)
@@ -35,11 +35,11 @@ void AKing::Tick(float deltaTime)
 
 void AKing::cppOnDeath()
 {
-    TArray<AActor*> drones;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_droneControllerClass, drones);
+    //TArray<AActor*> drones;
+    //UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_droneControllerClass, drones);
 
-    ADroneAIController* drone = Cast<ADroneAIController>(drones.Top());
-    drone->setFollowGroup(); //king is dead, follow group. Later -> Game over.
+    //ADroneAIController* drone = Cast<ADroneAIController>(drones.Top());
+    //drone->setFollowGroup(); //king is dead, follow group. Later -> Game over.
 
 
     Super::cppOnDeath();

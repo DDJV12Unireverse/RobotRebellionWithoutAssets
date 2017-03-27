@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CustomAIControllerBase.h"
+#include <utility>
+#include <vector>
 #include "DroneAIController.generated.h"
 
 UENUM(BlueprintType)
@@ -10,8 +12,15 @@ enum AIDroneState
 {
     DRONE_WAITING,
     DRONE_MOVING,
-    DRONE_COMBAT
+    DRONE_COMBAT,
+    DRONE_BOMB,
+    DRONE_RECHARGE,
+    DRONE_NULL // Error
 };
+
+typedef std::pair<AIDroneState, float> ActionScore;
+
+
 
 /**
  * 
@@ -27,6 +36,12 @@ private:
     /* PROPERTY                                                             */
     /************************************************************************/
 
+
+    std::vector<ActionScore> m_scores;
+
+    float c_bombDamageRadius = 700.0; //TODO move to weapon
+    bool m_gotBomb = true;
+
     AIDroneState m_state;
 
     //the height the drone must be
@@ -41,13 +56,27 @@ private:
     //the next time we update the movement of the drone.
     float m_nextMovementUpdateTime;
 
+    //the next time the drone checks we are attacking or attacked by ennemies
+    float m_nextUpdateAttackCooldownTime;
+
     
     //Position to follow
     FVector m_destination;
 
     class AKing* m_king;
     float m_coeffKing;
-    void(ADroneAIController::* m_updateTarget)();
+    void(ADroneAIController::* m_updateTargetMethod)();
+
+    float getAttackScore();
+
+    float getFollowScore();
+
+    float getReloadScore();
+
+    void selectDropZone();
+
+    TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
+    TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
 
 public:
     /************************************************************************/
@@ -69,10 +98,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateMovementTime;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
+        float m_updateAttackCooldownTime;
+
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
     
+    /** Projectile class */
+    UPROPERTY(EditDefaultsOnly, Category = Projectile)
+        TSubclassOf<class AProjectile> m_projectileClass;
 
     /************************************************************************/
     /* METHODS                                                              */
@@ -107,9 +142,21 @@ public:
     void followKing();
     
     void followGroup();
+
+    void followFireZone();
     
     void setFollowGroup();
     
     void setFollowKing();
+
+    void setFollowFireZone();
     
+    void chooseNextAction();
+
+    void dropBomb();
+
+    void CheckEnnemyNear(float range) override;
+
+    void AttackTarget() const override;
+
 };
