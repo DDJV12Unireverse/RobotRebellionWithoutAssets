@@ -446,6 +446,8 @@ void APlayableCharacter::closeLobbyWidget()
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
+        FInputModeGameOnly Mode;
+        MyPC->SetInputMode(Mode);
         MyPC->bShowMouseCursor = false;
     }
 }
