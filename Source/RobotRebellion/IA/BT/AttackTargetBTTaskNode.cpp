@@ -3,7 +3,7 @@
 #include "RobotRebellion.h"
 #include "AttackTargetBTTaskNode.h"
 #include "../Controller/CustomAIControllerBase.h"
-#include "../../Character/NonPlayableCharacter.h"
+#include "Character/NonPlayableCharacter.h"
 
 
 UAttackTargetBTTaskNode::UAttackTargetBTTaskNode()

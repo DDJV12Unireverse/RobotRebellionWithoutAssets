@@ -306,6 +306,7 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+        clientMainFireSound();
     }
 }
 
@@ -317,6 +318,11 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::clientMainFireSound_Implementation()
+{
+    m_weaponInventory->getCurrentWeapon()->playSound(this);
 }
 
 //DEAD
@@ -368,8 +374,18 @@ void APlayableCharacter::openLobbyWidget()
         MyPC->bShowMouseCursor = true;
         MyPC->SetInputMode(Mode);
     }
+}
 
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
+void APlayableCharacter::closeLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->LobbyImpl);
+        MyPC->bShowMouseCursor = false;
+    }
 }
 
 ///////// SWITCH WEAPON
@@ -565,6 +581,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
         
+        //CHANGE MAP
+        PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
+        PlayerInputComponent->BindAction("Debug_GotoRuins", IE_Released, this, &APlayableCharacter::gotoRuins);
+        PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -732,8 +752,6 @@ void APlayableCharacter::useHealthPotion()
     else if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
     {
         restoreHealth(m_healthPerPotion);
-        displayAnimatedIntegerValue(m_healthPerPotion, FColor::Green, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
         --m_healthPotionsCount;
     }
 }
@@ -756,10 +774,7 @@ void APlayableCharacter::useManaPotion()
     }
     else if(m_manaPotionsCount > 0 && getMana() < getMaxMana())
     {
-        setMana(getMana() + m_manaPerPotion);
-
-        displayAnimatedIntegerValue(m_manaPerPotion, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
+        restoreMana(m_manaPerPotion);
         --m_manaPotionsCount;
     }
 }
@@ -851,6 +866,72 @@ bool APlayableCharacter::serverLoseBomb_Validate()
     return true;
 }
 
+
+void APlayableCharacter::gotoDesert()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true,true);
+    }
+    else
+    {
+        serverGotoDesert();
+    }
+}
+
+void APlayableCharacter::gotoRuins()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true,true);
+    }
+    else
+    {
+        serverGotoRuins();
+    }
+}
+
+void APlayableCharacter::gotoGym()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true,true);
+    }
+    else
+    {
+        serverGotoGym();
+    }
+}
+void APlayableCharacter::serverGotoDesert_Implementation()
+{
+    gotoDesert();
+}
+
+bool APlayableCharacter::serverGotoDesert_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoGym_Implementation()
+{
+    gotoGym();
+}
+
+bool APlayableCharacter::serverGotoGym_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoRuins_Implementation()
+{
+    gotoRuins();
+}
+
+bool APlayableCharacter::serverGotoRuins_Validate()
+{
+    return true;
+}
+
 void APlayableCharacter::switchView()
 {
     if (m_tpsMode)
@@ -876,11 +957,11 @@ void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
     }
 
     if (Role >= ROLE_Authority)
@@ -898,10 +979,10 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
     }
 }
