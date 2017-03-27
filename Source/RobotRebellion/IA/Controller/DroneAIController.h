@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CustomAIControllerBase.h"
-#include <utility>
-#include <vector>
 #include "DroneAIController.generated.h"
 
 UENUM(BlueprintType)
@@ -18,7 +16,7 @@ enum AIDroneState
     DRONE_NULL // Error
 };
 
-typedef std::pair<AIDroneState, float> ActionScore;
+typedef TPair<AIDroneState, float> ActionScore;
 
 
 
@@ -37,7 +35,7 @@ private:
     /************************************************************************/
 
 
-    std::vector<ActionScore> m_scores;
+    TMap<AIDroneState,float> m_scores;
 
     float c_bombDamageRadius = 700.0; //TODO move to weapon
     bool m_gotBomb = true;
@@ -72,6 +70,8 @@ private:
     float getFollowScore();
 
     float getReloadScore();
+
+    float getWaitingScore();
 
     void selectDropZone();
 
@@ -159,4 +159,17 @@ public:
 
     void AttackTarget() const override;
 
+    int getNbBombPlayers();
+
+    float getBombScore(FVector position);
+
+    bool isInCombat();
+ 
+    int getNbAliveAllies();
+    
+    int getNbAliveEnnemies();
+    
+    int getNbEnnemiesInZone(FVector zoneCenter);
+
+    float distance(FVector dest);
 };

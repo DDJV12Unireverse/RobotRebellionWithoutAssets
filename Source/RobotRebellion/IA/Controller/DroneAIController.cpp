@@ -6,71 +6,14 @@
 #include "Character/RobotRebellionCharacter.h"
 #include "Character/NonPlayableCharacter.h"
 #include <algorithm>
-
-float ADroneAIController::getAttackScore()
-{
-    float score = 0.0f;
-    // Fighting stance /*Weapon Fired && */
-        //Player(s) fired recently + Ennemies near
-            CheckEnnemyNear(3000.0); //TODO: Fix
-            if( m_sensedEnnemies.Num())
-            {
-                score += 0.5;
-            }
-        //Got Bomb
-            if(m_gotBomb)
-            {
-                score += 0.5;
-            }
-            //Found Drop Zone && won't kill king, won't kill many allies
-
-            //TODO:
-
-
-        //Ennemies Alive
-            //No
-
-    // No
-    return score;
-}
-
-float ADroneAIController::getFollowScore()
-{
-
-    // Fighting stance
-    return 0.0f;
-}
-
-float ADroneAIController::getReloadScore()
-{
-    float score = 0.0f;
-    // No Bomb
-    if(!m_gotBomb)
-    {
-        score = 1.0f;
-    }
-
-        //Is it worth it??? 
-            //TBD
-
-        //Safe Zone available
-            //Anyone in safe zone
-
-    // Bomb
-    return score;
-}
-
-ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
-{
-    PrimaryActorTick.bCanEverTick = true;
-}
+#include "Map.h"
 
 void ADroneAIController::BeginPlay()
 {
     Super::BeginPlay();
 
     m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
-    
+
     m_currentTime = 0.f;
 
     m_nextMovementUpdateTime = m_updateMovementTime;
@@ -90,6 +33,110 @@ void ADroneAIController::Tick(float deltaTime)
 
     IAUpdate(deltaTime);
     IALoop(deltaTime);
+}
+
+float ADroneAIController::getAttackScore()
+{
+    float score = 1.0f;
+    if (!m_gotBomb)
+    {
+        score = 0.f;
+    }
+    else
+    {
+        // FOR 5 POSITIONS
+            //foreach Position 
+            {
+
+            }
+            //Get Best Bomb Score
+
+
+        //1-Players Alive RATIO
+        
+        //Ennemi Advantage
+
+        //Players bombs available
+
+        //Attack Score for best Bomb
+
+    }
+    return score;
+}
+
+
+float ADroneAIController::getFollowScore()
+{
+    float score;
+    if (isInCombat())
+    {
+        score = 0.f;
+    }
+    else
+    {
+        score = 1 - 1 / (0.1f+distance(m_destination)); //Change later
+    }
+    return score;
+}
+
+float ADroneAIController::getReloadScore()
+{
+    float score = 1.0f;
+    // No Bomb
+    if (m_gotBomb || (getNbBombPlayers() == 0))
+    {
+        score = 0.0f;
+    }
+    else
+    {
+        if (isInCombat())
+        {
+            score *= (1 - (getNbAliveAllies() / (4 * getNbAliveEnnemies())));
+        }
+        score *= (1 - getNbEnnemiesInZone(FVector(0, 0, 0)) / (0.1f + distance(FVector(0, 0, 0))));
+    }
+
+    //Is it worth it??? 
+        //TBD
+
+    //Safe Zone available
+        //Anyone in safe zone
+
+// Bomb
+    return score;
+}
+
+float ADroneAIController::getWaitingScore()
+{
+    return 0.f;
+}
+
+ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
+{
+    PrimaryActorTick.bCanEverTick = true;
+}
+
+
+bool ADroneAIController::isInCombat()
+{
+    return false;
+}
+int ADroneAIController::getNbAliveAllies()
+{
+    return 4;
+}
+int ADroneAIController::getNbAliveEnnemies()
+{
+    return 0;
+}
+
+int ADroneAIController::getNbEnnemiesInZone(FVector zoneCenter)
+{
+    return 0;
+}
+float ADroneAIController::distance(FVector dest)
+{
+    return 0.f;
 }
 
 
@@ -147,7 +194,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_nextUpdatePropertyTime = m_currentTime + m_updatePropertyTime;
     }
 
-    if(m_currentTime >= m_updateAttackCooldownTime)
+    if (m_currentTime >= m_updateAttackCooldownTime)
     {
         m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
     }
@@ -175,7 +222,7 @@ void ADroneAIController::IALoop(float deltaTime)
 
     case DRONE_COMBAT:
         setFollowFireZone();
-        if(m_currentTime >= m_nextMovementUpdateTime)
+        if (m_currentTime >= m_nextMovementUpdateTime)
         {
             this->MoveToTarget();
 
@@ -249,23 +296,23 @@ void ADroneAIController::selectDropZone()
 
 void ADroneAIController::followKing()
 {
-        int livingPlayers = 0;
-        m_destination = FVector(0, 0, 0);
-        int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
-        for (int32 iter = 0; iter < playerCount; ++iter)
+    int livingPlayers = 0;
+    m_destination = FVector(0, 0, 0);
+    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+    for (int32 iter = 0; iter < playerCount; ++iter)
+    {
+        ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+        if (currentPlayer) // Protection when player leaves the game
         {
-            ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-            if(currentPlayer) // Protection when player leaves the game
+            if (!currentPlayer->isDead())
             {
-                if (!currentPlayer->isDead())
-                {
-                    m_destination += currentPlayer->GetActorLocation();
-                    ++livingPlayers;
-                } 
+                m_destination += currentPlayer->GetActorLocation();
+                ++livingPlayers;
             }
         }
-        m_destination += m_coeffKing * m_king->GetActorLocation();
-        m_destination /= (livingPlayers+ m_coeffKing);
+    }
+    m_destination += m_coeffKing * m_king->GetActorLocation();
+    m_destination /= (livingPlayers + m_coeffKing);
 }
 
 void ADroneAIController::followGroup()
@@ -276,9 +323,9 @@ void ADroneAIController::followGroup()
     for (int32 iter = 0; iter < playerCount; ++iter)
     {
         ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-        if(currentPlayer) // Protection when player leaves the game
-        { 
-            if(!currentPlayer->isDead())
+        if (currentPlayer) // Protection when player leaves the game
+        {
+            if (!currentPlayer->isDead())
             {
                 m_destination += currentPlayer->GetActorLocation();
                 ++livingPlayers;
@@ -318,21 +365,22 @@ void ADroneAIController::setFollowFireZone()
     this->m_updateTargetMethod = &ADroneAIController::followFireZone;
 }
 
-static bool ScoreSortingFunction(const ActionScore& left, const ActionScore& right)
+static bool ScoreSortingFunction(const float& left, const float& right)
 {
-    return left.second > right.second;
+    return left > right;
 }
 
 void ADroneAIController::chooseNextAction()
 {
-    m_scores.clear();
-    m_scores.push_back(std::make_pair<AIDroneState, float>(DRONE_COMBAT, getAttackScore()));
-    m_scores.push_back(std::make_pair<AIDroneState, float>(DRONE_MOVING, getFollowScore()));
-    m_scores.push_back(std::make_pair<AIDroneState, float>(DRONE_MOVING, getReloadScore()));
+    m_scores.Empty();
 
-    std::sort(m_scores.begin(), m_scores.end(), &ScoreSortingFunction);
-
-    m_state = m_scores[0].first;
+    m_scores.Add(DRONE_COMBAT, getAttackScore());
+    m_scores.Add(DRONE_MOVING, getFollowScore());
+    m_scores.Add(DRONE_RECHARGE, getReloadScore());
+    m_scores.ValueSort(&ScoreSortingFunction);
+    TArray<AIDroneState> sortedStates;
+    m_scores.GenerateKeyArray(sortedStates);
+    m_state = sortedStates[0];
 }
 
 void ADroneAIController::CheckEnnemyNear(float range)
@@ -345,7 +393,7 @@ void ADroneAIController::CheckEnnemyNear(float range)
     FVector MultiSphereStart = dronePosition;
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players  //TODO consider avoiding players
+    //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players  //TODO consider avoiding players and king
     //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1)); // Projectile  //TODO consider 
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
@@ -355,28 +403,28 @@ void ADroneAIController::CheckEnnemyNear(float range)
     //ActorsToIgnore.Add(player); //TODO consider
     TArray<FHitResult> OutHits;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
-                                                                   MultiSphereStart,
-                                                                   MultiSphereEnd,
-                                                                   range, //TODO
-                                                                   ObjectTypes,
-                                                                   false,
-                                                                   ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForOneFrame,
-                                                                   OutHits,
-                                                                   true);
+        MultiSphereStart,
+        MultiSphereEnd,
+        range, //TODO
+        ObjectTypes,
+        false,
+        ActorsToIgnore,
+        EDrawDebugTrace::ForOneFrame,
+        OutHits,
+        true);
 
     //m_targetToFollow = NULL;
     m_sensedEnnemies.Empty();
 
-    if(Result == true)
+    if (Result == true)
     {
-        for(int32 i = 0; i < OutHits.Num(); i++)
+        for (int32 i = 0; i < OutHits.Num(); i++)
         {
             FHitResult Hit = OutHits[i];
             ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
-            if(NULL != RRCharacter)
+            if (NULL != RRCharacter)
             {
-                if(RRCharacter->isDead() || !RRCharacter->isVisible())
+                if (RRCharacter->isDead() || !RRCharacter->isVisible())
                 {
                     continue;
                 }
@@ -393,4 +441,14 @@ void ADroneAIController::CheckEnnemyNear(float range)
 void ADroneAIController::AttackTarget() const
 {
 
+}
+
+int ADroneAIController::getNbBombPlayers()
+{
+    return 4;
+}
+
+float ADroneAIController::getBombScore(FVector position)
+{
+    return 0.f;
 }
