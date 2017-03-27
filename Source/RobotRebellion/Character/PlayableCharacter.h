@@ -104,7 +104,7 @@ public:
         float MaxUseDistance;
 
 
-    // Seulement vrai lors de la première image avec un nouveau focus.
+    // Seulement vrai lors de la premiï¿½re image avec un nouveau focus.
     bool bHasNewFocus;
     AActor* focusedPickupActor;
 
@@ -202,7 +202,7 @@ public:
     UFUNCTION()
         void OnStartJump();
 
-    // On désactive le booléen bPressedJump
+    // On dï¿½sactive le boolï¿½en bPressedJump
     UFUNCTION()
         void OnStopJump();
 
@@ -366,6 +366,18 @@ public:
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiActivatePhysics(bool mustActive);
 
+    UFUNCTION()
+        void gotoDesert();
+    UFUNCTION()
+        void gotoRuins();
+    UFUNCTION()
+        void gotoGym();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoDesert();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoRuins();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoGym();
 
     UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
         float getReviveTimer()
@@ -421,5 +433,4 @@ public:
     {}
     virtual void OnEndFocus() override
     {}
-
 };

@@ -125,7 +125,7 @@ void APlayableCharacter::Tick(float DeltaTime)
     if (Controller && Controller->IsLocalController())
     {
         AActor* usable = Cast<AActor>(GetUsableInView());
-        // Terminer le focus sur l'objet précédent
+        // Terminer le focus sur l'objet prï¿½cï¿½dent
         if (focusedPickupActor != usable)
         {
             m_isReviving = false;
@@ -133,9 +133,9 @@ void APlayableCharacter::Tick(float DeltaTime)
             //PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
             bHasNewFocus = true;
         }
-        // Assigner le nouveau focus (peut être nul)
+        // Assigner le nouveau focus (peut ï¿½tre nul)
         focusedPickupActor = usable;
-        // Démarrer un nouveau focus si Usable != null;
+        // Dï¿½marrer un nouveau focus si Usable != null;
         if (usable && usable->GetName() != "Floor")
         {
             if (bHasNewFocus)
@@ -667,7 +667,11 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
-
+        
+        //CHANGE MAP
+        PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
+        PlayerInputComponent->BindAction("Debug_GotoRuins", IE_Released, this, &APlayableCharacter::gotoRuins);
+        PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -935,6 +939,72 @@ void APlayableCharacter::serverLoseBomb_Implementation()
 }
 
 bool APlayableCharacter::serverLoseBomb_Validate()
+{
+    return true;
+}
+
+
+void APlayableCharacter::gotoDesert()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true,true);
+    }
+    else
+    {
+        serverGotoDesert();
+    }
+}
+
+void APlayableCharacter::gotoRuins()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true,true);
+    }
+    else
+    {
+        serverGotoRuins();
+    }
+}
+
+void APlayableCharacter::gotoGym()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true,true);
+    }
+    else
+    {
+        serverGotoGym();
+    }
+}
+void APlayableCharacter::serverGotoDesert_Implementation()
+{
+    gotoDesert();
+}
+
+bool APlayableCharacter::serverGotoDesert_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoGym_Implementation()
+{
+    gotoGym();
+}
+
+bool APlayableCharacter::serverGotoGym_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoRuins_Implementation()
+{
+    gotoRuins();
+}
+
+bool APlayableCharacter::serverGotoRuins_Validate()
 {
     return true;
 }
