@@ -6,20 +6,13 @@
 #include "ActiveSound.h"
 #include "Character/PlayableCharacter.h"
 
-
-void URobotRebellionWidget::initializeOwner()
-{
-    APlayerController* controller = GetOwningPlayer();
-    m_owner = Cast<APlayableCharacter>(controller->GetCharacter());
-}
-
 void URobotRebellionWidget::startSound()
 {
     // Begin sound
-    UGameplayStatics::SpawnSoundAttached(m_widgetBeginSound, m_owner->GetRootComponent());
+    UGameplayStatics::SpawnSoundAttached(m_widgetBeginSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
 
     // Background Loop
-    m_loopAudioComp = UGameplayStatics::SpawnSoundAttached(m_widgetLoopSound, m_owner->GetRootComponent());
+    m_loopAudioComp = UGameplayStatics::SpawnSoundAttached(m_widgetLoopSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
 
     if(m_stopAmbiantSound)
     {
@@ -50,7 +43,7 @@ void URobotRebellionWidget::endSound()
     }
 
     // Closing sound
-    UGameplayStatics::SpawnSoundAttached(m_widgetCloseSound, m_owner->GetRootComponent());
+    UGameplayStatics::SpawnSoundAttached(m_widgetCloseSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
 
     if(m_stopAmbiantSound)
     {

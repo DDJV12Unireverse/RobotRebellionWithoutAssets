@@ -19,11 +19,9 @@ void AGameMenu::BeginPlay()
 
     LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
     LobbyImpl->initialiseOnliSubsystem();
-    LobbyImpl->initializeOwner();
     LobbyImpl->SetVisibility(ESlateVisibility::Hidden);
 
     ReviveTimerWidgetImpl = CreateCustomWidget<UReviveTimerWidget>(ReviveWidget.GetDefaultObject());
-    ReviveTimerWidgetImpl->initializeOwner();
     ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
 }
 

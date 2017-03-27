@@ -15,8 +15,6 @@ class ROBOTREBELLION_API URobotRebellionWidget : public UUserWidget
 
 private:
     UPROPERTY(VisibleDefaultsOnly)
-        class APlayableCharacter* m_owner;
-    UPROPERTY(VisibleDefaultsOnly)
         UAudioComponent* m_notifyAudioComp;
     UPROPERTY(VisibleDefaultsOnly)
         UAudioComponent* m_loopAudioComp;
@@ -31,9 +29,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WidgetSound")
         USoundCue* m_widgetCloseSound;
 
-
-    UFUNCTION()
-        void initializeOwner();
     UFUNCTION(BlueprintCallable, Category = "WidgetSound")
         virtual void startSound();
     UFUNCTION(BlueprintCallable, Category = "WidgetSound")
