@@ -331,6 +331,18 @@ public:
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiActivatePhysics(bool mustActive);
 
+    UFUNCTION()
+        void gotoDesert();
+    UFUNCTION()
+        void gotoRuins();
+    UFUNCTION()
+        void gotoGym();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoDesert();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoRuins();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoGym();
 
     void giveBombToDrone() //Do Later
     {}
@@ -357,4 +369,5 @@ public:
     void setBombCount(int nbBombs);
 
     void switchView();
+    
 };

@@ -14,6 +14,7 @@ ARobotRebellionGameMode::ARobotRebellionGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+    bUseSeamlessTravel = true;
 }
 
 void ARobotRebellionGameMode::BeginPlay()

@@ -581,6 +581,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
         
+        //CHANGE MAP
+        PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
+        PlayerInputComponent->BindAction("Debug_GotoRuins", IE_Released, this, &APlayableCharacter::gotoRuins);
+        PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -858,6 +862,72 @@ void APlayableCharacter::serverLoseBomb_Implementation()
 }
 
 bool APlayableCharacter::serverLoseBomb_Validate()
+{
+    return true;
+}
+
+
+void APlayableCharacter::gotoDesert()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true,true);
+    }
+    else
+    {
+        serverGotoDesert();
+    }
+}
+
+void APlayableCharacter::gotoRuins()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true,true);
+    }
+    else
+    {
+        serverGotoRuins();
+    }
+}
+
+void APlayableCharacter::gotoGym()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true,true);
+    }
+    else
+    {
+        serverGotoGym();
+    }
+}
+void APlayableCharacter::serverGotoDesert_Implementation()
+{
+    gotoDesert();
+}
+
+bool APlayableCharacter::serverGotoDesert_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoGym_Implementation()
+{
+    gotoGym();
+}
+
+bool APlayableCharacter::serverGotoGym_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoRuins_Implementation()
+{
+    gotoRuins();
+}
+
+bool APlayableCharacter::serverGotoRuins_Validate()
 {
     return true;
 }
