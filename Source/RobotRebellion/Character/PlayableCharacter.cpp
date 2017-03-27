@@ -707,7 +707,7 @@ void APlayableCharacter::cppPreRevive(APlayableCharacter* characterToRevive)
 {
     if (Role >= ROLE_Authority)
     {
-        characterToRevive->restoreHealth(this->getMaxHealth() / 2);
+        characterToRevive->restoreHealth(characterToRevive->getMaxHealth() / 2);
         PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Prerevive");
         return;
     }
