@@ -424,6 +424,11 @@ void APlayableCharacter::openLobbyWidget()
     if (MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud->LobbyImpl->IsVisible())
+        {
+            closeLobbyWidget();
+            return;
+        }
         myHud->DisplayWidget(myHud->LobbyImpl);
         FInputModeGameAndUI Mode;
         Mode.SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture);

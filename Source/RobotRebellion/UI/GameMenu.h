@@ -68,5 +68,5 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = HUD)
     void HideWidget(URobotRebellionWidget* WidgetRef);
- 
+     
 };
