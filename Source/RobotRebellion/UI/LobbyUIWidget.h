@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Blueprint/UserWidget.h"
+#include "UI/RobotRebellionWidget.h"
 #include "ScrollBox.h"
 
 #include "LobbyUIWidget.generated.h"
@@ -12,7 +12,7 @@ class IOnlineSubsystem;
  *
  */
 UCLASS()
-class ROBOTREBELLION_API ULobbyUIWidget : public UUserWidget
+class ROBOTREBELLION_API ULobbyUIWidget : public URobotRebellionWidget
 {
     GENERATED_BODY()
 private:

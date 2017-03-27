@@ -6,6 +6,7 @@
 #include "LobbyUIWidget.h"
 #include "ReviveTimerWidget.h"
 #include "CustomRobotRebellionUserWidget.h"
+#include "RobotRebellionWidget.h"
 #include "GameMenu.generated.h"
 
 /**
@@ -16,17 +17,10 @@ class ROBOTREBELLION_API AGameMenu : public AHUD
 {
     GENERATED_BODY()
 
-private:
-
-    UPROPERTY(VisibleDefaultsOnly)
-        UAudioComponent* AudioComp;
 public:
     AGameMenu();
     virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
-        USoundCue* MenuLoop;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Game Menu Lobby Widget")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
@@ -43,19 +37,16 @@ public:
     template <class T>
     T* CreateCustomWidget(T *Widget)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | BEGIN"));
         if(Widget)
         {
             T* WidgetToImp = CreateWidget<T>(GetWorld(), Widget->GetClass());
 
-            PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | TEST"));
             /** Make sure widget was created */
             if(WidgetToImp)
             {
                 /** Add it to the viewport */
                 WidgetToImp->AddToViewport();
 
-                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | DONE"));
                 return WidgetToImp;
             }
         }
@@ -65,20 +56,17 @@ public:
     template <class T>
     void RemoveWidget(T *WidgetRef)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Hide widget | Begin"));
 
         if(WidgetRef->IsInViewport())
         {
             WidgetRef->RemoveFromParent();
-
-            PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Hide widget | DONE"));
         }
     }
 
     UFUNCTION(BlueprintCallable, Category = HUD)
-    void DisplayWidget(UUserWidget* WidgetRef);
+    void DisplayWidget(URobotRebellionWidget* WidgetRef);
 
     UFUNCTION(BlueprintCallable, Category = HUD)
-    void HideWidget(UUserWidget* WidgetRef);
+    void HideWidget(URobotRebellionWidget* WidgetRef);
  
 };

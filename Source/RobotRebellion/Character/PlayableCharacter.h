@@ -38,7 +38,7 @@ public:
     ////CROUCH////
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
-
+    
     ////INVENTORY
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_healthPotionsCount;

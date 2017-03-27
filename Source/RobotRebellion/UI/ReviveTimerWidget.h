@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Blueprint/UserWidget.h"
+#include "UI/RobotRebellionWidget.h"
 #include "ReviveTimerWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ROBOTREBELLION_API UReviveTimerWidget : public UUserWidget
+class ROBOTREBELLION_API UReviveTimerWidget : public URobotRebellionWidget
 {
 	GENERATED_BODY()
 	
