@@ -32,9 +32,7 @@ AKaboom::AKaboom()
     //Life Time
     InitialLifeSpan = 10.0f;
 
-    m_objectTypesToConsider.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
-    m_objectTypesToConsider.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
-    m_objectTypesToConsider.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
+    this->initializeDamagedObjectList();
 }
 
 void AKaboom::BeginPlay()
@@ -44,9 +42,31 @@ void AKaboom::BeginPlay()
     this->deactivateBomb();
 }
 
+void AKaboom::initializeDamagedObjectList()
+{
+    m_objectTypesToConsider = {
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
+    };
+}
+
 void AKaboom::attachToDrone(ADrone* drone)
 {
-    this->AttachRootComponentToActor(drone);
+    if (drone)
+    {
+        this->AttachRootComponentToActor(drone);
+        m_linkedDrone = drone;
+    }
+}
+
+void AKaboom::detachFromDrone()
+{
+    if (m_linkedDrone)
+    {
+        this->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        m_linkedDrone = nullptr;
+    }
 }
 
 void AKaboom::detonationImplementation()
@@ -55,9 +75,7 @@ void AKaboom::detonationImplementation()
     
     TArray<FHitResult> OutHits;
 
-    ARobotRebellionCharacter* drone = Cast<ARobotRebellionCharacter>(GetParentActor());
-    
-    if(drone && UKismetSystemLibrary::SphereTraceMultiForObjects(
+    if(m_linkedDrone && UKismetSystemLibrary::SphereTraceMultiForObjects(
         GetWorld(),
         actorLocation,
         actorLocation,
@@ -80,7 +98,7 @@ void AKaboom::detonationImplementation()
             {
                 DamageCoefficientLogic coeff;
 
-                Damage damage{ drone, targetInDistress };
+                Damage damage{ m_linkedDrone, targetInDistress };
 
                 Damage::DamageValue currentDamage = damage(
                     &UGlobalDamageMethod::droneDamageComputed,

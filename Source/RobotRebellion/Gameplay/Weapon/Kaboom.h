@@ -26,6 +26,8 @@ public:
 
 
 protected:
+    class ADrone* m_linkedDrone;
+
     TArray<TEnumAsByte<EObjectTypeQuery>> m_objectTypesToConsider;
 
     void (AKaboom::* m_activeBoomMethod)();
@@ -59,6 +61,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Action")
         void attachToDrone(class ADrone* drone);
 
+    UFUNCTION(BlueprintCallable, Category = "Action")
+        void detachFromDrone();
+
     UFUNCTION()
         virtual void onHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
             OtherComp, FVector NormalImpulse, const FHitResult& Hit) 
@@ -71,4 +76,7 @@ protected:
     void noDetonation() {}
 
     void detonationImplementation();
+
+
+    void initializeDamagedObjectList();
 };
