@@ -88,8 +88,6 @@ void AKaboom::detachFromDrone()
     {
         this->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
         this->dropingPhysicSetting(true);
-
-        m_linkedDrone = nullptr;
     }
 }
 
