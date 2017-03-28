@@ -24,6 +24,12 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
         UProjectileMovementComponent* m_kaboomMovement;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+        class UParticleSystemComponent* m_explosionPCS;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+        FVector m_explosionEffectScale;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb Attribute", meta = (ClampMin = 0.f))
         float m_baseDamage;
 
@@ -37,6 +43,7 @@ protected:
     TArray<TEnumAsByte<EObjectTypeQuery>> m_objectTypesToConsider;
 
     void (AKaboom::* m_activeBoomMethod)();
+    void (AKaboom::* m_destroyMethod)();
 
 
 public:
@@ -44,6 +51,8 @@ public:
     virtual ~AKaboom() = default;
 
     virtual void BeginPlay() override;
+
+    virtual void Tick(float deltaTime) override;
 
 
     FORCEINLINE UFUNCTION(BlueprintCallable, Category = "Action")
@@ -55,7 +64,7 @@ public:
     FORCEINLINE UFUNCTION(BlueprintCallable, Category = "Action")
         void deactivateBomb()
     {
-        m_activeBoomMethod = &AKaboom::noDetonation;
+        m_activeBoomMethod = &AKaboom::noMethod;
     }
 
     UFUNCTION(BlueprintCallable, Category = "Action")
@@ -77,11 +86,16 @@ public:
         (this->*m_activeBoomMethod)();
     }
 
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiExplosionOnEveryone();
+
 
 protected:
-    void noDetonation() {}
+    void noMethod() {}
 
     void detonationImplementation();
+
+    void realDestroy();
 
 
     void initializeDamagedObjectList();

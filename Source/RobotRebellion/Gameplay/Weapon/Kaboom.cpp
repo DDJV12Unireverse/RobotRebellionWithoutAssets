@@ -29,8 +29,16 @@ AKaboom::AKaboom()
 
     RootComponent = m_collisionComp;
 
+    m_explosionPCS = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Explosion PCS"));
+
+    m_explosionPCS->bAutoActivate = false;
+    m_explosionPCS->bAutoDestroy = false;
+    m_explosionPCS->SetupAttachment(RootComponent);
+
     bReplicates = true;
     bNetUseOwnerRelevancy = true;
+
+    m_destroyMethod = &AKaboom::noMethod;
 
     this->initializeDamagedObjectList();
     this->initializeKaboomMovementComponent();
@@ -41,6 +49,13 @@ void AKaboom::BeginPlay()
     Super::BeginPlay();
 
     this->deactivateBomb();
+}
+
+void AKaboom::Tick(float deltaTime)
+{
+    Super::Tick(deltaTime);
+
+    (this->*m_destroyMethod)();
 }
 
 void AKaboom::initializeDamagedObjectList()
@@ -135,7 +150,30 @@ void AKaboom::detonationImplementation()
         }
     }
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "KABOOOOOOOOOOOOOOOOOOUUUUUUUUMMMMMMMMMM !!!!!");
+    multiExplosionOnEveryone();
+}
+
+void AKaboom::realDestroy()
+{
+    m_explosionPCS->DeactivateSystem();
+    m_explosionPCS->DestroyComponent();
 
     this->Destroy();
+}
+
+void AKaboom::multiExplosionOnEveryone_Implementation()
+{
+    this->deactivateBomb();
+    m_destroyMethod = &AKaboom::realDestroy;
+
+    this->m_kaboomMesh->SetVisibility(false);
+
+    m_explosionPCS->SetRelativeScale3D(m_explosionEffectScale);
+
+    m_explosionPCS->ActivateSystem();
+}
+
+bool AKaboom::multiExplosionOnEveryone_Validate()
+{
+    return true;
 }
