@@ -37,7 +37,6 @@ private:
 
     TMap<AIDroneState,float> m_scores;
 
-    float c_bombDamageRadius = 700.0; //TODO move to weapon
     bool m_gotBomb = true;
 
     AIDroneState m_state;
@@ -100,6 +99,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateAttackCooldownTime;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
+    float c_bombDamageRadius = 700.0; //TODO move to weapon
 
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
