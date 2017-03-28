@@ -101,6 +101,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateAttackCooldownTime;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
+        float m_safeZoneSize;
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
@@ -182,4 +184,6 @@ public:
     int getNbEnnemiesInZone(FVector zoneCenter);
 
     float distance(FVector dest);
+
+    FVector findSafeZone();
 };

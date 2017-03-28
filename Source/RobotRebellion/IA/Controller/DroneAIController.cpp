@@ -97,7 +97,8 @@ float ADroneAIController::getFollowScore()
     {
         score = 1 - 1 / (0.1f + distance(m_destination)); //Change later
     }
-    return score;
+    //return score;
+    return 0.f;
 }
 
 float ADroneAIController::getReloadScore()
@@ -110,11 +111,12 @@ float ADroneAIController::getReloadScore()
     }
     else
     {
+        FVector bestSafeZoneCenter = findSafeZone();
         if (isInCombat())
         {
             score *= (1 - (getNbAliveAllies() / (4 * getNbAliveEnnemies()))); //if not in combat, combat score always =1
         }
-        score *= (1 - getNbEnnemiesInZone(FVector(0, 0, 0)) / (0.1f + distance(FVector(0, 0, 0)))); //ZoneScore
+        score *= (1 - getNbEnnemiesInZone(bestSafeZoneCenter) / (0.1f + distance(bestSafeZoneCenter))); //ZoneScore
     }
 
     //Is it worth it??? 
@@ -124,7 +126,8 @@ float ADroneAIController::getReloadScore()
         //Anyone in safe zone
 
 // Bomb
-    return score;
+    //return score;
+    return 1.f;
 }
 
 float ADroneAIController::getWaitingScore()
@@ -182,7 +185,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
     FVector dronePosition = owner->GetActorTransform().GetLocation();
     FVector directionToTarget = m_destination - dronePosition;
-    directionToTarget.Z = m_targetedHeight - dronePosition.Z;
+    //directionToTarget.Z = m_targetedHeight - dronePosition.Z;
 
     float length = directionToTarget.SizeSquared();
 
@@ -268,6 +271,14 @@ void ADroneAIController::IALoop(float deltaTime)
     case DRONE_BOMB:
         dropBomb();
         break;
+    case DRONE_RECHARGE:
+        m_destination = findSafeZone();
+        if (m_currentTime >= m_nextMovementUpdateTime)
+        {
+            this->MoveToTarget();
+
+            m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
+        }
     }
 }
 
@@ -494,4 +505,42 @@ int ADroneAIController::getNbBombPlayers()
 float ADroneAIController::getBombScore(FVector position)
 {
     return 0.f;
+}
+
+FVector ADroneAIController::findSafeZone()
+{
+    FVector zoneCenter = FVector(0.f, 0.f, 0.f);
+     int actorCount = 0;
+     CheckEnnemyNear(m_safeZoneSize);
+    for (int i=0; i<m_sensedEnnemies.Num();++i)
+    {
+        zoneCenter -= (m_sensedEnnemies[i])->GetActorLocation();
+        --actorCount;
+    }
+ 
+    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+    for (int32 iter = 0; iter < playerCount; ++iter)
+    {
+        ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+        if (currentPlayer) // Protection when player leaves the game
+        {
+            if (!currentPlayer->isDead())
+            {
+                zoneCenter += currentPlayer->GetActorLocation();
+                ++actorCount;
+            }
+        }
+    }
+
+   if (actorCount!=0)
+   {
+       zoneCenter /= actorCount;
+   }
+   else
+   {
+       ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+       zoneCenter += currentPlayer->GetActorLocation();
+   }
+   zoneCenter.Z = 35.f;
+   return zoneCenter;
 }

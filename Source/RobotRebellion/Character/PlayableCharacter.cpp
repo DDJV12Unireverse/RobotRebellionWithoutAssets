@@ -536,9 +536,9 @@ void APlayableCharacter::interact(AActor* focusedActor)
             if (FVector::DotProduct(deadBody->GetActorLocation() - this->GetActorLocation(),
                 deadBody->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
             {
-            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
-            clientRevive();
-            m_isReviving = true;
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
+                clientRevive();
+                m_isReviving = true;
             }
         }
         else if (drone)
