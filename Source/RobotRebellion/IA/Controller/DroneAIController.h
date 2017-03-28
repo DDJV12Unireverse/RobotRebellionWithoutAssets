@@ -37,7 +37,6 @@ private:
 
     TMap<AIDroneState,float> m_scores;
 
-    float c_bombDamageRadius = 700.0; //TODO move to weapon
     bool m_gotBomb = true;
 
     AIDroneState m_state;
@@ -73,10 +72,13 @@ private:
 
     float getWaitingScore();
 
+    float getDropSCore();
+
     void selectDropZone();
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
     TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
+    FVector4 m_bestBombLocation;
 
 public:
     /************************************************************************/
@@ -92,6 +94,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
         float m_stationaryElevation;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
+        float m_detectionDistance = 3000.0f;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updatePropertyTime;
 
@@ -99,7 +104,10 @@ public:
         float m_updateMovementTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updateAttackCooldownTime;
+        float m_updateAttackCooldownTime = 1.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
+    float c_bombDamageRadius = 700.0; //TODO move to weapon
 
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
