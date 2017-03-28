@@ -64,7 +64,7 @@ APlayableCharacter::APlayableCharacter()
                                                    // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
                                                    // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
-    
+
     m_spawner = CreateDefaultSubobject<URobotRobellionSpawnerClass>(TEXT("SpawnerClass"));
     m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
     m_spellKit = CreateDefaultSubobject<USpellKit>(TEXT("SpellKit"));
@@ -72,7 +72,7 @@ APlayableCharacter::APlayableCharacter()
     m_moveSpeed = 0.3f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
-    
+
     MaxUseDistance = 800;
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
@@ -81,6 +81,13 @@ APlayableCharacter::APlayableCharacter()
     m_fpsMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPS Mesh"));
     m_fpsMesh->SetupAttachment(GetCapsuleComponent());
     m_fpsMesh->SetVisibility(false);
+
+
+    //Revive
+
+    m_isReviving = false;
+    m_revivingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("revivingBox"));
+    m_revivingBox->SetupAttachment(RootComponent);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -100,7 +107,57 @@ void APlayableCharacter::BeginPlay()
 
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
 
+#ifdef WE_RE_ON_DEBUG
+        m_revivingBox->SetVisibility(true);
+        m_revivingBox->SetHiddenInGame(false);
+#else
+        m_revivingBox->SetVisibility(false);
+        m_revivingBox->SetHiddenInGame(true);
+#endif
+
     m_tpsMode = true;
+}
+
+void APlayableCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if (Controller && Controller->IsLocalController())
+    {
+        AActor* usable = Cast<AActor>(GetUsableInView());
+        // Terminer le focus sur l'objet prï¿½cï¿½dent
+        if (focusedPickupActor != usable)
+        {
+            m_isReviving = false;
+            m_currentRevivingTime = 0.f;
+            //PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Lost Focused");
+            bHasNewFocus = true;
+        }
+        // Assigner le nouveau focus (peut ï¿½tre nul)
+        focusedPickupActor = usable;
+        // Dï¿½marrer un nouveau focus si Usable != null;
+        if (usable && usable->GetName() != "Floor")
+        {
+            if (bHasNewFocus)
+            {
+                bHasNewFocus = false;
+                // only debug utility
+                //PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
+            }
+            if (m_isReviving)
+            {
+                m_currentRevivingTime += DeltaTime;
+
+                if (m_currentRevivingTime >= m_requiredTimeToRevive)
+                {
+                    m_isReviving = false;
+                    m_currentRevivingTime = 0.f;
+
+                    cppPreRevive(Cast<APlayableCharacter>(focusedPickupActor));
+                }
+            }
+        }
+    }
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -306,6 +363,7 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
+        clientMainFireSound();
     }
 }
 
@@ -317,6 +375,11 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
+}
+
+void APlayableCharacter::clientMainFireSound_Implementation()
+{
+    m_weaponInventory->getCurrentWeapon()->playSound(this);
 }
 
 //DEAD
@@ -361,6 +424,11 @@ void APlayableCharacter::openLobbyWidget()
     if (MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud->LobbyImpl->IsVisible())
+        {
+            closeLobbyWidget();
+            return;
+        }
         myHud->DisplayWidget(myHud->LobbyImpl);
         FInputModeGameAndUI Mode;
         Mode.SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture);
@@ -368,8 +436,20 @@ void APlayableCharacter::openLobbyWidget()
         MyPC->bShowMouseCursor = true;
         MyPC->SetInputMode(Mode);
     }
+}
 
-    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | PRESSED"));
+void APlayableCharacter::closeLobbyWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->LobbyImpl);
+        FInputModeGameOnly Mode;
+        MyPC->SetInputMode(Mode);
+        MyPC->bShowMouseCursor = false;
+    }
 }
 
 ///////// SWITCH WEAPON
@@ -391,12 +471,18 @@ void APlayableCharacter::switchWeapon()
     }
 }
 
-void APlayableCharacter::interact()
+void APlayableCharacter::interactBegin()
 {
-    if (Role == ROLE_Authority)
+    interact(GetUsableInView());
+}
+
+void APlayableCharacter::interact(AActor* focusedActor)
+{
+    if (Role >= ROLE_Authority)
     {
-        APickupActor* Usable = GetUsableInView();
-        if (Usable)
+        APickupActor* Usable = Cast<APickupActor>(focusedActor);
+        APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
+        if (Usable) //focusedActor is an Usable Object
         {
             if (Usable->getObjectType() == EObjectType::MANA_POTION)
             {
@@ -439,22 +525,34 @@ void APlayableCharacter::interact()
                 PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
             }
         }
+        else if (deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
+        {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
+            clientRevive();
+            m_isReviving = true;
+        }
     }
     else
     {
-        serverInteract();
+        serverInteract(focusedActor);
     }
 }
 
 
-void APlayableCharacter::serverInteract_Implementation()
+void APlayableCharacter::serverInteract_Implementation(AActor* focusedActor)
 {
-    this->interact();
+    this->interact(focusedActor);
 }
 
-bool APlayableCharacter::serverInteract_Validate()
+bool APlayableCharacter::serverInteract_Validate(AActor* focusedActor)
 {
     return true;
+}
+
+void APlayableCharacter::interactEnd()
+{
+    m_isReviving = false;
+    m_currentRevivingTime = 0.f;
 }
 
 void APlayableCharacter::serverSwitchWeapon_Implementation()
@@ -465,6 +563,17 @@ void APlayableCharacter::serverSwitchWeapon_Implementation()
 void APlayableCharacter::clientInteract_Implementation(APickupActor* Usable)
 {
     Usable->OnPickup(this);
+}
+
+
+ void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
+ {
+     PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
+ }
+
+void APlayableCharacter::clientRevive_Implementation()
+{
+    m_isReviving = true;
 }
 
 bool APlayableCharacter::serverSwitchWeapon_Validate()
@@ -549,7 +658,8 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
 
         //INTERACT
-        PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interact);
+        PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayableCharacter::interactBegin);
+        PlayerInputComponent->BindAction("Interact", IE_Released, this, &APlayableCharacter::interactEnd);
 
         //SPELLS
         PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<0>);
@@ -565,6 +675,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
         
+        //CHANGE MAP
+        PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
+        PlayerInputComponent->BindAction("Debug_GotoRuins", IE_Released, this, &APlayableCharacter::gotoRuins);
+        PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -596,11 +710,34 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
 }
 
+void APlayableCharacter::cppPreRevive(APlayableCharacter* characterToRevive)
+{
+    if (Role >= ROLE_Authority)
+    {
+        characterToRevive->restoreHealth(characterToRevive->getMaxHealth() / 2);
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Prerevive");
+        return;
+    }
+
+    this->serverCppPreRevive(characterToRevive);
+}
+
+void APlayableCharacter::serverCppPreRevive_Implementation(APlayableCharacter* characterToRevive)
+{
+    cppPreRevive(characterToRevive);
+}
+
+bool APlayableCharacter::serverCppPreRevive_Validate(APlayableCharacter* characterToRevive)
+{
+    return true;
+}
+
 void APlayableCharacter::cppOnRevive()
 {
     this->EnablePlayInput(true);
+    this->activatePhysics(true);
 
-    //TODO - Continue the Revive method
+    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Revive"));
 }
 
 void APlayableCharacter::cppOnDeath()
@@ -608,15 +745,15 @@ void APlayableCharacter::cppOnDeath()
     this->activatePhysics(false);
 
     this->EnablePlayInput(false);
-
     this->m_alterationController->removeAllAlteration();
+    this->m_currentRevivingTime = 0.f;
 }
 
 
 void APlayableCharacter::EnablePlayInput(bool enable)
 {
     APlayerController* playerController = Cast<APlayerController>(GetController());
-    
+
     if (playerController && playerController->InputComponent)
     {
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
@@ -660,47 +797,15 @@ GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter,
     }
 }
 
-void APlayableCharacter::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-    if (Controller && Controller->IsLocalController())
-    {
-        APickupActor* usable = GetUsableInView();
-        // Terminer le focus sur l'objet précédent
-        if (focusedPickupActor != usable)
-        {
-            if (focusedPickupActor)
-            {
-                focusedPickupActor->OnEndFocus();
-            }
-
-            bHasNewFocus = true;
-        }
-        // Assigner le nouveau focus (peut être nul)
-        focusedPickupActor = usable;
-        // Démarrer un nouveau focus si Usable != null;
-        if (usable)
-        {
-            if (bHasNewFocus)
-            {
-                usable->OnBeginFocus();
-                bHasNewFocus = false;
-
-                // only debug utility
-                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
-            }
-        }
-    }
-
-}
-
-APickupActor* APlayableCharacter::GetUsableInView()
+AActor* APlayableCharacter::GetUsableInView()
 {
     FVector CamLoc;
     FRotator CamRot;
 
     if (Controller == NULL)
+    {
         return NULL;
+    }
 
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
 
@@ -712,14 +817,13 @@ APickupActor* APlayableCharacter::GetUsableInView()
     TraceParams.bTraceAsyncScene = true;
     TraceParams.bReturnPhysicalMaterial = false;
     TraceParams.bTraceComplex = true;
-
     FHitResult Hit(ForceInit);
     GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
 
     //TODO: Comment or remove once implemented in post-process.
     //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
 
-    return Cast<APickupActor>(Hit.GetActor());
+    return (Hit.GetActor());
 }
 
 //////INVENTORY///////
@@ -732,8 +836,6 @@ void APlayableCharacter::useHealthPotion()
     else if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
     {
         restoreHealth(m_healthPerPotion);
-        displayAnimatedIntegerValue(m_healthPerPotion, FColor::Green, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
         --m_healthPotionsCount;
     }
 }
@@ -754,12 +856,9 @@ void APlayableCharacter::useManaPotion()
     {
         serverUseManaPotion();
     }
-    else if(m_manaPotionsCount > 0 && getMana() < getMaxMana())
+    else if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
     {
-        setMana(getMana() + m_manaPerPotion);
-
-        displayAnimatedIntegerValue(m_manaPerPotion, FColor::Yellow, ELivingTextAnimMode::TEXT_ANIM_MOVING);
-
+        restoreMana(m_manaPerPotion);
         --m_manaPotionsCount;
     }
 }
@@ -851,6 +950,72 @@ bool APlayableCharacter::serverLoseBomb_Validate()
     return true;
 }
 
+
+void APlayableCharacter::gotoDesert()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true,true);
+    }
+    else
+    {
+        serverGotoDesert();
+    }
+}
+
+void APlayableCharacter::gotoRuins()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true,true);
+    }
+    else
+    {
+        serverGotoRuins();
+    }
+}
+
+void APlayableCharacter::gotoGym()
+{
+    if (Role == ROLE_Authority)
+    {
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true,true);
+    }
+    else
+    {
+        serverGotoGym();
+    }
+}
+void APlayableCharacter::serverGotoDesert_Implementation()
+{
+    gotoDesert();
+}
+
+bool APlayableCharacter::serverGotoDesert_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoGym_Implementation()
+{
+    gotoGym();
+}
+
+bool APlayableCharacter::serverGotoGym_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverGotoRuins_Implementation()
+{
+    gotoRuins();
+}
+
+bool APlayableCharacter::serverGotoRuins_Validate()
+{
+    return true;
+}
+
 void APlayableCharacter::switchView()
 {
     if (m_tpsMode)
@@ -876,11 +1041,13 @@ void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
+        this->getRevivingBox()->DestroyPhysicsState();
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
+        this->getRevivingBox()->CreatePhysicsState();
     }
 
     if (Role >= ROLE_Authority)
@@ -898,10 +1065,14 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if (mustActive)
     {
-        this->GetCapsuleComponent()->RegisterComponent();
+        this->GetCapsuleComponent()->CreatePhysicsState();
+        this->getRevivingBox()->DestroyPhysicsState();
+
     }
     else
     {
-        this->GetCapsuleComponent()->UnregisterComponent();
+        this->GetCapsuleComponent()->DestroyPhysicsState();
+        this->getRevivingBox()->CreatePhysicsState();
     }
 }
+

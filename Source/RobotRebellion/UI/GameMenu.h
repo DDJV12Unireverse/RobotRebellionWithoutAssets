@@ -4,7 +4,9 @@
 
 #include "GameFramework/HUD.h"
 #include "LobbyUIWidget.h"
+#include "ReviveTimerWidget.h"
 #include "CustomRobotRebellionUserWidget.h"
+#include "RobotRebellionWidget.h"
 #include "GameMenu.generated.h"
 
 /**
@@ -18,6 +20,7 @@ class ROBOTREBELLION_API AGameMenu : public AHUD
 public:
     AGameMenu();
     virtual void BeginPlay() override;
+    virtual void Tick(float deltaTime) override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Game Menu Lobby Widget")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
@@ -27,22 +30,23 @@ public:
         TSubclassOf<UCustomRobotRebellionUserWidget> HUDCharacterWidget;
     UCustomRobotRebellionUserWidget* HUDCharacterImpl;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Revive Timer Widget")
+        TSubclassOf<UReviveTimerWidget> ReviveWidget;
+    UReviveTimerWidget* ReviveTimerWidgetImpl;
+
     template <class T>
     T* CreateCustomWidget(T *Widget)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | BEGIN"));
         if(Widget)
         {
             T* WidgetToImp = CreateWidget<T>(GetWorld(), Widget->GetClass());
 
-            PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | TEST"));
             /** Make sure widget was created */
             if(WidgetToImp)
             {
                 /** Add it to the viewport */
                 WidgetToImp->AddToViewport();
 
-                PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Creation widget | DONE"));
                 return WidgetToImp;
             }
         }
@@ -52,23 +56,17 @@ public:
     template <class T>
     void RemoveWidget(T *WidgetRef)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Hide widget | Begin"));
 
         if(WidgetRef->IsInViewport())
         {
             WidgetRef->RemoveFromParent();
-
-            PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Hide widget | DONE"));
         }
     }
 
-    void DisplayWidget(UUserWidget* WidgetRef)
-    {
-        WidgetRef->SetVisibility(ESlateVisibility::Visible);
-    }
+    UFUNCTION(BlueprintCallable, Category = HUD)
+    void DisplayWidget(URobotRebellionWidget* WidgetRef);
 
-    void HideWidget(UUserWidget* WidgetRef)
-    {
-        WidgetRef->SetVisibility(ESlateVisibility::Hidden);
-    }
+    UFUNCTION(BlueprintCallable, Category = HUD)
+    void HideWidget(URobotRebellionWidget* WidgetRef);
+     
 };

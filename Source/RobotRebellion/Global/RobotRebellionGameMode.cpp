@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "RobotRebellionGameMode.h"
-#include "../Character/RobotRebellionCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 #include "GameInstaller.h"
 
@@ -14,6 +14,7 @@ ARobotRebellionGameMode::ARobotRebellionGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+    bUseSeamlessTravel = true;
 }
 
 void ARobotRebellionGameMode::BeginPlay()

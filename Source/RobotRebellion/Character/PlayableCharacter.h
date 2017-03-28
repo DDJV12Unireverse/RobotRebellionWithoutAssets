@@ -4,17 +4,18 @@
 
 #include "RobotRebellionCharacter.h"
 #include "ClassType.h"
-#include "../Gameplay/Spell/SpellKit.h" 
+#include "../Gameplay/Spell/SpellKit.h"
+#include "../Gameplay/Item/Focusable.h"
 #include "PlayableCharacter.generated.h"
 
 /**
  *  Playable Character for Robot Rebellion Game
  */
 UCLASS()
-class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter
+class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter, public Focusable
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -37,7 +38,7 @@ public:
     ////CROUCH////
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
-
+    
     ////INVENTORY
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_healthPotionsCount;
@@ -56,13 +57,13 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbBombStart;
-        
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbHealthPotionMax;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbManaPotionMax;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         int m_nbBombMax;
 
@@ -71,6 +72,16 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         float m_manaPerPotion;
+
+    //Reviving Count
+    UPROPERTY(EditDefaultsOnly, Category = "Reviving")
+        UBoxComponent* m_revivingBox;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
+        float m_requiredTimeToRevive;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
+        float m_currentRevivingTime;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
+        bool m_isReviving;
 
     /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -93,9 +104,9 @@ public:
         float MaxUseDistance;
 
 
-    // Seulement vrai lors de la première image avec un nouveau focus.
+    // Seulement vrai lors de la premiï¿½re image avec un nouveau focus.
     bool bHasNewFocus;
-    class APickupActor* focusedPickupActor;
+    AActor* focusedPickupActor;
 
     bool m_tpsMode;
 
@@ -152,6 +163,19 @@ public:
     ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
+
+    UFUNCTION()
+        void cppPreRevive(APlayableCharacter* characterToRevive);
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        virtual void serverCppPreRevive(APlayableCharacter* characterToRevive);
+
+    UFUNCTION(BlueprintCallable, Category = "Revive")
+        void revive()
+    {
+        this->cppOnRevive();
+    }
+
     virtual void cppOnRevive() override;
     virtual void cppOnDeath() override;
 
@@ -169,13 +193,16 @@ public:
     //////UI
     void openLobbyWidget();
 
+    UFUNCTION(BlueprintCallable, Category = LobbyWidget)
+    void closeLobbyWidget();
+
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
     UFUNCTION()
         void OnStartJump();
 
-    // On désactive le booléen bPressedJump
+    // On dï¿½sactive le boolï¿½en bPressedJump
     UFUNCTION()
         void OnStopJump();
 
@@ -224,11 +251,14 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
+    UFUNCTION(NetMulticast, Reliable)
+        void clientMainFireSound();
+
     //CAST SPELL
     template<int32 index>
     void castSpellInputHanlder()
     {
-        if(Role < ROLE_Authority)
+        if (Role < ROLE_Authority)
         {
             castSpellServer(index); // le param n'a pas d'importance pour l'instant
         }
@@ -280,13 +310,24 @@ public:
         void serverSwitchWeapon();
 
     UFUNCTION()
-        void interact();
+        void interactBegin();
+
+    UFUNCTION()
+        void interact(AActor* focusedActor);
+
+    UFUNCTION()
+        void interactEnd();
 
     UFUNCTION(Reliable, Server, WithValidation)
-        void serverInteract();
+        void serverInteract(AActor* focusedActor);
 
     UFUNCTION(NetMulticast, Reliable)
         void clientInteract(APickupActor* Usable);
+
+
+    UFUNCTION(NetMulticast, Reliable)
+        void clientRevive();
+
 
     UFUNCTION(Reliable, Client, WithValidation)
         void clientEnableInput(bool enableInput);
@@ -294,7 +335,7 @@ public:
     // Called every image
     virtual void Tick(float DeltaSeconds) override;
 
-    class APickupActor* GetUsableInView();
+    AActor* GetUsableInView();
 
     //////INVENTORY///////
 
@@ -325,6 +366,40 @@ public:
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiActivatePhysics(bool mustActive);
 
+    UFUNCTION()
+        void gotoDesert();
+    UFUNCTION()
+        void gotoRuins();
+    UFUNCTION()
+        void gotoGym();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoDesert();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoRuins();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGotoGym();
+
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+        float getReviveTimer()
+    {
+        return m_currentRevivingTime;
+    }
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+        float getRequiredReviveTime()
+    {
+        return m_requiredTimeToRevive;
+    }
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+        bool isReviving()
+    {
+        return m_isReviving;
+    }
+    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
+        UBoxComponent* getRevivingBox()
+    {
+        return (this->m_revivingBox);
+    }
+
 
     void giveBombToDrone() //Do Later
     {}
@@ -351,4 +426,11 @@ public:
     void setBombCount(int nbBombs);
 
     void switchView();
+
+    virtual void OnPickup(APawn* InstigatorPawn) override;
+
+    virtual void OnBeginFocus() override
+    {}
+    virtual void OnEndFocus() override
+    {}
 };

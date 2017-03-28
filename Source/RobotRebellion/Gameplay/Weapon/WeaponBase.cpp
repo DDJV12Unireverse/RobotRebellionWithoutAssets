@@ -10,7 +10,8 @@ UWeaponBase::UWeaponBase() :
     m_weaponDamageCoefficient{ 1.f },
     m_weaponBaseDamage{ 0.f },
     m_weaponBaseCadence{ 1.f },
-    m_nextAllowedAttackTimer{ 0.0 }
+    m_nextAllowedAttackTimer{ 0.0 }, 
+    m_WeaponRadiusRange{ 700.0 }
 {
     bReplicates = true;
 }

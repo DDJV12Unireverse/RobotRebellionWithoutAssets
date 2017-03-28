@@ -3,18 +3,50 @@
 #include "RobotRebellion.h"
 #include "LobbyUIWidget.h"
 #include "GameMenu.h"
+#include "Character/PlayableCharacter.h"
 
 AGameMenu::AGameMenu()
-{}
+{
+    PrimaryActorTick.bCanEverTick = true;
+}
 
 void AGameMenu::BeginPlay()
 {
     Super::BeginPlay();
 
     HUDCharacterImpl = CreateCustomWidget<UCustomRobotRebellionUserWidget>(HUDCharacterWidget.GetDefaultObject());
-    //HUDCharacterImpl->SetVisibility(ESlateVisibility::Hidden);
+    //HideWidget(HUDCharacterImpl);
 
     LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
     LobbyImpl->initialiseOnliSubsystem();
-    HideWidget(LobbyImpl);
+    LobbyImpl->SetVisibility(ESlateVisibility::Hidden);
+
+    ReviveTimerWidgetImpl = CreateCustomWidget<UReviveTimerWidget>(ReviveWidget.GetDefaultObject());
+    ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void AGameMenu::Tick(float deltaTime)
+{
+    Super::Tick(deltaTime);
+    APlayableCharacter* player = Cast<APlayableCharacter>(GetOwningPlayerController()->GetCharacter());
+    if(player->isReviving())
+    {
+        ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Visible);
+    }
+    else
+    {
+        ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+    }
+}
+
+void AGameMenu::DisplayWidget(URobotRebellionWidget* WidgetRef)
+{
+    WidgetRef->SetVisibility(ESlateVisibility::Visible);
+    WidgetRef->startSound();
+}
+
+void AGameMenu::HideWidget(URobotRebellionWidget* WidgetRef)
+{
+    WidgetRef->SetVisibility(ESlateVisibility::Hidden);
+    WidgetRef->endSound();
 }
