@@ -24,15 +24,18 @@ AKaboom::AKaboom()
     m_collisionComp->BodyInstance.SetCollisionProfileName("Projectile");
     m_collisionComp->InitSphereRadius(5.0f);
 
+    m_kaboomMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Kaboom Mesh"));
+    m_kaboomMesh->SetupAttachment(m_collisionComp);
+
     RootComponent = m_collisionComp;
 
     bReplicates = true;
     bNetUseOwnerRelevancy = true;
 
-    //Life Time
-    InitialLifeSpan = 10.0f;
-
     this->initializeDamagedObjectList();
+    this->initializeKaboomMovementComponent();
+
+    m_collisionComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AKaboom::BeginPlay()
@@ -51,11 +54,30 @@ void AKaboom::initializeDamagedObjectList()
     };
 }
 
+void AKaboom::initializeKaboomMovementComponent()
+{
+    m_kaboomMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Kaboom Movement"));
+    m_kaboomMovement->UpdatedComponent = m_collisionComp;
+    
+    m_kaboomMovement->InitialSpeed = 0.f;
+    m_kaboomMovement->MaxSpeed = 1000.f;
+    m_kaboomMovement->bRotationFollowsVelocity = true;
+    m_kaboomMovement->bShouldBounce = false;
+    m_kaboomMovement->Bounciness = 0.f;
+}
+
+void AKaboom::dropingPhysicSetting(bool reenablePhysic)
+{
+    m_collisionComp->SetSimulatePhysics(reenablePhysic);
+    m_collisionComp->SetEnableGravity(reenablePhysic);
+}
+
 void AKaboom::attachToDrone(ADrone* drone)
 {
     if (drone)
     {
         this->AttachRootComponentToActor(drone);
+        this->dropingPhysicSetting(false);
         m_linkedDrone = drone;
     }
 }
@@ -65,6 +87,8 @@ void AKaboom::detachFromDrone()
     if (m_linkedDrone)
     {
         this->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        this->dropingPhysicSetting(true);
+
         m_linkedDrone = nullptr;
     }
 }
@@ -109,6 +133,8 @@ void AKaboom::detonationImplementation()
             }
         }
     }
+
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "KABOOOOOOOOOOOOOOOOOOUUUUUUUUMMMMMMMMMM !!!!!");
 
     this->Destroy();
 }

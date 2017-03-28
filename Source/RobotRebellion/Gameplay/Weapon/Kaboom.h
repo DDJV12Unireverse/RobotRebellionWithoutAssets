@@ -18,6 +18,12 @@ public:
     UPROPERTY(VisibleDefaultsOnly, Category = "Bomb Attribute")
         USphereComponent* m_collisionComp;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge")
+        class UStaticMeshComponent* m_kaboomMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
+        UProjectileMovementComponent* m_kaboomMovement;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb Attribute", meta = (ClampMin = 0.f))
         float m_baseDamage;
 
@@ -79,4 +85,8 @@ protected:
 
 
     void initializeDamagedObjectList();
+
+    void initializeKaboomMovementComponent();
+
+    void dropingPhysicSetting(bool reenablePhysic);
 };
