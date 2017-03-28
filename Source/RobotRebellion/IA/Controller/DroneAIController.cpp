@@ -111,12 +111,12 @@ float ADroneAIController::getReloadScore()
     }
     else
     {
-        FVector bestSafeZoneCenter = findSafeZone();
+        m_safeZone = findSafeZone();
         if (isInCombat())
         {
             score *= (1 - (getNbAliveAllies() / (4 * getNbAliveEnnemies()))); //if not in combat, combat score always =1
         }
-        score *= (1 - getNbEnnemiesInZone(bestSafeZoneCenter) / (0.1f + distance(bestSafeZoneCenter))); //ZoneScore
+        score *= (1 - getNbEnnemiesInZone(m_safeZone) / (0.1f + distance(m_safeZone))); //ZoneScore
     }
 
     //Is it worth it??? 
@@ -272,7 +272,7 @@ void ADroneAIController::IALoop(float deltaTime)
         dropBomb();
         break;
     case DRONE_RECHARGE:
-        m_destination = findSafeZone();
+        m_destination = m_safeZone;
         if (m_currentTime >= m_nextMovementUpdateTime)
         {
             this->MoveToTarget();

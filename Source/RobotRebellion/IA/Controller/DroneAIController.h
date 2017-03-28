@@ -61,6 +61,9 @@ private:
     //Position to follow
     FVector m_destination;
 
+    //SafeZone
+    FVector m_safeZone;
+
     class AKing* m_king;
     float m_coeffKing;
     void(ADroneAIController::* m_updateTargetMethod)();
