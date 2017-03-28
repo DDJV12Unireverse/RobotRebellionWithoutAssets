@@ -75,6 +75,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         float m_manaPerPotion;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact")
+        float m_interactRange;
+
     //Reviving Count
     UPROPERTY(EditDefaultsOnly, Category = "Reviving")
         UBoxComponent* m_revivingBox;

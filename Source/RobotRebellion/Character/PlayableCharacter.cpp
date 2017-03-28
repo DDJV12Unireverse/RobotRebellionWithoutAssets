@@ -489,7 +489,8 @@ void APlayableCharacter::interact(AActor* focusedActor)
         {
             if (Usable->getObjectType() == EObjectType::MANA_POTION)
             {
-                if (m_manaPotionsCount < m_nbManaPotionMax)
+                if (m_manaPotionsCount < m_nbManaPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
+                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
                 {
                     clientInteract(Usable);
                     ++m_manaPotionsCount;
@@ -501,7 +502,8 @@ void APlayableCharacter::interact(AActor* focusedActor)
             }
             else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
-                if (m_healthPotionsCount < m_nbHealthPotionMax)
+                if (m_healthPotionsCount < m_nbHealthPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
+                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
@@ -513,7 +515,8 @@ void APlayableCharacter::interact(AActor* focusedActor)
             }
             else if (Usable->getObjectType() == EObjectType::BOMB)
             {
-                if (m_bombCount < m_nbBombMax)
+                if (m_bombCount < m_nbBombMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
+                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
                 {
                     clientInteract(Usable);
                     ++m_bombCount;
@@ -530,16 +533,20 @@ void APlayableCharacter::interact(AActor* focusedActor)
         }
         else if (deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
+            if (FVector::DotProduct(deadBody->GetActorLocation() - this->GetActorLocation(),
+                deadBody->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+            {
             PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
             clientRevive();
             m_isReviving = true;
+            }
         }
         else if (drone)
         {
             PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDrone");
             ADroneAIController* droneController = Cast<ADroneAIController>(drone->GetController());
-            if (!(droneController) && FVector::DotProduct(drone->GetActorLocation() - this->GetActorLocation(),
-                drone->GetActorLocation() - this->GetActorLocation()) < 10.f)
+            if (droneController && FVector::DotProduct(drone->GetActorLocation() - this->GetActorLocation(),
+                drone->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
             {
                 PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDroneControler");
                 giveBombToDrone(droneController);
