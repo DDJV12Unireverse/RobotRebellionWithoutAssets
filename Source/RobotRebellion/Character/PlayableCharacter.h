@@ -6,11 +6,13 @@
 #include "ClassType.h"
 #include "../Gameplay/Spell/SpellKit.h"
 #include "../Gameplay/Item/Focusable.h"
+
 #include "PlayableCharacter.generated.h"
 
 /**
  *  Playable Character for Robot Rebellion Game
  */
+class ADroneAIController;
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter, public Focusable
 {
@@ -400,9 +402,11 @@ public:
         return (this->m_revivingBox);
     }
 
+    UFUNCTION()
+    void giveBombToDrone(ADroneAIController* drone);
 
-    void giveBombToDrone() //Do Later
-    {}
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGiveBombToDrone(ADroneAIController* drone);
 
     int getManaPotionCount()
     {

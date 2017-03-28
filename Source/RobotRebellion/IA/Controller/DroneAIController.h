@@ -121,7 +121,17 @@ public:
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
+    bool HasABomb()
+    {
+        return m_gotBomb;
+    }
 
+    UFUNCTION()
+        void receiveBomb();
+    
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverReceiveBomb();
+    
     /*Main IA methods*/
 
     //update the properties of the drone

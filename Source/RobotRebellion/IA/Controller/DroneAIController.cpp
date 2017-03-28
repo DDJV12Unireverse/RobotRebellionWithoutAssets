@@ -24,6 +24,7 @@ void ADroneAIController::BeginPlay()
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
     setFollowGroup();
+    m_gotBomb = false;
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -34,6 +35,25 @@ void ADroneAIController::Tick(float deltaTime)
 
     IAUpdate(deltaTime);
     IALoop(deltaTime);
+}
+
+void ADroneAIController::receiveBomb()
+{
+    if (Role >= ROLE_Authority)
+    {
+        m_gotBomb = true;
+        return;
+    }
+    serverReceiveBomb();
+}
+
+void ADroneAIController::serverReceiveBomb_Implementation()
+{
+    m_gotBomb = true;
+}
+bool ADroneAIController::serverReceiveBomb_Validate()
+{
+    return true;
 }
 
 float ADroneAIController::getAttackScore()
@@ -47,19 +67,19 @@ float ADroneAIController::getAttackScore()
     {
         // FOR 5 POSITIONS
             //foreach Position 
-            {
+        {
 
-            }
-            //Get Best Bomb Score
+        }
+        //Get Best Bomb Score
 
 
-        //1-Players Alive RATIO
-        
-        //Ennemi Advantage
+    //1-Players Alive RATIO
 
-        //Players bombs available
+    //Ennemi Advantage
 
-        //Attack Score for best Bomb
+    //Players bombs available
+
+    //Attack Score for best Bomb
 
     }
     return score;
@@ -75,7 +95,7 @@ float ADroneAIController::getFollowScore()
     }
     else
     {
-        score = 1 - 1 / (0.1f+distance(m_destination)); //Change later
+        score = 1 - 1 / (0.1f + distance(m_destination)); //Change later
     }
     return score;
 }
@@ -126,7 +146,7 @@ int ADroneAIController::getNbAliveAllies()
 {
     int nbPlayers = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
     int res = 0;
-    for (int noplayer=0;noplayer<nbPlayers;++noplayer)
+    for (int noplayer = 0; noplayer < nbPlayers; ++noplayer)
     {
         APlayableCharacter* currentPlayer = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), noplayer));
         if (!currentPlayer->isDead())
@@ -134,7 +154,7 @@ int ADroneAIController::getNbAliveAllies()
             ++res;
         }
     }
-        return res;
+    return res;
 }
 int ADroneAIController::getNbAliveEnnemies()
 {
@@ -149,8 +169,8 @@ float ADroneAIController::distance(FVector dest)
 {
     if (this->GetOwner())
     {
-        FVector distanceToCompute = dest-this->GetOwner()->GetActorLocation();
-        return sqrt(FVector::DotProduct(distanceToCompute,distanceToCompute));
+        FVector distanceToCompute = dest - this->GetOwner()->GetActorLocation();
+        return sqrt(FVector::DotProduct(distanceToCompute, distanceToCompute));
     }
     return 0.f;
 }
@@ -463,7 +483,7 @@ int ADroneAIController::getNbBombPlayers()
 {
     int bombCount = 0;
     int nbPlayers = getNbAliveAllies();
-    for (int noplayer=0;noplayer<nbPlayers;++noplayer)
+    for (int noplayer = 0; noplayer < nbPlayers; ++noplayer)
     {
         APlayableCharacter* currentPlayer = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), noplayer));
         bombCount += currentPlayer->getBombCount();
