@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Blueprint/UserWidget.h"
+#include "UI/RobotRebellionWidget.h"
 #include "CustomRobotRebellionUserWidget.generated.h"
 
 /**
  * 
  */
 UCLASS(Blueprintable)
-class ROBOTREBELLION_API UCustomRobotRebellionUserWidget : public UUserWidget
+class ROBOTREBELLION_API UCustomRobotRebellionUserWidget : public URobotRebellionWidget
 {
 	GENERATED_BODY()
 	

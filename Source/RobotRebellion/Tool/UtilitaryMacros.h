@@ -8,7 +8,7 @@
 
 
 
-#if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT) || defined(UE_BUILD_TEST)
+#if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_TEST)
 #define WE_RE_ON_DEBUG
 #endif //UE_BUILD_DEBUG
 

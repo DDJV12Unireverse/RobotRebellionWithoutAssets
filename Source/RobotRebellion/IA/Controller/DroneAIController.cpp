@@ -5,14 +5,8 @@
 #include "../../Character/King.h"
 #include "Character/RobotRebellionCharacter.h"
 #include "Character/NonPlayableCharacter.h"
-#include <algorithm>
 #include "Map.h"
 #include "Character/PlayableCharacter.h"
-
-static bool ScoreSortingFunction(const float& left, const float& right)
-{
-    return left > right;
-}
 
 void ADroneAIController::BeginPlay()
 {
@@ -41,6 +35,11 @@ void ADroneAIController::Tick(float deltaTime)
 
     IAUpdate(deltaTime);
     IALoop(deltaTime);
+}
+
+static bool ScoreSortingFunction(const float& left, const float& right)
+{
+    return left > right;
 }
 
 float ADroneAIController::getAttackScore()
@@ -102,7 +101,7 @@ float ADroneAIController::getReloadScore()
 {
     float score = 1.0f;
     // No Bomb
-    if (m_gotBomb || (getNbBombPlayers() == 0))
+    if (m_gotBomb || (getNbBombPlayers() == 0))  // no reloading possible
     {
         score = 0.0f;
     }
@@ -110,9 +109,9 @@ float ADroneAIController::getReloadScore()
     {
         if (isInCombat())
         {
-            score *= (1 - (getNbAliveAllies() / (4 * getNbAliveEnnemies())));
+            score *= (1 - (getNbAliveAllies() / (4 * getNbAliveEnnemies()))); //if not in combat, combat score always =1
         }
-        score *= (1 - getNbEnnemiesInZone(FVector(0, 0, 0)) / (0.1f + distance(FVector(0, 0, 0))));
+        score *= (1 - getNbEnnemiesInZone(FVector(0, 0, 0)) / (0.1f + distance(FVector(0, 0, 0)))); //ZoneScore
     }
 
     //Is it worth it??? 
@@ -157,7 +156,17 @@ bool ADroneAIController::isInCombat()
 }
 int ADroneAIController::getNbAliveAllies()
 {
-    return 4;
+    int nbPlayers = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+    int res = 0;
+    for (int noplayer=0;noplayer<nbPlayers;++noplayer)
+    {
+        APlayableCharacter* currentPlayer = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), noplayer));
+        if (!currentPlayer->isDead())
+        {
+            ++res;
+        }
+    }
+        return res;
 }
 int ADroneAIController::getNbAliveEnnemies()
 {
@@ -170,6 +179,11 @@ int ADroneAIController::getNbEnnemiesInZone(FVector zoneCenter)
 }
 float ADroneAIController::distance(FVector dest)
 {
+    if (this->GetOwner())
+    {
+        FVector distanceToCompute = dest-this->GetOwner()->GetActorLocation();
+        return sqrt(FVector::DotProduct(distanceToCompute,distanceToCompute));
+    }
     return 0.f;
 }
 
@@ -480,7 +494,14 @@ void ADroneAIController::AttackTarget() const
 
 int ADroneAIController::getNbBombPlayers()
 {
-    return 4;
+    int bombCount = 0;
+    int nbPlayers = getNbAliveAllies();
+    for (int noplayer=0;noplayer<nbPlayers;++noplayer)
+    {
+        APlayableCharacter* currentPlayer = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), noplayer));
+        bombCount += currentPlayer->getBombCount();
+    }
+    return bombCount;
 }
 
 float ADroneAIController::getBombScore(FVector position)
