@@ -7,11 +7,12 @@
 #include "Character/NonPlayableCharacter.h"
 #include "Map.h"
 #include "Character/PlayableCharacter.h"
-#include <algorithm>
 
 void ADroneAIController::BeginPlay()
 {
     Super::BeginPlay();
+
+    m_bestBombLocation = FVector(0, 0, 0);
 
     m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
 
@@ -37,6 +38,13 @@ void ADroneAIController::Tick(float deltaTime)
     IALoop(deltaTime);
 }
 
+
+static bool ScoreSortingFunction(const float& left, const float& right)
+{
+    return left > right;
+
+}
+
 void ADroneAIController::receiveBomb()
 {
     if (Role >= ROLE_Authority)
@@ -56,35 +64,48 @@ bool ADroneAIController::serverReceiveBomb_Validate()
     return true;
 }
 
+
 float ADroneAIController::getAttackScore()
 {
+    CheckEnnemyNear(m_detectionDistance);
+
     float score = 1.0f;
+    float bestBombScore = 0.0f;
+
+    TMap<FVector, float> scoreBombLocations;
     if (!m_gotBomb)
     {
         score = 0.f;
     }
     else
     {
-        // FOR 5 POSITIONS
-            //foreach Position 
+
+////////TODO: Smarter bomb zone calculation, instead of direcly on an ennemy...
+        // FOR up to 5 BOMB POSITIONS
+        const int iMax = m_sensedEnnemies.Num() < 5 ? m_sensedEnnemies.Num() : 5;
+        for(int i = 0; i < iMax; i++)
         {
-
+            scoreBombLocations.Add(m_sensedEnnemies[i]->GetActorLocation(), getBombScore(m_sensedEnnemies[i]->GetActorLocation()));
         }
-        //Get Best Bomb Score
+        if(scoreBombLocations.Num())
+        {
+            scoreBombLocations.ValueSort(&ScoreSortingFunction);
+            TArray<FVector> sortedLocations;
+            scoreBombLocations.GenerateKeyArray(sortedLocations);
+            m_bestBombLocation = sortedLocations[0];
+            bestBombScore = scoreBombLocations[sortedLocations[0]];
+        }
 
+        // Use the Best Bomb Score
 
-    //1-Players Alive RATIO
+        const float c_Normalize = 4.f; // 4 additions
+        const float c_NbPlayersMax = 4.f; // 4 elements
 
-    //Ennemi Advantage
-
-    //Players bombs available
-
-    //Attack Score for best Bomb
-
+////////TODO: getNbEnnemiesScene() HARDCODED 15.f for now 
+        score = ( /*BombAvailable+*/(1.f - getNbAliveAllies() / c_NbPlayersMax) + getNbAliveEnnemies()/*/getNbEnnemiesScene()*/ / 15.f + getNbBombPlayers() + bestBombScore) / c_Normalize;
     }
     return score;
 }
-
 
 float ADroneAIController::getFollowScore()
 {
@@ -133,6 +154,21 @@ float ADroneAIController::getReloadScore()
 float ADroneAIController::getWaitingScore()
 {
     return 0.f;
+}
+
+float ADroneAIController::getDropSCore()
+{
+    float score = 0.0f;
+
+    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
+    FVector dronePosition = owner->GetActorTransform().GetLocation();
+
+    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DROP DISTANCE: %f"), FVector(dronePosition - m_destination).Size()));
+    if(FVector(dronePosition - m_destination).Size() < 150.0f && m_gotBomb)
+    {
+        score = 100.0;
+    }
+    return score;
 }
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
@@ -233,10 +269,10 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_nextUpdatePropertyTime = m_currentTime + m_updatePropertyTime;
     }
 
-    if (m_currentTime >= m_updateAttackCooldownTime)
-    {
-        m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
-    }
+    //if (m_currentTime >= m_updateAttackCooldownTime)
+    //{
+    //    m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
+    //}
 }
 
 void ADroneAIController::IALoop(float deltaTime)
@@ -267,6 +303,7 @@ void ADroneAIController::IALoop(float deltaTime)
 
             m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
         }
+
         break;
     case DRONE_BOMB:
         dropBomb();
@@ -284,7 +321,7 @@ void ADroneAIController::IALoop(float deltaTime)
 
 void ADroneAIController::dropBomb()
 {
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BombAtt");
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
     //if(canFire && m_projectileClass != NULL)
     //{
     //    // Retrieve the camera location and rotation
@@ -388,7 +425,8 @@ void ADroneAIController::followGroup()
 
 void ADroneAIController::followFireZone()
 {
-
+    m_destination = m_bestBombLocation;
+    m_destination.Z = m_destination.Z + m_stationaryElevation;
 }
 
 void ADroneAIController::setFollowGroup()
@@ -404,7 +442,10 @@ void ADroneAIController::setFollowKing()
         m_king = Cast<AKing>(kings.Top());
         this->m_updateTargetMethod = &ADroneAIController::followKing;
     }
-    else setFollowGroup(); //if no king, stay with group
+    else
+    {
+        setFollowGroup(); //if no king, stay with group
+    }  
 }
 
 void ADroneAIController::setFollowFireZone()
@@ -412,18 +453,14 @@ void ADroneAIController::setFollowFireZone()
     this->m_updateTargetMethod = &ADroneAIController::followFireZone;
 }
 
-static bool ScoreSortingFunction(const float& left, const float& right)
-{
-    return left > right;
-}
-
 void ADroneAIController::chooseNextAction()
 {
     m_scores.Empty();
 
-    m_scores.Add(DRONE_COMBAT, getAttackScore());
     m_scores.Add(DRONE_MOVING, getFollowScore());
     m_scores.Add(DRONE_RECHARGE, getReloadScore());
+    m_scores.Add(DRONE_COMBAT, getAttackScore());
+    m_scores.Add(DRONE_BOMB, getDropSCore());
     m_scores.ValueSort(&ScoreSortingFunction);
     TArray<AIDroneState> sortedStates;
     m_scores.GenerateKeyArray(sortedStates);
@@ -476,9 +513,9 @@ void ADroneAIController::CheckEnnemyNear(float range)
                     continue;
                 }
                 //m_targetToFollow = RRCharacter;
-                m_destination = RRCharacter->GetActorLocation(); //TODO: Fix me.
+                //m_destination = RRCharacter->GetActorLocation(); //TODO: Fix me.
                 m_sensedEnnemies.Add(RRCharacter);
-                break;
+                break; //BUGBUG: ??? 
             }
         }
     }
@@ -504,7 +541,86 @@ int ADroneAIController::getNbBombPlayers()
 
 float ADroneAIController::getBombScore(FVector position)
 {
-    return 0.f;
+    float score = 0.f;
+    TArray<class ARobotRebellionCharacter *> m_charactersInBlastZone;
+    float kingAttacked = 0.f;
+    float playerWillBeKilled = 0.f;
+    float numberFriendlyAttacked = 0.f;
+    float gameEndIsNear = 0.f; //TODO
+    float ennemisAttacked = 0.f;
+
+    //CHECK DAMAGED TARGETS
+    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
+    FVector MultiSphereStart = position;
+    FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, c_bombDamageRadius);
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players  //TODO consider avoiding players and king
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel7)); // King
+    TArray<AActor*> ActorsToIgnore;
+    ActorsToIgnore.Add(owner);
+    TArray<FHitResult> OutHits;
+    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
+                                                                   MultiSphereStart,
+                                                                   MultiSphereEnd,
+                                                                   c_bombDamageRadius, //TODO
+                                                                   ObjectTypes,
+                                                                   false,
+                                                                   ActorsToIgnore,
+                                                                   EDrawDebugTrace::ForOneFrame,
+                                                                   OutHits,
+                                                                   true);
+    //m_targetToFollow = NULL;
+    m_charactersInBlastZone.Empty();
+    if(Result == true)
+    {
+        for(int32 i = 0; i < OutHits.Num(); i++)
+        {
+            FHitResult Hit = OutHits[i];
+            ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
+            if(NULL != RRCharacter)
+            {
+                if(RRCharacter->isDead() || !RRCharacter->isVisible())
+                {
+                    continue;
+                }
+                m_charactersInBlastZone.Add(RRCharacter);
+            }
+        }
+    }
+
+    for(auto character : m_charactersInBlastZone)
+    {
+        if(kingAttacked < 0.98f)
+        {
+            AKing* king = Cast<AKing>(character);
+            if(king)
+            {
+                kingAttacked = 1.f;
+                continue;
+            }
+        }
+        APlayableCharacter* player = Cast<APlayableCharacter>(character);
+        if(player)
+        {
+            numberFriendlyAttacked += 1.f;
+            if((player->getHealth() / player->getMaxHealth()) < 0.2f)
+            {
+                playerWillBeKilled = 1.0;
+            }
+        }
+        else
+        {
+            ennemisAttacked += 1.0f;
+        }
+    }
+
+    const float c_Normalize = 2.f; // 2 additions
+    score = (1.f - kingAttacked) * (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemisAttacked) / c_Normalize);
+
+    return score;
 }
 
 FVector ADroneAIController::findSafeZone()
