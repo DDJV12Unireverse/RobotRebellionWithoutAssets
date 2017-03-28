@@ -69,9 +69,9 @@ void ADrone::drop()
 {
     if (this->isLoaded())
     {
-        m_currentBomb->detachFromDrone();
-
         m_currentBomb->activateBomb();
+
+        m_currentBomb->detachFromDrone();
 
         PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "DROP");
 
@@ -89,4 +89,14 @@ void ADrone::autoDrop(float deltaTime)
 
         m_debugTimer = 0.f;
     }
+}
+
+float ADrone::getBombBaseDamage() const USE_NOEXCEPT
+{
+    return m_currentBomb->m_baseDamage;
+}
+
+float ADrone::getBombRadius() const USE_NOEXCEPT
+{
+    return m_currentBomb->m_detonationRadius;
 }

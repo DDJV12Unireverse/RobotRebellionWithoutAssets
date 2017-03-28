@@ -79,7 +79,7 @@ public:
 
 
 protected:
-    void noDetonation() {}
+    void noDetonation() { PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "NoExplosion"); }
 
     void detonationImplementation();
 

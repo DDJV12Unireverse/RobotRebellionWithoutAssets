@@ -34,8 +34,6 @@ AKaboom::AKaboom()
 
     this->initializeDamagedObjectList();
     this->initializeKaboomMovementComponent();
-
-    m_collisionComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AKaboom::BeginPlay()
@@ -76,7 +74,7 @@ void AKaboom::attachToDrone(ADrone* drone)
 {
     if (drone)
     {
-        this->AttachRootComponentToActor(drone);
+        this->AttachToActor(drone, FAttachmentTransformRules::KeepRelativeTransform);
         this->dropingPhysicSetting(false);
         m_linkedDrone = drone;
     }

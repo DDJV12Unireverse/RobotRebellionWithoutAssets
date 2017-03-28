@@ -54,6 +54,18 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Action")
         void drop();
 
+    /*
+    Get the bomb radius. Warning : check if the drone is loaded before using this method.
+    */
+    UFUNCTION(BlueprintCallable, Category = "Action")
+        float getBombRadius() const USE_NOEXCEPT;
+
+    /*
+    Get the bomb base damage. Warning : check if the drone is loaded before using this method.
+    */
+    UFUNCTION(BlueprintCallable, Category = "Action")
+        float getBombBaseDamage() const USE_NOEXCEPT;
+
     UFUNCTION(BlueprintCallable, Category = "Action")
         FORCEINLINE bool isLoaded() const USE_NOEXCEPT
     {
