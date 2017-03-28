@@ -18,6 +18,8 @@ void ADroneAIController::BeginPlay()
 {
     Super::BeginPlay();
 
+    m_bestBombLocation = FVector(0, 0, 0);
+
     m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
 
     m_currentTime = 0.f;
@@ -43,10 +45,12 @@ void ADroneAIController::Tick(float deltaTime)
 
 float ADroneAIController::getAttackScore()
 {
+    CheckEnnemyNear(m_detectionDistance);
+
     float score = 1.0f;
     float bestBombScore = 0.0f;
 
-    TMap<FVector4, float> scoreBombLocations;
+    TMap<FVector, float> scoreBombLocations;
     if (!m_gotBomb)
     {
         score = 0.f;
@@ -63,12 +67,13 @@ float ADroneAIController::getAttackScore()
         if(scoreBombLocations.Num())
         {
             scoreBombLocations.ValueSort(&ScoreSortingFunction);
-            TArray<FVector4> sortedLocations;
+            TArray<FVector> sortedLocations;
             scoreBombLocations.GenerateKeyArray(sortedLocations);
-            m_destination = sortedLocations[0];
+            m_bestBombLocation = sortedLocations[0];
             bestBombScore = scoreBombLocations[sortedLocations[0]];
-            //The Best Bomb Score
         }
+
+        // Use the Best Bomb Score
 
         const float c_Normalize = 4.f; // 4 additions
         const float c_NbPlayersMax = 4.f; // 4 elements
@@ -123,6 +128,21 @@ float ADroneAIController::getReloadScore()
 float ADroneAIController::getWaitingScore()
 {
     return 0.f;
+}
+
+float ADroneAIController::getDropSCore()
+{
+    float score = 0.0f;
+
+    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
+    FVector dronePosition = owner->GetActorTransform().GetLocation();
+
+    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DROP DISTANCE: %f"), FVector(dronePosition - m_destination).Size()));
+    if(FVector(dronePosition - m_destination).Size() < 150.0f && m_gotBomb)
+    {
+        score = 100.0;
+    }
+    return score;
 }
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
@@ -208,10 +228,10 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_nextUpdatePropertyTime = m_currentTime + m_updatePropertyTime;
     }
 
-    if (m_currentTime >= m_updateAttackCooldownTime)
-    {
-        m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
-    }
+    //if (m_currentTime >= m_updateAttackCooldownTime)
+    //{
+    //    m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
+    //}
 }
 
 void ADroneAIController::IALoop(float deltaTime)
@@ -242,6 +262,7 @@ void ADroneAIController::IALoop(float deltaTime)
 
             m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
         }
+
         break;
     case DRONE_BOMB:
         dropBomb();
@@ -251,7 +272,7 @@ void ADroneAIController::IALoop(float deltaTime)
 
 void ADroneAIController::dropBomb()
 {
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BombAtt");
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
     //if(canFire && m_projectileClass != NULL)
     //{
     //    // Retrieve the camera location and rotation
@@ -355,7 +376,8 @@ void ADroneAIController::followGroup()
 
 void ADroneAIController::followFireZone()
 {
-
+    m_destination = m_bestBombLocation;
+    m_destination.Z = m_destination.Z + m_stationaryElevation;
 }
 
 void ADroneAIController::setFollowGroup()
@@ -371,7 +393,10 @@ void ADroneAIController::setFollowKing()
         m_king = Cast<AKing>(kings.Top());
         this->m_updateTargetMethod = &ADroneAIController::followKing;
     }
-    else setFollowGroup(); //if no king, stay with group
+    else
+    {
+        setFollowGroup(); //if no king, stay with group
+    }  
 }
 
 void ADroneAIController::setFollowFireZone()
@@ -383,9 +408,10 @@ void ADroneAIController::chooseNextAction()
 {
     m_scores.Empty();
 
-    m_scores.Add(DRONE_COMBAT, getAttackScore());
     m_scores.Add(DRONE_MOVING, getFollowScore());
     m_scores.Add(DRONE_RECHARGE, getReloadScore());
+    m_scores.Add(DRONE_COMBAT, getAttackScore());
+    m_scores.Add(DRONE_BOMB, getDropSCore());
     m_scores.ValueSort(&ScoreSortingFunction);
     TArray<AIDroneState> sortedStates;
     m_scores.GenerateKeyArray(sortedStates);
@@ -438,7 +464,7 @@ void ADroneAIController::CheckEnnemyNear(float range)
                     continue;
                 }
                 //m_targetToFollow = RRCharacter;
-                m_destination = RRCharacter->GetActorLocation(); //TODO: Fix me.
+                //m_destination = RRCharacter->GetActorLocation(); //TODO: Fix me.
                 m_sensedEnnemies.Add(RRCharacter);
                 break; //BUGBUG: ??? 
             }
