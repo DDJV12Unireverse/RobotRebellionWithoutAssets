@@ -35,6 +35,11 @@ void ADrone::Tick(float deltaTime)
 
 bool ADrone::reload()
 {
+    if(Role < ROLE_Authority)
+    {
+        return false;
+    }
+
     PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "Loading Bomb");
 
     UWorld* world = this->GetWorld();
@@ -67,6 +72,11 @@ bool ADrone::reload()
 
 void ADrone::drop()
 {
+    if(Role < ROLE_Authority)
+    {
+        return;
+    }
+
     if (this->isLoaded())
     {
         m_currentBomb->activateBomb();

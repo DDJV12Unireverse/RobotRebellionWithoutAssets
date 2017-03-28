@@ -91,6 +91,11 @@ void AKaboom::detachFromDrone()
 
 void AKaboom::detonationImplementation()
 {
+    if(Role < ROLE_Authority)
+    {
+        return;
+    }
+
     FVector actorLocation = GetActorLocation();
     
     TArray<FHitResult> OutHits;
