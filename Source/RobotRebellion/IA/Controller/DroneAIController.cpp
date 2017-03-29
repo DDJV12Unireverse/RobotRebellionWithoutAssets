@@ -61,6 +61,7 @@ float ADroneAIController::getAttackScore()
         const int iMax = m_sensedEnnemies.Num() < 5 ? m_sensedEnnemies.Num() : 5;
         for(int i = 0; i < iMax; i++)
         {
+            //TODO: CALL findDropZone()
             scoreBombLocations.Add(m_sensedEnnemies[i]->GetActorLocation(), getBombScore(m_sensedEnnemies[i]->GetActorLocation()));
         }
         if(scoreBombLocations.Num())
@@ -287,58 +288,11 @@ void ADroneAIController::IALoop(float deltaTime)
 void ADroneAIController::dropBomb()
 {
     PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
-    //if(canFire && m_projectileClass != NULL)
-    //{
-    //    // Retrieve the camera location and rotation
-    //    FVector cameraLocation;
-    //    FRotator muzzleRotation;
-    //    user->GetActorEyesViewPoint(cameraLocation, muzzleRotation);
 
-    //    // m_muzzleOffset is in camera space coordinate => must be transformed to world space coordinate.
-    //    const FVector MuzzleLocation = cameraLocation + FTransform(muzzleRotation).TransformVector(m_muzzleOffset);
-    //    //muzzleRotation.Pitch += LIFT_OFFSET; // lift the fire a little 
-    //    UWorld* const World = user->GetWorld();
-    //    if(World)
-    //    {
-    //        FActorSpawnParameters spawnParams;
-    //        spawnParams.Owner = user;
-    //        spawnParams.Instigator = user->Instigator;
-
-    //        // spawn a projectile
-    //        AProjectile* const projectile = World->SpawnActor<AProjectile>(
-    //            m_projectileClass,
-    //            MuzzleLocation,
-    //            muzzleRotation,
-    //            spawnParams
-    //            );
-
-    //        if(projectile)
-    //        {
-    //            projectile->setOwner(user);
-
-    //            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "BOMB!");
-
-    //            // Fire
-    //            const FVector fireDirection = muzzleRotation.Vector();
-    //            projectile->InitVelocity(fireDirection);
-
-    //            if(user->Role == ROLE_Authority)
-    //            {
-    //                playSound(m_longRangeWeaponFireSound, user);
-    //            }
-
-    //            reload();
-    //        }
-    //    }
-    //}
-    //else
-    //{
-    //    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Bomb null");
-    //}
     m_gotBomb = false;
 }
 
-void ADroneAIController::selectDropZone()
+void ADroneAIController::findDropZone()
 {
     //TODO: Improve this a lot, instead of first ennemy!
 }
@@ -434,16 +388,11 @@ void ADroneAIController::chooseNextAction()
 
 void ADroneAIController::CheckEnnemyNear(float range)
 {
-
-    //TODO: Improve this a lot, instead of first ennemy!
-
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
     FVector dronePosition = owner->GetActorTransform().GetLocation();
     FVector MultiSphereStart = dronePosition;
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players  //TODO consider avoiding players and king
-    //ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1)); // Projectile  //TODO consider 
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
@@ -462,7 +411,6 @@ void ADroneAIController::CheckEnnemyNear(float range)
         OutHits,
         true);
 
-    //m_targetToFollow = NULL;
     m_sensedEnnemies.Empty();
 
     if (Result == true)
@@ -477,8 +425,6 @@ void ADroneAIController::CheckEnnemyNear(float range)
                 {
                     continue;
                 }
-                //m_targetToFollow = RRCharacter;
-                //m_destination = RRCharacter->GetActorLocation(); //TODO: Fix me.
                 m_sensedEnnemies.Add(RRCharacter);
                 break; //BUGBUG: ??? 
             }

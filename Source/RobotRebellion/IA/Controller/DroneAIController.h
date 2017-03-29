@@ -74,7 +74,7 @@ private:
 
     float getDropSCore();
 
-    void selectDropZone();
+    void findDropZone();
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
     TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
