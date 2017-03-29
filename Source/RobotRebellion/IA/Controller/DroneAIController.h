@@ -75,9 +75,8 @@ private:
 
     float getWaitingScore();
 
-    float getDropSCore();
+    float getDropScore();
 
-    void selectDropZone();
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
     TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
@@ -167,12 +166,16 @@ public:
     void followGroup();
 
     void followFireZone();
+
+    void followSafeZone();
     
     void setFollowGroup();
     
     void setFollowKing();
 
     void setFollowFireZone();
+
+    void setFollowSafeZone();
     
     void chooseNextAction();
 
@@ -180,7 +183,6 @@ public:
 
     void CheckEnnemyNear(float range) override;
 
-    void AttackTarget() const override;
 
     int getNbBombPlayers();
 
