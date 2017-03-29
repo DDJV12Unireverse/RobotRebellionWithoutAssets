@@ -60,6 +60,9 @@ private:
     //Position to follow
     FVector m_destination;
 
+    //SafeZone
+    FVector m_safeZone;
+
     class AKing* m_king;
     float m_coeffKing;
     void(ADroneAIController::* m_updateTargetMethod)();
@@ -72,7 +75,7 @@ private:
 
     float getWaitingScore();
 
-    float getDropSCore();
+    float getDropScore();
 
     void findDropZone();
 
@@ -109,6 +112,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
     float c_bombDamageRadius = 700.0; //TODO move to weapon
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
+        float m_safeZoneSize;
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
@@ -129,7 +134,17 @@ public:
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
+    bool HasABomb()
+    {
+        return m_gotBomb;
+    }
 
+    UFUNCTION()
+        void receiveBomb();
+    
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverReceiveBomb();
+    
     /*Main IA methods*/
 
     //update the properties of the drone
@@ -152,20 +167,23 @@ public:
     void followGroup();
 
     void followFireZone();
+
+    void followSafeZone();
     
     void setFollowGroup();
     
     void setFollowKing();
 
     void setFollowFireZone();
+
+    void setFollowSafeZone();
     
     void chooseNextAction();
 
     void dropBomb();
 
-    void CheckEnnemyNear(float range) override;
+    void CheckEnnemyNear(FVector position, float range);
 
-    void AttackTarget() const override;
 
     int getNbBombPlayers();
 
@@ -180,4 +198,6 @@ public:
     int getNbEnnemiesInZone(FVector zoneCenter);
 
     float distance(FVector dest);
+
+    FVector findSafeZone();
 };

@@ -11,12 +11,10 @@
 UCLASS()
 class ROBOTREBELLION_API ADrone : public ANonPlayableCharacter
 {
-	GENERATED_BODY()
-	
-	
+    GENERATED_BODY()
+
 public:
     ADrone();
-
 
     virtual void Tick(float deltaTime) override;
 };

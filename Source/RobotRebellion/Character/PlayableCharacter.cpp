@@ -22,6 +22,8 @@
 #include "Healer.h"
 
 #include "../Tool/UtilitaryMacros.h"
+#include "Drone.h"
+#include "IA/Controller/DroneAIController.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -108,11 +110,11 @@ void APlayableCharacter::BeginPlay()
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
 
 #ifdef WE_RE_ON_DEBUG
-        m_revivingBox->SetVisibility(true);
-        m_revivingBox->SetHiddenInGame(false);
+    m_revivingBox->SetVisibility(true);
+    m_revivingBox->SetHiddenInGame(false);
 #else
-        m_revivingBox->SetVisibility(false);
-        m_revivingBox->SetHiddenInGame(true);
+    m_revivingBox->SetVisibility(false);
+    m_revivingBox->SetHiddenInGame(true);
 #endif
 
     m_tpsMode = true;
@@ -428,7 +430,7 @@ void APlayableCharacter::openLobbyWidget()
     if (MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
-        if(myHud->LobbyImpl->IsVisible())
+        if (myHud->LobbyImpl->IsVisible())
         {
             closeLobbyWidget();
             return;
@@ -446,7 +448,7 @@ void APlayableCharacter::closeLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
 
-    if(MyPC)
+    if (MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
@@ -486,11 +488,13 @@ void APlayableCharacter::interact(AActor* focusedActor)
     {
         APickupActor* Usable = Cast<APickupActor>(focusedActor);
         APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
+        ADrone* drone = Cast<ADrone>(focusedActor);
         if (Usable) //focusedActor is an Usable Object
         {
             if (Usable->getObjectType() == EObjectType::MANA_POTION)
             {
-                if (m_manaPotionsCount < m_nbManaPotionMax)
+                if (m_manaPotionsCount < m_nbManaPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
+                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
                 {
                     clientInteract(Usable);
                     ++m_manaPotionsCount;
@@ -502,7 +506,8 @@ void APlayableCharacter::interact(AActor* focusedActor)
             }
             else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
-                if (m_healthPotionsCount < m_nbHealthPotionMax)
+                if (m_healthPotionsCount < m_nbHealthPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
+                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
@@ -514,7 +519,8 @@ void APlayableCharacter::interact(AActor* focusedActor)
             }
             else if (Usable->getObjectType() == EObjectType::BOMB)
             {
-                if (m_bombCount < m_nbBombMax)
+                if (m_bombCount < m_nbBombMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
+                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
                 {
                     clientInteract(Usable);
                     ++m_bombCount;
@@ -531,9 +537,24 @@ void APlayableCharacter::interact(AActor* focusedActor)
         }
         else if (deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
-            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
-            clientRevive();
-            m_isReviving = true;
+            if (FVector::DotProduct(deadBody->GetActorLocation() - this->GetActorLocation(),
+                deadBody->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
+                clientRevive();
+                m_isReviving = true;
+            }
+        }
+        else if (drone)
+        {
+            PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDrone");
+            ADroneAIController* droneController = Cast<ADroneAIController>(drone->GetController());
+            if (droneController && FVector::DotProduct(drone->GetActorLocation() - this->GetActorLocation(),
+                drone->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+            {
+                PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDroneControler");
+                giveBombToDrone(droneController);
+            }
         }
     }
     else
@@ -559,6 +580,37 @@ void APlayableCharacter::interactEnd()
     m_currentRevivingTime = 0.f;
 }
 
+
+void APlayableCharacter::giveBombToDrone(ADroneAIController* drone)
+{
+    if (Role >= ROLE_Authority)
+    {
+        if (!drone->HasABomb() && m_bombCount > 0)
+        {
+            drone->receiveBomb();
+            --m_bombCount;
+            PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "ServergiveBombToDrone");
+        }
+        return;
+    }
+    PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "giveBombToDrone");
+    serverGiveBombToDrone(drone);
+}
+
+void APlayableCharacter::serverGiveBombToDrone_Implementation(ADroneAIController* drone)
+{
+    if (!drone->HasABomb() && m_bombCount > 0)
+    {
+        drone->receiveBomb();
+        --m_bombCount;
+        PRINT_MESSAGE_ON_SCREEN(FColor::Red, "ServergiveBombToDrone");
+    }
+}
+
+bool APlayableCharacter::serverGiveBombToDrone_Validate(ADroneAIController* drone)
+{
+    return true;
+}
 void APlayableCharacter::serverSwitchWeapon_Implementation()
 {
     this->switchWeapon();
@@ -570,10 +622,10 @@ void APlayableCharacter::clientInteract_Implementation(APickupActor* Usable)
 }
 
 
- void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
- {
-     PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
- }
+void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
+{
+    PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
+}
 
 void APlayableCharacter::clientRevive_Implementation()
 {
@@ -678,7 +730,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
-        
+
         //CHANGE MAP
         PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
         PlayerInputComponent->BindAction("Debug_GotoRuins", IE_Released, this, &APlayableCharacter::gotoRuins);
@@ -959,7 +1011,7 @@ void APlayableCharacter::gotoDesert()
 {
     if (Role == ROLE_Authority)
     {
-        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true,true);
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true, true);
     }
     else
     {
@@ -971,7 +1023,7 @@ void APlayableCharacter::gotoRuins()
 {
     if (Role == ROLE_Authority)
     {
-        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true,true);
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true, true);
     }
     else
     {
@@ -983,7 +1035,7 @@ void APlayableCharacter::gotoGym()
 {
     if (Role == ROLE_Authority)
     {
-        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true,true);
+        GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true, true);
     }
     else
     {
