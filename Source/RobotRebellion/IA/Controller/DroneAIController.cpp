@@ -50,6 +50,12 @@ void ADroneAIController::receiveBomb()
 {
     if (Role >= ROLE_Authority)
     {
+        ADrone * drone = Cast<ADrone>(this->GetPawn());
+        if(drone)
+        {
+            drone->reload();
+        }
+
         m_gotBomb = true;
         return;
     }
@@ -58,6 +64,11 @@ void ADroneAIController::receiveBomb()
 
 void ADroneAIController::serverReceiveBomb_Implementation()
 {
+    ADrone * drone = Cast<ADrone>(this->GetPawn());
+    if(drone)
+    {
+        drone->reload();
+    }
     m_gotBomb = true;
 }
 bool ADroneAIController::serverReceiveBomb_Validate()
@@ -68,9 +79,11 @@ bool ADroneAIController::serverReceiveBomb_Validate()
 
 float ADroneAIController::getAttackScore()
 {
-    if (this->GetOwner())
+    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
+    if(owner)
     {
-        CheckEnnemyNear(this->GetOwner()->GetActorLocation(), m_detectionDistance);
+        FVector dronePosition = owner->GetActorTransform().GetLocation();
+        CheckEnnemyNear(dronePosition, m_detectionDistance);
     }
 
     float score = 1.0f;
@@ -96,6 +109,7 @@ float ADroneAIController::getAttackScore()
             scoreBombLocations.ValueSort(&ScoreSortingFunction);
             TArray<FVector> sortedLocations;
             scoreBombLocations.GenerateKeyArray(sortedLocations);
+
             m_bestBombLocation = sortedLocations[0];
             bestBombScore = scoreBombLocations[sortedLocations[0]];
         }
@@ -168,7 +182,7 @@ float ADroneAIController::getDropScore()
     FVector dronePosition = owner->GetActorTransform().GetLocation();
 
     //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DROP DISTANCE: %f"), FVector(dronePosition - m_destination).Size()));
-    if (FVector(dronePosition - m_destination).Size() < 250.0f && m_gotBomb && m_state == DRONE_COMBAT)
+    if (FVector(dronePosition - m_destination).Size() < 150.0f && m_gotBomb && m_state == DRONE_COMBAT)
     {
         score = 100.f;
     }
@@ -207,9 +221,11 @@ int ADroneAIController::getNbAliveAllies()
 }
 int ADroneAIController::getNbAliveEnnemies()
 {
-    if (this->GetOwner())
+    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
+    if(owner)
     {
-        CheckEnnemyNear(this->GetOwner()->GetActorLocation(), m_detectionDistance);
+        FVector dronePosition = owner->GetActorTransform().GetLocation();
+        CheckEnnemyNear(dronePosition, m_detectionDistance);
         return (m_sensedEnnemies.Num());
     }
     return 0;
@@ -222,9 +238,11 @@ int ADroneAIController::getNbEnnemiesInZone(FVector zoneCenter)
 }
 float ADroneAIController::distance(FVector dest)
 {
-    if (this->GetOwner())
+    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
+    if(owner)
     {
-        FVector distanceToCompute = dest - this->GetOwner()->GetActorLocation();
+        FVector dronePosition = owner->GetActorTransform().GetLocation();
+        FVector distanceToCompute = dest - dronePosition;
         return sqrt(FVector::DotProduct(distanceToCompute, distanceToCompute));
     }
     return 0.f;
@@ -303,24 +321,22 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_nextUpdatePropertyTime = m_currentTime + m_updatePropertyTime;
     }
 
-    //if (m_currentTime >= m_updateAttackCooldownTime)
-    //{
-    //    m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
-    //}
 }
 
 void ADroneAIController::IALoop(float deltaTime)
 {
-    chooseNextAction();
+    
+        chooseNextAction();
+    
 
     switch (m_state)
     {
     case DRONE_WAITING:
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
         break;
     case DRONE_MOVING:
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_MOVING"));
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_MOVING"));
         if (m_currentTime >= m_nextMovementUpdateTime)
         {
             this->MoveToTarget();
@@ -331,7 +347,7 @@ void ADroneAIController::IALoop(float deltaTime)
     }
 
     case DRONE_COMBAT:
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_COMBAT"));
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_COMBAT"));
         setFollowFireZone();
         if (m_currentTime >= m_nextMovementUpdateTime)
         {
@@ -341,12 +357,12 @@ void ADroneAIController::IALoop(float deltaTime)
         }
         break;
     case DRONE_BOMB:
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_BOMB"));
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_BOMB"));
         dropBomb();
         break;
     case DRONE_RECHARGE:
         setFollowSafeZone();
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_RECHARGE"));
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_RECHARGE"));
         if (m_currentTime >= m_nextMovementUpdateTime)
         {
             this->MoveToTarget();
@@ -366,6 +382,11 @@ void ADroneAIController::IALoop(float deltaTime)
 void ADroneAIController::dropBomb()
 {
     PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
+    ADrone * drone = Cast<ADrone>(this->GetPawn());
+    if(drone)
+    {
+        drone->drop();
+    }
     m_gotBomb = false;
 }
 
@@ -373,7 +394,7 @@ void ADroneAIController::findDropZone()
 {
     //TODO: Improve this a lot, instead of first ennemy!
 
-    // Example: Voronoi Diagram/Fortune's algorithm generation / Delaunay Triangulation / circum-circles  ?
+    // Example: Voronoi Diagram+Fortune's algorithm generation+Delaunay Triangulation / circum-circles  ?
 }
 
 void ADroneAIController::followKing()
@@ -425,8 +446,9 @@ void ADroneAIController::followFireZone()
 {
 
 
-    m_destination = m_bestBombLocation;
-    m_destination.Z = m_destination.Z + m_stationaryElevation;
+
+        m_destination = m_bestBombLocation;
+        m_destination.Z = m_destination.Z + m_stationaryElevation;
 }
 
 void ADroneAIController::followSafeZone()
@@ -465,16 +487,26 @@ void ADroneAIController::setFollowSafeZone()
 
 void ADroneAIController::chooseNextAction()
 {
-    m_scores.Empty();
+    if(m_currentTime >= m_nextUpdateAttackCooldownTime)
+    {
+        m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
 
-    m_scores.Add(DRONE_MOVING, getFollowScore());
-    m_scores.Add(DRONE_RECHARGE, getReloadScore());
-    m_scores.Add(DRONE_COMBAT, getAttackScore());
-    m_scores.Add(DRONE_BOMB, getDropScore());
-    m_scores.ValueSort(&ScoreSortingFunction);
-    TArray<AIDroneState> sortedStates;
-    m_scores.GenerateKeyArray(sortedStates);
-    m_state = sortedStates[0];
+        m_scores.Empty();
+
+        m_scores.Add(DRONE_MOVING, getFollowScore());
+        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_MOVING Score: %f"), getFollowScore()));
+        m_scores.Add(DRONE_RECHARGE, getReloadScore());
+        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_RECHARGE Score: %f"), getReloadScore()));
+        m_scores.Add(DRONE_COMBAT, getAttackScore());
+        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_COMBAT Score: %f"), getAttackScore()));
+        m_scores.Add(DRONE_BOMB, getDropScore());
+        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_BOMB Score: %f"), getDropScore()));
+        m_scores.ValueSort(&ScoreSortingFunction);
+        TArray<AIDroneState> sortedStates;
+        m_scores.GenerateKeyArray(sortedStates);
+        m_state = sortedStates[0];
+    }
+
 }
 
 void ADroneAIController::CheckEnnemyNear(FVector position, float range)

@@ -109,7 +109,7 @@ public:
         float m_updateMovementTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updateAttackCooldownTime = 1.0f;
+        float m_updateAttackCooldownTime = 2.25f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
     float c_bombDamageRadius = 700.0; //TODO move to weapon
