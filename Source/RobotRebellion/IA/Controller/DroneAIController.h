@@ -181,7 +181,7 @@ public:
 
     void dropBomb();
 
-    void CheckEnnemyNear(float range) override;
+    void CheckEnnemyNear(FVector position, float range);
 
 
     int getNbBombPlayers();
