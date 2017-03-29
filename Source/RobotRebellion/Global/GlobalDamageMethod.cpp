@@ -27,3 +27,14 @@ Damage::DamageValue UGlobalDamageMethod::normalHitWithWeaponComputed(const ARobo
 
     return static_cast<Damage::DamageValue>(intermediary);
 }
+
+Damage::DamageValue UGlobalDamageMethod::droneDamageComputed(const ARobotRebellionCharacter* assailant, const ARobotRebellionCharacter* receiver)
+{
+    float intermediary = (assailant->getStrength() - receiver->getDefense()) * 10.f;
+    if(intermediary < 1.f)
+    {
+        intermediary = 1.f;
+    }
+
+    return static_cast<Damage::DamageValue>(intermediary);
+}
