@@ -84,12 +84,11 @@ float ADroneAIController::getAttackScore()
     else
     {
 
-        ////////TODO: Smarter bomb zone calculation, instead of direcly on an ennemy...
-                // FOR up to 5 BOMB POSITIONS
+        //Up to 5 BOMB POSITIONS
         const int iMax = m_sensedEnnemies.Num() < 5 ? m_sensedEnnemies.Num() : 5;
         for (int i = 0; i < iMax; i++)
         {
-            //TODO: CALL findDropZone()
+            //TODO: Implement and call findDropZone() instead
             scoreBombLocations.Add(m_sensedEnnemies[i]->GetActorLocation(), getBombScore(m_sensedEnnemies[i]->GetActorLocation()));
         }
         if (scoreBombLocations.Num())
@@ -174,6 +173,12 @@ float ADroneAIController::getDropScore()
         score = 100.f;
     }
     return score;
+}
+
+float ADroneAIController::getNbEnnemiesInScene()
+{
+    //TODO: Get a way of knowing how many ennemies were spawned originally in the current fight scene.
+    return 15.f;
 }
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
@@ -349,6 +354,13 @@ void ADroneAIController::IALoop(float deltaTime)
             m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
         }
     }
+    DrawDebugSphere(
+        GetWorld(),
+        m_destination,
+        24,
+        32,
+        FColor(0, 0, 255)
+    );
 }
 
 void ADroneAIController::dropBomb()
@@ -360,6 +372,8 @@ void ADroneAIController::dropBomb()
 void ADroneAIController::findDropZone()
 {
     //TODO: Improve this a lot, instead of first ennemy!
+
+    // Example: Voronoi Diagram/Fortune's algorithm generation / Delaunay Triangulation / circum-circles  ?
 }
 
 void ADroneAIController::followKing()
@@ -409,6 +423,8 @@ void ADroneAIController::followGroup()
 
 void ADroneAIController::followFireZone()
 {
+
+
     m_destination = m_bestBombLocation;
     m_destination.Z = m_destination.Z + m_stationaryElevation;
 }
@@ -463,9 +479,10 @@ void ADroneAIController::chooseNextAction()
 
 void ADroneAIController::CheckEnnemyNear(FVector position, float range)
 {
+    //TODO: Ray cast instead... Drone currently sees through walls...
+
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
     FVector dronePosition = owner->GetActorTransform().GetLocation();
-    //FVector MultiSphereStart = dronePosition;
     FVector MultiSphereStart = position;
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
@@ -474,7 +491,6 @@ void ADroneAIController::CheckEnnemyNear(FVector position, float range)
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
     TArray<AActor*> ActorsToIgnore;
     ActorsToIgnore.Add(owner);
-    //ActorsToIgnore.Add(player); //TODO consider
     TArray<FHitResult> OutHits;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
         MultiSphereStart,

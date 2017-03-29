@@ -77,6 +77,8 @@ private:
 
     float getDropScore();
 
+    float getNbEnnemiesInScene();
+
     void findDropZone();
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
