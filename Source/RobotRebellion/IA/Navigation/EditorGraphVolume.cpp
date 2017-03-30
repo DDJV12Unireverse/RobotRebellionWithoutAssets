@@ -2,6 +2,8 @@
 
 #include "RobotRebellion.h"
 #include "EditorGraphVolume.h"
+#include "NavigationVolumeGraph.h" 
+#include "VolumeIdProvider.h"
 
 // Sets default values
 AEditorGraphVolume::AEditorGraphVolume() 
@@ -20,7 +22,7 @@ AEditorGraphVolume::AEditorGraphVolume()
 void AEditorGraphVolume::BeginPlay()
 {
     Super::BeginPlay();
-    //m_id = Identificateur::get().getNextId();
+    m_id = VolumeIdProvider::getInstance().getNextId();
     registerNode();
 }
 
@@ -34,7 +36,11 @@ void AEditorGraphVolume::Tick(float DeltaTime)
 // Graph registration
 void AEditorGraphVolume::registerNode()
 {
-    //Graph::getInstance()->addNode(this);
+    // Only register node if its the server
+    if(Role == ROLE_Authority)
+    {
+        NavigationVolumeGraph::getInstance().addNode(this);
+    }
 }
 
 bool AEditorGraphVolume::contains(const FVector& point)const

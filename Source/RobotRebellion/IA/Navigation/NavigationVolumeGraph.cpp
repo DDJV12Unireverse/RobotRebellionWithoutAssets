@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "NavigationVolumeGraph.h"
 #include "EditorGraphVolume.h"
+#include "VolumeIdProvider.h"
 
 struct NodeRecordSingleton
 {
@@ -50,7 +51,7 @@ void NavigationVolumeGraph::clearGraph()
     m_nodes.Empty();
     m_isBuilt = false;
 
-    //Identificateur::get().reset();
+    VolumeIdProvider::getInstance().reset();
 }
 
 int32 NavigationVolumeGraph::getNodeAmount()
@@ -72,8 +73,16 @@ void NavigationVolumeGraph::addNode(AEditorGraphVolume *newVolume)
 {
     if(newVolume)
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "adding new node ...");
         m_nodes.Add(newVolume);
+    }
+    PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, FString::FromInt(m_nodes.Num()) 
+                            + "/" 
+                            + FString::FromInt(m_NodeAmountExpected) + " Nodes");
+    if(m_nodes.Num() == m_NodeAmountExpected)
+    {
+        PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "BUILD")
+        m_isBuilt = true;
+        build();
     }
 }
 
