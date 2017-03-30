@@ -85,6 +85,8 @@ public:
 
     void doesNothing() {}
 
+    UTextBillboardComponent* getBillboardComponent();
+
 
 protected:
     FORCEINLINE void noDestroyForNow(float deltaTime)

@@ -106,7 +106,6 @@ void APlayableCharacter::BeginPlay()
     m_manaPotionsCount = m_nbManaPotionStart;
     m_bombCount = m_nbBombStart;
     m_healthPotionsCount = m_nbHealthPotionStart;
-
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
 
 #ifdef WE_RE_ON_DEBUG
@@ -118,6 +117,8 @@ void APlayableCharacter::BeginPlay()
 #endif
 
     m_tpsMode = true;
+
+    
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
@@ -381,10 +382,10 @@ bool APlayableCharacter::serverMainFire_Validate()
 
 void APlayableCharacter::clientMainFireSound_Implementation()
 {
-    UWeaponBase* weapon = m_weaponInventory->getCurrentWeapon();
-    if(weapon)
+    UWeaponBase* currentWeapon = m_weaponInventory->getCurrentWeapon();
+    if (currentWeapon)
     {
-        weapon->playSound(this);
+        currentWeapon->playSound(this);
     }
 }
 
@@ -499,10 +500,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                     clientInteract(Usable);
                     ++m_manaPotionsCount;
                 }
-                else
-                {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
-                }
+                
             }
             else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
@@ -511,10 +509,6 @@ void APlayableCharacter::interact(AActor* focusedActor)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
-                }
-                else
-                {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
                 }
             }
             else if (Usable->getObjectType() == EObjectType::BOMB)
@@ -525,10 +519,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                     clientInteract(Usable);
                     ++m_bombCount;
                 }
-                else
-                {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL BOMB"));
-                }
+                
             }
             else
             {
@@ -547,7 +538,6 @@ void APlayableCharacter::interact(AActor* focusedActor)
         }
         else if (drone)
         {
-            PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDrone");
             ADroneAIController* droneController = Cast<ADroneAIController>(drone->GetController());
             if (droneController && FVector::DotProduct(drone->GetActorLocation() - this->GetActorLocation(),
                 drone->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
@@ -764,6 +754,9 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &APlayableCharacter::changeToHealer);
     PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &APlayableCharacter::changeToSoldier);
     PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
+
+    //Display Drone UT Scores
+    PlayerInputComponent->BindAction("Debug_DroneDisplay", IE_Pressed, this, &APlayableCharacter::enableDroneDisplay);
 }
 
 void APlayableCharacter::cppPreRevive(APlayableCharacter* characterToRevive)
@@ -1132,3 +1125,19 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     }
 }
 
+
+void APlayableCharacter::enableDroneDisplay()
+{
+    ADroneAIController* droneController=nullptr;
+    TArray<AActor*> drone;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADroneAIController::StaticClass(), drone);
+    if (drone.Num() > 0) //The king is here
+    {
+        droneController = Cast<ADroneAIController>(drone.Top());
+       
+    }
+    if (droneController) 
+    {
+        droneController->enableDroneDisplay(!droneController->isDebugEnabled());
+    }
+}

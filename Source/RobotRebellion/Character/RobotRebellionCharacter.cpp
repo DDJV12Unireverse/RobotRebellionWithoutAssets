@@ -319,3 +319,8 @@ GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionChar
         characterMesh->SetVisibility(!isInvisible);
     }
 }
+
+UTextBillboardComponent* ARobotRebellionCharacter::getBillboardComponent()
+{
+    return m_textBillboardInstance;
+}

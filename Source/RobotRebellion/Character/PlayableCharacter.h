@@ -6,7 +6,6 @@
 #include "ClassType.h"
 #include "../Gameplay/Spell/SpellKit.h"
 #include "../Gameplay/Item/Focusable.h"
-
 #include "PlayableCharacter.generated.h"
 
 /**
@@ -108,12 +107,12 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
-
     // Seulement vrai lors de la premi�re image avec un nouveau focus.
     bool bHasNewFocus;
     AActor* focusedPickupActor;
 
     bool m_tpsMode;
+
 
 public:
     APlayableCharacter();
@@ -411,6 +410,8 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverGiveBombToDrone(ADroneAIController* drone);
 
+    
+
     int getManaPotionCount()
     {
         return m_manaPotionsCount;
@@ -440,4 +441,5 @@ public:
     {}
     virtual void OnEndFocus() override
     {}
+    void enableDroneDisplay();
 };

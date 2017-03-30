@@ -14,6 +14,7 @@ class ROBOTREBELLION_API ADrone : public ANonPlayableCharacter
     GENERATED_BODY()
 
 public:
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
         float m_debugAutoDropTimer;
 
@@ -39,7 +40,7 @@ public:
 
     virtual void Tick(float deltaTime) override;
 
-
+    void displayScore(float scores[5]);
     /*
     Reload the drone with an object (here a kaboom bomb). Spawn the Kaboom actor and attach it to the drone. 
     The Bomb is unnactive and won't explode at collision.
@@ -76,4 +77,5 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
         void autoDrop(float deltaTime);
+
 };

@@ -37,7 +37,7 @@ private:
 
     TMap<AIDroneState,float> m_scores;
 
-    bool m_gotBomb = false;
+  //  bool m_gotBomb = false;
 
     AIDroneState m_state;
 
@@ -56,6 +56,10 @@ private:
     //the next time the drone checks we are attacking or attacked by ennemies
     float m_nextUpdateAttackCooldownTime;
 
+    //the next time the drone checks we are attacking or attacked by ennemies
+    float m_nextDebugDisplayTime;
+
+    bool m_isDebugEnabled;
     
     //Position to follow
     FVector m_destination;
@@ -65,21 +69,10 @@ private:
 
     class AKing* m_king;
     float m_coeffKing;
+
+
     void(ADroneAIController::* m_updateTargetMethod)();
 
-    float getAttackScore();
-
-    float getFollowScore();
-
-    float getReloadScore();
-
-    float getWaitingScore();
-
-    float getDropScore();
-
-    float getNbEnnemiesInScene();
-
-    void findDropZone();
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
     TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
@@ -111,8 +104,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateAttackCooldownTime = 2.25f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
-    float c_bombDamageRadius = 700.0; //TODO move to weapon
+   // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
+    //float c_bombDamageRadius = 700.0; //TODO move to weapon
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
         float m_safeZoneSize;
@@ -134,12 +127,30 @@ public:
 
     virtual void Tick(float deltaTime) override;
 
+    float getNbEnnemiesInScene();
+
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
-    bool HasABomb()
-    {
-        return m_gotBomb;
-    }
+    void findDropZone();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getAttackScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getFollowScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getReloadScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getWaitingScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getDropScore();
+
+
+    bool HasABomb();
+    
 
     UFUNCTION()
         void receiveBomb();
@@ -184,7 +195,7 @@ public:
 
     void dropBomb();
 
-    void CheckEnnemyNear(FVector position, float range);
+    virtual void CheckEnnemyNear(FVector position, float range);
 
 
     int getNbBombPlayers();
@@ -202,4 +213,13 @@ public:
     float distance(FVector dest);
 
     FVector findSafeZone();
+
+    void enableDroneDisplay(bool enable)
+    {
+        m_isDebugEnabled = enable;
+    }
+    bool isDebugEnabled()
+    {
+        return m_isDebugEnabled;
+    }
 };
