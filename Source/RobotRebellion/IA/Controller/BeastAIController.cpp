@@ -56,5 +56,8 @@ void ABeastAIController::CheckEnnemyNear(float range)
 void ABeastAIController::AttackTarget() const
 {
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
-    ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+    if(ennemiCharacter)
+    {
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);        
+    }
 }

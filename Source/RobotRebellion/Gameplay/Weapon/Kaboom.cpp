@@ -42,6 +42,7 @@ AKaboom::AKaboom()
 
     this->initializeDamagedObjectList();
     this->initializeKaboomMovementComponent();
+    this->deactivateBomb();
 }
 
 void AKaboom::BeginPlay()

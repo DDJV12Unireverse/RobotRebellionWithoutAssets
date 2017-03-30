@@ -15,8 +15,6 @@ void ADroneAIController::BeginPlay()
 {
     Super::BeginPlay();
 
-    m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
-    
     m_currentTime = 0.f;
 
     m_nextMovementUpdateTime = m_updateMovementTime;
@@ -41,7 +39,10 @@ void ADroneAIController::Tick(float deltaTime)
 EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 {
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
-
+    if(NULL == owner)
+    {
+        return EPathFollowingRequestResult::Failed;
+    }
     FVector dronePosition = owner->GetActorTransform().GetLocation();
     FVector directionToTarget = m_destination - dronePosition;
     directionToTarget.Z = m_targetedHeight - dronePosition.Z;
@@ -73,7 +74,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
 void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
 {
-    m_targetedHeight = m_targetToFollow->GetActorLocation().Z + m_stationaryElevation;
+    m_targetedHeight = m_destination.Z + m_stationaryElevation;
 }
 
 void ADroneAIController::updateTargetedTarget()
