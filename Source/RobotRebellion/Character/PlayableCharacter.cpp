@@ -384,10 +384,10 @@ bool APlayableCharacter::serverMainFire_Validate()
 
 void APlayableCharacter::clientMainFireSound_Implementation()
 {
-    UWeaponBase* weapon = m_weaponInventory->getCurrentWeapon();
-    if(weapon)
+    UWeaponBase* currentWeapon = m_weaponInventory->getCurrentWeapon();
+    if (currentWeapon)
     {
-        weapon->playSound(this);
+        currentWeapon->playSound(this);
     }
 }
 

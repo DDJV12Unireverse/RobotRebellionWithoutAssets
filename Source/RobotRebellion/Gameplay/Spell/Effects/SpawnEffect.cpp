@@ -28,7 +28,7 @@ void USpawnEffect::exec(const FVector impactPoint)
     // update position
     FVector spawnLocation = impactPoint + m_offsetFromImpactPoint;
     AActor* temp = GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
-    if(temp) // previous crash protection
+    if (temp)
     {
         temp->SetLifeSpan(m_actorLifeTime);
 
