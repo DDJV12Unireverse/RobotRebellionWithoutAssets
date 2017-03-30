@@ -81,7 +81,6 @@ void NavigationVolumeGraph::addNode(AEditorGraphVolume *newVolume)
     if(m_nodes.Num() == m_NodeAmountExpected)
     {
         PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, "BUILD")
-        m_isBuilt = true;
         build();
     }
 }
@@ -132,6 +131,9 @@ void NavigationVolumeGraph::build()
         }
     }
     m_indexEdgesForNode[m_nodes.Num()] = m_edges.Num();
+
+    // For test draw the graph - just comment to avoid graph drawing at the start
+    drawConnections(m_nodes[0]->GetWorld());
 }
 
 void NavigationVolumeGraph::sortNodeArray()
