@@ -26,6 +26,9 @@
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
 
+#define STAND_UP_HEIGHT 70.f
+#define CROUCH_HEIGHT -10.f
+
 
 APlayableCharacter::APlayableCharacter()
 {
@@ -54,7 +57,7 @@ APlayableCharacter::APlayableCharacter()
 
     // Slight camera offset to aid with object selection
     //CameraBoom->SocketOffset = FVector(0, 35, 0);
-    CameraBoom->TargetOffset = FVector(0, 0, 70);
+    CameraBoom->TargetOffset = FVector(0.f, 0.f, STAND_UP_HEIGHT);
 
     // Create a follow camera
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -347,12 +350,20 @@ void APlayableCharacter::OnCrouchToggle()
         {
             m_bPressedCrouch = true;
             m_moveSpeed = 0.1f;
+
+            CameraBoom->TargetOffset.Z = CROUCH_HEIGHT;
+            this->BaseEyeHeight = CROUCH_HEIGHT;
+
             Crouch();
         }
         else
         {
             m_bPressedCrouch = false;
             m_moveSpeed = 0.3f;
+
+            CameraBoom->TargetOffset.Z = STAND_UP_HEIGHT;
+            this->BaseEyeHeight = STAND_UP_HEIGHT;
+
             UnCrouch();
         }
     }
