@@ -198,7 +198,11 @@ bool ARobotRebellionCharacter::netMultidisplayAnimatedText_Validate(const FStrin
 
 void ARobotRebellionCharacter::createTextBillboard()
 {
-    this->createTextBillboardWithThisCamera(Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->FollowCamera);
+    APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+    if(charac)
+    {
+        this->createTextBillboardWithThisCamera(charac->FollowCamera);
+    }
 }
 
 void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponent* camera)

@@ -41,7 +41,10 @@ void ADroneAIController::Tick(float deltaTime)
 EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 {
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
-
+    if(NULL == owner)
+    {
+        return EPathFollowingRequestResult::Failed;
+    }
     FVector dronePosition = owner->GetActorTransform().GetLocation();
     FVector directionToTarget = m_destination - dronePosition;
     directionToTarget.Z = m_targetedHeight - dronePosition.Z;

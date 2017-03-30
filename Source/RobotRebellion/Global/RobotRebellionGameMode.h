@@ -21,6 +21,7 @@ public:
 	ARobotRebellionGameMode();
 
     virtual void BeginPlay() override;
+
 };
 
 

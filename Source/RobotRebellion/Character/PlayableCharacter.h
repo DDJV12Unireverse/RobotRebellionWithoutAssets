@@ -196,6 +196,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = LobbyWidget)
     void closeLobbyWidget();
 
+    UFUNCTION(BlueprintCallable, Category = CharacterSelection)
+        void closeSelectionWidget();
+
+    void giveInputGameMode(bool status);
+
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
