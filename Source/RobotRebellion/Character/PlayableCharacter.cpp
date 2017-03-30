@@ -502,10 +502,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                     clientInteract(Usable);
                     ++m_manaPotionsCount;
                 }
-                else
-                {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL MANA POTION"));
-                }
+                
             }
             else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
@@ -514,10 +511,6 @@ void APlayableCharacter::interact(AActor* focusedActor)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
-                }
-                else
-                {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL HEALTH POTION"));
                 }
             }
             else if (Usable->getObjectType() == EObjectType::BOMB)
@@ -528,10 +521,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                     clientInteract(Usable);
                     ++m_bombCount;
                 }
-                else
-                {
-                    PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("FULL BOMB"));
-                }
+                
             }
             else
             {
@@ -550,7 +540,6 @@ void APlayableCharacter::interact(AActor* focusedActor)
         }
         else if (drone)
         {
-            PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDrone");
             ADroneAIController* droneController = Cast<ADroneAIController>(drone->GetController());
             if (droneController && FVector::DotProduct(drone->GetActorLocation() - this->GetActorLocation(),
                 drone->GetActorLocation() - this->GetActorLocation()) < m_interactRange)

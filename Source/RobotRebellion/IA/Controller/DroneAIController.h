@@ -74,10 +74,6 @@ private:
     void(ADroneAIController::* m_updateTargetMethod)();
 
 
-
-    
-
-
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
     TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
     FVector4 m_bestBombLocation;
