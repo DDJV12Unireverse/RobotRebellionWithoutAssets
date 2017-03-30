@@ -5,6 +5,7 @@
 
 #include "Gameplay/Weapon/Kaboom.h"
 #include "Tool/UtilitaryFunctionLibrary.h"
+#include "Components/SplineComponent.h"
 
 
 ADrone::ADrone() : ANonPlayableCharacter()
@@ -17,6 +18,12 @@ ADrone::ADrone() : ANonPlayableCharacter()
     this->GetCharacterMovement()->GravityScale = 0.f;
 
     m_debugTimer = 0.f;
+
+    m_splinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Path"));
+    m_splinePath->DefaultUpVector = { 0.f, 0.f, 1.f };
+    m_splinePath->ScaleVisualizationWidth = 10.f;
+    m_splinePath->bShouldVisualizeScale = true;
+    m_splinePath->bAllowDiscontinuousSpline = false;
 }
 
 void ADrone::BeginPlay()
