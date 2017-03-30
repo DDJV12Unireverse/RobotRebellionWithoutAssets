@@ -15,8 +15,6 @@ void ADroneAIController::BeginPlay()
 {
     Super::BeginPlay();
 
-    m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
-    
     m_currentTime = 0.f;
 
     m_nextMovementUpdateTime = m_updateMovementTime;
@@ -76,7 +74,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
 void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
 {
-    m_targetedHeight = m_targetToFollow->GetActorLocation().Z + m_stationaryElevation;
+    m_targetedHeight = m_destination.Z + m_stationaryElevation;
 }
 
 void ADroneAIController::updateTargetedTarget()
