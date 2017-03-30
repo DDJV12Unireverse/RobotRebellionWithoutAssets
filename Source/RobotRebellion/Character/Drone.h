@@ -17,6 +17,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
         float m_debugAutoDropTimer;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
+        class USplineComponent* m_splinePath;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge")
         FVector m_bombAccroch;
 
