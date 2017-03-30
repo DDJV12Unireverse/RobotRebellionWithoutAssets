@@ -6,7 +6,6 @@
 #include "ClassType.h"
 #include "../Gameplay/Spell/SpellKit.h"
 #include "../Gameplay/Item/Focusable.h"
-
 #include "PlayableCharacter.generated.h"
 
 /**

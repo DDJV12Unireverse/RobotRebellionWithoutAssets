@@ -490,9 +490,14 @@ void ADroneAIController::setFollowSafeZone()
 void ADroneAIController::chooseNextAction()
 {
 
+    float followScore = getFollowScore();
+    float reloadScore = getReloadScore();
+    float attackScore = getAttackScore();
+    float dropScore = getDropScore();
+    float waitScore = getWaitingScore();
         if (m_currentTime >= m_nextDebugDisplayTime && m_isDebugEnabled)
         {
-            float scoresArray[5] =  { getFollowScore(),getReloadScore(),getAttackScore(),getDropScore(),getWaitingScore() };
+            float scoresArray[5] =  { followScore,reloadScore,attackScore,dropScore,waitScore };
             m_nextDebugDisplayTime = m_currentTime + 1.5f;
             ADrone * drone = Cast<ADrone>(this->GetPawn());
             drone->displayScore(scoresArray);
@@ -502,16 +507,16 @@ void ADroneAIController::chooseNextAction()
         m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
 
         m_scores.Empty();
-        m_scores.Add(DRONE_MOVING, getFollowScore());
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_MOVING Score: %f"), getFollowScore()));
-        m_scores.Add(DRONE_RECHARGE, getReloadScore());
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_RECHARGE Score: %f"), getReloadScore()));
-        m_scores.Add(DRONE_COMBAT, getAttackScore());
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_COMBAT Score: %f"), getAttackScore()));
-        m_scores.Add(DRONE_BOMB, getDropScore());
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_BOMB Score: %f"), getDropScore()));
-        m_scores.Add(DRONE_WAITING, getWaitingScore());
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_WAIT Score: %f"), getWaitingScore()));
+        m_scores.Add(DRONE_MOVING, followScore);
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_MOVING Score: %f"), followScore));
+        m_scores.Add(DRONE_RECHARGE, reloadScore);
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_RECHARGE Score: %f"), reloadScore));
+        m_scores.Add(DRONE_COMBAT, attackScore);
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_COMBAT Score: %f"), attackScore));
+        m_scores.Add(DRONE_BOMB, dropScore);
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_BOMB Score: %f"), dropScore));
+        m_scores.Add(DRONE_WAITING, waitScore);
+        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_WAIT Score: %f"), waitScore));
         m_scores.ValueSort(&ScoreSortingFunction);
         
         TArray<AIDroneState> sortedStates;

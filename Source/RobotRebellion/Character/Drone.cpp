@@ -2,8 +2,6 @@
 
 #include "RobotRebellion.h"
 #include "Drone.h"
-#include "WidgetComponent.h"
-
 #include "Gameplay/Weapon/Kaboom.h"
 #include "Tool/UtilitaryFunctionLibrary.h"
 
