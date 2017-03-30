@@ -410,8 +410,7 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverGiveBombToDrone(ADroneAIController* drone);
 
-    UFUNCTION(BlueprintCallable, Category = "Debug UT")
-        ADroneAIController* getDroneController();
+    
 
     int getManaPotionCount()
     {

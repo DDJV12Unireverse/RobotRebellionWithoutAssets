@@ -1125,20 +1125,19 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     }
 }
 
-ADroneAIController* APlayableCharacter::getDroneController()
+
+void APlayableCharacter::enableDroneDisplay()
 {
+    ADroneAIController* droneController=nullptr;
     TArray<AActor*> drone;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADroneAIController::StaticClass(), drone);
     if (drone.Num() > 0) //The king is here
     {
-        ADroneAIController* droneController = Cast<ADroneAIController>(drone.Top());
-        return droneController;
+        droneController = Cast<ADroneAIController>(drone.Top());
+       
     }
-    return nullptr;
-}
-
-void APlayableCharacter::enableDroneDisplay()
-{
-    ADroneAIController* droneController = getDroneController();
+    if (droneController) 
+    {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
+    }
 }
