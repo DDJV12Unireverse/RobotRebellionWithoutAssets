@@ -14,7 +14,13 @@ class ROBOTREBELLION_API ADrone : public ANonPlayableCharacter
     GENERATED_BODY()
 
 public:
-    ADrone();
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Debug")
+    class UWidgetComponent* m_utScores;
 
+    ADrone();
+    virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
+
+    void displayScore(float scores[5]);
+    
 };

@@ -56,6 +56,10 @@ private:
     //the next time the drone checks we are attacking or attacked by ennemies
     float m_nextUpdateAttackCooldownTime;
 
+    //the next time the drone checks we are attacking or attacked by ennemies
+    float m_nextDebugDisplayTime;
+
+
     
     //Position to follow
     FVector m_destination;
@@ -67,15 +71,7 @@ private:
     float m_coeffKing;
     void(ADroneAIController::* m_updateTargetMethod)();
 
-    float getAttackScore();
-
-    float getFollowScore();
-
-    float getReloadScore();
-
-    float getWaitingScore();
-
-    float getDropScore();
+    
 
     void findDropZone();
 
@@ -134,6 +130,23 @@ public:
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getAttackScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getFollowScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getReloadScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getWaitingScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getDropScore();
+
+
     bool HasABomb()
     {
         return m_gotBomb;
@@ -182,7 +195,7 @@ public:
 
     void dropBomb();
 
-    void CheckEnnemyNear(FVector position, float range);
+    virtual void CheckEnnemyNear(FVector position, float range);
 
 
     int getNbBombPlayers();

@@ -7,13 +7,14 @@
 #include "Character/NonPlayableCharacter.h"
 #include "Map.h"
 #include "Character/PlayableCharacter.h"
+#include "Character/Drone.h"
 
 static const float c_DroneRechargeHeight = 250.f;
 
 void ADroneAIController::BeginPlay()
 {
     Super::BeginPlay();
-
+    
     m_bestBombLocation = FVector(0, 0, 0);
 
     m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
@@ -23,6 +24,7 @@ void ADroneAIController::BeginPlay()
     m_nextMovementUpdateTime = m_updateMovementTime;
     m_nextUpdatePropertyTime = m_updatePropertyTime;
     m_nextUpdateAttackCooldownTime = m_updateAttackCooldownTime;
+    m_nextDebugDisplayTime = m_updateAttackCooldownTime;
 
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
@@ -298,10 +300,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_nextUpdatePropertyTime = m_currentTime + m_updatePropertyTime;
     }
 
-    //if (m_currentTime >= m_updateAttackCooldownTime)
-    //{
-    //    m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
-    //}
+
 }
 
 void ADroneAIController::IALoop(float deltaTime)
@@ -450,15 +449,24 @@ void ADroneAIController::setFollowSafeZone()
 void ADroneAIController::chooseNextAction()
 {
     m_scores.Empty();
-
+    ADrone* drone = Cast<ADrone>(GetControlledPawn());
     m_scores.Add(DRONE_MOVING, getFollowScore());
     m_scores.Add(DRONE_RECHARGE, getReloadScore());
     m_scores.Add(DRONE_COMBAT, getAttackScore());
     m_scores.Add(DRONE_BOMB, getDropScore());
+    m_scores.Add(DRONE_WAITING, getWaitingScore());
+    float scoresArray[5] = {getFollowScore(),getReloadScore(),getAttackScore(),getDropScore(),getWaitingScore()};
+    if (m_currentTime >= m_nextDebugDisplayTime)
+    {
+        m_nextDebugDisplayTime = m_currentTime + 5.f;
+        drone->displayScore(scoresArray);
+    }
+
     m_scores.ValueSort(&ScoreSortingFunction);
     TArray<AIDroneState> sortedStates;
     m_scores.GenerateKeyArray(sortedStates);
     m_state = sortedStates[0];
+    m_state = DRONE_RECHARGE;
 }
 
 void ADroneAIController::CheckEnnemyNear(FVector position, float range)
