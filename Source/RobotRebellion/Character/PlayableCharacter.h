@@ -109,11 +109,18 @@ public:
         float MaxUseDistance;
 
 
+    UPROPERTY(EditDefaultsOnly, Category = DroneController) //For debug UT widget
+        TSubclassOf<ADroneAIController> m_droneClass;
+
     // Seulement vrai lors de la premi�re image avec un nouveau focus.
     bool bHasNewFocus;
     AActor* focusedPickupActor;
 
     bool m_tpsMode;
+
+    ADroneAIController* m_droneController;
+
+    bool m_isDebugDisplayEnabled;
 
 public:
     APlayableCharacter();
@@ -411,6 +418,9 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverGiveBombToDrone(ADroneAIController* drone);
 
+    UFUNCTION(BlueprintCallable, Category = "Debug UT")
+        ADroneAIController* getDroneController();
+
     int getManaPotionCount()
     {
         return m_manaPotionsCount;
@@ -440,4 +450,7 @@ public:
     {}
     virtual void OnEndFocus() override
     {}
+    void enableDroneDisplay();
+
+    bool isDroneDebugEnabled();
 };

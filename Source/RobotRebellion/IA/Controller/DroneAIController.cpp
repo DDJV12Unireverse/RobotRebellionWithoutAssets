@@ -456,9 +456,9 @@ void ADroneAIController::chooseNextAction()
     m_scores.Add(DRONE_BOMB, getDropScore());
     m_scores.Add(DRONE_WAITING, getWaitingScore());
     float scoresArray[5] = {getFollowScore(),getReloadScore(),getAttackScore(),getDropScore(),getWaitingScore()};
-    if (m_currentTime >= m_nextDebugDisplayTime)
+    if (m_currentTime >= m_nextDebugDisplayTime && m_isDebugEnabled)
     {
-        m_nextDebugDisplayTime = m_currentTime + 5.f;
+        m_nextDebugDisplayTime = m_currentTime + 1.5f;
         drone->displayScore(scoresArray);
     }
 

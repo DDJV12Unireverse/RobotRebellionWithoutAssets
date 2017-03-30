@@ -18,7 +18,6 @@ public:
     class UWidgetComponent* m_utScores;
 
     ADrone();
-    virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
 
     void displayScore(float scores[5]);

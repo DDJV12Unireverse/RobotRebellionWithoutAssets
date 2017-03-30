@@ -106,7 +106,7 @@ void APlayableCharacter::BeginPlay()
     m_manaPotionsCount = m_nbManaPotionStart;
     m_bombCount = m_nbBombStart;
     m_healthPotionsCount = m_nbHealthPotionStart;
-
+    m_isDebugDisplayEnabled = false;
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
 
 #ifdef WE_RE_ON_DEBUG
@@ -118,6 +118,9 @@ void APlayableCharacter::BeginPlay()
 #endif
 
     m_tpsMode = true;
+
+    m_droneController=getDroneController();
+    
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
@@ -764,6 +767,9 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAction("Debug_ChangeToHealer", IE_Pressed, this, &APlayableCharacter::changeToHealer);
     PlayerInputComponent->BindAction("Debug_ChangeToSoldier", IE_Pressed, this, &APlayableCharacter::changeToSoldier);
     PlayerInputComponent->BindAction("Debug_ChangeToWizard", IE_Pressed, this, &APlayableCharacter::changeToWizard);
+
+    //Display Drone UT Scores
+    PlayerInputComponent->BindAction("Debug_DroneDisplay", IE_Pressed, this, &APlayableCharacter::enableDroneDisplay);
 }
 
 void APlayableCharacter::cppPreRevive(APlayableCharacter* characterToRevive)
@@ -1132,3 +1138,31 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     }
 }
 
+ADroneAIController* APlayableCharacter::getDroneController()
+{
+    TArray<AActor*> drone;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_droneClass, drone);
+    if (drone.Num() > 0) //The king is here
+    {
+        ADroneAIController* droneController = Cast<ADroneAIController>(drone.Top());
+        return droneController;
+    }
+    return nullptr;
+}
+
+void APlayableCharacter::enableDroneDisplay()
+{
+    if (m_isDebugDisplayEnabled)
+    {
+        m_isDebugDisplayEnabled = false;
+        m_droneController->enableDroneDisplay(false);
+        return;
+    }
+    m_isDebugDisplayEnabled = true;
+    m_droneController->enableDroneDisplay(true);
+
+}
+bool APlayableCharacter::isDroneDebugEnabled()
+{
+    return m_isDebugDisplayEnabled;
+}

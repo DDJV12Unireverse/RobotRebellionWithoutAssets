@@ -59,7 +59,7 @@ private:
     //the next time the drone checks we are attacking or attacked by ennemies
     float m_nextDebugDisplayTime;
 
-
+    bool m_isDebugEnabled;
     
     //Position to follow
     FVector m_destination;
@@ -69,11 +69,12 @@ private:
 
     class AKing* m_king;
     float m_coeffKing;
+
+
     void(ADroneAIController::* m_updateTargetMethod)();
 
     
 
-    void findDropZone();
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
     TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
@@ -130,6 +131,7 @@ public:
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
+    void findDropZone();
 
     UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
     float getAttackScore();
@@ -213,4 +215,9 @@ public:
     float distance(FVector dest);
 
     FVector findSafeZone();
+
+    void enableDroneDisplay(bool enable)
+    {
+        m_isDebugEnabled = enable;
+    }
 };
