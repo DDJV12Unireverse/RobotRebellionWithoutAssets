@@ -37,7 +37,7 @@ private:
 
     TMap<AIDroneState,float> m_scores;
 
-    bool m_gotBomb = true;
+    bool m_gotBomb = false;
 
     AIDroneState m_state;
 
@@ -73,6 +73,8 @@ private:
 
     void(ADroneAIController::* m_updateTargetMethod)();
 
+
+
     
 
 
@@ -104,7 +106,7 @@ public:
         float m_updateMovementTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updateAttackCooldownTime = 1.0f;
+        float m_updateAttackCooldownTime = 2.25f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
     float c_bombDamageRadius = 700.0; //TODO move to weapon
@@ -128,6 +130,8 @@ public:
     virtual void BeginPlay() override;
 
     virtual void Tick(float deltaTime) override;
+
+    float getNbEnnemiesInScene();
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
