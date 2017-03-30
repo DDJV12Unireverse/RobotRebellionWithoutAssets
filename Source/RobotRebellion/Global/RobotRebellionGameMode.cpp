@@ -11,41 +11,7 @@
 ARobotRebellionGameMode::ARobotRebellionGameMode()
 {
     // set default pawn class to our Blueprinted character
-    //static ConstructorHelpers::FClassFinder<APawn> soldier(TEXT("/Game/ThirdPersonCPP/Blueprints/Soldier_BP"));
-    //static ConstructorHelpers::FClassFinder<APawn> healer(TEXT("/Game/ThirdPersonCPP/Blueprints/Healer_BP"));
-    //static ConstructorHelpers::FClassFinder<APawn> wizard(TEXT("/Game/ThirdPersonCPP/Blueprints/Wizard_BP"));
-    //static ConstructorHelpers::FClassFinder<APawn> assassin(TEXT("/Game/ThirdPersonCPP/Blueprints/Assassin_BP"));
-    static ConstructorHelpers::FClassFinder<APawn> defaultPawn(TEXT("/Game/ThirdPersonCPP/Blueprints/DefaultSelectionClassePawn_BP"));
-
-    //int32 randNumber = FMath::RandRange(0, 3);
-    //switch(randNumber)
-    //{
-    //    case 1:
-    //        if(healer.Class != NULL)
-    //        {
-    //            DefaultPawnClass = healer.Class;
-    //            break;
-    //        }
-    //    case 2:
-    //        if(wizard.Class != NULL)
-    //        {
-    //            DefaultPawnClass = wizard.Class;
-    //            break;
-    //        }
-    //    case 3:
-    //        if(assassin.Class != NULL)
-    //        {
-    //            DefaultPawnClass = assassin.Class;
-    //            break;
-    //        }
-    //    case 0:
-    //    default:
-    //        if(soldier.Class != NULL)
-    //        {
-    //            DefaultPawnClass = soldier.Class;
-    //            break;
-    //        }
-    //}
+    static ConstructorHelpers::FClassFinder<APawn> defaultPawn(TEXT("/Game/ThirdPersonCPP/Blueprints/DefaultSpawn_BP"));
     DefaultPawnClass = defaultPawn.Class;
     bUseSeamlessTravel = true;
 }
