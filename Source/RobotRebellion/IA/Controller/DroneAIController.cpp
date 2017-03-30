@@ -96,13 +96,15 @@ float ADroneAIController::getAttackScore()
     }
     else
     {
-
         //Up to 5 BOMB POSITIONS
         const int iMax = m_sensedEnnemies.Num() < 5 ? m_sensedEnnemies.Num() : 5;
         for (int i = 0; i < iMax; i++)
         {
             //TODO: Implement and call findDropZone() instead
-            scoreBombLocations.Add(m_sensedEnnemies[i]->GetActorLocation(), getBombScore(m_sensedEnnemies[i]->GetActorLocation()));
+            FVector ennemyPos = m_sensedEnnemies[i]->GetActorLocation();
+            float bombScore = getBombScore(ennemyPos);
+            scoreBombLocations.Add(ennemyPos, bombScore);
+            PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("POSITION:%f %f %f BOMB Score: %f"), ennemyPos.X, ennemyPos.Y, ennemyPos.Z, bombScore));
         }
         if (scoreBombLocations.Num())
         {
@@ -182,7 +184,7 @@ float ADroneAIController::getDropScore()
     FVector dronePosition = owner->GetActorTransform().GetLocation();
 
     //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DROP DISTANCE: %f"), FVector(dronePosition - m_destination).Size()));
-    if (FVector(dronePosition - m_destination).Size() < 150.0f && m_gotBomb && m_state == DRONE_COMBAT)
+    if (FVector(dronePosition - m_destination).Size() < 50.0f && m_gotBomb && m_state == DRONE_COMBAT)
     {
         score = 100.f;
     }
@@ -370,18 +372,18 @@ void ADroneAIController::IALoop(float deltaTime)
             m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
         }
     }
-    DrawDebugSphere(
-        GetWorld(),
-        m_destination,
-        24,
-        32,
-        FColor(0, 0, 255)
-    );
+    //DrawDebugSphere(
+    //    GetWorld(),
+    //    m_destination,
+    //    24,
+    //    32,
+    //    FColor(0, 0, 255)
+    //);
 }
 
 void ADroneAIController::dropBomb()
 {
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
+    if(m_gotBomb) PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
     ADrone * drone = Cast<ADrone>(this->GetPawn());
     if(drone)
     {
@@ -444,9 +446,6 @@ void ADroneAIController::followGroup()
 
 void ADroneAIController::followFireZone()
 {
-
-
-
         m_destination = m_bestBombLocation;
         m_destination.Z = m_destination.Z + m_stationaryElevation;
 }
@@ -492,7 +491,6 @@ void ADroneAIController::chooseNextAction()
         m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
 
         m_scores.Empty();
-
         m_scores.Add(DRONE_MOVING, getFollowScore());
         PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_MOVING Score: %f"), getFollowScore()));
         m_scores.Add(DRONE_RECHARGE, getReloadScore());
@@ -501,6 +499,8 @@ void ADroneAIController::chooseNextAction()
         PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_COMBAT Score: %f"), getAttackScore()));
         m_scores.Add(DRONE_BOMB, getDropScore());
         PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_BOMB Score: %f"), getDropScore()));
+        m_scores.Add(DRONE_WAITING, getWaitingScore());
+        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_WAIT Score: %f"), getWaitingScore()));
         m_scores.ValueSort(&ScoreSortingFunction);
         TArray<AIDroneState> sortedStates;
         m_scores.GenerateKeyArray(sortedStates);
@@ -511,6 +511,9 @@ void ADroneAIController::chooseNextAction()
 
 void ADroneAIController::CheckEnnemyNear(FVector position, float range)
 {
+    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("CheckEnnemyNear Range: %f"), range));
+
+
     //TODO: Ray cast instead... Drone currently sees through walls...
 
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
@@ -527,7 +530,7 @@ void ADroneAIController::CheckEnnemyNear(FVector position, float range)
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
         MultiSphereStart,
         MultiSphereEnd,
-        range, //TODO
+        range, 
         ObjectTypes,
         false,
         ActorsToIgnore,
@@ -550,7 +553,7 @@ void ADroneAIController::CheckEnnemyNear(FVector position, float range)
                     continue;
                 }
                 m_sensedEnnemies.Add(RRCharacter);
-                break; //BUGBUG: ??? 
+                //break; //DISABLE BREAKS BOMB SEARCH 
             }
         }
     }

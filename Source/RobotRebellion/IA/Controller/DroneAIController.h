@@ -37,7 +37,7 @@ private:
 
     TMap<AIDroneState,float> m_scores;
 
-    bool m_gotBomb = true;
+    bool m_gotBomb = false;
 
     AIDroneState m_state;
 
