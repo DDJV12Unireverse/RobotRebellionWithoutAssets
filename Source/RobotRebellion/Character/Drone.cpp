@@ -17,19 +17,13 @@ ADrone::ADrone() : ANonPlayableCharacter()
 
 
     m_debugTimer = 0.f;
-
-    m_splinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Path"));
-    m_splinePath->DefaultUpVector = { 0.f, 0.f, 1.f };
-    m_splinePath->ScaleVisualizationWidth = 10.f;
-    m_splinePath->bShouldVisualizeScale = true;
-    m_splinePath->bAllowDiscontinuousSpline = false;
 }
 
 void ADrone::BeginPlay()
 {
     Super::BeginPlay();
 
-    reload();
+    //reload();
 
 }
 
@@ -64,7 +58,7 @@ bool ADrone::reload()
 
     UWorld* world = this->GetWorld();
 
-    if (!this->isLoaded() && world)
+    if(!this->isLoaded() && world)
     {
         FActorSpawnParameters spawnParams;
         spawnParams.Owner = this;
@@ -77,7 +71,7 @@ bool ADrone::reload()
             spawnParams
         );
 
-        if (m_currentBomb)
+        if(m_currentBomb)
         {
             m_currentBomb->attachToDrone(this);
 
@@ -97,7 +91,7 @@ void ADrone::drop()
         return;
     }
 
-    if (this->isLoaded())
+    if(this->isLoaded())
     {
         m_currentBomb->activateBomb();
 
@@ -113,7 +107,7 @@ void ADrone::autoDrop(float deltaTime)
 {
     m_debugTimer += deltaTime;
 
-    if (m_debugTimer > m_debugAutoDropTimer)
+    if(m_debugTimer > m_debugAutoDropTimer)
     {
         drop();
 

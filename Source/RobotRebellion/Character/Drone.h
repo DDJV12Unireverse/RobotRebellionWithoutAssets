@@ -18,9 +18,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
         float m_debugAutoDropTimer;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
-        class USplineComponent* m_splinePath;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charge")
         FVector m_bombAccroch;
 
@@ -34,13 +31,27 @@ public:
 
 
 public:
+    /************************************************************************/
+    /* CONSTRUCTOR                                                          */
+    /************************************************************************/
     ADrone();
 
+
+    /************************************************************************/
+    /* GENUINE METHODS                                                      */
+    /************************************************************************/
     virtual void BeginPlay() override;
 
     virtual void Tick(float deltaTime) override;
 
+
     void displayScore(float scores[5]);
+
+
+    /************************************************************************/
+    /* UFUNCTION                                                            */
+    /************************************************************************/
+
     /*
     Reload the drone with an object (here a kaboom bomb). Spawn the Kaboom actor and attach it to the drone. 
     The Bomb is unnactive and won't explode at collision.

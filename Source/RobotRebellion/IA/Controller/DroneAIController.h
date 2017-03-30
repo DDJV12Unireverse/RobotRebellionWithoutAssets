@@ -117,6 +117,40 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = Projectile)
         TSubclassOf<class AProjectile> m_projectileClass;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
+        class USplineComponent* m_splinePath;
+
+    /** Specifie how many time aicontroller wait before updating everything (in ms)*/
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UpdateParameter)
+        float m_updateFrequencie;
+    /** Specifie if the path is showed on screen*/
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
+        bool m_showDebugPath;
+    /** Specifie the time Step along the spline curve. Must be between 0 and 1. It's more like a percentage*/
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter, meta = (ClampMin = 0.f, ClampMax = 1.f))
+        float m_timeStep;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
+        float m_splineTension;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
+        float m_timerAStarProcess;
+
+
+private:
+    TArray<FVector> m_path;
+    TArray<FVector> m_smoothedPath;
+
+    //Debug
+    int32 m_targetId;
+    int32 m_oldTarget;
+
+    float m_time;
+
+    float m_currentAStarTimer;
+
+
+public:
     /************************************************************************/
     /* METHODS                                                              */
     /************************************************************************/
@@ -222,4 +256,23 @@ public:
     {
         return m_isDebugEnabled;
     }
+
+    void clearSplinePath();
+
+    /*
+    Update the spline path using the point array containing all passage point.
+    Tension must be between 0.f and 1.f and control the bending strength of the curve.
+    */
+    void updateSplinePath(float tension);
+
+    // Draw the path on screen
+    void debugDrawPath();
+
+    // Smooth the path, make it more optimal and more realistic
+    void smoothPath();
+
+    // See if the agent can go from one point to another
+    bool testFlyFromTo(const FVector& startPoint, const FVector& endPoint);
+
+    void processPath(float deltaTime);
 };
