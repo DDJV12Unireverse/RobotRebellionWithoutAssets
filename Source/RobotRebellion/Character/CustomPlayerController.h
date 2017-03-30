@@ -12,5 +12,9 @@ UCLASS()
 class ROBOTREBELLION_API ACustomPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+public:
+    UFUNCTION(Reliable, Client)
+        void setInputMode(bool status);
+    
 };

@@ -1,4 +1,4 @@
-  // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #include "RobotRebellion.h"
 #include "RobotRebellionCharacter.h"
@@ -45,7 +45,7 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
 {
     Super::Tick(deltaTime);
 
-    if (m_textBillboardInstance)
+    if(m_textBillboardInstance)
     {
         m_textBillboardInstance->update(deltaTime);
     }
@@ -61,7 +61,7 @@ void ARobotRebellionCharacter::disablingEverything()
 {
     this->bHidden = true;
 
-    if (Controller)
+    if(Controller)
     {
         Controller->UnPossess();
     }
@@ -69,7 +69,7 @@ void ARobotRebellionCharacter::disablingEverything()
     this->SetActorEnableCollision(false);
 
     this->UnregisterAllComponents();
-    
+
     GetCapsuleComponent()->DestroyComponent();
 
     this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::endDisabling;
@@ -88,16 +88,16 @@ void ARobotRebellionCharacter::destroyNow(float deltaTime)
     //All conditions are met for destroying
     //To add a condition for destroying, add it to this if.
     //The destruction will occur when all conditions will be met
-    if (m_textBillboardInstance->nothingToRender())
+    if(m_textBillboardInstance->nothingToRender())
     {
         //We have made everything important before destroying. Now we can destroy safely.
         this->m_timedDestroyDelegate = &ARobotRebellionCharacter::noDestroyForNow;
 
-        if (Role >= ROLE_Authority)
+        if(Role >= ROLE_Authority)
         {
             netMultiKill();
         }
-        else if (!this->IsPendingKillOrUnreachable())
+        else if(!this->IsPendingKillOrUnreachable())
         {
             this->Destroy();
         }
@@ -106,7 +106,7 @@ void ARobotRebellionCharacter::destroyNow(float deltaTime)
 
 void ARobotRebellionCharacter::netMultiKill_Implementation()
 {
-    if (!this->IsPendingKillOrUnreachable())
+    if(!this->IsPendingKillOrUnreachable())
     {
         this->ConditionalBeginDestroy();
     }
@@ -134,12 +134,12 @@ void ARobotRebellionCharacter::cppOnDeath()
 
 void ARobotRebellionCharacter::onDeath()
 {
-    if (Role == ROLE_Authority)
+    if(Role == ROLE_Authority)
     {
         clientOnDeath();
         //return;
     }
-        
+
     this->cppOnDeath();
 }
 
@@ -160,7 +160,7 @@ void ARobotRebellionCharacter::displayAnimatedIntegerValue(int32 valueToDisplay,
 {
     m_textBillboardInstance->beginDisplayingInteger(this->GetActorLocation(), valueToDisplay, color, mode);
 
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
         netMultidisplayAnimatedIntegerValue(valueToDisplay, color, mode);
     }
@@ -170,7 +170,7 @@ void ARobotRebellionCharacter::displayAnimatedText(const FString& textToDisplay,
 {
     m_textBillboardInstance->beginDisplayingText(this->GetActorLocation(), textToDisplay, color, mode);
 
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
         netMultidisplayAnimatedText(textToDisplay, color, mode);
     }
@@ -198,19 +198,31 @@ bool ARobotRebellionCharacter::netMultidisplayAnimatedText_Validate(const FStrin
 
 void ARobotRebellionCharacter::createTextBillboard()
 {
-    this->createTextBillboardWithThisCamera(Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->FollowCamera);
+    APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+    if(charac)
+    {
+        this->createTextBillboardWithThisCamera(charac->FollowCamera);
+    }
 }
 
 void ARobotRebellionCharacter::createTextBillboardWithThisCamera(UCameraComponent* camera)
 {
-    if (UUtilitaryFunctionLibrary::createObjectFromDefault<UTextBillboardComponent>(&m_textBillboardInstance, m_textBillboardDefault, camera, RF_Dynamic))
+    if(UUtilitaryFunctionLibrary::createObjectFromDefault<UTextBillboardComponent>(&m_textBillboardInstance, m_textBillboardDefault, camera, RF_Dynamic))
+    {
+        setBillboardInstanceNewCamera(camera);
+        m_textBillboardInstance->Activate();
+
+        m_textBillboardInstance->RegisterComponent();
+    }
+}
+
+void ARobotRebellionCharacter::setBillboardInstanceNewCamera(UCameraComponent* camera)
+{
+    if(NULL != m_textBillboardInstance)
     {
         m_textBillboardInstance->AttachToComponent(camera, FAttachmentTransformRules::KeepRelativeTransform);
         m_textBillboardInstance->SetRelativeTransform({});
         camera->UpdateChildTransforms();
-        m_textBillboardInstance->Activate();
-
-        m_textBillboardInstance->RegisterComponent();
     }
 }
 
@@ -249,13 +261,13 @@ void ARobotRebellionCharacter::inflictStun(float duration)
 
 void ARobotRebellionCharacter::inflictInvisibility()
 {
-    if (!this->isImmortal())
+    if(!this->isImmortal())
     {
         UInvisibilityAlteration* invisibilityAlteration;
-        if (UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UInvisibilityAlteration>(
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UInvisibilityAlteration>(
             &invisibilityAlteration,
             *GameAlterationInstaller::getInstance().getAlterationDefault<UInvisibilityAlteration>()
-        ))
+            ))
         {
             m_alterationController->addAlteration(invisibilityAlteration);
         }
@@ -266,12 +278,12 @@ void ARobotRebellionCharacter::inflictInvisibility()
 void ARobotRebellionCharacter::setInvisible(bool isInvisible)
 {
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if (characterMesh)
+    if(characterMesh)
     {
         characterMesh->SetVisibility(!isInvisible);
     }
 
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
         multiSetInvisible(isInvisible);
     }
@@ -314,7 +326,7 @@ void ARobotRebellionCharacter::restoreMana(float value, ELivingTextAnimMode anim
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
 {
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if (characterMesh)
+    if(characterMesh)
     {
         characterMesh->SetVisibility(!isInvisible);
     }
