@@ -107,19 +107,12 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
-
-    UPROPERTY(EditDefaultsOnly, Category = DroneController) //For debug UT widget
-        TSubclassOf<ADroneAIController> m_droneClass;
-
     // Seulement vrai lors de la premi�re image avec un nouveau focus.
     bool bHasNewFocus;
     AActor* focusedPickupActor;
 
     bool m_tpsMode;
 
-    ADroneAIController* m_droneController;
-
-    bool m_isDebugDisplayEnabled;
 
 public:
     APlayableCharacter();
@@ -450,6 +443,4 @@ public:
     virtual void OnEndFocus() override
     {}
     void enableDroneDisplay();
-
-    bool isDroneDebugEnabled();
 };

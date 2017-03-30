@@ -106,7 +106,6 @@ void APlayableCharacter::BeginPlay()
     m_manaPotionsCount = m_nbManaPotionStart;
     m_bombCount = m_nbBombStart;
     m_healthPotionsCount = m_nbHealthPotionStart;
-    m_isDebugDisplayEnabled = false;
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
 
 #ifdef WE_RE_ON_DEBUG
@@ -119,7 +118,6 @@ void APlayableCharacter::BeginPlay()
 
     m_tpsMode = true;
 
-    m_droneController=getDroneController();
     
 }
 
@@ -1130,7 +1128,7 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 ADroneAIController* APlayableCharacter::getDroneController()
 {
     TArray<AActor*> drone;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), m_droneClass, drone);
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADroneAIController::StaticClass(), drone);
     if (drone.Num() > 0) //The king is here
     {
         ADroneAIController* droneController = Cast<ADroneAIController>(drone.Top());
@@ -1141,17 +1139,6 @@ ADroneAIController* APlayableCharacter::getDroneController()
 
 void APlayableCharacter::enableDroneDisplay()
 {
-    if (m_isDebugDisplayEnabled)
-    {
-        m_isDebugDisplayEnabled = false;
-        m_droneController->enableDroneDisplay(false);
-        return;
-    }
-    m_isDebugDisplayEnabled = true;
-    m_droneController->enableDroneDisplay(true);
-
-}
-bool APlayableCharacter::isDroneDebugEnabled()
-{
-    return m_isDebugDisplayEnabled;
+    ADroneAIController* droneController = getDroneController();
+        droneController->enableDroneDisplay(!droneController->isDebugEnabled());
 }
