@@ -598,6 +598,21 @@ void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
     PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
 }
 
+void APlayableCharacter::updateAllCharacterBillboard_Implementation(UCameraComponent* camToFollow)
+{
+    TArray<AActor*> OutArray;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARobotRebellionCharacter::StaticClass(), OutArray);
+
+    for(AActor* charc : OutArray)
+    {
+        ARobotRebellionCharacter* RRCharac = Cast<ARobotRebellionCharacter>(charc);
+        if(RRCharac)
+        {
+            RRCharac->setBillboardInstanceNewCamera(camToFollow);
+        }
+    }
+}
+
 void APlayableCharacter::clientRevive_Implementation()
 {
     m_isReviving = true;

@@ -438,4 +438,7 @@ public:
     {}
     virtual void OnEndFocus() override
     {}
+
+    UFUNCTION(Reliable, Client)
+        void updateAllCharacterBillboard(UCameraComponent* camToFollow);
 };
