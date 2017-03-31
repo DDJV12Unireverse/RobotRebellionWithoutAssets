@@ -25,6 +25,11 @@ private:
         float m_weaponVerticallyRange;
 
 public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+        USoundCue* m_missSound;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+        USoundCue* m_hitSound;
+
     /************************************************************************/
     /*                  CONSTRUCTORS                                        */
     /************************************************************************/
@@ -44,7 +49,12 @@ public:
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
+
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
+
+    virtual void playSound(ARobotRebellionCharacter* user) override;
+
+    void playSound(USoundCue* sound, AActor* originator);
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
 };

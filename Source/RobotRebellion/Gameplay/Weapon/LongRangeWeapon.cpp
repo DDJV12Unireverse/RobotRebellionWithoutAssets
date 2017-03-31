@@ -149,7 +149,6 @@ void ULongRangeWeapon::playSound(ARobotRebellionCharacter* user)
 
 void ULongRangeWeapon::playSound(USoundCue* sound, AActor* originator)
 {
-    UAudioComponent* audioComponent = nullptr;
     if(sound && originator)
     {
         //UGameplayStatics::PlaySoundAtLocation(originator, sound, originator->GetActorLocation());
