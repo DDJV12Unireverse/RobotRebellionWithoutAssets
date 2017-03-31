@@ -740,16 +740,16 @@ void ADroneAIController::updateSplinePath(float tension)
 
     m_splinePath->AddSplinePoint(GetPawn()->GetActorLocation(), ESplineCoordinateSpace::World, false);
 
-    for(int32 iter = m_smoothedPath.Num() - 1; iter > 0; --iter)
+    const int32 lastPointIndex = m_smoothedPath.Num() - 1;
+    for(int32 iter = 0; iter < lastPointIndex; ++iter)
     {
         m_splinePath->AddSplinePoint(m_smoothedPath[iter], ESplineCoordinateSpace::World, false);
     }
 
-    m_splinePath->AddSplinePoint(m_smoothedPath[0], ESplineCoordinateSpace::World, true);
+    //update spline at the very end. It is useless to update it before.
+    m_splinePath->AddSplinePoint(m_smoothedPath[lastPointIndex], ESplineCoordinateSpace::World, true); 
 
     m_splinePath->GetSplinePointsPosition().AutoSetTangents(tension);
-
-    m_time = 0.f;
 }
 
 void ADroneAIController::smoothPath()
@@ -759,9 +759,9 @@ void ADroneAIController::smoothPath()
     int32 nextIndex{};
 
     // Smooth the path beginning at the start point
-    TArray<FVector> smoothedPath{};
+    m_smoothedPath.Reset();
     currentIndex = m_path.Num() - 1;
-    smoothedPath.Emplace(m_path[currentIndex]);
+    m_smoothedPath.Emplace(m_path[currentIndex]);
     while(currentIndex > 0)
     {
         nextIndex = currentIndex;
@@ -779,19 +779,10 @@ void ADroneAIController::smoothPath()
             }
         }
         ++nextIndex;
-        smoothedPath.Emplace(m_path[nextIndex]);
+        m_smoothedPath.Emplace(m_path[nextIndex]);
         //re -loop from the last index
         currentIndex = nextIndex;
     }
-
-    m_smoothedPath.Reset(smoothedPath.Num());
-    m_smoothedPath.AddUninitialized(smoothedPath.Num());
-    int32 smoothedPathMaxIndex = smoothedPath.Num() - 1;
-    for(int32 index{}; index < smoothedPath.Num(); ++index)
-    {
-        m_smoothedPath[index] = smoothedPath[smoothedPathMaxIndex - index];
-    }
-
 
     this->updateSplinePath(m_splineTension);
 
