@@ -9,7 +9,9 @@
 #include "Character/PlayableCharacter.h"
 #include "Character/Drone.h"
 
-static const float cEnnemisInScene = 5.f; // TODO REMPLACER AVEC INFO DE LA SCENE
+static const float cEnnemisInScene = 15.f; // TODO REMPLACER AVEC INFO DE LA SCENE
+
+static const float cAttackTuningFactor = 0.5f;
 
 void ADroneAIController::BeginPlay()
 {
@@ -135,6 +137,8 @@ float ADroneAIController::getAttackScore()
 
         score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / getNbEnnemiesInScene()) + isInCombat() * getNbBombPlayers() +  bestBombScore) / c_Normalize;
 
+        score *= cAttackTuningFactor;
+
         if (FVector(dronePosition - m_destination).Size() < 50.0f && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
         {
             score *= 0.01f;
@@ -175,17 +179,10 @@ float ADroneAIController::getReloadScore()
             score *= (1 - (getNbAliveAllies() / (4 * getNbAliveEnnemies())));
         }
         score *= (1 - getNbEnnemiesInZone(m_safeZone) / (0.1f + distance(m_safeZone))); //ZoneScore
+        score = (score < 0.f) ? 0.f : score;
     }
 
-    //Is it worth it??? 
-        //TBD
-
-    //Safe Zone available
-        //Anyone in safe zone
-
-// Bomb
     return score;
-    //return 1.f;
 }
 
 float ADroneAIController::getWaitingScore()
@@ -478,6 +475,7 @@ void ADroneAIController::followGroup()
     {
         m_destination /= livingPlayers;
     }
+    m_destination.Z = m_stationaryElevation;
 }
 
 
