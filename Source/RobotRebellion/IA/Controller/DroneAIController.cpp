@@ -9,9 +9,7 @@
 #include "Character/PlayableCharacter.h"
 #include "Character/Drone.h"
 
-static const float cEnnemisInScene = 15.f; // TODO REMPLACER AVEC INFO DE LA SCENE
 
-static const float cAttackTuningFactor = 0.5f;
 
 void ADroneAIController::BeginPlay()
 {
@@ -25,6 +23,10 @@ void ADroneAIController::BeginPlay()
     m_nextUpdatePropertyTime = m_updatePropertyTime;
     m_nextUpdateAttackCooldownTime = m_updateAttackCooldownTime;
     m_nextDebugDisplayTime = m_updateAttackCooldownTime;
+
+    TArray<AActor*> ennemies;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANonPlayableCharacter::StaticClass(), ennemies);
+    c_ennemisInScene = ennemies.Num()-2; //do not count drone and king
 
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
@@ -137,7 +139,7 @@ float ADroneAIController::getAttackScore()
 
         score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / getNbEnnemiesInScene()) + isInCombat() * getNbBombPlayers() +  bestBombScore) / c_Normalize;
 
-        score *= cAttackTuningFactor;
+        score *= m_attackTuningFactor;
 
         if (FVector(dronePosition - m_destination).Size() < 50.0f && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
         {
@@ -224,7 +226,7 @@ float ADroneAIController::getDropScore()
 float ADroneAIController::getNbEnnemiesInScene()
 {
     //TODO: Get a way of knowing how many ennemies were spawned originally in the current fight scene.
-    return cEnnemisInScene;
+    return c_ennemisInScene;
 }
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()

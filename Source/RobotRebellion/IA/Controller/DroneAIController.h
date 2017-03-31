@@ -44,8 +44,7 @@ private:
     //the height the drone must be
     float m_targetedHeight;
 
-    
-
+    float c_ennemisInScene; // TODO REMPLACER AVEC INFO DE LA SCENE
 
     //the current time
     float m_currentTime;
@@ -75,7 +74,6 @@ private:
 
     class AKing* m_king;
     float m_coeffKing;
-
 
     void(ADroneAIController::* m_updateTargetMethod)();
 
@@ -123,6 +121,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
         float m_safeZoneSize;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
+        float m_attackTuningFactor;
+
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
