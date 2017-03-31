@@ -10,7 +10,7 @@
 #include "Components/SplineComponent.h"
 #include "IA/Navigation/NavigationVolumeGraph.h"
 
-#define VERY_LITTLE 150.0f
+#define VERY_LITTLE 5.0f
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
 {
@@ -269,7 +269,6 @@ float ADroneAIController::distance(FVector dest)
 EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 {
     ADrone* owner = Cast<ADrone>(GetPawn());
-    FVector actorLocation = owner->GetActorLocation();
 
     if(m_finalPath.Num() == 0)
     {
@@ -277,8 +276,12 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
         return EPathFollowingRequestResult::AlreadyAtGoal;
     }
 
+    FVector actorLocation = owner->GetActorLocation();
+
+    float epsilonSegregation = m_droneVelocity * m_droneVelocity * m_timeSinceLastUpdate;
+    
     // Check if we have reach the current point
-    if(FVector::Dist(actorLocation, m_finalPath.Top()) <= VERY_LITTLE)
+    while(m_finalPath.Num() != 0 && FVector::DistSquared(actorLocation, m_finalPath.Top()) <= epsilonSegregation)
     {
         m_finalPath.Pop();
     }
@@ -289,10 +292,10 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
         return EPathFollowingRequestResult::AlreadyAtGoal;
     }
 
-    FVector directionToTarget = m_finalPath.Top() - actorLocation;
+    FVector directionToTarget = m_finalPath.Pop() - actorLocation;
     directionToTarget.Normalize();
 
-    owner->GetMovementComponent()->Velocity = directionToTarget * 1000.f;
+    owner->GetMovementComponent()->Velocity = directionToTarget * m_droneVelocity;
 
     return EPathFollowingRequestResult::RequestSuccessful;
 }
@@ -319,6 +322,8 @@ void ADroneAIController::updateTargetedTarget()
 
 void ADroneAIController::IAUpdate(float deltaTime)
 {
+    m_timeSinceLastUpdate = deltaTime;
+
     if(m_currentTime >= m_nextUpdatePropertyTime)
     {
         updateTargetedTarget();
@@ -327,8 +332,6 @@ void ADroneAIController::IAUpdate(float deltaTime)
 
         m_nextUpdatePropertyTime = m_currentTime + m_updatePropertyTime;
     }
-
-
 }
 
 void ADroneAIController::IALoop(float deltaTime)

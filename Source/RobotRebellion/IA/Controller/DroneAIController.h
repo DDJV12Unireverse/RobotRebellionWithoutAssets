@@ -86,7 +86,7 @@ public:
     //Deceleration Coefficient. Higher the value, faster the drone will arrive to its target and more rough the stop will be.
     //Beware, a too high value will cause instability.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
-        float m_decelerationCoefficient;
+        float m_droneVelocity;
 
     //Elevation relative to its target
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
@@ -146,9 +146,8 @@ private:
     TArray<FVector> m_smoothedPath;
     TArray<FVector> m_finalPath;
 
-    float m_time;
-
     float m_currentAStarTimer;
+    float m_timeSinceLastUpdate;
 
 
 public:
