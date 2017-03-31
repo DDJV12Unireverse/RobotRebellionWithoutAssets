@@ -834,12 +834,6 @@ void ADroneAIController::debugDrawPath()
 
         DrawDebugLine(world, m_smoothedPath[index], m_smoothedPath[index + 1], FColor::Green, false, 15.f, 0, 5.f);
     }
-
-    float step = m_splinePath->Duration / 10.f;
-    for (float t = 0.f; t < m_splinePath->Duration; t += step)
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, m_splinePath->GetLocationAtTime(t, ESplineCoordinateSpace::World).ToString());
-    }
 }
 
 void ADroneAIController::processPath(float deltaTime)
