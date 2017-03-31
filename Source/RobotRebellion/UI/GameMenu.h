@@ -22,17 +22,21 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Game Menu Lobby Widget")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | UI Game Menu Lobby")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
     ULobbyUIWidget* LobbyImpl;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD Character Widget")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | HUD Character")
         TSubclassOf<UCustomRobotRebellionUserWidget> HUDCharacterWidget;
     UCustomRobotRebellionUserWidget* HUDCharacterImpl;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Revive Timer Widget")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | Revive Timer")
         TSubclassOf<UReviveTimerWidget> ReviveWidget;
     UReviveTimerWidget* ReviveTimerWidgetImpl;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | Classes Selection")
+        TSubclassOf<URobotRebellionWidget> ClassSelectionWidget;
+    URobotRebellionWidget* ClassSelectionWidgetImpl;
 
     template <class T>
     T* CreateCustomWidget(T *Widget)

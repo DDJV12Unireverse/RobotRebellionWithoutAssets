@@ -42,13 +42,13 @@ AKaboom::AKaboom()
 
     this->initializeDamagedObjectList();
     this->initializeKaboomMovementComponent();
+    this->deactivateBomb();
 }
 
 void AKaboom::BeginPlay()
 {
     Super::BeginPlay();
 
-    this->deactivateBomb();
 }
 
 void AKaboom::Tick(float deltaTime)
