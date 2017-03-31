@@ -729,7 +729,7 @@ FVector ADroneAIController::findSafeZone()
     return zoneCenter;
 }
 
-
+#define TO_ERASE_AFTER
 void ADroneAIController::clearSplinePath()
 {
     m_splinePath->ClearSplinePoints(false);
@@ -739,7 +739,9 @@ void ADroneAIController::updateSplinePath(float tension)
 {
     this->clearSplinePath();
 
+#ifndef TO_ERASE_AFTER
     m_splinePath->AddSplinePoint(GetPawn()->GetActorLocation(), ESplineCoordinateSpace::World, false);
+#endif
 
     const int32 lastPointIndex = m_smoothedPath.Num() - 1;
     for(int32 iter = 0; iter < lastPointIndex; ++iter)
@@ -852,6 +854,9 @@ void ADroneAIController::processPath(float deltaTime)
                 m_path.Reset();
                 m_path.Add(m_destination);
                 m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
+#ifdef TO_ERASE_AFTER
+                m_path.Emplace(GetPawn()->GetActorLocation());
+#endif
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
                 smoothPath();
