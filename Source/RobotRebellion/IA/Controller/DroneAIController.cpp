@@ -9,6 +9,7 @@
 #include "Character/PlayableCharacter.h"
 #include "Character/Drone.h"
 
+static const float cEnnemisInScene = 5.f; // TODO REMPLACER AVEC INFO DE LA SCENE
 
 void ADroneAIController::BeginPlay()
 {
@@ -130,9 +131,9 @@ float ADroneAIController::getAttackScore()
 
 //   PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("POSITION:%f %f %f BOMB Score: %f"), ennemyPos.X, ennemyPos.Y, ennemyPos.Z, bombScore));
 
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("Player alive ratio:%.3f \n EnnemyRatio:%f \n nbBmbPlayr:%d \n bestBombScore:%f \n"), (1.f - getNbAliveAllies() / c_NbPlayersMax), (getNbAliveEnnemies() / 15.f), getNbBombPlayers(), bestBombScore));
+        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("Player alive ratio:%.3f \n EnnemyRatio:%f \n nbBmbPlayr:%d \n bestBombScore:%f \n"), (1.f - getNbAliveAllies() / c_NbPlayersMax), (getNbAliveEnnemies() / getNbEnnemiesInScene()), getNbBombPlayers(), bestBombScore));
 
-        score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / 15.f) + isInCombat() * getNbBombPlayers() +  bestBombScore) / c_Normalize;
+        score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / getNbEnnemiesInScene()) + isInCombat() * getNbBombPlayers() +  bestBombScore) / c_Normalize;
 
         if (FVector(dronePosition - m_destination).Size() < 50.0f && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
         {
@@ -226,7 +227,7 @@ float ADroneAIController::getDropScore()
 float ADroneAIController::getNbEnnemiesInScene()
 {
     //TODO: Get a way of knowing how many ennemies were spawned originally in the current fight scene.
-    return 15.f;
+    return cEnnemisInScene;
 }
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
@@ -368,6 +369,7 @@ void ADroneAIController::IALoop(float deltaTime)
     {
     case DRONE_WAITING:
         PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
+        setFollowGroup();
         break;
     case DRONE_MOVING:
     {
@@ -708,7 +710,7 @@ float ADroneAIController::getBombScore(FVector position)
     }
     else 
     {
-        score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemisAttacked) / c_Normalize);
+        score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemisAttacked/ getNbEnnemiesInScene()) / c_Normalize);
     }
 
     return score;
