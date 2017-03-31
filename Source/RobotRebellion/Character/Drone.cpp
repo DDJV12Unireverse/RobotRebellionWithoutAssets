@@ -48,7 +48,7 @@ void ADrone::displayScore(float scores[5])
 
 bool ADrone::reload()
 {
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         return false;
     }
@@ -68,7 +68,7 @@ bool ADrone::reload()
             m_bombAccroch,
             { 0.f, 0.f, 0.f },
             spawnParams
-        );
+            );
 
         if (m_currentBomb)
         {
@@ -85,7 +85,7 @@ bool ADrone::reload()
 
 void ADrone::drop()
 {
-    if(Role < ROLE_Authority)
+    if (Role < ROLE_Authority)
     {
         return;
     }
@@ -121,5 +121,9 @@ float ADrone::getBombBaseDamage() const USE_NOEXCEPT
 
 float ADrone::getBombRadius() const USE_NOEXCEPT
 {
-    return m_currentBomb->m_detonationRadius;
+    if (m_currentBomb)
+    {
+        return m_currentBomb->m_detonationRadius;
+    }
+    return 0.f;
 }
