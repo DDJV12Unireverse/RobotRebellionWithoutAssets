@@ -306,23 +306,32 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     }
 
     FVector actorLocation = owner->GetActorLocation();
-
-    float epsilonSegregation = m_droneVelocity * m_droneVelocity * m_timeSinceLastUpdate;
     
+    FVector globalDirection = m_destination - actorLocation;
+    FVector directionToTarget = m_finalPath.Top() - actorLocation;
+
     // Check if we have reach the current point
-    while(m_finalPath.Num() != 0 && FVector::DistSquared(actorLocation, m_finalPath.Top()) <= epsilonSegregation)
+    while(
+        m_finalPath.Num() != 0 && 
+        (FVector::DotProduct(directionToTarget, globalDirection) < 0.f || 
+            directionToTarget.SizeSquared() < m_epsilonSquaredDistanceTolerance))
     {
-        m_finalPath.Pop();
+        globalDirection = m_destination - actorLocation;
+        directionToTarget = m_finalPath.Pop(false) - actorLocation;
     }
 
-    if(m_finalPath.Num() == 0)
+    float directionVectSquaredSize = directionToTarget.SizeSquared();
+
+    if(m_finalPath.Num() == 0 && directionVectSquaredSize < m_epsilonSquaredDistanceTolerance)
     {// Already at the goal
         owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
         return EPathFollowingRequestResult::AlreadyAtGoal;
     }
-
-    FVector directionToTarget = m_finalPath.Pop() - actorLocation;
-    directionToTarget.Normalize();
+    
+    if (directionVectSquaredSize > 1.f)
+    {
+        directionToTarget /= FMath::Sqrt(directionVectSquaredSize);
+    }
 
     owner->GetMovementComponent()->Velocity = directionToTarget * m_droneVelocity;
 
@@ -425,6 +434,7 @@ void ADroneAIController::dropBomb()
         {
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
         }
+        drone->GetMovementComponent()->Velocity = FVector::ZeroVector;
         drone->drop();
     }
 }
@@ -768,7 +778,7 @@ FVector ADroneAIController::findSafeZone()
     }
 }
 
-//#define TO_ERASE_AFTER
+#define TO_ERASE_AFTER
 void ADroneAIController::clearSplinePath()
 {
     m_splinePath->ClearSplinePoints(false);
