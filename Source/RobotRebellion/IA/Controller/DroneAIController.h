@@ -10,8 +10,15 @@ enum AIDroneState
 {
     DRONE_WAITING,
     DRONE_MOVING,
-    DRONE_COMBAT
+    DRONE_COMBAT,
+    DRONE_BOMB,
+    DRONE_RECHARGE,
+    DRONE_NULL // Error
 };
+
+typedef TPair<AIDroneState, float> ActionScore;
+
+
 
 /**
  * 
@@ -27,6 +34,11 @@ private:
     /* PROPERTY                                                             */
     /************************************************************************/
 
+
+    TMap<AIDroneState,float> m_scores;
+
+  //  bool m_gotBomb = false;
+
     AIDroneState m_state;
 
     //the height the drone must be
@@ -41,13 +53,30 @@ private:
     //the next time we update the movement of the drone.
     float m_nextMovementUpdateTime;
 
+    //the next time the drone checks we are attacking or attacked by ennemies
+    float m_nextUpdateAttackCooldownTime;
+
+    //the next time the drone checks we are attacking or attacked by ennemies
+    float m_nextDebugDisplayTime;
+
+    bool m_isDebugEnabled;
     
     //Position to follow
     FVector m_destination;
 
+    //SafeZone
+    FVector m_safeZone;
+
     class AKing* m_king;
     float m_coeffKing;
-    void(ADroneAIController::* m_updateTarget)();
+
+
+    void(ADroneAIController::* m_updateTargetMethod)();
+
+
+    TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
+    TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
+    FVector4 m_bestBombLocation;
 
 public:
     /************************************************************************/
@@ -63,16 +92,30 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
         float m_stationaryElevation;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
+        float m_detectionDistance = 3000.0f;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updatePropertyTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateMovementTime;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
+        float m_updateAttackCooldownTime = 2.25f;
+
+   // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
+    //float c_bombDamageRadius = 700.0; //TODO move to weapon
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
+        float m_safeZoneSize;
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
     
+    /** Projectile class */
+    UPROPERTY(EditDefaultsOnly, Category = Projectile)
+        TSubclassOf<class AProjectile> m_projectileClass;
 
     /************************************************************************/
     /* METHODS                                                              */
@@ -84,9 +127,37 @@ public:
 
     virtual void Tick(float deltaTime) override;
 
+    float getNbEnnemiesInScene();
+
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
+    void findDropZone();
 
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getAttackScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getFollowScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getReloadScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getWaitingScore();
+
+    UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
+    float getDropScore();
+
+
+    bool HasABomb();
+    
+
+    UFUNCTION()
+        void receiveBomb();
+    
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverReceiveBomb();
+    
     /*Main IA methods*/
 
     //update the properties of the drone
@@ -107,9 +178,48 @@ public:
     void followKing();
     
     void followGroup();
+
+    void followFireZone();
+
+    void followSafeZone();
     
     void setFollowGroup();
     
     void setFollowKing();
+
+    void setFollowFireZone();
+
+    void setFollowSafeZone();
     
+    void chooseNextAction();
+
+    void dropBomb();
+
+    virtual void CheckEnnemyNear(FVector position, float range);
+
+
+    int getNbBombPlayers();
+
+    float getBombScore(FVector position);
+
+    bool isInCombat();
+ 
+    int getNbAliveAllies();
+    
+    int getNbAliveEnnemies();
+    
+    int getNbEnnemiesInZone(FVector zoneCenter);
+
+    float distance(FVector dest);
+
+    FVector findSafeZone();
+
+    void enableDroneDisplay(bool enable)
+    {
+        m_isDebugEnabled = enable;
+    }
+    bool isDebugEnabled()
+    {
+        return m_isDebugEnabled;
+    }
 };

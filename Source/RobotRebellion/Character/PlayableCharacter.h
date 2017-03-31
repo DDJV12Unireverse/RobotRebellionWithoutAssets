@@ -11,6 +11,7 @@
 /**
  *  Playable Character for Robot Rebellion Game
  */
+class ADroneAIController;
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter, public Focusable
 {
@@ -73,6 +74,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         float m_manaPerPotion;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact")
+        float m_interactRange;
+
     //Reviving Count
     UPROPERTY(EditDefaultsOnly, Category = "Reviving")
         UBoxComponent* m_revivingBox;
@@ -103,12 +107,12 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
-
     // Seulement vrai lors de la premi�re image avec un nouveau focus.
     bool bHasNewFocus;
     AActor* focusedPickupActor;
 
     bool m_tpsMode;
+
 
 public:
     APlayableCharacter();
@@ -405,9 +409,13 @@ public:
         return (this->m_revivingBox);
     }
 
+    UFUNCTION()
+    void giveBombToDrone(ADroneAIController* drone);
 
-    void giveBombToDrone() //Do Later
-    {}
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGiveBombToDrone(ADroneAIController* drone);
+
+    
 
     int getManaPotionCount()
     {
@@ -438,6 +446,8 @@ public:
     {}
     virtual void OnEndFocus() override
     {}
+
+    void enableDroneDisplay();
 
     UFUNCTION(Reliable, Client)
         void updateAllCharacterBillboard(UCameraComponent* camToFollow);

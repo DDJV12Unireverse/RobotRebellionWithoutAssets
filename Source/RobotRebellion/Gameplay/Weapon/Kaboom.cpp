@@ -49,7 +49,6 @@ void AKaboom::BeginPlay()
 {
     Super::BeginPlay();
 
-    this->deactivateBomb();
 }
 
 void AKaboom::Tick(float deltaTime)

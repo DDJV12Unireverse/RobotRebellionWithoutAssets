@@ -16,6 +16,7 @@ class ROBOTREBELLION_API ACustomAIControllerBase : public AAIController
 protected:
     class ARobotRebellionCharacter *m_targetToFollow;
 
+
 public:
     FORCEINLINE bool hasTarget() const USE_NOEXCEPT
     {
