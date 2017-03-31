@@ -109,6 +109,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
         float m_safeZoneSize;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
+        float m_reloadHeight;
+
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
@@ -126,12 +130,12 @@ public:
     /** Specifie if the path is showed on screen*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
         bool m_showDebugPath;
-    /** Specifie the time Step along the spline curve. Must be between 0 and 1. It's more like a percentage*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter, meta = (ClampMin = 0.f, ClampMax = 1.f))
-        float m_timeStep;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
         float m_splineTension;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 2))
+        int32 m_splinePointCountIntraSegment;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
         float m_timerAStarProcess;
@@ -140,10 +144,6 @@ public:
 private:
     TArray<FVector> m_path;
     TArray<FVector> m_smoothedPath;
-
-    //Debug
-    int32 m_targetId;
-    int32 m_oldTarget;
 
     float m_time;
 
@@ -275,4 +275,6 @@ public:
     bool testFlyFromTo(const FVector& startPoint, const FVector& endPoint);
 
     void processPath(float deltaTime);
+
+    void splineForecast();
 };

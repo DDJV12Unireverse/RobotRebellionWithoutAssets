@@ -23,7 +23,7 @@ void ADrone::BeginPlay()
 {
     Super::BeginPlay();
 
-    //reload();
+    reload();
 
 }
 

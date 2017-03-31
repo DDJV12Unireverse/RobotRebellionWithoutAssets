@@ -10,9 +10,7 @@
 #include "Components/SplineComponent.h"
 #include "IA/Navigation/NavigationVolumeGraph.h"
 
-static const float c_DroneRechargeHeight = 250.f;
-
-#define VERY_LITTLE 5.0f
+#define VERY_LITTLE 150.0f
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
 {
@@ -20,7 +18,8 @@ ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
 
     m_splinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Path"));
     m_splinePath->DefaultUpVector = { 0.f, 0.f, 1.f };
-    m_splinePath->ScaleVisualizationWidth = 10.f;
+    m_splinePath->ScaleVisualizationWidth = 30.f;
+    m_splinePath->SetSelectedSplineSegmentColor(FLinearColor::Blue);
     m_splinePath->bShouldVisualizeScale = true;
     m_splinePath->bAllowDiscontinuousSpline = false;
 }
@@ -34,6 +33,7 @@ void ADroneAIController::BeginPlay()
     m_targetToFollow = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // for testing
 
     m_currentTime = 0.f;
+    m_currentAStarTimer = 0.f;
 
     m_nextMovementUpdateTime = m_updateMovementTime;
     m_nextUpdatePropertyTime = m_updatePropertyTime;
@@ -54,6 +54,8 @@ void ADroneAIController::Tick(float deltaTime)
 
     IAUpdate(deltaTime);
     IALoop(deltaTime);
+
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, m_destination.ToString());
 }
 
 
@@ -265,11 +267,37 @@ float ADroneAIController::distance(FVector dest)
     return 0.f;
 }
 
+#define USE_EX
 
 EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 {
     ADrone* owner = Cast<ADrone>(GetPawn());
     FVector actorLocation = owner->GetActorLocation();
+
+#ifdef USE_EX
+    if(m_smoothedPath.Num() == 0)
+    {
+        owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
+        return EPathFollowingRequestResult::AlreadyAtGoal;
+    }
+
+    // Check if we have reach the current point
+    if(FVector::Dist(actorLocation, m_smoothedPath.Top()) <= VERY_LITTLE)
+    {
+        m_smoothedPath.Pop();
+    }
+
+    if(m_smoothedPath.Num() == 0)
+    {// Already at the goal
+        owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
+        return EPathFollowingRequestResult::AlreadyAtGoal;
+    }
+    FVector directionToTarget = m_smoothedPath.Top() - actorLocation;
+    directionToTarget.Normalize();
+
+    owner->GetMovementComponent()->Velocity = directionToTarget * 1000.f;
+
+#else
 
     if(m_time == m_splinePath->Duration)
     {// Already at the goal
@@ -306,6 +334,8 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
     owner->GetMovementComponent()->Velocity = directionToTarget / dt;
 
+#endif
+
     return EPathFollowingRequestResult::RequestSuccessful;
 }
 
@@ -316,7 +346,7 @@ void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
         switch(m_state)
         {
         case DRONE_RECHARGE:
-            m_targetedHeight = c_DroneRechargeHeight; //m_targetToFollow->GetActorLocation().Z;
+            m_targetedHeight = m_reloadHeight; //m_targetToFollow->GetActorLocation().Z;
             break;
         default:
             m_targetedHeight = m_targetToFollow->GetActorLocation().Z + m_stationaryElevation;
@@ -735,7 +765,7 @@ FVector ADroneAIController::findSafeZone()
         ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
         zoneCenter += currentPlayer->GetActorLocation();
     }
-    zoneCenter.Z = c_DroneRechargeHeight;
+    zoneCenter.Z = m_reloadHeight;
     return zoneCenter;
 }
 
@@ -759,6 +789,8 @@ void ADroneAIController::updateSplinePath(float tension)
     m_splinePath->AddSplinePoint(m_smoothedPath[0], ESplineCoordinateSpace::World, true);
 
     m_splinePath->GetSplinePointsPosition().AutoSetTangents(tension);
+
+    m_time = 0.f;
 }
 
 void ADroneAIController::smoothPath()
@@ -803,6 +835,8 @@ void ADroneAIController::smoothPath()
 
 
     this->updateSplinePath(m_splineTension);
+
+    this->splineForecast();
 }
 
 bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector& endPoint)
@@ -841,10 +875,18 @@ void ADroneAIController::debugDrawPath()
 
         DrawDebugLine(world, m_smoothedPath[index], m_smoothedPath[index + 1], FColor::Green, false, 15.f, 0, 5.f);
     }
+
+    float step = m_splinePath->Duration / 10.f;
+    for (float t = 0.f; t < m_splinePath->Duration; t += step)
+    {
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, m_splinePath->GetLocationAtTime(t, ESplineCoordinateSpace::World).ToString());
+    }
 }
 
 void ADroneAIController::processPath(float deltaTime)
 {
+    m_currentAStarTimer += deltaTime;
+
     if (m_currentAStarTimer > m_timerAStarProcess)
     {
         NavigationVolumeGraph& myGraph = NavigationVolumeGraph::getInstance();
@@ -860,7 +902,7 @@ void ADroneAIController::processPath(float deltaTime)
                 m_path.Reset();
                 m_path.Add(m_destination);
                 m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(m_targetId));
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
                 smoothPath();
                 if(m_showDebugPath)
@@ -869,11 +911,25 @@ void ADroneAIController::processPath(float deltaTime)
                 }
             }
         }
-
         m_currentAStarTimer = 0.f;
     }
-    else
+}
+
+void ADroneAIController::splineForecast()
+{
+    const int32 totalPointCount = m_splinePath->GetNumberOfSplinePoints() * m_splinePointCountIntraSegment;
+    const float timeStep = m_splinePath->Duration / static_cast<float>(totalPointCount);
+
+    m_smoothedPath.Reset(totalPointCount);
+
+    float currentTime = m_splinePath->Duration;
+    const int32 lastPoint = totalPointCount - 1;
+
+    for(int32 iter = 0; iter < lastPoint; ++iter)
     {
-        m_currentAStarTimer += deltaTime;
+        m_smoothedPath.Add(m_splinePath->GetLocationAtTime(currentTime, ESplineCoordinateSpace::World));
+        currentTime -= timeStep;
     }
+
+    m_smoothedPath.Add(m_splinePath->GetLocationAtTime(0.f, ESplineCoordinateSpace::World));
 }
