@@ -54,8 +54,6 @@ void ADroneAIController::Tick(float deltaTime)
 
     IAUpdate(deltaTime);
     IALoop(deltaTime);
-
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, m_destination.ToString());
 }
 
 
@@ -729,7 +727,7 @@ FVector ADroneAIController::findSafeZone()
     return zoneCenter;
 }
 
-#define TO_ERASE_AFTER
+//#define TO_ERASE_AFTER
 void ADroneAIController::clearSplinePath()
 {
     m_splinePath->ClearSplinePoints(false);
