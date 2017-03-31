@@ -132,11 +132,11 @@ float ADroneAIController::getAttackScore()
 
         PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("Player alive ratio:%.3f \n EnnemyRatio:%f \n nbBmbPlayr:%d \n bestBombScore:%f \n"), (1.f - getNbAliveAllies() / c_NbPlayersMax), (getNbAliveEnnemies() / 15.f), getNbBombPlayers(), bestBombScore));
 
-        score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / 15.f) + getNbBombPlayers() + bestBombScore) / c_Normalize;
+        score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / 15.f) + isInCombat() * getNbBombPlayers() +  bestBombScore) / c_Normalize;
 
         if (FVector(dronePosition - m_destination).Size() < 50.0f && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
         {
-            score *= 0.01;
+            score *= 0.01f;
         }
     }
     return score;
@@ -144,8 +144,16 @@ float ADroneAIController::getAttackScore()
 
 float ADroneAIController::getFollowScore()
 {
-    float score = 1 - 1 / (0.1f + distance(m_destination)); //Change later
-    score = (score < 0) ? 0 : score;
+    float score;
+    if (!isInCombat())
+    {
+       score = 1 - 1.f / (0.1f + distance(m_destination)); //Change later
+    }
+    else
+    {
+        score = 1.f-getBombScore(m_bestBombLocation);
+    }
+    score = (score < 0.f) ? 0.f : score;
     return score;
 }
 
@@ -182,11 +190,22 @@ float ADroneAIController::getReloadScore()
 float ADroneAIController::getWaitingScore()
 {
     ADrone* drone = Cast<ADrone>(GetPawn());
-    if ((m_destination - drone->GetActorLocation()).Size() < 10.f)
+    if (isInCombat())
     {
-        return 1.f;
+        if ((m_destination - drone->GetActorLocation()).Size() < 10.f)
+        {
+            return 1.f-getBombScore(m_bestBombLocation);
+        }
+        return 0.f;
     }
+    else
+    {
+        if ((m_destination - drone->GetActorLocation()).Size() < 10.f)
+        {
+            return 1.f;
+        }
     return 0.f;
+    }
 }
 
 float ADroneAIController::getDropScore()
@@ -197,7 +216,7 @@ float ADroneAIController::getDropScore()
     FVector dronePosition = owner->GetActorTransform().GetLocation();
 
     //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DROP DISTANCE: %f"), FVector(dronePosition - m_destination).Size()));
-    if (FVector(dronePosition - m_destination).Size() < 10.0f && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
+    if (FVector(dronePosition - m_destination).Size() < 10.f && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
     {
         score = getBombScore(m_bestBombLocation);
     }
