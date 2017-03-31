@@ -273,24 +273,25 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     ADrone* owner = Cast<ADrone>(GetPawn());
     FVector actorLocation = owner->GetActorLocation();
 
-    if(m_smoothedPath.Num() == 0)
+    if(m_finalPath.Num() == 0)
     {
         owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
         return EPathFollowingRequestResult::AlreadyAtGoal;
     }
 
     // Check if we have reach the current point
-    if(FVector::Dist(actorLocation, m_smoothedPath.Top()) <= VERY_LITTLE)
+    if(FVector::Dist(actorLocation, m_finalPath.Top()) <= VERY_LITTLE)
     {
-        m_smoothedPath.Pop();
+        m_finalPath.Pop();
     }
 
-    if(m_smoothedPath.Num() == 0)
+    if(m_finalPath.Num() == 0)
     {// Already at the goal
         owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
         return EPathFollowingRequestResult::AlreadyAtGoal;
     }
-    FVector directionToTarget = m_smoothedPath.Top() - actorLocation;
+
+    FVector directionToTarget = m_finalPath.Top() - actorLocation;
     directionToTarget.Normalize();
 
     owner->GetMovementComponent()->Velocity = directionToTarget * 1000.f;
@@ -809,21 +810,26 @@ bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector&
     return hitActors.Num() == 0;
 }
 
-void ADroneAIController::debugDrawPath()
+void ADroneAIController::debugDrawPath() const
 {
     //path
-    for(int32 index{}; index < m_path.Num() - 1; ++index)
-    {
-        UWorld* world = GetPawn()->GetWorld();
-
-        DrawDebugLine(world, m_path[index], m_path[index + 1], FColor::Red, false, 15.f, 0, 5.f);
-    }
+    this->debugElementaryDrawPath(m_path, FColor::Red);
+    
     // smoothed path
-    for(int32 index{}; index < m_smoothedPath.Num() - 1; ++index)
-    {
-        UWorld* world = GetPawn()->GetWorld();
+    this->debugElementaryDrawPath(m_smoothedPath, FColor::Green);
+    
+    // final path
+    this->debugElementaryDrawPath(m_finalPath, FColor::Blue);
+}
 
-        DrawDebugLine(world, m_smoothedPath[index], m_smoothedPath[index + 1], FColor::Green, false, 15.f, 0, 5.f);
+void ADroneAIController::debugElementaryDrawPath(const TArray<FVector>& pathToDraw, const FColor& lineColor) const
+{
+    int32 lastTracedPathPoint = pathToDraw.Num() - 1;
+    UWorld* world = GetPawn()->GetWorld();
+
+    for(int32 index{}; index < lastTracedPathPoint; ++index)
+    {
+        DrawDebugLine(world, pathToDraw[index], pathToDraw[index + 1], lineColor, false, 15.f, 0, 5.f);
     }
 }
 
@@ -864,16 +870,16 @@ void ADroneAIController::splineForecast()
     const int32 totalPointCount = m_splinePath->GetNumberOfSplinePoints() * m_splinePointCountIntraSegment;
     const float timeStep = m_splinePath->Duration / static_cast<float>(totalPointCount);
 
-    m_smoothedPath.Reset(totalPointCount);
+    m_finalPath.Reset(totalPointCount);
 
     float currentTime = m_splinePath->Duration;
     const int32 lastPoint = totalPointCount - 1;
 
     for(int32 iter = 0; iter < lastPoint; ++iter)
     {
-        m_smoothedPath.Add(m_splinePath->GetLocationAtTime(currentTime, ESplineCoordinateSpace::World));
+        m_finalPath.Add(m_splinePath->GetLocationAtTime(currentTime, ESplineCoordinateSpace::World));
         currentTime -= timeStep;
     }
 
-    m_smoothedPath.Add(m_splinePath->GetLocationAtTime(0.f, ESplineCoordinateSpace::World));
+    m_finalPath.Add(m_splinePath->GetLocationAtTime(0.f, ESplineCoordinateSpace::World));
 }

@@ -144,6 +144,7 @@ public:
 private:
     TArray<FVector> m_path;
     TArray<FVector> m_smoothedPath;
+    TArray<FVector> m_finalPath;
 
     float m_time;
 
@@ -266,7 +267,9 @@ public:
     void updateSplinePath(float tension);
 
     // Draw the path on screen
-    void debugDrawPath();
+    void debugDrawPath() const;
+
+    void debugElementaryDrawPath(const TArray<FVector>& pathToDraw, const FColor& lineColor) const;
 
     // Smooth the path, make it more optimal and more realistic
     void smoothPath();
