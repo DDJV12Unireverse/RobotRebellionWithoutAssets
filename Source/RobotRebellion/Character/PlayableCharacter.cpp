@@ -28,6 +28,9 @@
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
 
+#define STAND_UP_HEIGHT 70.f
+#define CROUCH_HEIGHT -10.f
+
 
 APlayableCharacter::APlayableCharacter()
 {
@@ -56,7 +59,7 @@ APlayableCharacter::APlayableCharacter()
 
     // Slight camera offset to aid with object selection
     //CameraBoom->SocketOffset = FVector(0, 35, 0);
-    CameraBoom->TargetOffset = FVector(0, 0, 70);
+    CameraBoom->TargetOffset = FVector(0.f, 0.f, STAND_UP_HEIGHT);
 
     // Create a follow camera
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -118,18 +121,25 @@ void APlayableCharacter::BeginPlay()
 
     m_tpsMode = true;
 
-    
+
+    // InputMode UI to select classes
+    APlayerController* MyPC = Cast<APlayerController>(GetController());
+    if(MyPC)
+    {
+        this->EnablePlayInput(false);
+    }
+
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (Controller && Controller->IsLocalController())
+    if(Controller && Controller->IsLocalController())
     {
         AActor* usable = Cast<AActor>(GetUsableInView());
         // Terminer le focus sur l'objet pr�c�dent
-        if (focusedPickupActor != usable)
+        if(focusedPickupActor != usable)
         {
             m_isReviving = false;
             m_currentRevivingTime = 0.f;
@@ -139,24 +149,28 @@ void APlayableCharacter::Tick(float DeltaTime)
         // Assigner le nouveau focus (peut �tre nul)
         focusedPickupActor = usable;
         // D�marrer un nouveau focus si Usable != null;
-        if (usable && usable->GetName() != "Floor")
+        if(usable && usable->GetName() != "Floor")
         {
-            if (bHasNewFocus)
+            if(bHasNewFocus)
             {
                 bHasNewFocus = false;
                 // only debug utility
                 //PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, TEXT("Focus"));
             }
-            if (m_isReviving)
+            if(m_isReviving)
             {
                 m_currentRevivingTime += DeltaTime;
 
-                if (m_currentRevivingTime >= m_requiredTimeToRevive)
+                if(m_currentRevivingTime >= m_requiredTimeToRevive)
                 {
                     m_isReviving = false;
                     m_currentRevivingTime = 0.f;
 
-                    cppPreRevive(Cast<APlayableCharacter>(focusedPickupActor));
+                    APlayableCharacter* charac = Cast<APlayableCharacter>(focusedPickupActor);
+                    if(charac)
+                    {
+                        cppPreRevive(charac);
+                    }
                 }
             }
         }
@@ -177,7 +191,7 @@ void APlayableCharacter::LookUpAtRate(float Rate)
 
 void APlayableCharacter::MoveForward(float Value)
 {
-    if ((Controller != NULL) && (Value != 0.0f))
+    if((Controller != NULL) && (Value != 0.0f))
     {
         // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
@@ -191,7 +205,7 @@ void APlayableCharacter::MoveForward(float Value)
 
 void APlayableCharacter::MoveRight(float Value)
 {
-    if ((Controller != NULL) && (Value != 0.0f))
+    if((Controller != NULL) && (Value != 0.0f))
     {
         // find out which way is right
         const FRotator Rotation = Controller->GetControlRotation();
@@ -219,7 +233,7 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 void APlayableCharacter::ExecuteCommand(FString command) const
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
-    if (MyPC)
+    if(MyPC)
     {
         MyPC->ConsoleCommand(command, true);
         PRINT_MESSAGE_ON_SCREEN(FColor::Red, command);
@@ -229,7 +243,7 @@ void APlayableCharacter::ExecuteCommand(FString command) const
 ///// JUMP
 void APlayableCharacter::OnStartJump()
 {
-    if (m_bPressedCrouch)
+    if(m_bPressedCrouch)
     {
         OnCrouchToggle();
     }
@@ -246,7 +260,7 @@ void APlayableCharacter::OnStopJump()
 ///// SPRINT
 void APlayableCharacter::OnStartSprint()
 {
-    if (m_bPressedCrouch)
+    if(m_bPressedCrouch)
     {
         OnCrouchToggle();
     }
@@ -256,7 +270,7 @@ void APlayableCharacter::OnStartSprint()
         m_moveSpeed = 1.0f;
         m_bPressedRun = true;
 
-        if (Role < ROLE_Authority)
+        if(Role < ROLE_Authority)
         {
             ServerSprintActivate(m_bPressedRun);
         }
@@ -269,7 +283,7 @@ void APlayableCharacter::OnStopSprint()
     m_moveSpeed = 0.3;
     m_bPressedRun = false;
     // Si nous sommes sur un client
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         ServerSprintActivate(m_bPressedRun);
     }
@@ -277,7 +291,7 @@ void APlayableCharacter::OnStopSprint()
 
 void APlayableCharacter::ServerSprintActivate_Implementation(bool NewRunning)
 {
-    if (NewRunning)
+    if(NewRunning)
     {
         OnStartSprint();
     }
@@ -293,7 +307,7 @@ bool APlayableCharacter::ServerSprintActivate_Validate(bool NewRunning)
 
 void APlayableCharacter::OnRep_SprintButtonDown()
 {
-    if (m_bPressedRun == true)
+    if(m_bPressedRun == true)
     {
         OnStartSprint();
     }
@@ -320,7 +334,7 @@ bool APlayableCharacter::ServerCrouchToggle_Validate(bool NewCrouching)
 void APlayableCharacter::OnRep_CrouchButtonDown()
 {
 
-    if (m_bPressedCrouch == true)
+    if(m_bPressedCrouch == true)
     {
         Crouch();
     }
@@ -333,23 +347,31 @@ void APlayableCharacter::OnRep_CrouchButtonDown()
 void APlayableCharacter::OnCrouchToggle()
 {
     // Not crouched and not running -> can Crouch
-    if (!IsRunning())
+    if(!IsRunning())
     {
-        if (!m_bPressedCrouch)
+        if(!m_bPressedCrouch)
         {
             m_bPressedCrouch = true;
             m_moveSpeed = 0.1f;
+
+            CameraBoom->TargetOffset.Z = CROUCH_HEIGHT;
+            this->BaseEyeHeight = CROUCH_HEIGHT;
+
             Crouch();
         }
         else
         {
             m_bPressedCrouch = false;
             m_moveSpeed = 0.3f;
+
+            CameraBoom->TargetOffset.Z = STAND_UP_HEIGHT;
+            this->BaseEyeHeight = STAND_UP_HEIGHT;
+
             UnCrouch();
         }
     }
     // Si nous sommes sur un client
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         ServerCrouchToggle(true); // le param n'a pas d'importance pour l'instant
     }
@@ -359,7 +381,7 @@ void APlayableCharacter::OnCrouchToggle()
 void APlayableCharacter::mainFire()
 {
     // Essayer de tirer un projectile
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         serverMainFire(); // le param n'a pas d'importance pour l'instant
     }
@@ -428,7 +450,7 @@ void APlayableCharacter::openLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
 
-    if (MyPC)
+    if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         if (myHud->LobbyImpl->IsVisible())
@@ -437,11 +459,7 @@ void APlayableCharacter::openLobbyWidget()
             return;
         }
         myHud->DisplayWidget(myHud->LobbyImpl);
-        FInputModeGameAndUI Mode;
-        Mode.SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture);
-        Mode.SetHideCursorDuringCapture(false);
-        MyPC->bShowMouseCursor = true;
-        MyPC->SetInputMode(Mode);
+        giveInputGameMode(false);
     }
 }
 
@@ -453,16 +471,36 @@ void APlayableCharacter::closeLobbyWidget()
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
-        FInputModeGameOnly Mode;
-        MyPC->SetInputMode(Mode);
-        MyPC->bShowMouseCursor = false;
+        giveInputGameMode(true);
+    }
+}
+
+void APlayableCharacter::closeSelectionWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(this->GetController());
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->ClassSelectionWidgetImpl);
+        myHud->DisplayWidget(myHud->HUDCharacterImpl);
+        giveInputGameMode(true);
+    }
+}
+
+void APlayableCharacter::giveInputGameMode(bool status)
+{
+    ACustomPlayerController* MyPC = Cast<ACustomPlayerController>(this->GetController());
+    if(MyPC)
+    {
+        EnablePlayInput(status);
+        MyPC->setInputMode(status);
     }
 }
 
 ///////// SWITCH WEAPON
 void APlayableCharacter::switchWeapon()
 {
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
     }
@@ -485,14 +523,14 @@ void APlayableCharacter::interactBegin()
 
 void APlayableCharacter::interact(AActor* focusedActor)
 {
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
         APickupActor* Usable = Cast<APickupActor>(focusedActor);
         APlayableCharacter* deadBody = Cast<APlayableCharacter>(focusedActor);
         ADrone* drone = Cast<ADrone>(focusedActor);
-        if (Usable) //focusedActor is an Usable Object
+        if(Usable) //focusedActor is an Usable Object
         {
-            if (Usable->getObjectType() == EObjectType::MANA_POTION)
+            if(Usable->getObjectType() == EObjectType::MANA_POTION)
             {
                 if (m_manaPotionsCount < m_nbManaPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
                     Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
@@ -502,7 +540,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                 }
                 
             }
-            else if (Usable->getObjectType() == EObjectType::HEALTH_POTION)
+            else if(Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
                 if (m_healthPotionsCount < m_nbHealthPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
                     Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
@@ -511,7 +549,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                     ++m_healthPotionsCount;
                 }
             }
-            else if (Usable->getObjectType() == EObjectType::BOMB)
+            else if(Usable->getObjectType() == EObjectType::BOMB)
             {
                 if (m_bombCount < m_nbBombMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
                     Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
@@ -526,7 +564,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                 PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
             }
         }
-        else if (deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
+        else if(deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
             if (FVector::DotProduct(deadBody->GetActorLocation() - this->GetActorLocation(),
                 deadBody->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
@@ -617,6 +655,21 @@ void APlayableCharacter::OnPickup(APawn * InstigatorPawn)
     PRINT_MESSAGE_ON_SCREEN(FColor::Yellow, "focusActor")
 }
 
+void APlayableCharacter::updateAllCharacterBillboard_Implementation(UCameraComponent* camToFollow)
+{
+    TArray<AActor*> OutArray;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARobotRebellionCharacter::StaticClass(), OutArray);
+
+    for(AActor* charc : OutArray)
+    {
+        ARobotRebellionCharacter* RRCharac = Cast<ARobotRebellionCharacter>(charc);
+        if(RRCharac)
+        {
+            RRCharac->setBillboardInstanceNewCamera(camToFollow);
+        }
+    }
+}
+
 void APlayableCharacter::clientRevive_Implementation()
 {
     m_isReviving = true;
@@ -673,7 +726,7 @@ void APlayableCharacter::changeToWizard()
 
 void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputComponent)
 {
-    if (PlayerInputComponent)
+    if(PlayerInputComponent)
     {
         PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APlayableCharacter::OnStartJump);
         PlayerInputComponent->BindAction("Jump", IE_Released, this, &APlayableCharacter::OnStopJump);
@@ -735,7 +788,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
 void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponent)
 {
-    if (PlayerInputComponent)
+    if(PlayerInputComponent)
     {
         //ESCAPE
         PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
@@ -761,7 +814,7 @@ void APlayableCharacter::inputDebug(class UInputComponent* PlayerInputComponent)
 
 void APlayableCharacter::cppPreRevive(APlayableCharacter* characterToRevive)
 {
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
         characterToRevive->restoreHealth(characterToRevive->getMaxHealth() / 2);
         PRINT_MESSAGE_ON_SCREEN(FColor::Red, "Prerevive");
@@ -803,11 +856,11 @@ void APlayableCharacter::EnablePlayInput(bool enable)
 {
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
-    if (playerController && playerController->InputComponent)
+    if(playerController && playerController->InputComponent)
     {
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
 
-        if (enable)
+        if(enable)
         {
             inputOnLiving(newPlayerController);
         }
@@ -819,7 +872,7 @@ void APlayableCharacter::EnablePlayInput(bool enable)
         playerController->InputComponent = newPlayerController;
     }
 
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
         clientEnableInput(enable);
     }
@@ -829,11 +882,11 @@ GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter,
 {
     APlayerController* playerController = Cast<APlayerController>(GetController());
 
-    if (playerController && playerController->InputComponent)
+    if(playerController && playerController->InputComponent)
     {
         UInputComponent* newPlayerController = CreatePlayerInputComponent();
 
-        if (enableInput)
+        if(enableInput)
         {
             inputOnLiving(newPlayerController);
         }
@@ -851,7 +904,7 @@ AActor* APlayableCharacter::GetUsableInView()
     FVector CamLoc;
     FRotator CamRot;
 
-    if (Controller == NULL)
+    if(Controller == NULL)
     {
         return NULL;
     }
@@ -878,11 +931,11 @@ AActor* APlayableCharacter::GetUsableInView()
 //////INVENTORY///////
 void APlayableCharacter::useHealthPotion()
 {
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         serverUseHealthPotion();
     }
-    else if (m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
+    else if(m_healthPotionsCount > 0 && getHealth() < getMaxHealth())
     {
         restoreHealth(m_healthPerPotion);
         --m_healthPotionsCount;
@@ -901,11 +954,11 @@ bool APlayableCharacter::serverUseHealthPotion_Validate()
 
 void APlayableCharacter::useManaPotion()
 {
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         serverUseManaPotion();
     }
-    else if (m_manaPotionsCount > 0 && getMana() < getMaxMana())
+    else if(m_manaPotionsCount > 0 && getMana() < getMaxMana())
     {
         restoreMana(m_manaPerPotion);
         --m_manaPotionsCount;
@@ -924,7 +977,7 @@ bool APlayableCharacter::serverUseManaPotion_Validate()
 
 void APlayableCharacter::setManaPotionCount(int nbPotions)
 {
-    if (nbPotions > m_nbManaPotionMax)
+    if(nbPotions > m_nbManaPotionMax)
     {
         m_manaPotionsCount = m_nbManaPotionMax;
     }
@@ -936,7 +989,7 @@ void APlayableCharacter::setManaPotionCount(int nbPotions)
 
 void APlayableCharacter::setHealthPotionCount(int nbPotions)
 {
-    if (nbPotions > m_nbHealthPotionMax)
+    if(nbPotions > m_nbHealthPotionMax)
     {
         m_healthPotionsCount = m_nbHealthPotionMax;
     }
@@ -948,7 +1001,7 @@ void APlayableCharacter::setHealthPotionCount(int nbPotions)
 
 void APlayableCharacter::setBombCount(int nbBombs)
 {
-    if (nbBombs > m_nbBombMax)
+    if(nbBombs > m_nbBombMax)
     {
         m_bombCount = m_nbBombMax;
     }
@@ -962,7 +1015,7 @@ void APlayableCharacter::loseMana()
 {
     this->consumeMana(150.f);
 
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         serverLoseMana();
     }
@@ -983,7 +1036,7 @@ void APlayableCharacter::loseBomb()
     m_bombCount = 0;
     PRINT_MESSAGE_ON_SCREEN(FColor::Turquoise, TEXT("BombLost"));
 
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         serverLoseBomb();
     }
@@ -1002,7 +1055,7 @@ bool APlayableCharacter::serverLoseBomb_Validate()
 
 void APlayableCharacter::gotoDesert()
 {
-    if (Role == ROLE_Authority)
+    if(Role == ROLE_Authority)
     {
         GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Desert", true, true);
     }
@@ -1014,7 +1067,7 @@ void APlayableCharacter::gotoDesert()
 
 void APlayableCharacter::gotoRuins()
 {
-    if (Role == ROLE_Authority)
+    if(Role == ROLE_Authority)
     {
         GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/Ruins", true, true);
     }
@@ -1026,7 +1079,7 @@ void APlayableCharacter::gotoRuins()
 
 void APlayableCharacter::gotoGym()
 {
-    if (Role == ROLE_Authority)
+    if(Role == ROLE_Authority)
     {
         GetWorld()->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap", true, true);
     }
@@ -1067,7 +1120,7 @@ bool APlayableCharacter::serverGotoRuins_Validate()
 
 void APlayableCharacter::switchView()
 {
-    if (m_tpsMode)
+    if(m_tpsMode)
     {
         CameraBoom->TargetArmLength = m_FPSCameraDistance;
     }
@@ -1079,7 +1132,7 @@ void APlayableCharacter::switchView()
     m_tpsMode = !m_tpsMode;
 
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if (characterMesh)
+    if(characterMesh)
     {
         characterMesh->SetVisibility(m_tpsMode);
         m_fpsMesh->SetVisibility(!m_tpsMode);
@@ -1088,7 +1141,7 @@ void APlayableCharacter::switchView()
 
 void APlayableCharacter::activatePhysics(bool mustActive)
 {
-    if (mustActive)
+    if(mustActive)
     {
         this->GetCapsuleComponent()->CreatePhysicsState();
         this->getRevivingBox()->DestroyPhysicsState();
@@ -1099,7 +1152,7 @@ void APlayableCharacter::activatePhysics(bool mustActive)
         this->getRevivingBox()->CreatePhysicsState();
     }
 
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
         multiActivatePhysics(mustActive);
     }
@@ -1112,7 +1165,7 @@ bool APlayableCharacter::multiActivatePhysics_Validate(bool mustActive)
 
 void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
-    if (mustActive)
+    if(mustActive)
     {
         this->GetCapsuleComponent()->CreatePhysicsState();
         this->getRevivingBox()->DestroyPhysicsState();

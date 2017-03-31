@@ -44,6 +44,8 @@ private:
     //the height the drone must be
     float m_targetedHeight;
 
+    float m_ennemisInScene; // TODO REMPLACER AVEC INFO DE LA SCENE
+
     //the current time
     float m_currentTime;
 
@@ -56,8 +58,11 @@ private:
     //the next time the drone checks we are attacking or attacked by ennemies
     float m_nextUpdateAttackCooldownTime;
 
-    //the next time the drone checks we are attacking or attacked by ennemies
     float m_nextDebugDisplayTime;
+
+    float m_nextUpdateSafeZoneTime;
+
+    float m_nextChangeTargetTime;
 
     bool m_isDebugEnabled;
     
@@ -69,7 +74,6 @@ private:
 
     class AKing* m_king;
     float m_coeffKing;
-
 
     void(ADroneAIController::* m_updateTargetMethod)();
 
@@ -93,7 +97,7 @@ public:
         float m_stationaryElevation;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
-        float m_detectionDistance = 3000.0f;
+        float m_detectionDistance;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updatePropertyTime;
@@ -102,7 +106,13 @@ public:
         float m_updateMovementTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updateAttackCooldownTime = 2.25f;
+        float m_updateAttackCooldownTime;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
+        float m_updateSafeZoneCooldownTime;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
+        float m_updateTargetCooldownTime;
 
    // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
     //float c_bombDamageRadius = 700.0; //TODO move to weapon
@@ -112,6 +122,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
         float m_reloadHeight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
+        float m_attackTuningFactor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
+        float m_epsilonSquaredDistanceTolerance;
 
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)

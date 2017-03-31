@@ -59,8 +59,10 @@ void ULobbyUIWidget::CreateServer(FString mapName)
     auto currentCharacter = Cast<APlayableCharacter>(GetOwningPlayer()->GetCharacter());
 
     FString command = "open " + mapName + "?listen";
-
-    currentCharacter->ExecuteCommand(command);
+    if(currentCharacter)
+    {
+        currentCharacter->ExecuteCommand(command);        
+    }
 }
 
 void ULobbyUIWidget::JoinServer(FString IPAdress)
@@ -69,7 +71,10 @@ void ULobbyUIWidget::JoinServer(FString IPAdress)
 
     FString command = "open " + IPAdress + ":7777";
 
-    currentCharacter->ExecuteCommand(command);
+    if(currentCharacter)
+    {
+        currentCharacter->ExecuteCommand(command);
+    }
 }
 
 bool ULobbyUIWidget::HostSession()

@@ -117,6 +117,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Billboard - Living Text")
         void createTextBillboardWithThisCamera(UCameraComponent* camera);
 
+    void setBillboardInstanceNewCamera(UCameraComponent* camera);
+
     UFUNCTION(BlueprintCallable, Category = "Billboard - Living Text")
         void displayAnimatedIntegerValue(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);
 
