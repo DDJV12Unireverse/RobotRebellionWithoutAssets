@@ -267,14 +267,12 @@ float ADroneAIController::distance(FVector dest)
     return 0.f;
 }
 
-#define USE_EX
 
 EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 {
     ADrone* owner = Cast<ADrone>(GetPawn());
     FVector actorLocation = owner->GetActorLocation();
 
-#ifdef USE_EX
     if(m_smoothedPath.Num() == 0)
     {
         owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
@@ -296,45 +294,6 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     directionToTarget.Normalize();
 
     owner->GetMovementComponent()->Velocity = directionToTarget * 1000.f;
-
-#else
-
-    if(m_time == m_splinePath->Duration)
-    {// Already at the goal
-        owner->GetMovementComponent()->Velocity = { 0.f, 0.f, 0.f }; //stop
-        return EPathFollowingRequestResult::AlreadyAtGoal;
-    }
-
-    //FInterpCurveVector& splinePointsArray = path->GetSplinePointsPosition();
-    float dt = m_splinePath->Duration / 10000.f;
-    float tIncrement = m_splinePath->Duration / 100.f;
-
-    FVector directionToTarget = m_splinePath->GetLocationAtTime(m_time, ESplineCoordinateSpace::World) - actorLocation;
-
-    if(m_time != m_splinePath->Duration)
-    {
-        while(directionToTarget.SizeSquared() < VERY_LITTLE)
-        {
-            m_time += tIncrement;
-
-            if(m_time < m_splinePath->Duration) // the last point
-            {
-                directionToTarget = m_splinePath->GetLocationAtTime(m_time, ESplineCoordinateSpace::World) - actorLocation;
-            }
-            else
-            {
-                m_time = m_splinePath->Duration;
-                directionToTarget = m_splinePath->GetLocationAtTime(m_time, ESplineCoordinateSpace::World) - actorLocation;
-                break;
-            }
-        }
-    }
-
-    directionToTarget.Normalize();
-
-    owner->GetMovementComponent()->Velocity = directionToTarget / dt;
-
-#endif
 
     return EPathFollowingRequestResult::RequestSuccessful;
 }
