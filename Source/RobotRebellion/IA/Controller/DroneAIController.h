@@ -44,7 +44,7 @@ private:
     //the height the drone must be
     float m_targetedHeight;
 
-    float c_ennemisInScene; // TODO REMPLACER AVEC INFO DE LA SCENE
+    float m_ennemisInScene; // TODO REMPLACER AVEC INFO DE LA SCENE
 
     //the current time
     float m_currentTime;

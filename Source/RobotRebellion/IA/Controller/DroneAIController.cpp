@@ -26,7 +26,7 @@ void ADroneAIController::BeginPlay()
 
     TArray<AActor*> ennemies;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANonPlayableCharacter::StaticClass(), ennemies);
-    c_ennemisInScene = ennemies.Num()-2; //do not count drone and king
+    m_ennemisInScene = ennemies.Num()-2; //do not count drone and king
 
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
@@ -226,7 +226,7 @@ float ADroneAIController::getDropScore()
 float ADroneAIController::getNbEnnemiesInScene()
 {
     //TODO: Get a way of knowing how many ennemies were spawned originally in the current fight scene.
-    return c_ennemisInScene;
+    return m_ennemisInScene;
 }
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
