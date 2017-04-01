@@ -192,7 +192,7 @@ float ADroneAIController::getReloadScore()
         {
             score *= FVector::DistSquared(getGroupBarycentre(), GetPawn()->GetActorLocation())
                 / FVector::DistSquared(m_safeZone, GetPawn()->GetActorLocation());
-                
+
         }
         score *= (1 - getNbEnnemiesInZone(m_safeZone) / (0.1f + distance(m_safeZone))); //ZoneScore
         score = (score < 0.f) ? 0.f : score;
@@ -598,9 +598,9 @@ void ADroneAIController::setFollowFireZone()
     m_canDropBomb = false;
     this->m_performAction = &ADroneAIController::followFireZone;
 
-    this->setDestination({ 
-        m_bestBombLocation.X, 
-        m_bestBombLocation.Y, 
+    this->setDestination({
+        m_bestBombLocation.X,
+        m_bestBombLocation.Y,
         m_bestBombLocation.Z + m_stationaryElevation
     });
 }
@@ -821,51 +821,42 @@ float ADroneAIController::getBombScore(FVector position)
 
 FVector ADroneAIController::findSafeZone()
 {
-    if(m_currentTime >= m_nextUpdateSafeZoneTime)
+    FVector zoneCenterAllies = FVector(0.f, 0.f, 0.f);
+    FVector zoneCenterEnnemies = FVector(0.f, 0.f, 0.f);
+    int actorCount = 0;
+    CheckEnnemyNear(GetPawn()->GetActorLocation(), m_detectionDistance);
+    for(int i = 0; i < m_sensedEnnemies.Num(); ++i)
     {
-        m_nextUpdateSafeZoneTime = m_currentTime + m_updateSafeZoneCooldownTime;
-        FVector zoneCenter = FVector(0.f, 0.f, 0.f);
-        FVector zoneCenterAllies = FVector(0.f, 0.f, 0.f);
-        FVector zoneCenterEnnemies = FVector(0.f, 0.f, 0.f);
-        int actorCount = 0;
-        CheckEnnemyNear(zoneCenter, m_safeZoneSize);
-        for(int i = 0; i < m_sensedEnnemies.Num(); ++i)
+        zoneCenterEnnemies += (m_sensedEnnemies[i])->GetActorLocation();
+        ++actorCount;
+    }
+    if(actorCount > 0)
+    {
+        zoneCenterEnnemies /= actorCount;
+    }
+    actorCount = 0;
+
+    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+    for(int32 iter = 0; iter < playerCount; ++iter)
+    {
+        ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+        if(currentPlayer) // Protection when player leaves the game
         {
-            zoneCenterEnnemies += (m_sensedEnnemies[i])->GetActorLocation();
-            ++actorCount;
+            if(!currentPlayer->isDead())
+            {
+                zoneCenterAllies += currentPlayer->GetActorLocation();
+                ++actorCount;
+            }
         }
         if(actorCount > 0)
         {
-            zoneCenterEnnemies /= actorCount;
+            zoneCenterAllies /= actorCount;
         }
-        actorCount = 0;
-
-        int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
-        for(int32 iter = 0; iter < playerCount; ++iter)
-        {
-            ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-            if(currentPlayer) // Protection when player leaves the game
-            {
-                if(!currentPlayer->isDead())
-                {
-                    zoneCenterAllies += currentPlayer->GetActorLocation();
-                    ++actorCount;
-                }
-            }
-            if(actorCount > 0)
-            {
-                zoneCenterAllies /= actorCount;
-            }
-        }
-
-        zoneCenter = (5 * zoneCenterAllies - zoneCenterEnnemies) / 4;
-        zoneCenter.Z = m_reloadHeight;
-        return zoneCenter;
     }
-    else
-    {
-        return m_safeZone;
-    }
+
+    FVector zoneCenter = (5 * zoneCenterAllies - zoneCenterEnnemies) / 4;
+    zoneCenter.Z = m_reloadHeight;
+    return zoneCenter;
 }
 
 void ADroneAIController::clearSplinePath()
@@ -1007,7 +998,9 @@ void ADroneAIController::processPath()
         }
         else
         {
-            targetId = myGraph.getBelowVolume(m_destination, 100.f);
+            float offset = 10.f;
+            targetId = myGraph.getBelowVolume(m_destination,
+                                              Cast<ADrone>(GetPawn())->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + offset);
             if(targetId != -1)
             {
                 m_path.Reset();
