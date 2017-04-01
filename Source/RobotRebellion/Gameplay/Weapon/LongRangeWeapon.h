@@ -8,13 +8,13 @@
 #include "LongRangeWeapon.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class ROBOTREBELLION_API ULongRangeWeapon : public UWeaponBase
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 
 public:
     /************************************************************************/
@@ -54,16 +54,13 @@ public:
     /************************************************************************/
 
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
-
-
-    // Base class version
-    virtual void playSound(ARobotRebellionCharacter* user) override;
-
+    
     virtual void cppAttack(ARobotRebellionCharacter* instigator, ARobotRebellionCharacter* ennemy) override;
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
 
     ULongRangeWeapon();
 
-    void playSound(USoundCue* sound, AActor* originator);
+    UFUNCTION(NetMulticast, Reliable)
+        virtual void playSound(USoundCue* sound, AActor* originator) override;
 };

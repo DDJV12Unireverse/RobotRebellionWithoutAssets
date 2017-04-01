@@ -78,8 +78,6 @@ public:
         float m_interactRange;
 
     //Reviving Count
-    UPROPERTY(EditDefaultsOnly, Category = "Reviving")
-        UBoxComponent* m_revivingBox;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
         float m_requiredTimeToRevive;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
@@ -260,9 +258,6 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
-    UFUNCTION(NetMulticast, Reliable)
-        void clientMainFireSound();
-
     //CAST SPELL
     template<int32 index>
     void castSpellInputHanlder()
@@ -402,11 +397,6 @@ public:
         bool isReviving()
     {
         return m_isReviving;
-    }
-    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        UBoxComponent* getRevivingBox()
-    {
-        return (this->m_revivingBox);
     }
 
     UFUNCTION()

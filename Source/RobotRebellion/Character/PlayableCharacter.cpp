@@ -91,8 +91,6 @@ APlayableCharacter::APlayableCharacter()
     //Revive
 
     m_isReviving = false;
-    m_revivingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("revivingBox"));
-    m_revivingBox->SetupAttachment(RootComponent);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -110,14 +108,6 @@ void APlayableCharacter::BeginPlay()
     m_bombCount = m_nbBombStart;
     m_healthPotionsCount = m_nbHealthPotionStart;
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
-
-#ifdef WE_RE_ON_DEBUG
-    m_revivingBox->SetVisibility(true);
-    m_revivingBox->SetHiddenInGame(false);
-#else
-    m_revivingBox->SetVisibility(false);
-    m_revivingBox->SetHiddenInGame(true);
-#endif
 
     m_tpsMode = true;
 
@@ -388,7 +378,6 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
-        clientMainFireSound();
     }
 }
 
@@ -400,15 +389,6 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
-}
-
-void APlayableCharacter::clientMainFireSound_Implementation()
-{
-    UWeaponBase* currentWeapon = m_weaponInventory->getCurrentWeapon();
-    if (currentWeapon)
-    {
-        currentWeapon->playSound(this);
-    }
 }
 
 //DEAD
@@ -564,7 +544,7 @@ void APlayableCharacter::interact(AActor* focusedActor)
                 PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
             }
         }
-        else if(deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
+        else if(deadBody && deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
             if (FVector::DotProduct(deadBody->GetActorLocation() - this->GetActorLocation(),
                 deadBody->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
@@ -902,25 +882,28 @@ GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter,
 AActor* APlayableCharacter::GetUsableInView()
 {
     FVector CamLoc;
+    FVector eyeLoc;
     FRotator CamRot;
+    FRotator eyeRot;
 
     if(Controller == NULL)
     {
         return NULL;
     }
 
+    GetActorEyesViewPoint(eyeLoc, eyeRot);
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
 
-    const FVector TraceStart = CamLoc;
     const FVector Direction = CamRot.Vector();
+    const FVector TraceStart = GetActorLocation() + Direction * 75.0f + FVector(0.0f, 0.0f, BaseEyeHeight);
     const FVector TraceEnd = TraceStart + (Direction * MaxUseDistance);
 
     FCollisionQueryParams TraceParams(FName(TEXT("TraceUsableActor")), true, this);
     TraceParams.bTraceAsyncScene = true;
     TraceParams.bReturnPhysicalMaterial = false;
-    TraceParams.bTraceComplex = true;
+    //TraceParams.bTraceComplex = true;
     FHitResult Hit(ForceInit);
-    GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
+    GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_WorldStatic, TraceParams);
 
     //TODO: Comment or remove once implemented in post-process.
     //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
@@ -1144,12 +1127,10 @@ void APlayableCharacter::activatePhysics(bool mustActive)
     if(mustActive)
     {
         this->GetCapsuleComponent()->CreatePhysicsState();
-        this->getRevivingBox()->DestroyPhysicsState();
     }
     else
     {
         this->GetCapsuleComponent()->DestroyPhysicsState();
-        this->getRevivingBox()->CreatePhysicsState();
     }
 
     if(Role >= ROLE_Authority)
@@ -1168,13 +1149,11 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     if(mustActive)
     {
         this->GetCapsuleComponent()->CreatePhysicsState();
-        this->getRevivingBox()->DestroyPhysicsState();
 
     }
     else
     {
         this->GetCapsuleComponent()->DestroyPhysicsState();
-        this->getRevivingBox()->CreatePhysicsState();
     }
 }
 

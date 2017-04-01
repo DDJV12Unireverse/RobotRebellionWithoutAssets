@@ -11,9 +11,7 @@
 
 ULongRangeWeapon::ULongRangeWeapon() :
     UWeaponBase()
-{
-
-}
+{}
 
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
@@ -54,10 +52,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 const FVector fireDirection = muzzleRotation.Vector();
                 projectile->InitVelocity(fireDirection);
 
-                if(user->Role == ROLE_Authority)
-                {
-                    playSound(m_longRangeWeaponFireSound, user);
-                }
+                playSound(m_longRangeWeaponFireSound, user);
 
                 reload();
             }
@@ -113,10 +108,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
                     UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation()));
                 projectile->InitVelocity(fireDirection);
 
-                if(user->Role == ROLE_Authority)
-                {
-                    playSound(m_longRangeWeaponFireSound, user);
-                }
+                playSound(m_longRangeWeaponFireSound, user);
 
                 reload();
             }
@@ -137,22 +129,10 @@ FString ULongRangeWeapon::rangeToFString() const USE_NOEXCEPT
     return "Long Range weapon";
 }
 
-void ULongRangeWeapon::playSound(ARobotRebellionCharacter* user)
+void ULongRangeWeapon::playSound_Implementation(USoundCue* sound, AActor* originator)
 {
-    if(canAttack() && m_projectileClass != NULL)
-    {
-        playSound(m_longRangeWeaponFireSound, user);
-        reload();
-    }
-}
-
-
-void ULongRangeWeapon::playSound(USoundCue* sound, AActor* originator)
-{
-    UAudioComponent* audioComponent = nullptr;
     if(sound && originator)
     {
-        //UGameplayStatics::PlaySoundAtLocation(originator, sound, originator->GetActorLocation());
         UGameplayStatics::SpawnSoundAttached(sound, originator->GetRootComponent());
     }
 }
