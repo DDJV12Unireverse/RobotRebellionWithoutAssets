@@ -228,12 +228,12 @@ float ADroneAIController::getDropScore()
 {
     float score = 0.f;
 
-    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
-    FVector dronePosition = owner->GetActorTransform().GetLocation();
+    ADrone* drone = Cast<ADrone>(this->GetPawn());
+    FVector dronePosition = drone->GetActorLocation();
 
     //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DROP DISTANCE: %f"), FVector(dronePosition - m_destination).Size()));
 
-    if(FVector(dronePosition - m_destination).SizeSquared() < m_epsilonSquaredDistanceTolerance && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
+    if(m_state == DRONE_COMBAT && this->isArrivedAtDestination() && drone->isLoaded())
     {
         score = getBombScore(m_bestBombLocation);
     }
@@ -307,16 +307,15 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
     FVector actorLocation = owner->GetActorLocation();
 
-    FVector globalDirection = m_destination - actorLocation;
     FVector directionToTarget = m_finalPath.Top() - actorLocation;
+    FVector lastDirection = owner->GetMovementComponent()->Velocity;
 
     // Check if we have reach the current point
     while(
         m_finalPath.Num() != 0 &&
-        (FVector::DotProduct(directionToTarget, globalDirection) < 0.f ||
+        (FVector::DotProduct(directionToTarget, lastDirection) < 0.f ||
             directionToTarget.SizeSquared() < m_epsilonSquaredDistanceTolerance))
     {
-        globalDirection = m_destination - actorLocation;
         directionToTarget = m_finalPath.Pop(false) - actorLocation;
     }
 
