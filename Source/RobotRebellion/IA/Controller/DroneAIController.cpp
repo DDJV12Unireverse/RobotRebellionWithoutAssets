@@ -307,16 +307,15 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
     FVector actorLocation = owner->GetActorLocation();
 
-    FVector globalDirection = m_destination - actorLocation;
     FVector directionToTarget = m_finalPath.Top() - actorLocation;
+    FVector lastDirection = owner->GetMovementComponent()->Velocity;
 
     // Check if we have reach the current point
     while(
         m_finalPath.Num() != 0 &&
-        (FVector::DotProduct(directionToTarget, globalDirection) < 0.f ||
+        (FVector::DotProduct(directionToTarget, lastDirection) < 0.f ||
             directionToTarget.SizeSquared() < m_epsilonSquaredDistanceTolerance))
     {
-        globalDirection = m_destination - actorLocation;
         directionToTarget = m_finalPath.Pop(false) - actorLocation;
     }
 
