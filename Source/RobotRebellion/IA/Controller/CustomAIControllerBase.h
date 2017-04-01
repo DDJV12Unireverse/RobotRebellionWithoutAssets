@@ -16,6 +16,7 @@ class ROBOTREBELLION_API ACustomAIControllerBase : public AAIController
 protected:
     class ARobotRebellionCharacter *m_targetToFollow;
     bool m_isInCombat;
+    FVector m_hitDirection;
 
 public:
     virtual void BeginPlay() override;
@@ -46,8 +47,6 @@ public:
         return m_isInCombat;
     }
 
-    void setCombat(bool isCombat)
-    {
-        m_isInCombat = isCombat;
-    }
+    //Set in combat mode and give information from combat direction
+    void setCombat(bool isCombat, FVector direction = FVector(0, 0, 0));
 };

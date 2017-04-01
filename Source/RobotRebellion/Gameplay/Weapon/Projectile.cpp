@@ -121,7 +121,7 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                     ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(ennemy->GetController());
                     if (controller)
                     {
-                        controller->setCombat(true);
+                        controller->setCombat(true,NormalImpulse);
                     }
                 }
                 receiver->inflictDamage(currentDamage);
