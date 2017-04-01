@@ -10,23 +10,24 @@
 
 
 UIsTargetInRangeBTTaskNode::UIsTargetInRangeBTTaskNode()
-{
-}
+{}
 
 EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
-
-    ARobotRebellionCharacter* pawn = Cast<ARobotRebellionCharacter>(AIController->GetPawn());
-
-    if(pawn)
+    if(AIController)
     {
-        if(pawn->m_weaponInventory && pawn->m_weaponInventory->getCurrentWeapon())
+        ARobotRebellionCharacter* pawn = Cast<ARobotRebellionCharacter>(AIController->GetPawn());
+
+        if(pawn)
         {
-            float weaponRangeDistance = pawn->m_weaponInventory->getCurrentWeapon()->m_WeaponRadiusRange;
-            if(weaponRangeDistance != m_detectingRange)
+            if(pawn->m_weaponInventory && pawn->m_weaponInventory->getCurrentWeapon())
             {
-                m_detectingRange = weaponRangeDistance;
+                float weaponRangeDistance = pawn->m_weaponInventory->getCurrentWeapon()->m_WeaponRadiusRange;
+                if(weaponRangeDistance != m_detectingRange)
+                {
+                    m_detectingRange = weaponRangeDistance;
+                }
             }
         }
     }
@@ -56,21 +57,7 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
 }
 
 void UIsTargetInRangeBTTaskNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-    ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
-
-
-
-
-
-    if(AIController->hasALivingTarget())
-    {
-        FVector currentTargetLocation = AIController->getTarget()->GetActorLocation();
-        FVector ennemiLocation = AIController->GetPawn()->GetActorLocation();
-
-        FVector distanceBetween = currentTargetLocation - ennemiLocation;
-    }
-}
+{}
 
 FString UIsTargetInRangeBTTaskNode::GetStaticDescription() const
 {

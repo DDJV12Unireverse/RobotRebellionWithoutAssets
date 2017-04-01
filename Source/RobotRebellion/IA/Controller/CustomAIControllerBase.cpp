@@ -8,6 +8,7 @@
 
 void ACustomAIControllerBase::BeginPlay()
 {
+    Super::BeginPlay();
     m_isInCombat = false;
     m_hitDirection = FVector(0, 0, 0);
 }
@@ -29,11 +30,14 @@ EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
     return MoveToActorResult;
 }
 
-void ACustomAIControllerBase::setCombat(bool isCombat, FVector direction /*= FVector(0, 0, 0)*/)
+void ACustomAIControllerBase::setCombat(bool isCombat, ARobotRebellionCharacter* attacker)
 {
     m_isInCombat = isCombat;
     if(isCombat)
     {
-        m_hitDirection = direction;
+        if(!hasALivingTarget())
+        {
+            m_targetToFollow = attacker;
+        }
     }
 }

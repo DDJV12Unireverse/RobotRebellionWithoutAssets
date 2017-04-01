@@ -15,10 +15,6 @@ class ROBOTREBELLION_API AEnnemiAIController : public ACustomAIControllerBase
 
 public:
 
-
-
-    virtual void BeginPlay() override;
-
     void CheckEnnemyNear(float range) override;
 
     void AttackTarget() const override;

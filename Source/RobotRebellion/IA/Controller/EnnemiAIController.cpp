@@ -11,38 +11,34 @@
 #include "Gameplay/Weapon/WeaponBase.h"
 #include "IA/Character/RobotsCharacter.h"
 
-
-void AEnnemiAIController::BeginPlay()
-{
-    m_isInCombat = false;
-}
-
 void AEnnemiAIController::CheckEnnemyNear(float range)
 {
     APawn *currentPawn = GetPawn();
+
     FVector MultiSphereStart = currentPawn->GetActorLocation();
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
+
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
+
     TArray<AActor*> ActorsToIgnore;
     ActorsToIgnore.Add(currentPawn);
-    TArray<FHitResult> OutHits;
-    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
-                                                                   MultiSphereStart,
-                                                                   MultiSphereEnd,
-                                                                   range,
-                                                                   ObjectTypes,
-                                                                   false,
-                                                                   ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
-                                                                   OutHits,
-                                                                   true);
 
     m_targetToFollow = NULL;
 
-    if(Result == true)
+    TArray<FHitResult> OutHits;
+    if(UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
+                                                        MultiSphereStart,
+                                                        MultiSphereEnd,
+                                                        range,
+                                                        ObjectTypes,
+                                                        false,
+                                                        ActorsToIgnore,
+                                                        EDrawDebugTrace::ForDuration,
+                                                        OutHits,
+                                                        true))
     {
         for(int32 i = 0; i < OutHits.Num(); i++)
         {

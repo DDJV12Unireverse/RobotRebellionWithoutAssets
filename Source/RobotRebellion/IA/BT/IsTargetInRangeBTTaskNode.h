@@ -18,7 +18,6 @@ public:
 
     UIsTargetInRangeBTTaskNode();
 
-
     virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp,
                                             uint8* NodeMemory) override;
     virtual void TickTask(class UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,

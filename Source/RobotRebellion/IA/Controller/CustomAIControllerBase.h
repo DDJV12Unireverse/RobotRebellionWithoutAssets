@@ -48,5 +48,5 @@ public:
     }
 
     //Set in combat mode and give information from combat direction
-    void setCombat(bool isCombat, FVector direction = FVector(0, 0, 0));
+    void setCombat(bool isCombat, ARobotRebellionCharacter* attacker);
 };
