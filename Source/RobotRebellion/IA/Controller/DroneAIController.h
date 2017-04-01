@@ -219,6 +219,13 @@ public:
 
     /*Intermediary IA Methods*/
 
+    void setDestination(const FVector& newDestinationPosition);
+
+    FORCEINLINE bool isArrivedAtDestination() const
+    {
+        return (m_destination - GetPawn()->GetActorLocation()).SizeSquared() < m_epsilonSquaredDistanceTolerance;
+    }
+
     //update the targeted height of the drone
     void updateTargetedHeight() USE_NOEXCEPT;
 

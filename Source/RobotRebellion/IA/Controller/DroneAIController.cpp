@@ -338,6 +338,12 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     return EPathFollowingRequestResult::RequestSuccessful;
 }
 
+void ADroneAIController::setDestination(const FVector& newDestinationPosition)
+{
+    m_destination = newDestinationPosition;
+    //this->processPath();
+}
+
 void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
 {
     switch(m_state)
@@ -449,8 +455,10 @@ void ADroneAIController::findDropZone()
 void ADroneAIController::followKing()
 {
     int livingPlayers = 0;
-    m_destination = FVector(0, 0, 0);
+
+    FVector preDestination{ m_coeffKing * m_king->GetActorLocation() };
     int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+
     for(int32 iter = 0; iter < playerCount; ++iter)
     {
         ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
@@ -458,20 +466,24 @@ void ADroneAIController::followKing()
         {
             if(!currentPlayer->isDead())
             {
-                m_destination += currentPlayer->GetActorLocation();
+                preDestination += currentPlayer->GetActorLocation();
                 ++livingPlayers;
             }
         }
     }
-    m_destination += m_coeffKing * m_king->GetActorLocation();
-    m_destination /= (livingPlayers + m_coeffKing);
+
+    preDestination /= (livingPlayers + m_coeffKing);
+
+    this->setDestination(preDestination);
 }
 
 void ADroneAIController::followGroup()
 {
     int livingPlayers = 0;
-    m_destination = FVector(0, 0, 0);
+
+    FVector preDestination = FVector::ZeroVector;
     int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+
     for(int32 iter = 0; iter < playerCount; ++iter)
     {
         ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
@@ -479,28 +491,31 @@ void ADroneAIController::followGroup()
         {
             if(!currentPlayer->isDead())
             {
-                m_destination += currentPlayer->GetActorLocation();
+                preDestination += currentPlayer->GetActorLocation();
                 ++livingPlayers;
             }
         }
     }
+    
     if(livingPlayers > 0)
     {
-        m_destination /= livingPlayers;
+        preDestination /= livingPlayers;
     }
-    m_destination.Z = m_stationaryElevation;
+    
+    preDestination.Z = m_stationaryElevation;
+
+    this->setDestination(preDestination);
 }
 
 
 void ADroneAIController::followFireZone()
 {
-    m_destination = m_bestBombLocation;
-    m_destination.Z = m_destination.Z + m_stationaryElevation;
+    this->setDestination({ m_bestBombLocation.X, m_bestBombLocation.Y, m_bestBombLocation.Z + m_stationaryElevation });
 }
 
 void ADroneAIController::followSafeZone()
 {
-    m_destination = m_safeZone;
+    this->setDestination(m_safeZone);
 }
 
 void ADroneAIController::setFollowGroup()
