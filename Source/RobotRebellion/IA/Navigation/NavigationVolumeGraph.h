@@ -8,9 +8,9 @@
 */
 class ROBOTREBELLION_API NavigationVolumeGraph : private IsSingleton<NavigationVolumeGraph>
 {
-private:
     GENERATED_USING_FROM_IsSingleton(NavigationVolumeGraph);
 
+private:
     NavigationVolumeGraph();
     
 public:

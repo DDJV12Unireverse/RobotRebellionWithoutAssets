@@ -8,9 +8,9 @@
 */
 class ROBOTREBELLION_API VolumeIdProvider : private IsSingleton<VolumeIdProvider>
 {
-private:
     GENERATED_USING_FROM_IsSingleton(VolumeIdProvider);
 
+private:
 
     int m_count;
     VolumeIdProvider() : m_count{}
