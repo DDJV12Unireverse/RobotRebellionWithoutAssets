@@ -378,7 +378,6 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
-        clientMainFireSound();
     }
 }
 
@@ -390,15 +389,6 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
-}
-
-void APlayableCharacter::clientMainFireSound_Implementation()
-{
-    UWeaponBase* currentWeapon = m_weaponInventory->getCurrentWeapon();
-    if(currentWeapon)
-    {
-        currentWeapon->playSound(this);
-    }
 }
 
 //DEAD

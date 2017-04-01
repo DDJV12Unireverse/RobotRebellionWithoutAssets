@@ -86,8 +86,6 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                             Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
 
                             receiver->inflictDamage(damageValue);
-
-                            playSound(m_hitSound, user);
                         }
                         else
                         {
@@ -97,6 +95,8 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                         exReceiver = &receiver;
                     }
                 }
+
+                playSound(m_hitSound, user);
             }
         }
         else
@@ -117,20 +117,10 @@ FString UShortRangeWeapon::rangeToFString() const USE_NOEXCEPT
     return "Short Range weapon";
 }
 
-void UShortRangeWeapon::playSound(ARobotRebellionCharacter* user)
-{
-    if(canAttack())
-    {
-        playSound(m_missSound, user);
-        reload();
-    }
-}
-
-void UShortRangeWeapon::playSound(USoundCue* sound, AActor* originator)
+void UShortRangeWeapon::playSound_Implementation(USoundCue* sound, AActor* originator)
 {
     if(sound && originator)
     {
-        //UGameplayStatics::PlaySoundAtLocation(originator, sound, originator->GetActorLocation());
         UGameplayStatics::SpawnSoundAttached(sound, originator->GetRootComponent());
     }
 }

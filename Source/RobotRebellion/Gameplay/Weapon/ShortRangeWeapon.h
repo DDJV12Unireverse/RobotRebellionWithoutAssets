@@ -6,13 +6,13 @@
 #include "ShortRangeWeapon.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class ROBOTREBELLION_API UShortRangeWeapon : public UWeaponBase
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 private:
 
     /************************************************************************/
@@ -39,22 +39,23 @@ public:
     /*                  UFUNCTION                                           */
     /************************************************************************/
 
-    
+
     UFUNCTION(BlueprintCallable, Category = "General")
         virtual EWeaponRange getWeaponRange() const USE_NOEXCEPT override
     {
         return EWeaponRange::SHORT_RANGE_WEAPON;
     }
-    
+
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
 
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
-    virtual void playSound(ARobotRebellionCharacter* user) override;
+    //virtual void playSound(ARobotRebellionCharacter* user) override;
 
-    void playSound(USoundCue* sound, AActor* originator);
+    UFUNCTION(NetMulticast, Reliable)
+        virtual void playSound(USoundCue* sound, AActor* originator) override;
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
 };
