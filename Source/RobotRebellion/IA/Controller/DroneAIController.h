@@ -39,8 +39,6 @@ private:
 
   //  bool m_gotBomb = false;
 
-    AIDroneState m_state;
-
     //the height the drone must be
     float m_targetedHeight;
 
@@ -75,7 +73,10 @@ private:
     class AKing* m_king;
     float m_coeffKing;
 
-    void(ADroneAIController::* m_updateTargetMethod)();
+    void(ADroneAIController::* m_performAction)();
+    bool m_actionFinished;
+    AIDroneState m_state;
+    float m_idleTimer;
 
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
@@ -108,6 +109,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateAttackCooldownTime;
 
+    /** Max time for reload action*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateSafeZoneCooldownTime;
 
@@ -240,6 +242,8 @@ public:
 
     void followSafeZone();
 
+    void waiting();
+
     void setFollowGroup();
 
     void setFollowKing();
@@ -247,6 +251,8 @@ public:
     void setFollowFireZone();
 
     void setFollowSafeZone();
+
+    void setWaiting();
 
     void chooseNextAction();
 
