@@ -21,21 +21,21 @@ typedef TPair<AIDroneState, float> ActionScore;
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class ROBOTREBELLION_API ADroneAIController : public ACustomAIControllerBase
 {
-	GENERATED_BODY()
-	
-	
+    GENERATED_BODY()
+
+
 private:
     /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
 
 
-    TMap<AIDroneState,float> m_scores;
+    TMap<AIDroneState, float> m_scores;
 
   //  bool m_gotBomb = false;
 
@@ -65,7 +65,7 @@ private:
     float m_nextChangeTargetTime;
 
     bool m_isDebugEnabled;
-    
+
     //Position to follow
     FVector m_destination;
 
@@ -132,7 +132,7 @@ public:
     //King
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
-    
+
     /** Projectile class */
     UPROPERTY(EditDefaultsOnly, Category = Projectile)
         TSubclassOf<class AProjectile> m_projectileClass;
@@ -184,30 +184,30 @@ public:
     void findDropZone();
 
     UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
-    float getAttackScore();
+        float getAttackScore();
 
     UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
-    float getFollowScore();
+        float getFollowScore();
 
     UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
-    float getReloadScore();
+        float getReloadScore();
 
     UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
-    float getWaitingScore();
+        float getWaitingScore();
 
     UFUNCTION(BlueprintCallable, Category = "Utility Theory Debug")
-    float getDropScore();
+        float getDropScore();
 
 
     bool HasABomb();
-    
+
 
     UFUNCTION()
         void receiveBomb();
-    
+
     UFUNCTION(Reliable, Server, WithValidation)
         void serverReceiveBomb();
-    
+
     /*Main IA methods*/
 
     //update the properties of the drone
@@ -226,21 +226,21 @@ public:
     void updateTargetedTarget();
 
     void followKing();
-    
+
     void followGroup();
 
     void followFireZone();
 
     void followSafeZone();
-    
+
     void setFollowGroup();
-    
+
     void setFollowKing();
 
     void setFollowFireZone();
 
     void setFollowSafeZone();
-    
+
     void chooseNextAction();
 
     void dropBomb();
@@ -253,11 +253,11 @@ public:
     float getBombScore(FVector position);
 
     bool isInCombat();
- 
+
     int getNbAliveAllies();
-    
+
     int getNbAliveEnnemies();
-    
+
     int getNbEnnemiesInZone(FVector zoneCenter);
 
     float distance(FVector dest);
