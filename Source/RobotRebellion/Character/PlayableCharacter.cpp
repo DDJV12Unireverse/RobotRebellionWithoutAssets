@@ -1108,11 +1108,28 @@ void APlayableCharacter::switchView()
     m_tpsMode = !m_tpsMode;
 
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if(characterMesh)
+    if(m_isInvisible)
     {
-        characterMesh->SetVisibility(m_tpsMode);
-        m_fpsMesh->SetVisibility(!m_tpsMode);
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(false);
+            m_fpsMesh->SetVisibility(false);
+        }
     }
+    else
+    {
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(m_tpsMode);
+            m_fpsMesh->SetVisibility(!m_tpsMode);
+        }
+    }
+}
+
+UMeshComponent * APlayableCharacter::getCurrentViewMesh()
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    return m_tpsMode ? characterMesh : m_fpsMesh;
 }
 
 void APlayableCharacter::activatePhysics(bool mustActive)
