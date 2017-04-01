@@ -78,7 +78,8 @@ APlayableCharacter::APlayableCharacter()
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
-    MaxUseDistance = 800;
+    MinUseDistance = 75.0f;
+    MaxUseDistance = 250.0f;
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
     GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
@@ -433,7 +434,7 @@ void APlayableCharacter::openLobbyWidget()
     if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
-        if (myHud->LobbyImpl->IsVisible())
+        if(myHud->LobbyImpl->IsVisible())
         {
             closeLobbyWidget();
             return;
@@ -447,7 +448,7 @@ void APlayableCharacter::closeLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
 
-    if (MyPC)
+    if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
@@ -512,18 +513,16 @@ void APlayableCharacter::interact(AActor* focusedActor)
         {
             if(Usable->getObjectType() == EObjectType::MANA_POTION)
             {
-                if (m_manaPotionsCount < m_nbManaPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
-                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+                if(m_manaPotionsCount < m_nbManaPotionMax)
                 {
                     clientInteract(Usable);
                     ++m_manaPotionsCount;
                 }
-                
+
             }
             else if(Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
-                if (m_healthPotionsCount < m_nbHealthPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
-                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+                if(m_healthPotionsCount < m_nbHealthPotionMax)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
@@ -531,13 +530,12 @@ void APlayableCharacter::interact(AActor* focusedActor)
             }
             else if(Usable->getObjectType() == EObjectType::BOMB)
             {
-                if (m_bombCount < m_nbBombMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
-                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+                if(m_bombCount < m_nbBombMax)
                 {
                     clientInteract(Usable);
                     ++m_bombCount;
                 }
-                
+
             }
             else
             {
@@ -546,19 +544,14 @@ void APlayableCharacter::interact(AActor* focusedActor)
         }
         else if(deadBody && deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
-            if (FVector::DotProduct(deadBody->GetActorLocation() - this->GetActorLocation(),
-                deadBody->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
-            {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
-                clientRevive();
-                m_isReviving = true;
-            }
+            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
+            clientRevive();
+            m_isReviving = true;
         }
-        else if (drone)
+        else if(drone)
         {
             ADroneAIController* droneController = Cast<ADroneAIController>(drone->GetController());
-            if (droneController && FVector::DotProduct(drone->GetActorLocation() - this->GetActorLocation(),
-                drone->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+            if(droneController)
             {
                 PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDroneControler");
                 giveBombToDrone(droneController);
@@ -591,9 +584,9 @@ void APlayableCharacter::interactEnd()
 
 void APlayableCharacter::giveBombToDrone(ADroneAIController* drone)
 {
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
-        if (!drone->HasABomb() && m_bombCount > 0)
+        if(!drone->HasABomb() && m_bombCount > 0)
         {
             drone->receiveBomb();
             --m_bombCount;
@@ -607,7 +600,7 @@ void APlayableCharacter::giveBombToDrone(ADroneAIController* drone)
 
 void APlayableCharacter::serverGiveBombToDrone_Implementation(ADroneAIController* drone)
 {
-    if (!drone->HasABomb() && m_bombCount > 0)
+    if(!drone->HasABomb() && m_bombCount > 0)
     {
         drone->receiveBomb();
         --m_bombCount;
@@ -895,7 +888,7 @@ AActor* APlayableCharacter::GetUsableInView()
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
 
     const FVector Direction = CamRot.Vector();
-    const FVector TraceStart = GetActorLocation() + Direction * 75.0f + FVector(0.0f, 0.0f, BaseEyeHeight);
+    const FVector TraceStart = GetActorLocation() + Direction * MinUseDistance + FVector(0.0f, 0.0f, BaseEyeHeight);
     const FVector TraceEnd = TraceStart + (Direction * MaxUseDistance);
 
     FCollisionQueryParams TraceParams(FName(TEXT("TraceUsableActor")), true, this);
@@ -1160,15 +1153,15 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 
 void APlayableCharacter::enableDroneDisplay()
 {
-    ADroneAIController* droneController=nullptr;
+    ADroneAIController* droneController = nullptr;
     TArray<AActor*> drone;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADroneAIController::StaticClass(), drone);
-    if (drone.Num() > 0) //The king is here
+    if(drone.Num() > 0) //The king is here
     {
         droneController = Cast<ADroneAIController>(drone.Top());
-       
+
     }
-    if (droneController) 
+    if(droneController)
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
     }
