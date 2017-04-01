@@ -14,8 +14,18 @@ class ROBOTREBELLION_API AEnnemiAIController : public ACustomAIControllerBase
     GENERATED_BODY()
 
 public:
+
+
+
+    virtual void BeginPlay() override;
+
     void CheckEnnemyNear(float range) override;
 
     void AttackTarget() const override;
-	
+
+    void setIsInConmbat(bool isCombat)
+    {
+        m_isInCombat = isCombat;
+    }
+
 };

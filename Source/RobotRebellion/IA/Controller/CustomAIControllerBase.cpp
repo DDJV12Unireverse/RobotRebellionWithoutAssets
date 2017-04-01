@@ -5,6 +5,12 @@
 
 #include "Character/RobotRebellionCharacter.h"
 
+
+void ACustomAIControllerBase::BeginPlay()
+{
+    m_isInCombat = false;
+}
+
 bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 {
     return this->hasTarget() && !m_targetToFollow->IsActorBeingDestroyed() && !m_targetToFollow->isDead();

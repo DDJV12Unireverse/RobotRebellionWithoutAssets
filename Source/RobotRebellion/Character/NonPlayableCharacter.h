@@ -13,7 +13,8 @@ UCLASS()
 class ROBOTREBELLION_API ANonPlayableCharacter : public ARobotRebellionCharacter
 {
 	GENERATED_BODY()
-
+private:
+        bool m_isInCombat;
 public:
     ANonPlayableCharacter();
     //Loot Probability

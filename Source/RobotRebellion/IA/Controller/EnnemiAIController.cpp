@@ -9,7 +9,13 @@
 #include "Character/NonPlayableCharacter.h"
 #include "Gameplay/Weapon/WeaponInventory.h"
 #include "Gameplay/Weapon/WeaponBase.h"
+#include "IA/Character/RobotsCharacter.h"
 
+
+void AEnnemiAIController::BeginPlay()
+{
+    m_isInCombat = false;
+}
 
 void AEnnemiAIController::CheckEnnemyNear(float range)
 {

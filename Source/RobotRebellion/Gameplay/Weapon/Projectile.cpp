@@ -9,6 +9,8 @@
 
 #include "../../Global/GlobalDamageMethod.h"
 #include "../../Tool/UtilitaryFunctionLibrary.h"
+#include "IA/Controller/CustomAIControllerBase.h"
+#include "Character/NonPlayableCharacter.h"
 
 
 
@@ -113,6 +115,15 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                     coeff.getCoefficientValue()
                 );
 
+                ANonPlayableCharacter * ennemy = Cast<ANonPlayableCharacter>(receiver);
+                if (ennemy)
+                {
+                    ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(ennemy->GetController());
+                    if (controller)
+                    {
+                        controller->setCombat(true);
+                    }
+                }
                 receiver->inflictDamage(currentDamage);
             }
             else

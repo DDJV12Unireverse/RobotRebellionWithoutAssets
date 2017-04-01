@@ -15,9 +15,11 @@ class ROBOTREBELLION_API ACustomAIControllerBase : public AAIController
 
 protected:
     class ARobotRebellionCharacter *m_targetToFollow;
-
+    bool m_isInCombat;
 
 public:
+    virtual void BeginPlay() override;
+
     FORCEINLINE bool hasTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow != NULL;
@@ -38,4 +40,14 @@ public:
     virtual void CheckEnnemyNear(float range) PURE_VIRTUAL(ACustomAIControllerBase::CheckEnnemyNear, );
 
     virtual void AttackTarget() const PURE_VIRTUAL(ACustomAIControllerBase::AttackTarget, );
+
+    bool IsInCombat()
+    {
+        return m_isInCombat;
+    }
+
+    void setCombat(bool isCombat)
+    {
+        m_isInCombat = isCombat;
+    }
 };
