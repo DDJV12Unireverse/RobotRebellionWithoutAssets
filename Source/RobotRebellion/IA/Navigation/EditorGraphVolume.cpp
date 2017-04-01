@@ -66,3 +66,23 @@ bool AEditorGraphVolume::contains(const FVector& point)const
     }
     return false;
 }
+
+float AEditorGraphVolume::isBelow(const FVector& point) const
+{
+    FVector volumeCenter = GetActorLocation();
+    FVector extent = m_box->GetScaledBoxExtent();
+
+    int32 maxY, maxX, minY, minX;
+    maxY = volumeCenter.Y + extent.Y;
+    maxX = volumeCenter.X + extent.X;
+    minY = volumeCenter.Y - extent.Y;
+    minX = volumeCenter.X - extent.X;
+    if(point.Y < maxY
+       && point.X < maxX
+       && point.Y > minY
+       && point.X > minX)
+    {
+        return fabs(point.Z - volumeCenter.Z);
+    }
+    return -1.f;
+}

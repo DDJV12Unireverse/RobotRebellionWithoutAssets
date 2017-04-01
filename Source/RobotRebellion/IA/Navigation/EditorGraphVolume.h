@@ -42,6 +42,9 @@ public:
     // Return true if the volume overlap the given point
     bool contains(const FVector& point) const;
 
+    // Return the distance if the volume below the point
+    // else return -1;
+    float isBelow(const FVector& point) const;
 private:
     // register the volume into the graph
     void registerNode();

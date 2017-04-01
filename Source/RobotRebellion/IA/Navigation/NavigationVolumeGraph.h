@@ -40,6 +40,9 @@ public:
     // Return the id of the volume that contains the given point
     int32 getOverlappingVolumeId(const FVector &point) const;
 
+    // Return the id of the volum below the point and update the point in order to be overlapped by volume
+    int32 getBelowVolume(FVector& point, float offset) const;
+
     int32 getNodeAmount();
     int32 getEdgeAmount();
     bool isReadyToUse();

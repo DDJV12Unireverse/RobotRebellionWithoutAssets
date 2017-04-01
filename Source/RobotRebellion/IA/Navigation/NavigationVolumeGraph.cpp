@@ -33,7 +33,7 @@ NavigationVolumeGraph::NavigationVolumeGraph()
     m_edgesCosts{},
     m_indexEdgesForNode{},
     m_isBuilt{false},
-    m_NodeAmountExpected{150}
+    m_NodeAmountExpected{213}
 {
     // default graph is empty
 }
@@ -258,6 +258,31 @@ int32 NavigationVolumeGraph::getOverlappingVolumeId(const FVector &point)const
     }
 
     // No volume found
+    return -1;
+}
+
+int32 NavigationVolumeGraph::getBelowVolume(FVector& point, float offset) const
+{
+    float minDist = 9E+16f;
+    int32 idVolume{};
+    bool volumeFind = false;
+    for(int index{}; index < m_nodes.Num(); ++index)
+    {
+        float dist = m_nodes[index]->isBelow(point);
+        if(dist >= 0.f && dist < minDist )
+        {
+            minDist = dist;
+            volumeFind = true;
+            idVolume = index;
+        }
+    }
+    if(volumeFind)
+    {
+        point.Z = m_nodes[idVolume]->GetActorLocation().Z
+            + m_nodes[idVolume]->m_box->GetScaledBoxExtent().Z
+            - offset;
+        return idVolume;
+    }
     return -1;
 }
 
