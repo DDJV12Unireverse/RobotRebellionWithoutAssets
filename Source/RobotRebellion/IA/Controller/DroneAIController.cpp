@@ -106,55 +106,46 @@ bool ADroneAIController::HasABomb()
 
 float ADroneAIController::getAttackScore()
 {
-    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
-    FVector dronePosition;
-    if(owner)
-    {
-        dronePosition = owner->GetActorTransform().GetLocation();
-        CheckEnnemyNear(dronePosition, m_detectionDistance);
-    }
+    ADrone* owner = Cast<ADrone>(this->GetPawn());
+    FVector dronePosition = GetPawn()->GetActorLocation();
+    CheckEnnemyNear(dronePosition, m_detectionDistance);
 
-    float score = 1.0f;
+    float score{};
     float bestBombScore = 0.0f;
 
-    TMap<FVector, float> scoreBombLocations;
-    if(!Cast<ADrone>(this->GetPawn())->isLoaded())
-    {
-        score = 0.f;
+    if(!owner->isLoaded() || m_sensedEnnemies.Num() == 0)
+    { // Cannot attack cause no bomb
+        return 0.f;
     }
-    else
+    //Test all positions
+    float bestScoreBomb{};
+    int32 indexBestBomb{};
+    for(int i = 0; i < m_sensedEnnemies.Num(); i++)
     {
-        //Up to 5 BOMB POSITIONS
-        const int iMax = m_sensedEnnemies.Num() < 5 ? m_sensedEnnemies.Num() : 5;
-        for(int i = 0; i < iMax; i++)
+        FVector ennemyPos = m_sensedEnnemies[i]->GetActorLocation();
+        float bombScore = getBombScore(ennemyPos);
+        if(bombScore > bestScoreBomb)
         {
-            //TODO: Implement and call findDropZone() instead
-            FVector ennemyPos = m_sensedEnnemies[i]->GetActorLocation();
-            float bombScore = getBombScore(ennemyPos);
-            scoreBombLocations.Add(ennemyPos, bombScore);
-            //   PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("POSITION:%f %f %f BOMB Score: %f"), ennemyPos.X, ennemyPos.Y, ennemyPos.Z, bombScore));
+            bestScoreBomb = bombScore;
+            indexBestBomb = i;
         }
-
-        if(scoreBombLocations.Num() && m_currentTime >= m_nextChangeTargetTime)
-        {
-            m_nextChangeTargetTime = m_currentTime + m_updateAttackCooldownTime;
-            scoreBombLocations.ValueSort(&ScoreSortingFunction);
-            TArray<FVector> sortedLocations;
-            scoreBombLocations.GenerateKeyArray(sortedLocations);
-
-            m_bestBombLocation = sortedLocations[0];
-            bestBombScore = scoreBombLocations[sortedLocations[0]];
-        }
-
-        // Use the Best Bomb Score
-
-        const float c_Normalize = 4.f; // 4 additions
-        const float c_NbPlayersMax = 4.f; // 4 elements
-
-        score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / getNbEnnemiesInScene()) + isInCombat() * getNbBombPlayers() + bestBombScore) / c_Normalize;
-
-        score *= m_attackTuningFactor;
     }
+    m_bestBombLocation = m_sensedEnnemies[indexBestBomb]->GetActorLocation();
+
+    const float c_Normalize = 4.f; // 4 additions
+    const float c_NbPlayersMax = 4.f; // 4 elements
+
+    score = 0.5f * bestScoreBomb;
+    float temp = getNbAliveAllies();
+    temp = temp == 0 ? 1.f : temp;
+    temp = (m_sensedEnnemies.Num() / temp);
+    temp = temp > 1 ? 1.f : temp;
+    score *= 0.3f * temp;
+    if(getNbBombPlayers())
+    {
+        score += 0.2f; // Add 20%
+    }
+
     return score;
 }
 
@@ -192,7 +183,6 @@ float ADroneAIController::getReloadScore()
         {
             score *= FVector::DistSquared(getGroupBarycentre(), GetPawn()->GetActorLocation())
                 / FVector::DistSquared(m_safeZone, GetPawn()->GetActorLocation());
-
         }
         score *= (1 - getNbEnnemiesInZone(m_safeZone) / (0.1f + distance(m_safeZone))); //ZoneScore
         score = (score < 0.f) ? 0.f : score;
@@ -233,8 +223,10 @@ float ADroneAIController::getNbEnnemiesInScene()
 
 bool ADroneAIController::isInCombat()
 {
+    //  TODO - Check if ennemy are attacking players or players attacking ennemy
     return (getNbAliveEnnemies() > 0);
 }
+
 int ADroneAIController::getNbAliveAllies()
 {
     int nbPlayers = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
@@ -728,93 +720,87 @@ float ADroneAIController::getBombScore(FVector position)
     ADrone* owner = Cast<ADrone>(this->GetPawn());
     float score = 0.f;
 
-    if(owner->isLoaded())
+    TArray<class ARobotRebellionCharacter *> charactersInBlastZone{};
+    bool kingAttacked = false;
+    float playerWillBeKilled = 0.f;
+    float numberFriendlyAttacked = 0.f;
+    float gameEndIsNear = 0.f; //TODO
+    float enemiesAttacked = 0.f;
+    float enemiesKilled{};
+
+    //CHECK DAMAGED TARGETS
+    FVector MultiSphereStart = position;
+    FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, owner->getBombRadius());
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players  //TODO consider avoiding players and king
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel7)); // King
+    TArray<AActor*> ActorsToIgnore;
+    ActorsToIgnore.Add(owner);
+    TArray<FHitResult> OutHits;
+    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
+                                                                   MultiSphereStart,
+                                                                   MultiSphereEnd,
+                                                                   owner->getBombRadius(),
+                                                                   ObjectTypes,
+                                                                   false,
+                                                                   ActorsToIgnore,
+                                                                   EDrawDebugTrace::ForOneFrame,
+                                                                   OutHits,
+                                                                   true);
+    if(Result == true)
     {
-        TArray<class ARobotRebellionCharacter *> m_charactersInBlastZone;
-        bool kingAttacked = false;
-        float playerWillBeKilled = 0.f;
-        float numberFriendlyAttacked = 0.f;
-        float gameEndIsNear = 0.f; //TODO
-        float ennemisAttacked = 0.f;
-
-        //CHECK DAMAGED TARGETS
-        FVector MultiSphereStart = position;
-        FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, owner->getBombRadius());
-        TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players  //TODO consider avoiding players and king
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel7)); // King
-        TArray<AActor*> ActorsToIgnore;
-        ActorsToIgnore.Add(owner);
-        TArray<FHitResult> OutHits;
-        bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
-                                                                       MultiSphereStart,
-                                                                       MultiSphereEnd,
-                                                                       owner->getBombRadius(), //TODO
-                                                                       ObjectTypes,
-                                                                       false,
-                                                                       ActorsToIgnore,
-                                                                       EDrawDebugTrace::ForOneFrame,
-                                                                       OutHits,
-                                                                       true);
-        //m_targetToFollow = NULL;
-        m_charactersInBlastZone.Empty();
-        if(Result == true)
+        for(int32 i = 0; i < OutHits.Num(); i++)
         {
-            for(int32 i = 0; i < OutHits.Num(); i++)
+            FHitResult Hit = OutHits[i];
+            ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
+            if(NULL != RRCharacter)
             {
-                FHitResult Hit = OutHits[i];
-                ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
-                if(NULL != RRCharacter)
+                if(RRCharacter->isDead() || !RRCharacter->isVisible())
                 {
-                    if(RRCharacter->isDead() || !RRCharacter->isVisible())
-                    {
-                        continue;
-                    }
-                    m_charactersInBlastZone.Add(RRCharacter);
-                }
-            }
-        }
-
-        for(auto character : m_charactersInBlastZone)
-        {
-            if(!kingAttacked)
-            {
-                AKing* king = Cast<AKing>(character);
-                if(king)
-                {
-                    kingAttacked = true;
                     continue;
                 }
-            }
-            APlayableCharacter* player = Cast<APlayableCharacter>(character);
-            if(player)
-            {
-                numberFriendlyAttacked += 1.f;
-                if((player->getHealth() / player->getMaxHealth()) < 0.2f)
-                {
-                    playerWillBeKilled = 1.0;
-                }
-            }
-            else
-            {
-                ennemisAttacked += 1.0f;
+                charactersInBlastZone.Add(RRCharacter);
             }
         }
+    }
 
-        const float c_Normalize = 2.f; // 2 additions
+    for(auto character : charactersInBlastZone)
+    {
 
-        if(kingAttacked || numberFriendlyAttacked > 0)
+        AKing* king = Cast<AKing>(character);
+        if(king)
         {
-            score = 0.f;
+            return 0.f; // just dont shoot the king
+        }
+        APlayableCharacter* player = Cast<APlayableCharacter>(character);
+        if(player)
+        {
+            numberFriendlyAttacked += 1.f;
+            if(player->getHealth() < owner->getBombBaseDamage())
+            {
+                //playerWillBeKilled += 1.f;
+                // TODO - See if the bomb end the fight
+                return 0.f;
+            }
         }
         else
         {
-            score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemisAttacked / getNbEnnemiesInScene()) / c_Normalize);
+            ANonPlayableCharacter* ennemy = Cast<ANonPlayableCharacter>(character);
+            if(ennemy->getHealth() < owner->getBombBaseDamage())
+            {
+                ++enemiesKilled;
+            }
+            ++enemiesAttacked;
         }
     }
+
+    score = 0.35f * (enemiesKilled / enemiesAttacked);
+    score += 0.3f * (enemiesAttacked / m_sensedEnnemies.Num());
+    score += 0.35f * ((4.f - numberFriendlyAttacked) / 4.f);
+    //score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemIsAttacked / getNbEnnemiesInScene()) / c_Normalize);
 
     return score;
 }
