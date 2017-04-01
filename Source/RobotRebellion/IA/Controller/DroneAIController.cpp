@@ -228,12 +228,12 @@ float ADroneAIController::getDropScore()
 {
     float score = 0.f;
 
-    ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
-    FVector dronePosition = owner->GetActorTransform().GetLocation();
+    ADrone* drone = Cast<ADrone>(this->GetPawn());
+    FVector dronePosition = drone->GetActorLocation();
 
     //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DROP DISTANCE: %f"), FVector(dronePosition - m_destination).Size()));
 
-    if(FVector(dronePosition - m_destination).SizeSquared() < m_epsilonSquaredDistanceTolerance && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
+    if(m_state == DRONE_COMBAT && this->isArrivedAtDestination() && drone->isLoaded())
     {
         score = getBombScore(m_bestBombLocation);
     }
