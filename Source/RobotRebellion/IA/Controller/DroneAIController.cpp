@@ -24,8 +24,8 @@ ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
     m_splinePath->bShouldVisualizeScale = true;
     m_splinePath->bAllowDiscontinuousSpline = false;
 
-    m_actionFinished = true;
     m_idleTimer = 0.f;
+    m_actionFinished = true;
 }
 
 void ADroneAIController::BeginPlay()
@@ -48,8 +48,9 @@ void ADroneAIController::BeginPlay()
 
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
-    setFollowGroup();
+    //setFollowGroup();
     //m_gotBomb = true;
+
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -150,20 +151,9 @@ float ADroneAIController::getAttackScore()
         const float c_Normalize = 4.f; // 4 additions
         const float c_NbPlayersMax = 4.f; // 4 elements
 
-////////TODO: getNbEnnemiesScene() HARDCODED 15.f for now 
-
-//   PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("POSITION:%f %f %f BOMB Score: %f"), ennemyPos.X, ennemyPos.Y, ennemyPos.Z, bombScore));
-
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("Player alive ratio:%.3f \n EnnemyRatio:%f \n nbBmbPlayr:%d \n bestBombScore:%f \n"), (1.f - getNbAliveAllies() / c_NbPlayersMax), (getNbAliveEnnemies() / getNbEnnemiesInScene()), getNbBombPlayers(), bestBombScore));
-
         score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / getNbEnnemiesInScene()) + isInCombat() * getNbBombPlayers() + bestBombScore) / c_Normalize;
 
         score *= m_attackTuningFactor;
-
-        if(FVector(dronePosition - m_destination).Size() < 50.0f && Cast<ADrone>(this->GetPawn())->isLoaded() && m_state == DRONE_COMBAT)
-        {
-            score *= 0.01f;
-        }
     }
     return score;
 }
@@ -171,15 +161,14 @@ float ADroneAIController::getAttackScore()
 float ADroneAIController::getFollowScore()
 {
     float score;
-    if(!isInCombat())
-    {
-        score = 1 - 1.f / (0.1f + distance(m_destination)); //Change later
-    }
-    else
-    {
-        score = 1.f - getBombScore(m_bestBombLocation);
-    }
+    score = 1 - 250000.f / (0.1f + (GetPawn()->GetActorLocation() - getGroupBarycentre()).SizeSquared()); //Change later
     score = (score < 0.f) ? 0.f : score;
+    score *= score;
+    if(isInCombat())
+    {
+        score *= score;
+    }
+
     return score;
 }
 
@@ -199,6 +188,12 @@ float ADroneAIController::getReloadScore()
             //if not in combat, combat score always =1, else it's closer to 1 if many ennemies
             score *= (1 - (getNbAliveAllies() / (4 * getNbAliveEnnemies())));
         }
+        else
+        {
+            score *= FVector::DistSquared(getGroupBarycentre(), GetPawn()->GetActorLocation())
+                / FVector::DistSquared(m_safeZone, GetPawn()->GetActorLocation());
+                
+        }
         score *= (1 - getNbEnnemiesInZone(m_safeZone) / (0.1f + distance(m_safeZone))); //ZoneScore
         score = (score < 0.f) ? 0.f : score;
     }
@@ -208,23 +203,9 @@ float ADroneAIController::getReloadScore()
 
 float ADroneAIController::getWaitingScore()
 {
-    ADrone* drone = Cast<ADrone>(GetPawn());
-    if(isInCombat())
-    {
-        if((m_destination - drone->GetActorLocation()).Size() < 10.f)
-        {
-            return 1.f - getBombScore(m_bestBombLocation);
-        }
-        return 0.f;
-    }
-    else
-    {
-        if((m_destination - drone->GetActorLocation()).Size() < 10.f)
-        {
-            return 1.f;
-        }
-        return 0.f;
-    }
+    /*ADrone* drone = Cast<ADrone>(GetPawn());
+    return 1.f - getAttackScore();*/
+    return m_waitingThreshold;
 }
 
 float ADroneAIController::getDropScore()
@@ -285,6 +266,7 @@ int ADroneAIController::getNbEnnemiesInZone(FVector zoneCenter)
     CheckEnnemyNear(zoneCenter, m_detectionDistance);
     return (m_sensedEnnemies.Num());
 }
+
 float ADroneAIController::distance(FVector dest)
 {
     ANonPlayableCharacter* owner = Cast<ANonPlayableCharacter>(this->GetPawn());
@@ -297,6 +279,33 @@ float ADroneAIController::distance(FVector dest)
     return 0.f;
 }
 
+FVector ADroneAIController::getGroupBarycentre()
+{
+    // Find barycentre
+    int livingPlayers = 0;
+    FVector preDestination = FVector::ZeroVector;
+    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
+
+    for(int32 iter = 0; iter < playerCount; ++iter)
+    {
+        ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
+        if(currentPlayer) // Protection when player leaves the game
+        {
+            if(!currentPlayer->isDead())
+            {
+                preDestination += currentPlayer->GetActorLocation();
+                ++livingPlayers;
+            }
+        }
+    }
+    if(livingPlayers > 0)
+    {
+        preDestination /= livingPlayers;
+    }
+
+    preDestination.Z = m_stationaryElevation;
+    return preDestination;
+}
 
 EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 {
@@ -343,7 +352,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 void ADroneAIController::setDestination(const FVector& newDestinationPosition)
 {
     m_destination = newDestinationPosition;
-    //this->processPath();
+    this->processPath();
 }
 
 void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
@@ -393,6 +402,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
             case DRONE_MOVING:
                 // TODO - Take king in consideration
                 setFollowGroup();
+                break;
             case DRONE_COMBAT:
                 setFollowFireZone();
                 break;
@@ -476,7 +486,6 @@ void ADroneAIController::dropBomb()
         {
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
         }
-        drone->GetMovementComponent()->Velocity = FVector::ZeroVector;
         drone->drop();
     }
 }
@@ -525,10 +534,15 @@ void ADroneAIController::followGroup()
 
 void ADroneAIController::followFireZone()
 {
+    ADrone* drone = Cast<ADrone>(GetPawn());
     if(MoveToTarget() == EPathFollowingRequestResult::AlreadyAtGoal)
     {
-        dropBomb();
-        m_actionFinished = true;
+        if(m_canDropBomb)
+        {
+            dropBomb();
+            m_actionFinished = true;
+        }
+        m_canDropBomb = !m_canDropBomb;
     }
 }
 
@@ -556,31 +570,7 @@ void ADroneAIController::setFollowGroup()
     m_actionFinished = false;
     this->m_performAction = &ADroneAIController::followGroup;
 
-    // Find and set the location
-    int livingPlayers = 0;
-    FVector preDestination = FVector::ZeroVector;
-    int32 playerCount = UGameplayStatics::GetGameMode(GetWorld())->GetNumPlayers();
-
-    for(int32 iter = 0; iter < playerCount; ++iter)
-    {
-        ARobotRebellionCharacter* currentPlayer = Cast<ARobotRebellionCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), iter));
-        if(currentPlayer) // Protection when player leaves the game
-        {
-            if(!currentPlayer->isDead())
-            {
-                preDestination += currentPlayer->GetActorLocation();
-                ++livingPlayers;
-            }
-        }
-    }
-    if(livingPlayers > 0)
-    {
-        preDestination /= livingPlayers;
-    }
-
-    preDestination.Z = m_stationaryElevation;
-
-    this->setDestination(preDestination);
+    this->setDestination(getGroupBarycentre());
     // TODO - find and set the destination
 }
 
@@ -604,6 +594,7 @@ void ADroneAIController::setFollowKing()
 void ADroneAIController::setFollowFireZone()
 {
     m_actionFinished = false;
+    m_canDropBomb = false;
     this->m_performAction = &ADroneAIController::followFireZone;
 
     this->setDestination({m_bestBombLocation.X, m_bestBombLocation.Y, m_bestBombLocation.Z + m_stationaryElevation});
@@ -632,39 +623,39 @@ void ADroneAIController::chooseNextAction()
     float followScore = getFollowScore();
     float reloadScore = getReloadScore();
     float attackScore = getAttackScore();
-    float dropScore = getDropScore();
     float waitScore = getWaitingScore();
 
     if(m_currentTime >= m_nextDebugDisplayTime && m_isDebugEnabled)
     {
-        float scoresArray[5] = {followScore, reloadScore, attackScore, dropScore, waitScore};
+        float scoresArray[] = {followScore, reloadScore, attackScore, waitScore};
         m_nextDebugDisplayTime = m_currentTime + 1.5f;
         ADrone * drone = Cast<ADrone>(this->GetPawn());
         drone->displayScore(scoresArray);
     }
 
-    if(m_currentTime >= m_nextUpdateAttackCooldownTime)
-    {
-        m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
 
-        m_scores.Reset();
-        m_scores.Add(DRONE_MOVING, followScore);
-        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_MOVING Score: %f"), followScore));
-        m_scores.Add(DRONE_RECHARGE, reloadScore);
-        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_RECHARGE Score: %f"), reloadScore));
-        m_scores.Add(DRONE_COMBAT, attackScore);
-        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_COMBAT Score: %f"), attackScore));
-        m_scores.Add(DRONE_BOMB, dropScore);
-        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_BOMB Score: %f"), dropScore));
-        m_scores.Add(DRONE_WAITING, waitScore);
-        //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_WAIT Score: %f"), waitScore));
+    m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
 
-        m_scores.ValueSort(&ScoreSortingFunction);
+    m_scores.Reset();
+    m_scores.Add(DRONE_MOVING, followScore);
+    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_MOVING Score: %f"), followScore));
+    m_scores.Add(DRONE_RECHARGE, reloadScore);
+    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_RECHARGE Score: %f"), reloadScore));
+    m_scores.Add(DRONE_COMBAT, attackScore);
+    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_COMBAT Score: %f"), attackScore));
+    m_scores.Add(DRONE_WAITING, waitScore);
+    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_WAIT Score: %f"), waitScore));
 
-        TArray<AIDroneState> sortedStates;
-        m_scores.GenerateKeyArray(sortedStates);
-        m_state = sortedStates[0];
-    }
+    GEngine->AddOnScreenDebugMessage(15, 5.f, FColor::White, "followScore : " + FString::SanitizeFloat(followScore));
+    GEngine->AddOnScreenDebugMessage(16, 5.f, FColor::White, "reloadScore : " + FString::SanitizeFloat(reloadScore));
+    GEngine->AddOnScreenDebugMessage(17, 5.f, FColor::White, "attackScore : " + FString::SanitizeFloat(attackScore));
+    GEngine->AddOnScreenDebugMessage(18, 5.f, FColor::White, "waitScore : " + FString::SanitizeFloat(waitScore));
+
+    m_scores.ValueSort(&ScoreSortingFunction);
+
+    TArray<AIDroneState> sortedStates;
+    m_scores.GenerateKeyArray(sortedStates);
+    m_state = sortedStates[0];
 }
 
 void ADroneAIController::CheckEnnemyNear(FVector position, float range)
@@ -984,32 +975,38 @@ void ADroneAIController::processPath(float deltaTime)
 
     if(m_currentAStarTimer > m_timerAStarProcess)
     {
-        NavigationVolumeGraph& myGraph = NavigationVolumeGraph::getInstance();
+        processPath();
+        m_currentAStarTimer = 0.f;
+    }
+}
 
-        int32 currentLocId = myGraph.getOverlappingVolumeId(GetPawn()->GetActorLocation());
 
-        if(currentLocId != -1)
+void ADroneAIController::processPath()
+{
+    NavigationVolumeGraph& myGraph = NavigationVolumeGraph::getInstance();
+
+    int32 currentLocId = myGraph.getOverlappingVolumeId(GetPawn()->GetActorLocation());
+
+    if(currentLocId != -1)
+    {
+        int32 targetId = myGraph.getOverlappingVolumeId(m_destination);
+
+        if(targetId != -1)
         {
-            int32 targetId = myGraph.getOverlappingVolumeId(m_destination);
-
-            if(targetId != -1)
-            {
-                m_path.Reset();
-                m_path.Add(m_destination);
-                m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
+            m_path.Reset();
+            m_path.Add(m_destination);
+            m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
 #ifdef TO_ERASE_AFTER
-                m_path.Emplace(GetPawn()->GetActorLocation());
+            m_path.Emplace(GetPawn()->GetActorLocation());
 #endif
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
-                smoothPath();
-                if(m_showDebugPath)
-                {
-                    debugDrawPath();
-                }
+            smoothPath();
+            if(m_showDebugPath)
+            {
+                debugDrawPath();
             }
         }
-        m_currentAStarTimer = 0.f;
     }
 }
 

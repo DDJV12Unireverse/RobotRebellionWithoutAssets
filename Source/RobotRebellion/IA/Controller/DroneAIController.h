@@ -77,6 +77,7 @@ private:
     bool m_actionFinished;
     AIDroneState m_state;
     float m_idleTimer;
+    bool m_canDropBomb;
 
 
     TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
@@ -127,6 +128,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
         float m_attackTuningFactor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
+        float m_waitingThreshold;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
         float m_epsilonSquaredDistanceTolerance;
@@ -275,6 +279,8 @@ public:
 
     float distance(FVector dest);
 
+    FVector getGroupBarycentre();
+
     FVector findSafeZone();
 
     FORCEINLINE void enableDroneDisplay(bool enable)
@@ -307,6 +313,8 @@ public:
     bool testFlyFromTo(const FVector& startPoint, const FVector& endPoint);
 
     void processPath(float deltaTime);
+
+    void processPath();
 
     void splineForecast();
 };
