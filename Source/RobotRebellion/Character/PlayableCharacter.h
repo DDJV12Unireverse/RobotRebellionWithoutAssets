@@ -74,9 +74,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         float m_manaPerPotion;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact")
-        float m_interactRange;
-
     //Reviving Count
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
         float m_requiredTimeToRevive;
@@ -102,6 +99,8 @@ public:
         float m_FPSCameraDistance;
 
     // Maximal Focus distance on items.
+    UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
+        float MinUseDistance;
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
@@ -257,9 +256,6 @@ public:
         void mainFire();
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
-
-    UFUNCTION(NetMulticast, Reliable)
-        void clientMainFireSound();
 
     //CAST SPELL
     template<int32 index>
