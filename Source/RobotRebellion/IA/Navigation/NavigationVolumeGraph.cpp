@@ -33,7 +33,7 @@ NavigationVolumeGraph::NavigationVolumeGraph()
     m_edgesCosts{},
     m_indexEdgesForNode{},
     m_isBuilt{false},
-    m_NodeAmountExpected{67}
+    m_NodeAmountExpected{150}
 {
     // default graph is empty
 }
