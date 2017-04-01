@@ -264,11 +264,12 @@ public:
 
     FVector findSafeZone();
 
-    void enableDroneDisplay(bool enable)
+    FORCEINLINE void enableDroneDisplay(bool enable)
     {
         m_isDebugEnabled = enable;
     }
-    bool isDebugEnabled()
+
+    FORCEINLINE bool isDebugEnabled()
     {
         return m_isDebugEnabled;
     }
