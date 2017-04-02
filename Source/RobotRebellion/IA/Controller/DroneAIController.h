@@ -37,7 +37,7 @@ private:
     //the height the drone must be
     float m_targetedHeight;
 
-    float m_ennemisInScene; // TODO REMPLACER AVEC INFO DE LA SCENE
+    float m_ennemisInScene; // TODO REPLACE WITH SCENE INFO
 
     //the current time
     float m_currentTime;
@@ -106,7 +106,7 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
         class USplineComponent* m_splinePath;
 
-    /** Specifie if the path is showed on screen*/
+    /** Specify if the path is showed on screen*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
         bool m_showDebugPath;
 
@@ -122,7 +122,6 @@ private:
     TArray<FVector> m_smoothedPath;
     TArray<FVector> m_finalPath;
 
-    float m_currentAStarTimer;
     float m_timeSinceLastUpdate;
 
 
