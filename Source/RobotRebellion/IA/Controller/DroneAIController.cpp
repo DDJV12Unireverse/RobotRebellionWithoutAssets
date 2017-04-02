@@ -51,7 +51,6 @@ void ADroneAIController::Tick(float deltaTime)
     m_currentTime += deltaTime;
 
     IAUpdate(deltaTime);
-    //IALoop(deltaTime);
 }
 
 
@@ -402,62 +401,6 @@ void ADroneAIController::IAUpdate(float deltaTime)
         FColor(0, 0, 255)
     );
 }
-
-//void ADroneAIController::IALoop(float deltaTime)
-//{
-//    chooseNextAction();
-//
-//    switch(m_state)
-//    {
-//        case DRONE_WAITING:
-//            PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
-//            setFollowGroup();
-//            break;
-//        case DRONE_MOVING:
-//        {
-//            //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_MOVING"));
-//            if(m_currentTime >= m_nextMovementUpdateTime)
-//            {
-//                this->processPath(deltaTime);
-//                this->MoveToTarget();
-//
-//                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
-//            }
-//            break;
-//        }
-//
-//        case DRONE_COMBAT:
-//            setFollowFireZone();
-//            if(m_currentTime >= m_nextMovementUpdateTime)
-//            {
-//                this->processPath(deltaTime);
-//                this->MoveToTarget();
-//
-//                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
-//            }
-//            break;
-//        case DRONE_BOMB:
-//            dropBomb();
-//            break;
-//        case DRONE_RECHARGE:
-//            setFollowSafeZone();
-//            //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_RECHARGE"));
-//            if(m_currentTime >= m_nextMovementUpdateTime)
-//            {
-//                this->processPath(deltaTime);
-//                this->MoveToTarget();
-//
-//                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
-//            }
-//    }
-//    DrawDebugSphere(
-//        GetWorld(),
-//        m_destination,
-//        24,
-//        32,
-//        FColor(0, 0, 255)
-//    );
-//}
 
 void ADroneAIController::dropBomb()
 {
