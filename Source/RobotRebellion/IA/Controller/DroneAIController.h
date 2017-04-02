@@ -275,5 +275,7 @@ public:
 
     void processPath();
 
+    bool isLocationFree(const FVector& loc);
+
     void splineForecast();
 };

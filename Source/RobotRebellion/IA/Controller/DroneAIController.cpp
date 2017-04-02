@@ -749,6 +749,7 @@ void ADroneAIController::smoothPath()
     int32 currentIndex{};
     int32 nextIndex{};
     int32 previousIndex{1};
+    int32 previousCurrentIndex{1};
 
     // Smooth the path beginning at the start point
     m_smoothedPath.Reset();
@@ -771,11 +772,13 @@ void ADroneAIController::smoothPath()
             }
         }
         ++nextIndex;
-        if(nextIndex == previousIndex)
+        if(nextIndex == previousIndex && previousCurrentIndex == currentIndex)
         {
             UE_LOG(DroneLog, Log, TEXT("m_smoothedPath:%d"), m_smoothedPath.Num());
+            break;
         }
         previousIndex = nextIndex;
+        previousCurrentIndex = currentIndex;
         m_smoothedPath.Emplace(m_path[nextIndex]);
         //re -loop from the last index
         currentIndex = nextIndex;
@@ -796,10 +799,12 @@ bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector&
         ActorsToIgnore.Emplace(bomb);
     }
     TArray<FHitResult> hitActors;
+    float offset = 5.f;
+    float radius = Cast<ADrone>(GetPawn())->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() - offset;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
                                                                    startPoint,
                                                                    endPoint,
-                                                                   10.0f,
+                                                                   radius,
                                                                    ObjectTypes,
                                                                    false,
                                                                    ActorsToIgnore,
@@ -854,8 +859,12 @@ void ADroneAIController::processPath()
         if(targetId != -1)
         {
             m_path.Reset();
-            m_path.Add(m_destination);
-            m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
+            // test if destination is possible
+            if(isLocationFree(m_destination))
+            {
+                m_path.Add(m_destination);
+            }
+            m_path.Append(myGraph.processAStar(currentLocId, targetId)); 
             m_path.Emplace(GetPawn()->GetActorLocation());
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
@@ -870,7 +879,10 @@ void ADroneAIController::processPath()
             if(targetId != -1)
             {
                 m_path.Reset();
-                m_path.Add(m_destination);
+                if(isLocationFree(m_destination))
+                {
+                    m_path.Add(m_destination);
+                }
                 m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
                 m_path.Emplace(GetPawn()->GetActorLocation());
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
@@ -878,8 +890,38 @@ void ADroneAIController::processPath()
                 smoothPath();
                 debugDrawPath();
             }
+            else
+            {
+                // No volume found
+            }
         }
     }
+}
+
+bool ADroneAIController::isLocationFree(const FVector& loc)
+{
+    float offset = 10.f;
+    float radius = Cast<ADrone>(GetPawn())->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + offset;
+
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{UEngineTypes::ConvertToObjectType(ECC_WorldStatic)};
+    TArray<AActor*> ActorsToIgnore{GetPawn()};
+    AKaboom* bomb = Cast<ADrone>(GetPawn())->m_currentBomb;
+    if(bomb)
+    {
+        ActorsToIgnore.Emplace(bomb);
+    }
+    TArray<FHitResult> hitActors;
+    bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
+                                                                   loc,
+                                                                   loc,
+                                                                   radius,
+                                                                   ObjectTypes,
+                                                                   false,
+                                                                   ActorsToIgnore,
+                                                                   EDrawDebugTrace::None,
+                                                                   hitActors,
+                                                                   true);
+    return hitActors.Num() == 0;
 }
 
 void ADroneAIController::splineForecast()
