@@ -9,6 +9,8 @@
 
 #include "../../Global/GlobalDamageMethod.h"
 #include "../../Tool/UtilitaryFunctionLibrary.h"
+#include "IA/Controller/CustomAIControllerBase.h"
+#include "Character/NonPlayableCharacter.h"
 
 
 
@@ -93,19 +95,6 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
             {
                 DamageCoefficientLogic coeff;
 
-                /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
-                true,
-                coeff,
-                &DamageCoefficientLogic::criticalHit,
-                &DamageCoefficientLogic::engagementHit,
-                &DamageCoefficientLogic::superEfficient,
-                &DamageCoefficientLogic::lessEfficient,
-                &DamageCoefficientLogic::multipleHit,
-                &DamageCoefficientLogic::graze
-                );
-
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
-
                 Damage damage{m_owner, receiver};
 
                 Damage::DamageValue currentDamage = damage(
@@ -113,6 +102,7 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                     coeff.getCoefficientValue()
                 );
 
+                setReceiverInCombat(receiver);
                 receiver->inflictDamage(currentDamage);
             }
             else
@@ -124,5 +114,18 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
         Destroy();
 
         //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Destroy on Server"));
+    }
+}
+
+void AProjectile::setReceiverInCombat(ARobotRebellionCharacter* receiver)
+{
+    ANonPlayableCharacter * ennemy = Cast<ANonPlayableCharacter>(receiver);
+    if(ennemy)
+    {
+        ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(ennemy->GetController());
+        if(controller)
+        {
+            controller->setCombat(true, m_owner);
+        }
     }
 }

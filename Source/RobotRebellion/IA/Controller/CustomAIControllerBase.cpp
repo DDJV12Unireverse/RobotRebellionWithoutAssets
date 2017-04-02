@@ -5,6 +5,14 @@
 
 #include "Character/RobotRebellionCharacter.h"
 
+
+void ACustomAIControllerBase::BeginPlay()
+{
+    Super::BeginPlay();
+    m_isInCombat = false;
+    m_hitDirection = FVector(0, 0, 0);
+}
+
 bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 {
     return this->hasTarget() && !m_targetToFollow->IsActorBeingDestroyed() && !m_targetToFollow->isDead();
@@ -13,5 +21,18 @@ bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
 {
     EPathFollowingRequestResult::Type MoveToActorResult = MoveToActor(Cast<AActor>(m_targetToFollow));
+
     return MoveToActorResult;
+}
+
+void ACustomAIControllerBase::setCombat(bool isCombat, ARobotRebellionCharacter* attacker)
+{
+    m_isInCombat = isCombat;
+    if(isCombat)
+    {
+        if(!hasALivingTarget())
+        {
+            m_targetToFollow = attacker;
+        }
+    }
 }

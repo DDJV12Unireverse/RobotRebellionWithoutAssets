@@ -107,7 +107,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
                 const FVector fireDirection = UKismetMathLibrary::GetForwardVector(
                     UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation()));
                 projectile->InitVelocity(fireDirection);
-
+                
                 playSound(m_longRangeWeaponFireSound, user);
 
                 reload();
