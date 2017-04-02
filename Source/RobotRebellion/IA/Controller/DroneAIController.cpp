@@ -7,11 +7,13 @@
 #include "Character/NonPlayableCharacter.h"
 #include "Character/PlayableCharacter.h"
 #include "Character/Drone.h"
+#include "Gameplay/Weapon/Kaboom.h" 
 #include "Components/SplineComponent.h"
 #include "IA/Navigation/NavigationVolumeGraph.h"
 
 
 #define VERY_LITTLE 5.0f
+DEFINE_LOG_CATEGORY(DroneLog);
 
 ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
 {
@@ -746,6 +748,7 @@ void ADroneAIController::smoothPath()
     // Smooth the path beginning at the end point
     int32 currentIndex{};
     int32 nextIndex{};
+    int32 previousIndex{1};
 
     // Smooth the path beginning at the start point
     m_smoothedPath.Reset();
@@ -768,6 +771,11 @@ void ADroneAIController::smoothPath()
             }
         }
         ++nextIndex;
+        if(nextIndex == previousIndex)
+        {
+            UE_LOG(DroneLog, Log, TEXT("m_smoothedPath:%d"), m_smoothedPath.Num());
+        }
+        previousIndex = nextIndex;
         m_smoothedPath.Emplace(m_path[nextIndex]);
         //re -loop from the last index
         currentIndex = nextIndex;
@@ -781,7 +789,12 @@ void ADroneAIController::smoothPath()
 bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector& endPoint)
 {
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{ UEngineTypes::ConvertToObjectType(ECC_WorldStatic) };
-    TArray<AActor*> ActorsToIgnore{ GetPawn() };
+    TArray<AActor*> ActorsToIgnore{ GetPawn()};
+    AKaboom* bomb = Cast<ADrone>(GetPawn())->m_currentBomb;
+    if(bomb)
+    {
+        ActorsToIgnore.Emplace(bomb);
+    }
     TArray<FHitResult> hitActors;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
                                                                    startPoint,

@@ -5,6 +5,8 @@
 #include "CustomAIControllerBase.h"
 #include "DroneAIController.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(DroneLog, Log, All);
+
 UENUM(BlueprintType)
 enum AIDroneState
 {
