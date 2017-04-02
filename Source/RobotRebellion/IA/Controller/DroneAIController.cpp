@@ -35,12 +35,6 @@ void ADroneAIController::BeginPlay()
     m_bestBombLocation = FVector::ZeroVector;
 
     m_currentTime = 0.f;
-    m_currentAStarTimer = 0.f;
-
-    m_nextMovementUpdateTime = m_updateMovementTime;
-    m_nextUpdatePropertyTime = m_updatePropertyTime;
-    m_nextUpdateAttackCooldownTime = m_updateAttackCooldownTime;
-    m_nextDebugDisplayTime = m_updateAttackCooldownTime;
 
     TArray<AActor*> ennemies;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANonPlayableCharacter::StaticClass(), ennemies);
@@ -48,9 +42,6 @@ void ADroneAIController::BeginPlay()
 
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
-    //setFollowGroup();
-    //m_gotBomb = true;
-
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -412,61 +403,61 @@ void ADroneAIController::IAUpdate(float deltaTime)
     );
 }
 
-void ADroneAIController::IALoop(float deltaTime)
-{
-    chooseNextAction();
-
-    switch(m_state)
-    {
-        case DRONE_WAITING:
-            PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
-            setFollowGroup();
-            break;
-        case DRONE_MOVING:
-        {
-            //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_MOVING"));
-            if(m_currentTime >= m_nextMovementUpdateTime)
-            {
-                this->processPath(deltaTime);
-                this->MoveToTarget();
-
-                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
-            }
-            break;
-        }
-
-        case DRONE_COMBAT:
-            setFollowFireZone();
-            if(m_currentTime >= m_nextMovementUpdateTime)
-            {
-                this->processPath(deltaTime);
-                this->MoveToTarget();
-
-                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
-            }
-            break;
-        case DRONE_BOMB:
-            dropBomb();
-            break;
-        case DRONE_RECHARGE:
-            setFollowSafeZone();
-            //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_RECHARGE"));
-            if(m_currentTime >= m_nextMovementUpdateTime)
-            {
-                this->processPath(deltaTime);
-                this->MoveToTarget();
-
-                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
-            }
-    }
-    DrawDebugSphere(
-        GetWorld(),
-        m_destination,
-        24,
-        32,
-        FColor(0, 0, 255)
-    );
-}
+//void ADroneAIController::IALoop(float deltaTime)
+//{
+//    chooseNextAction();
+//
+//    switch(m_state)
+//    {
+//        case DRONE_WAITING:
+//            PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
+//            setFollowGroup();
+//            break;
+//        case DRONE_MOVING:
+//        {
+//            //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_MOVING"));
+//            if(m_currentTime >= m_nextMovementUpdateTime)
+//            {
+//                this->processPath(deltaTime);
+//                this->MoveToTarget();
+//
+//                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
+//            }
+//            break;
+//        }
+//
+//        case DRONE_COMBAT:
+//            setFollowFireZone();
+//            if(m_currentTime >= m_nextMovementUpdateTime)
+//            {
+//                this->processPath(deltaTime);
+//                this->MoveToTarget();
+//
+//                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
+//            }
+//            break;
+//        case DRONE_BOMB:
+//            dropBomb();
+//            break;
+//        case DRONE_RECHARGE:
+//            setFollowSafeZone();
+//            //PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_RECHARGE"));
+//            if(m_currentTime >= m_nextMovementUpdateTime)
+//            {
+//                this->processPath(deltaTime);
+//                this->MoveToTarget();
+//
+//                m_nextMovementUpdateTime = m_currentTime + m_updateMovementTime;
+//            }
+//    }
+//    DrawDebugSphere(
+//        GetWorld(),
+//        m_destination,
+//        24,
+//        32,
+//        FColor(0, 0, 255)
+//    );
+//}
 
 void ADroneAIController::dropBomb()
 {
@@ -615,43 +606,52 @@ void ADroneAIController::setWaiting()
 
 void ADroneAIController::chooseNextAction()
 {
-
-    float followScore = getFollowScore();
-    float reloadScore = getReloadScore();
-    float attackScore = getAttackScore();
-    float waitScore = getWaitingScore();
+    float scoresArray[DRONE_ACTION_COUNT] = {
+        getWaitingScore(),
+        getFollowScore(),
+        getAttackScore(),
+        getReloadScore()
+    };
 
     if(m_currentTime >= m_nextDebugDisplayTime && m_isDebugEnabled)
     {
-        float scoresArray[] = {followScore, reloadScore, attackScore, waitScore};
         m_nextDebugDisplayTime = m_currentTime + 1.5f;
         ADrone * drone = Cast<ADrone>(this->GetPawn());
         drone->displayScore(scoresArray);
     }
 
+    GEngine->AddOnScreenDebugMessage(15, 5.f, FColor::White, "waitScore : " + FString::SanitizeFloat(scoresArray[DRONE_WAITING]));
+    GEngine->AddOnScreenDebugMessage(16, 5.f, FColor::White, "followScore : " + FString::SanitizeFloat(scoresArray[DRONE_MOVING]));
+    GEngine->AddOnScreenDebugMessage(18, 5.f, FColor::White, "attackScore : " + FString::SanitizeFloat(scoresArray[DRONE_COMBAT]));
+    GEngine->AddOnScreenDebugMessage(17, 5.f, FColor::White, "reloadScore : " + FString::SanitizeFloat(scoresArray[DRONE_RECHARGE]));
 
-    m_nextUpdateAttackCooldownTime = m_currentTime + m_updateAttackCooldownTime;
+    float bestScore = -1.f;
 
-    m_scores.Reset();
-    m_scores.Add(DRONE_MOVING, followScore);
-    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_MOVING Score: %f"), followScore));
-    m_scores.Add(DRONE_RECHARGE, reloadScore);
-    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_RECHARGE Score: %f"), reloadScore));
-    m_scores.Add(DRONE_COMBAT, attackScore);
-    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_COMBAT Score: %f"), attackScore));
-    m_scores.Add(DRONE_WAITING, waitScore);
-    //PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("DRONE_WAIT Score: %f"), waitScore));
+    for (int iter = 0; iter < DRONE_ACTION_COUNT; ++iter)
+    {
+        if (scoresArray[iter] > bestScore)
+        {
+            bestScore = scoresArray[iter];
+            switch (iter)
+            {
+            case DRONE_MOVING:
+                m_state = DRONE_MOVING;
+                break;
 
-    GEngine->AddOnScreenDebugMessage(15, 5.f, FColor::White, "followScore : " + FString::SanitizeFloat(followScore));
-    GEngine->AddOnScreenDebugMessage(16, 5.f, FColor::White, "reloadScore : " + FString::SanitizeFloat(reloadScore));
-    GEngine->AddOnScreenDebugMessage(17, 5.f, FColor::White, "attackScore : " + FString::SanitizeFloat(attackScore));
-    GEngine->AddOnScreenDebugMessage(18, 5.f, FColor::White, "waitScore : " + FString::SanitizeFloat(waitScore));
+            case DRONE_COMBAT:
+                m_state = DRONE_COMBAT;
+                break;
 
-    m_scores.ValueSort(&ScoreSortingFunction);
+            case DRONE_RECHARGE:
+                m_state = DRONE_RECHARGE;
+                break;
 
-    TArray<AIDroneState> sortedStates;
-    m_scores.GenerateKeyArray(sortedStates);
-    m_state = sortedStates[0];
+            case DRONE_WAITING:
+            default:
+                m_state = DRONE_WAITING;
+            }
+        }
+    }
 }
 
 void ADroneAIController::CheckEnnemyNear(FVector position, float range)
@@ -948,18 +948,6 @@ void ADroneAIController::debugElementaryDrawPath(const TArray<FVector>& pathToDr
         DrawDebugLine(world, pathToDraw[index], pathToDraw[index + 1], lineColor, false, 15.f, 0, 5.f);
     }
 }
-
-void ADroneAIController::processPath(float deltaTime)
-{
-    m_currentAStarTimer += deltaTime;
-
-    if(m_currentAStarTimer > m_timerAStarProcess)
-    {
-        processPath();
-        m_currentAStarTimer = 0.f;
-    }
-}
-
 
 void ADroneAIController::processPath()
 {

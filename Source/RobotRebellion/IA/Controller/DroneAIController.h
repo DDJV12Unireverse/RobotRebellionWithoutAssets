@@ -11,9 +11,9 @@ enum AIDroneState
     DRONE_WAITING,
     DRONE_MOVING,
     DRONE_COMBAT,
-    DRONE_BOMB,
     DRONE_RECHARGE,
-    DRONE_NULL // Error
+
+    DRONE_ACTION_COUNT
 };
 
 typedef TPair<AIDroneState, float> ActionScore;
@@ -34,11 +34,6 @@ private:
     /* PROPERTY                                                             */
     /************************************************************************/
 
-
-    TMap<AIDroneState, float> m_scores;
-
-  //  bool m_gotBomb = false;
-
     //the height the drone must be
     float m_targetedHeight;
 
@@ -47,20 +42,7 @@ private:
     //the current time
     float m_currentTime;
 
-    //the next time we update the drone properties
-    float m_nextUpdatePropertyTime;
-
-    //the next time we update the movement of the drone.
-    float m_nextMovementUpdateTime;
-
-    //the next time the drone checks we are attacking or attacked by ennemies
-    float m_nextUpdateAttackCooldownTime;
-
     float m_nextDebugDisplayTime;
-
-    float m_nextUpdateSafeZoneTime;
-
-    float m_nextChangeTargetTime;
 
     bool m_isDebugEnabled;
 
@@ -80,8 +62,8 @@ private:
     bool m_canDropBomb;
 
 
-    TArray<class ARobotRebellionCharacter *> m_sensedEnnemies;
-    TArray<class ARobotRebellionCharacter *> m_attackZoneCharacters;
+    TArray<class ARobotRebellionCharacter*> m_sensedEnnemies;
+    TArray<class ARobotRebellionCharacter*> m_attackZoneCharacters;
     FVector4 m_bestBombLocation;
 
 public:
@@ -101,33 +83,15 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AGeneral")
         float m_detectionDistance;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updatePropertyTime;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updateMovementTime;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updateAttackCooldownTime;
-
     /** Max time for reload action*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
         float m_updateSafeZoneCooldownTime;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Update Time")
-        float m_updateTargetCooldownTime;
-
-   // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb")
-    //float c_bombDamageRadius = 700.0; //TODO move to weapon
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
         float m_safeZoneSize;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "safeZone")
         float m_reloadHeight;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
-        float m_attackTuningFactor;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
         float m_waitingThreshold;
@@ -139,16 +103,9 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = King)
         TSubclassOf<class AKing> m_kingClass;
 
-    /** Projectile class */
-    UPROPERTY(EditDefaultsOnly, Category = Projectile)
-        TSubclassOf<class AProjectile> m_projectileClass;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
         class USplineComponent* m_splinePath;
 
-    /** Specifie how many time aicontroller wait before updating everything (in ms)*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UpdateParameter)
-        float m_updateFrequencie;
     /** Specifie if the path is showed on screen*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
         bool m_showDebugPath;
@@ -158,9 +115,6 @@ public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 2))
         int32 m_splinePointCountIntraSegment;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
-        float m_timerAStarProcess;
 
 
 private:
@@ -311,8 +265,6 @@ public:
 
     // See if the agent can go from one point to another
     bool testFlyFromTo(const FVector& startPoint, const FVector& endPoint);
-
-    void processPath(float deltaTime);
 
     void processPath();
 
