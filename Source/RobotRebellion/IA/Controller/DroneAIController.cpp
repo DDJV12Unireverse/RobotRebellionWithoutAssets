@@ -709,7 +709,7 @@ float ADroneAIController::getBombScore(const FVector& position)
     //score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemIsAttacked / getNbEnnemiesInScene()) / c_Normalize);
     
     //float temp = FMath::Clamp((m_sensedEnnemies.Num() - getNbAliveAllies()) / 4.f, 0.f, 1.f);
-    float minimalEnemyNumber = 3.f;
+    float minimalEnemyNumber = 4.f;
     float temp = enemiesAttacked / minimalEnemyNumber;
     temp = temp > 1.f ? 1.f : temp;
     return temp * score; //> temp ? temp : score;
