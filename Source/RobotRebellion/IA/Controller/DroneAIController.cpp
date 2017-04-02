@@ -111,7 +111,6 @@ float ADroneAIController::getAttackScore()
     CheckEnnemyNear(dronePosition, m_detectionDistance);
 
     float score{};
-    float bestBombScore = 0.0f;
 
     if(!owner->isLoaded() || m_sensedEnnemies.Num() == 0)
     { // Cannot attack cause no bomb
@@ -135,15 +134,15 @@ float ADroneAIController::getAttackScore()
     const float c_Normalize = 4.f; // 4 additions
     const float c_NbPlayersMax = 4.f; // 4 elements
 
-    score = 0.5f * bestScoreBomb;
-    float temp = getNbAliveAllies();
+    score = 0.6f * bestScoreBomb;
+    float temp = getNbAliveAllies() * 3.f;
     temp = temp == 0 ? 1.f : temp;
     temp = (m_sensedEnnemies.Num() / temp);
     temp = temp > 1 ? 1.f : temp;
-    score *= 0.3f * temp;
+    score += 0.3f * temp;
     if(getNbBombPlayers())
     {
-        score += 0.2f; // Add 20%
+        score += 0.1f; // Add 20%
     }
 
     return score;
@@ -797,12 +796,16 @@ float ADroneAIController::getBombScore(FVector position)
         }
     }
 
-    score = 0.35f * (enemiesKilled / enemiesAttacked);
-    score += 0.3f * (enemiesAttacked / m_sensedEnnemies.Num());
-    score += 0.35f * ((4.f - numberFriendlyAttacked) / 4.f);
+    score = 0.40f * (enemiesKilled / enemiesAttacked);
+    score += 0.35f * (enemiesAttacked / m_sensedEnnemies.Num());
+    score += 0.25f * ((4.f - numberFriendlyAttacked) / 4.f);
     //score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemIsAttacked / getNbEnnemiesInScene()) / c_Normalize);
-
-    return score;
+    
+    //float temp = FMath::Clamp((m_sensedEnnemies.Num() - getNbAliveAllies()) / 4.f, 0.f, 1.f);
+    float minimalEnemyNumber = 3.f;
+    float temp = enemiesAttacked / minimalEnemyNumber;
+    temp = temp > 1.f ? 1.f : temp;
+    return temp * score; //> temp ? temp : score;
 }
 
 FVector ADroneAIController::findSafeZone()
