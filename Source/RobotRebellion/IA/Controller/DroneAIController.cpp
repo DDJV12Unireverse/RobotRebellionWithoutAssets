@@ -135,7 +135,7 @@ float ADroneAIController::getAttackScore()
 
 //   PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("POSITION:%f %f %f BOMB Score: %f"), ennemyPos.X, ennemyPos.Y, ennemyPos.Z, bombScore));
 
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("Player alive ratio:%.3f \n EnnemyRatio:%f \n nbBmbPlayr:%d \n bestBombScore:%f \n"), (1.f - getNbAliveAllies() / c_NbPlayersMax), (getNbAliveEnnemies() / getNbEnnemiesInScene()), getNbBombPlayers(), bestBombScore));
+     //   PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("Player alive ratio:%.3f \n EnnemyRatio:%f \n nbBmbPlayr:%d \n bestBombScore:%f \n"), (1.f - getNbAliveAllies() / c_NbPlayersMax), (getNbAliveEnnemies() / getNbEnnemiesInScene()), getNbBombPlayers(), bestBombScore));
 
         score = ((1.f - getNbAliveAllies() / c_NbPlayersMax) + (getNbAliveEnnemies() / getNbEnnemiesInScene()) + isInCombat() * getNbBombPlayers() +  bestBombScore) / c_Normalize;
 
@@ -367,12 +367,12 @@ void ADroneAIController::IALoop(float deltaTime)
     switch (m_state)
     {
     case DRONE_WAITING:
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
+       // PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_WAITING"));
         setFollowGroup();
         break;
     case DRONE_MOVING:
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_MOVING"));
+       // PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_MOVING"));
         if (m_currentTime >= m_nextMovementUpdateTime)
         {
             this->MoveToTarget();
@@ -383,7 +383,7 @@ void ADroneAIController::IALoop(float deltaTime)
     }
 
     case DRONE_COMBAT:
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_COMBAT"));
+    //    PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_COMBAT"));
         setFollowFireZone();
         if (m_currentTime >= m_nextMovementUpdateTime)
         {
@@ -393,12 +393,12 @@ void ADroneAIController::IALoop(float deltaTime)
         }
         break;
     case DRONE_BOMB:
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_BOMB"));
+      //  PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_BOMB"));
         dropBomb();
         break;
     case DRONE_RECHARGE:
         setFollowSafeZone();
-        PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_RECHARGE"));
+     //   PRINT_MESSAGE_ON_SCREEN(FColor::White, TEXT("DRONE_RECHARGE"));
         if (m_currentTime >= m_nextMovementUpdateTime)
         {
             this->MoveToTarget();
@@ -422,7 +422,7 @@ void ADroneAIController::dropBomb()
     {
         if (drone->isLoaded())
         {
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
+       //     PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
         }
         drone->drop();
     }
@@ -564,7 +564,7 @@ void ADroneAIController::chooseNextAction()
 
 void ADroneAIController::CheckEnnemyNear(FVector position, float range)
 {
-    PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("CheckEnnemyNear Range: %f"), range));
+   // PRINT_MESSAGE_ON_SCREEN(FColor::White, FString::Printf(TEXT("CheckEnnemyNear Range: %f"), range));
 
 
     //TODO: Ray cast instead... Drone currently sees through walls...
