@@ -16,7 +16,7 @@ class ROBOTREBELLION_API ACustomAIControllerBase : public AAIController
 protected:
     class ARobotRebellionCharacter *m_targetToFollow;
     bool m_isInCombat;
-    FVector m_hitDirection;
+   FVector m_hitDirection;
 
 public:
     virtual void BeginPlay() override;

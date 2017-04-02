@@ -44,8 +44,8 @@ EBTNodeResult::Type UIsTargetInRangeBTTaskNode::ExecuteTask(UBehaviorTreeCompone
         FVector distanceBetween = currentTargetLocation - ennemiLocation;
         if(ennemiCharacter->m_weaponInventory)
         {
-            if(distanceBetween.Size() < m_detectingRange // Ensure the target is at the correct distance
-               && ennemiCharacter->m_weaponInventory->getCurrentWeapon()->canAttack()) // Ensure the AI weapon are reloaded
+            if(distanceBetween.Size() < m_detectingRange) // Ensure the target is at the correct distance
+               //&& ennemiCharacter->m_weaponInventory->getCurrentWeapon()->canAttack()) // Ensure the AI weapon are reloaded
             {
                 NodeResult = EBTNodeResult::Succeeded;
             }
