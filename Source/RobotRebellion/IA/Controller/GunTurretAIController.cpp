@@ -13,39 +13,6 @@
 
 void AGunTurretAIController::CheckEnnemyNear(float range)
 {
-    if(!m_showDebugSphereTrace)
-    {
-        EntityDataSingleton& sing = EntityDataSingleton::getInstance();
-
-        float rangeSquared = range * range;
-        FVector currentLocation = GetPawn()->GetActorLocation();
-
-        for(ARobotsCharacter* robots : sing.m_robotArray)
-        {
-            if(FVector::DistSquared(currentLocation, robots->GetActorLocation()) < rangeSquared)
-            {
-                m_targetToFollow = robots;
-                return;
-            }
-        }
-
-        for(ABeastCharacter* beast : sing.m_beastArray)
-        {
-            if(FVector::DistSquared(currentLocation, beast->GetActorLocation()) < rangeSquared)
-            {
-                m_targetToFollow = beast;
-                return;
-            }
-        }
-    }
-    else
-    {
-        this->formerCheckMethod(range);
-    }
-}
-
-void AGunTurretAIController::formerCheckMethod(float range)
-{
     APawn *currentPawn = GetPawn();
     FVector MultiSphereStart = currentPawn->GetActorLocation();
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
