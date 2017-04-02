@@ -52,6 +52,7 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
                     coeff.getCoefficientValue()
                 );
 
+                setReceiverInCombat(receiver);
                 receiver->inflictDamage(m_baseDamage*currentDamage);
             }
             else
