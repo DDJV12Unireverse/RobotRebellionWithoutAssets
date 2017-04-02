@@ -11,6 +11,9 @@
 #include "Gameplay/Weapon/WeaponBase.h"
 #include "IA/Character/RobotsCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Tool/UtilitaryMacros.h"
+#include "UnrealString.h"
+#include "AIController.h"
 
 void AEnnemiAIController::CheckEnnemyNear(float range)
 {
@@ -63,21 +66,31 @@ void AEnnemiAIController::AttackTarget() const
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     if(m_targetToFollow)
     {
-        FVector fireDirection = UKismetMathLibrary::GetForwardVector(
+        FVector hitDirection = UKismetMathLibrary::GetForwardVector(
             UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), m_targetToFollow->GetActorLocation()));
-        fireDirection.Normalize();
-
+        hitDirection.Z = 0;
+        hitDirection.Normalize();
         FVector front = GetPawn()->GetActorForwardVector();
+        front.Z = 0;
         front.Normalize();
-        float angle = FVector::DotProduct(front, fireDirection);
+        FVector vert = FVector::CrossProduct(front, hitDirection);
+        float moveDirection = vert.Z;
+        float sinAngle = vert.Size();
+
+         if(moveDirection > 0)
+         {
+             GetPawn()->AddActorLocalRotation(FQuat(FVector(0, 0, 1), asinf(sinAngle)), true); //Correct
+         }
+         else
+         {
+             GetPawn()->AddActorLocalRotation(FQuat(FVector(0, 0, 1), asinf(-sinAngle)), true);
+         }
         
-
-        GetPawn()->SetActorRelativeRotation(FQuat(FVector(0,0,1),acos(angle))); 
-
+        
         ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, m_targetToFollow);
     }
-     else
-     {
-         ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
-     }
+    else
+    {
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+    }
 }
