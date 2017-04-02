@@ -429,6 +429,8 @@ public:
 
     void switchView();
 
+    UMeshComponent* getCurrentViewMesh();
+
     virtual void OnPickup(APawn* InstigatorPawn) override;
 
     virtual void OnBeginFocus() override
