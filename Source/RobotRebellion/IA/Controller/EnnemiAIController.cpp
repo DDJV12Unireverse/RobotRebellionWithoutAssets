@@ -18,67 +18,6 @@
 
 void AEnnemiAIController::CheckEnnemyNear(float range)
 {
-    if (!m_showDebugSphereTrace)
-    {
-        EntityDataSingleton& sing = EntityDataSingleton::getInstance();
-        m_targetToFollow = nullptr;
-
-        float rangeSquared = range * range;
-        FVector currentLocation = GetPawn()->GetActorLocation();
-
-        float distSquaredTemp;
-        float minDist = 9e+34f;
-        for(APlayableCharacter* player : sing.m_playableCharacterArray)
-        {
-            if(player->isVisible() && !player->isDead())
-            {
-                distSquaredTemp = FVector::DistSquared(currentLocation, player->GetActorLocation());
-                if(distSquaredTemp < rangeSquared)
-                {
-                    minDist = distSquaredTemp;
-                    m_targetToFollow = player;
-                }
-            }
-        }
-
-        {
-            AKing* king = sing.m_king;
-            distSquaredTemp = FVector::DistSquared(currentLocation, king->GetActorLocation());
-            if(distSquaredTemp < minDist)
-            {
-                minDist = distSquaredTemp;
-                m_targetToFollow = king;
-            }
-        }
-
-        for(ASovecCharacter* sovec : sing.m_sovecArray)
-        {
-            distSquaredTemp = FVector::DistSquared(currentLocation, sovec->GetActorLocation());
-            if(distSquaredTemp < minDist)
-            {
-                minDist = distSquaredTemp;
-                m_targetToFollow = sovec;
-                break;
-            }
-        }
-
-        for(ABeastCharacter* beast : sing.m_beastArray)
-        {
-            if(FVector::DistSquared(currentLocation, beast->GetActorLocation()) < minDist)
-            {
-                m_targetToFollow = beast;
-                break;
-            }
-        }
-    }
-    else
-    {
-        this->formerCheckMethod(range);
-    }
-}
-
-void AEnnemiAIController::formerCheckMethod(float range)
-{
     APawn *currentPawn = GetPawn();
     FVector MultiSphereStart = currentPawn->GetActorLocation();
     FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
