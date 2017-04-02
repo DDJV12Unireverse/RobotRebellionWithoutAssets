@@ -33,11 +33,18 @@ private:
     /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
+    int32 m_alliesAliveCount;
+    int32 m_alliesInScene;
+    FVector m_groupBarycenter;
+
+    int32 m_ennemyNear;
+    int32 m_ennemyInScene;
+    FVector m_ennemyNearBarycenter;
+
+
 
     //the height the drone must be
     float m_targetedHeight;
-
-    float m_ennemisInScene; // TODO REPLACE WITH SCENE INFO
 
     //the current time
     float m_currentTime;
@@ -99,10 +106,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
         float m_epsilonSquaredDistanceTolerance;
 
-    //King
-    UPROPERTY(EditDefaultsOnly, Category = King)
-        TSubclassOf<class AKing> m_kingClass;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
         class USplineComponent* m_splinePath;
 
@@ -136,7 +139,11 @@ public:
 
     virtual void Tick(float deltaTime) override;
 
-    float getNbEnnemiesInScene();
+    void updateFrameProperties(float deltaTime);
+    
+    void updateEnnemiesCampInfo();
+
+    void updateAlliesCampInfo();
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
@@ -188,9 +195,6 @@ public:
     //update the targeted height of the drone
     void updateTargetedHeight() USE_NOEXCEPT;
 
-    //update the player the drone must follows. Temporary for now because the drone will only go follow a living target.
-    void updateTargetedTarget();
-
     void followKing();
 
     void followGroup();
@@ -215,24 +219,17 @@ public:
 
     void dropBomb();
 
-    virtual void CheckEnnemyNear(FVector position, float range);
+    virtual void CheckEnnemyNear(float range);
+    void CheckEnnemyNearPosition(const FVector& position, float range);
 
 
     int getNbBombPlayers();
 
-    float getBombScore(FVector position);
+    float getBombScore(const FVector& position);
 
     bool isInCombat();
 
-    int getNbAliveAllies();
-
-    int getNbAliveEnnemies();
-
-    int getNbEnnemiesInZone(FVector zoneCenter);
-
-    float distance(FVector dest);
-
-    FVector getGroupBarycentre();
+    int getNbEnnemiesInZone(const FVector& zoneCenter);
 
     FVector findSafeZone();
 
