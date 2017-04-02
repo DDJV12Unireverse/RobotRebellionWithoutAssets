@@ -27,10 +27,10 @@ void ARestoreHealthProjectile::OnHit(UPrimitiveComponent * ThisComp, AActor * Ot
             {
                 receiver->restoreHealth(m_restoredHealth);
             }
-            else
-            {
-                receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-            }
+            //else // CHEAT CODE
+            //{
+            //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+            //}
         }
 
         Destroy();

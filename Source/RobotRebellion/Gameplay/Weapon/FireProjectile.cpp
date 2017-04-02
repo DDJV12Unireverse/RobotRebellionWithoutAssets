@@ -54,10 +54,11 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
 
                 receiver->inflictDamage(m_baseDamage*currentDamage);
             }
-            else
-            {
-                receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-            }
+            // COMMENTED FOR CHEAT CODE
+            //else
+            //{
+            //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+            //}
         }
 
         //TODO display burn effect on Mesh
