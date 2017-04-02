@@ -21,11 +21,6 @@ bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
 {
     EPathFollowingRequestResult::Type MoveToActorResult = MoveToActor(Cast<AActor>(m_targetToFollow));
-//     if(MoveToActorResult == EPathFollowingRequestResult::Failed && m_hitDirection.Size())
-//     {
-//         EPathFollowingRequestResult::Type MoveInDirection = MoveToLocation(GetPawn()->GetActorLocation() + m_hitDirection);
-//         return MoveInDirection;
-//     }
 
     return MoveToActorResult;
 }

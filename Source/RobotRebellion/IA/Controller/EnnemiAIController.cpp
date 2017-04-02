@@ -10,6 +10,7 @@
 #include "Gameplay/Weapon/WeaponInventory.h"
 #include "Gameplay/Weapon/WeaponBase.h"
 #include "IA/Character/RobotsCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void AEnnemiAIController::CheckEnnemyNear(float range)
 {
@@ -62,10 +63,21 @@ void AEnnemiAIController::AttackTarget() const
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     if(m_targetToFollow)
     {
+        FVector fireDirection = UKismetMathLibrary::GetForwardVector(
+            UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), m_targetToFollow->GetActorLocation()));
+        fireDirection.Normalize();
+
+        FVector front = GetPawn()->GetActorForwardVector();
+        front.Normalize();
+        float angle = FVector::DotProduct(front, fireDirection);
+        
+
+        GetPawn()->SetActorRelativeRotation(FQuat(FVector(0,0,1),acos(angle))); 
+
         ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, m_targetToFollow);
     }
-    else
-    {
-        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
-    }
+     else
+     {
+         ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter);
+     }
 }
