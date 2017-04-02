@@ -4,10 +4,47 @@
 #include "GunTurretAIController.h"
 
 #include "Character/NonPlayableCharacter.h"
+#include "IA/Character/SovecCharacter.h"
+#include "IA/Character/BeastCharacter.h"
+#include "IA/Character/RobotsCharacter.h"
 #include "Gameplay/Weapon/WeaponInventory.h"
 #include "Gameplay/Weapon/WeaponBase.h"
+#include "Global/EntityDataSingleton.h"
 
 void AGunTurretAIController::CheckEnnemyNear(float range)
+{
+    if(!m_showDebugSphereTrace)
+    {
+        EntityDataSingleton& sing = EntityDataSingleton::getInstance();
+
+        float rangeSquared = range * range;
+        FVector currentLocation = GetPawn()->GetActorLocation();
+
+        for(ARobotsCharacter* robots : sing.m_robotArray)
+        {
+            if(FVector::DistSquared(currentLocation, robots->GetActorLocation()) < rangeSquared)
+            {
+                m_targetToFollow = robots;
+                return;
+            }
+        }
+
+        for(ABeastCharacter* beast : sing.m_beastArray)
+        {
+            if(FVector::DistSquared(currentLocation, beast->GetActorLocation()) < rangeSquared)
+            {
+                m_targetToFollow = beast;
+                return;
+            }
+        }
+    }
+    else
+    {
+        this->formerCheckMethod(range);
+    }
+}
+
+void AGunTurretAIController::formerCheckMethod(float range)
 {
     APawn *currentPawn = GetPawn();
     FVector MultiSphereStart = currentPawn->GetActorLocation();
@@ -19,15 +56,15 @@ void AGunTurretAIController::CheckEnnemyNear(float range)
     ActorsToIgnore.Add(currentPawn);
     TArray<FHitResult> OutHits;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
-                                                                   MultiSphereStart,
-                                                                   MultiSphereEnd,
-                                                                   range,
-                                                                   ObjectTypes,
-                                                                   false,
-                                                                   ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
-                                                                   OutHits,
-                                                                   true);
+        MultiSphereStart,
+        MultiSphereEnd,
+        range,
+        ObjectTypes,
+        false,
+        ActorsToIgnore,
+        this->debugDrawTraceShowingMode(),
+        OutHits,
+        true);
 
     m_targetToFollow = NULL;
 

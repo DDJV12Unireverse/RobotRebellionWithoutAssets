@@ -16,8 +16,16 @@ class ROBOTREBELLION_API ACustomAIControllerBase : public AAIController
 protected:
     class ARobotRebellionCharacter *m_targetToFollow;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+        bool m_showDebugSphereTrace;
+
 
 public:
+    ACustomAIControllerBase();
+    virtual ~ACustomAIControllerBase() = default;
+
+    virtual void BeginPlay() override;
+
     FORCEINLINE bool hasTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow != NULL;
@@ -29,6 +37,11 @@ public:
     }
 
     bool hasALivingTarget() const USE_NOEXCEPT;
+
+    FORCEINLINE EDrawDebugTrace::Type debugDrawTraceShowingMode() const USE_NOEXCEPT
+    {
+        return m_showDebugSphereTrace ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+    }
 
     /*
      * VIRTUAL METHODS

@@ -379,13 +379,16 @@ void ADroneAIController::IAUpdate(float deltaTime)
         }
     }
 
-    DrawDebugSphere(
-        GetWorld(),
-        m_destination,
-        24,
-        32,
-        FColor(0, 0, 255)
-    );
+    if (m_showDestination)
+    {
+        DrawDebugSphere(
+            GetWorld(),
+            m_destination,
+            24,
+            32,
+            FColor(0, 0, 255)
+        );
+    }
 }
 
 void ADroneAIController::dropBomb()
@@ -796,13 +799,22 @@ bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector&
 void ADroneAIController::debugDrawPath() const
 {
     //path
-    this->debugElementaryDrawPath(m_path, FColor::Red);
+    if (m_showOriginPath)
+    {
+        this->debugElementaryDrawPath(m_path, FColor::Red);
+    }
 
     // smoothed path
-    this->debugElementaryDrawPath(m_smoothedPath, FColor::Green);
+    if (m_showSmoothedPath)
+    {
+        this->debugElementaryDrawPath(m_smoothedPath, FColor::Green);
+    }
 
     // final path
-    this->debugElementaryDrawPath(m_finalPath, FColor::Blue);
+    if(m_showFinalPath)
+    {
+        this->debugElementaryDrawPath(m_finalPath, FColor::Blue);
+    }
 }
 
 void ADroneAIController::debugElementaryDrawPath(const TArray<FVector>& pathToDraw, const FColor& lineColor) const
@@ -835,10 +847,7 @@ void ADroneAIController::processPath()
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
             smoothPath();
-            if(m_showDebugPath)
-            {
-                debugDrawPath();
-            }
+            debugDrawPath();
         }
         else
         {
@@ -854,10 +863,7 @@ void ADroneAIController::processPath()
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
                 smoothPath();
-                if(m_showDebugPath)
-                {
-                    debugDrawPath();
-                }
+                debugDrawPath();
             }
         }
     }

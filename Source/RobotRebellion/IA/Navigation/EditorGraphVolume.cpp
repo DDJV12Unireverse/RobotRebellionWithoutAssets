@@ -4,6 +4,7 @@
 #include "EditorGraphVolume.h"
 #include "NavigationVolumeGraph.h" 
 #include "VolumeIdProvider.h"
+#include "Global/EntityDataSingleton.h"
 
 // Sets default values
 AEditorGraphVolume::AEditorGraphVolume() 
@@ -14,7 +15,6 @@ AEditorGraphVolume::AEditorGraphVolume()
 
     // Init box comp to have editor visual feedback
     m_box = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-    m_box->SetHiddenInGame(!m_isVisibleInGame); // enable to be shown in game
     m_box->SetCollisionEnabled(ECollisionEnabled::NoCollision); // disable collision
 }
 
@@ -24,6 +24,8 @@ void AEditorGraphVolume::BeginPlay()
     Super::BeginPlay();
     m_id = VolumeIdProvider::getInstance().getNextId();
     registerNode();
+    m_isVisibleInGame = !!EntityDataSingleton::getInstance().m_showVolumeBox;
+    m_box->SetHiddenInGame(!m_isVisibleInGame); // enable to be shown in game
 }
 
 // Called every frame

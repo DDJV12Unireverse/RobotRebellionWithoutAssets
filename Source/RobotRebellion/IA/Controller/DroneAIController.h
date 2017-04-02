@@ -111,7 +111,16 @@ public:
 
     /** Specify if the path is showed on screen*/
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
-        bool m_showDebugPath;
+        bool m_showOriginPath;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
+        bool m_showSmoothedPath;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
+        bool m_showFinalPath;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = DebugParameter)
+        bool m_showDestination;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
         float m_splineTension;

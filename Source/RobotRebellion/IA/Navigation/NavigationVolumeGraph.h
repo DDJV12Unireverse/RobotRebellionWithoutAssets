@@ -20,6 +20,7 @@ public:
         TArray<AEditorGraphVolume*> m_nodes; // used to store all node in order to build the graph
         bool m_isBuilt;
         int32 m_NodeAmountExpected;
+        bool m_showConnection;
 
 public:
 

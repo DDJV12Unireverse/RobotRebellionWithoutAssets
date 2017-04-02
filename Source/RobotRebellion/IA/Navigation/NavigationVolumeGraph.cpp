@@ -319,24 +319,27 @@ void NavigationVolumeGraph::writeGraph() const
 
 void NavigationVolumeGraph::drawConnections(const UWorld* world) const
 {
-    // TODO draw all connection (use the edges list for that)
-    for(int32 indexOfEdges{}; indexOfEdges < m_indexEdgesForNode.Num() - 1; ++indexOfEdges)
+    if (m_showConnection)
     {
-        FVector startPosition = m_nodes[indexOfEdges]->GetActorLocation();
-        int32 startIndex = m_indexEdgesForNode[indexOfEdges];
-        int32 endIndex;
-        if(indexOfEdges + 1 == m_indexEdgesForNode.Num())
+        // TODO draw all connection (use the edges list for that)
+        for(int32 indexOfEdges{}; indexOfEdges < m_indexEdgesForNode.Num() - 1; ++indexOfEdges)
         {
-            endIndex = m_edges.Num();
-        }
-        else
-        {
-            endIndex = m_indexEdgesForNode[indexOfEdges + 1];
-        }
-        for(int32 edgesIndex = startIndex; edgesIndex < endIndex; ++edgesIndex)
-        {
-            DrawDebugLine(world, startPosition, m_edges[edgesIndex]->GetActorLocation(),
-                          FColor::Emerald, false, 30.f, 0, 5.f);
+            FVector startPosition = m_nodes[indexOfEdges]->GetActorLocation();
+            int32 startIndex = m_indexEdgesForNode[indexOfEdges];
+            int32 endIndex;
+            if(indexOfEdges + 1 == m_indexEdgesForNode.Num())
+            {
+                endIndex = m_edges.Num();
+            }
+            else
+            {
+                endIndex = m_indexEdgesForNode[indexOfEdges + 1];
+            }
+            for(int32 edgesIndex = startIndex; edgesIndex < endIndex; ++edgesIndex)
+            {
+                DrawDebugLine(world, startPosition, m_edges[edgesIndex]->GetActorLocation(),
+                    FColor::Emerald, false, 30.f, 0, 5.f);
+            }
         }
     }
 }
