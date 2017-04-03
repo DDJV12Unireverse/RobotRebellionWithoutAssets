@@ -828,8 +828,6 @@ void APlayableCharacter::cppOnDeath()
     else
     {
         this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::deactivatePhysicsWhenKilled;
-        //this->activatePhysics(false);
-
     }
 
     this->EnablePlayInput(false);
@@ -1142,11 +1140,15 @@ void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if(mustActive)
     {
-        this->GetCapsuleComponent()->CreatePhysicsState();
+        //this->GetCapsuleComponent()->CreatePhysicsState();
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
     }
     else
     {
-        this->GetCapsuleComponent()->DestroyPhysicsState();
+  //      this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+//        this->GetCapsuleComponent()->SetEnableGravity(false);
+        //this->GetCapsuleComponent()->DestroyPhysicsState();
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
     }
 
     if(Role >= ROLE_Authority)
@@ -1164,12 +1166,17 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if(mustActive)
     {
-        this->GetCapsuleComponent()->CreatePhysicsState();
-
+        //this->GetCapsuleComponent()->CreatePhysicsState();
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
     }
     else
     {
-        this->GetCapsuleComponent()->DestroyPhysicsState();
+        //this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+        //this->GetCapsuleComponent()->DestroyPhysicsState();
+        //this->GetCapsuleComponent()->SetEnableGravity(false);
+
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
+        
     }
 }
 
