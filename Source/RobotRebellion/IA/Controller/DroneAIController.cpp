@@ -477,9 +477,13 @@ void ADroneAIController::followFireZone()
 
 void ADroneAIController::followSafeZone()
 {
+    if (m_idleTimer > m_updateSafeZoneCooldownTime)
+    {
+        m_actionFinished = true;
+        return;
+    }
     if(this->HasABomb())// || m_idleTimer > m_updateSafeZoneCooldownTime)
     {
-        
         FVector newHeight = GetPawn()->GetActorLocation();
         newHeight.Z = m_stationaryElevation;
         setDestination(newHeight);
@@ -741,7 +745,7 @@ float ADroneAIController::getBombScore(const FVector& position)
     //score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemIsAttacked / getNbEnnemiesInScene()) / c_Normalize);
     
     //float temp = FMath::Clamp((m_sensedEnnemies.Num() - getNbAliveAllies()) / 4.f, 0.f, 1.f);
-    float minimalEnemyNumber = 1.f;
+    float minimalEnemyNumber = 4.f;
     float temp = enemiesAttacked / minimalEnemyNumber;
     temp = temp > 1.f ? 1.f : temp;
     return temp * score; //> temp ? temp : score;
@@ -882,8 +886,14 @@ void ADroneAIController::processPath()
 {
     NavigationVolumeGraph& myGraph = NavigationVolumeGraph::getInstance();
 
-    int32 currentLocId = myGraph.getOverlappingVolumeId(GetPawn()->GetActorLocation());
+    FVector droneLocation = GetPawn()->GetActorLocation();
+    int32 currentLocId = myGraph.getOverlappingVolumeId(droneLocation);
+    float offset = Cast<ADrone>(GetPawn())->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + 10.f;
 
+    if (currentLocId == -1)
+    {
+        currentLocId = myGraph.getBelowVolume(droneLocation, offset);
+    }
     if(currentLocId != -1)
     {
         int32 targetId = myGraph.getOverlappingVolumeId(m_destination);
@@ -897,7 +907,7 @@ void ADroneAIController::processPath()
                 m_path.Add(m_destination);
             }
             m_path.Append(myGraph.processAStar(currentLocId, targetId)); 
-            m_path.Emplace(GetPawn()->GetActorLocation());
+            m_path.Emplace(droneLocation);
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
             smoothPath();
@@ -905,9 +915,7 @@ void ADroneAIController::processPath()
         }
         else
         {
-            float offset = 10.f;
-            targetId = myGraph.getBelowVolume(m_destination,
-                                              Cast<ADrone>(GetPawn())->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + offset);
+            targetId = myGraph.getBelowVolume(m_destination, offset);
             if(targetId != -1)
             {
                 m_path.Reset();
@@ -916,7 +924,7 @@ void ADroneAIController::processPath()
                     m_path.Add(m_destination);
                 }
                 m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
-                m_path.Emplace(GetPawn()->GetActorLocation());
+                m_path.Emplace(droneLocation);
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
                 smoothPath();
