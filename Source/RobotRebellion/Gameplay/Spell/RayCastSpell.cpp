@@ -87,13 +87,13 @@ void URayCastSpell::processHitActor(const FHitResult& hitResult)
             ARobotRebellionCharacter* hitCharacter = Cast<ARobotRebellionCharacter>(hitResult.GetActor());
             if(hitCharacter)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Ray cast spell done -> apply effect on target");
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Ray cast spell done -> apply effect on target");
                 applyEffect(hitCharacter);
             }
         }
         else
         {
-            GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Ray cast spell done -> apply effect on impactpoint");
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Ray cast spell done -> apply effect on impactpoint");
             applyEffect(hitResult.ImpactPoint);
         }
     }

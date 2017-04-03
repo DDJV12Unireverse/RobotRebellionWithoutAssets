@@ -19,7 +19,7 @@ void ADamageZone::BeginPlay()
 	Super::BeginPlay();
 
     m_secondBetweenTick = 1.f / m_tickRate;
-    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "spawn molotov zone - tick" + FString::SanitizeFloat(m_secondBetweenTick));
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, "spawn molotov zone - tick" + FString::SanitizeFloat(m_secondBetweenTick));
 }
 
 // Called every frame
