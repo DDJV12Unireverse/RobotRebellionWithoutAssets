@@ -62,6 +62,7 @@ void AKaboom::initializeDamagedObjectList()
 {
     m_objectTypesToConsider = {
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3), // Robots
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
     };
