@@ -196,9 +196,6 @@ float ADroneAIController::getAttackScore()
     }
     m_bestBombLocation = m_sensedEnnemies[indexBestBomb]->GetActorLocation();
 
-    const float c_Normalize = 4.f; // 4 additions
-    const float c_NbPlayersMax = 4.f; // 4 elements
-
     score = 0.6f * bestScoreBomb;
     float temp = m_alliesAliveCount * 3.f;
     temp = temp == 0 ? 1.f : temp;

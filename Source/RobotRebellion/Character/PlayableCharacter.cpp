@@ -93,6 +93,8 @@ APlayableCharacter::APlayableCharacter()
     //Revive
 
     m_isReviving = false;
+
+    this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::doesNothing;
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -167,6 +169,8 @@ void APlayableCharacter::Tick(float DeltaTime)
             }
         }
     }
+
+    (this->*deactivatePhysicsKilledMethodPtr)();
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -851,11 +855,28 @@ void APlayableCharacter::cppOnRevive()
 
 void APlayableCharacter::cppOnDeath()
 {
-    this->activatePhysics(false);
+    if(!this->GetMovementComponent()->IsFalling())
+    {
+        this->activatePhysics(false);
+    }
+    else
+    {
+        this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::deactivatePhysicsWhenKilled;
+    }
 
     this->EnablePlayInput(false);
     this->m_alterationController->removeAllAlteration();
     this->m_currentRevivingTime = 0.f;
+}
+
+void APlayableCharacter::deactivatePhysicsWhenKilled()
+{
+    if(this->GetMovementComponent()->IsFalling())
+    {
+        return;
+    }
+    this->activatePhysics(false);
+    this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::doesNothing;
 }
 
 
@@ -1170,11 +1191,13 @@ void APlayableCharacter::activatePhysics(bool mustActive)
 {
     if(mustActive)
     {
-        this->GetCapsuleComponent()->CreatePhysicsState();
+        //this->GetCapsuleComponent()->CreatePhysicsState();
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
     }
     else
     {
-        this->GetCapsuleComponent()->DestroyPhysicsState();
+        //this->GetCapsuleComponent()->DestroyPhysicsState();
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
     }
 
     if(Role >= ROLE_Authority)
@@ -1192,12 +1215,14 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
 {
     if(mustActive)
     {
-        this->GetCapsuleComponent()->CreatePhysicsState();
-
+        //this->GetCapsuleComponent()->CreatePhysicsState();
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
     }
     else
     {
-        this->GetCapsuleComponent()->DestroyPhysicsState();
+        //this->GetCapsuleComponent()->DestroyPhysicsState();
+        GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
+        
     }
 }
 

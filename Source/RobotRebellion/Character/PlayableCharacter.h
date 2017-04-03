@@ -109,8 +109,15 @@ public:
 
     bool m_tpsMode;
 
+    void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
+
 public:
     APlayableCharacter();
+
+
+private:
+    void doesNothing(){}
+    void deactivatePhysicsWhenKilled();
 
 protected:
     /************************************************************************/
