@@ -662,7 +662,32 @@ bool APlayableCharacter::serverSwitchWeapon_Validate()
 
 void APlayableCharacter::onDebugCheat()
 {
-    this->setImmortal(true);
+    if(Role == ROLE_Authority)
+    {
+        if(this->isImmortal())
+        {
+            this->setImmortal(false);
+        }
+        else
+        {
+            this->setImmortal(true);
+        }
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Immortality Status : %d"), this->isImmortal()));
+    }
+    else
+    {
+        serverOnDebugCheat();
+    }
+}
+
+bool APlayableCharacter::serverOnDebugCheat_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverOnDebugCheat_Implementation()
+{
+    onDebugCheat();
 }
 
 

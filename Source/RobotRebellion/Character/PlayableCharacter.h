@@ -372,6 +372,9 @@ public:
     UFUNCTION()
         void onDebugCheat();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverOnDebugCheat();
+
     UFUNCTION()
         void gotoDesert();
     UFUNCTION()
