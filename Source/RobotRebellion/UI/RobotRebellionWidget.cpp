@@ -9,10 +9,16 @@
 void URobotRebellionWidget::startSound()
 {
     // Begin sound
-    UGameplayStatics::SpawnSoundAttached(m_widgetBeginSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
+    if (m_widgetBeginSound)
+    {
+        UGameplayStatics::SpawnSoundAttached(m_widgetBeginSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
+    }
 
     // Background Loop
-    m_loopAudioComp = UGameplayStatics::SpawnSoundAttached(m_widgetLoopSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
+    if (m_widgetLoopSound && GetOwningPlayer()->GetCharacter())
+    {
+        m_loopAudioComp = UGameplayStatics::SpawnSoundAttached(m_widgetLoopSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
+    }
 
     if(m_stopAmbiantSound)
     {

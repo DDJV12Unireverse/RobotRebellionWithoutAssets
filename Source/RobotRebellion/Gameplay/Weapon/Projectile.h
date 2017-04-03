@@ -49,6 +49,8 @@ public:
         virtual void OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
             OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+    void setReceiverInCombat(ARobotRebellionCharacter* receiver);
+
     
     /** Initialize velocity */
     virtual void InitVelocity(const FVector& shootDirection);

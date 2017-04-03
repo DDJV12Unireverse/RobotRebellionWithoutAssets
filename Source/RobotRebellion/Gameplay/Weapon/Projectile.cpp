@@ -9,6 +9,8 @@
 
 #include "../../Global/GlobalDamageMethod.h"
 #include "../../Tool/UtilitaryFunctionLibrary.h"
+#include "IA/Controller/CustomAIControllerBase.h"
+#include "Character/NonPlayableCharacter.h"
 
 
 
@@ -22,24 +24,22 @@ AProjectile::AProjectile()
     m_collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
     m_collisionComp->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
     m_collisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-    m_collisionComp->InitSphereRadius(5.0f);
 
     RootComponent = m_collisionComp;
+
     //Projectile Movement datas
     m_projectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
     m_projectileMovement->UpdatedComponent = m_collisionComp;
     m_projectileMovement->InitialSpeed = 3000.f;
     m_projectileMovement->MaxSpeed = 3000.f;
     m_projectileMovement->bRotationFollowsVelocity = true;
-    m_projectileMovement->bShouldBounce = true;
-    m_projectileMovement->Bounciness = 0.3f;
+    m_projectileMovement->bShouldBounce = false;
 
     bReplicates = true;
     bNetUseOwnerRelevancy = true;
 
     //Life Time
     InitialLifeSpan = 2.0f;
-
 }
 
 // Called when the game starts or when spawned
@@ -95,19 +95,6 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
             {
                 DamageCoefficientLogic coeff;
 
-                /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
-                true,
-                coeff,
-                &DamageCoefficientLogic::criticalHit,
-                &DamageCoefficientLogic::engagementHit,
-                &DamageCoefficientLogic::superEfficient,
-                &DamageCoefficientLogic::lessEfficient,
-                &DamageCoefficientLogic::multipleHit,
-                &DamageCoefficientLogic::graze
-                );
-
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
-
                 Damage damage{m_owner, receiver};
 
                 Damage::DamageValue currentDamage = damage(
@@ -115,16 +102,30 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                     coeff.getCoefficientValue()
                 );
 
+                setReceiverInCombat(receiver);
                 receiver->inflictDamage(currentDamage);
             }
-            else
-            {
-                receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-            }
+            //else             // COMMENTED FOR CHEAT CODE
+            //{
+            //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+            //}
         }
 
         Destroy();
 
         //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Destroy on Server"));
+    }
+}
+
+void AProjectile::setReceiverInCombat(ARobotRebellionCharacter* receiver)
+{
+    ANonPlayableCharacter * ennemy = Cast<ANonPlayableCharacter>(receiver);
+    if(ennemy)
+    {
+        ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(ennemy->GetController());
+        if(controller)
+        {
+            controller->setCombat(true, m_owner);
+        }
     }
 }

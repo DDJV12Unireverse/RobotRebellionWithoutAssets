@@ -59,8 +59,10 @@ void ULobbyUIWidget::CreateServer(FString mapName)
     auto currentCharacter = Cast<APlayableCharacter>(GetOwningPlayer()->GetCharacter());
 
     FString command = "open " + mapName + "?listen";
-
-    currentCharacter->ExecuteCommand(command);
+    if(currentCharacter)
+    {
+        currentCharacter->ExecuteCommand(command);        
+    }
 }
 
 void ULobbyUIWidget::JoinServer(FString IPAdress)
@@ -69,7 +71,10 @@ void ULobbyUIWidget::JoinServer(FString IPAdress)
 
     FString command = "open " + IPAdress + ":7777";
 
-    currentCharacter->ExecuteCommand(command);
+    if(currentCharacter)
+    {
+        currentCharacter->ExecuteCommand(command);
+    }
 }
 
 bool ULobbyUIWidget::HostSession()
@@ -154,7 +159,7 @@ void ULobbyUIWidget::JoinLanSession()
     FOnlineSessionSearchResult SearchResult;
 
     // If the Array is not empty, we can go through it
-    if(m_sessionSearch->SearchResults.Num() > 0)
+    if(m_sessionSearch->SearchResults.Num() > 0 && m_selectedSessionIndex >= 0)
     {
         // To avoid something crazy, we filter sessions from ourself
         if(m_sessionSearch->SearchResults[m_selectedSessionIndex].Session.OwningUserId != Player->GetPreferredUniqueNetId())

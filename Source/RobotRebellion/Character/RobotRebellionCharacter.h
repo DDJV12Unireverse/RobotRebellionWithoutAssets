@@ -40,6 +40,8 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
         UAlterationController* m_alterationController;
 
+    bool m_isInvisible;
+
 
 
     /************************************************************************/
@@ -85,6 +87,8 @@ public:
 
     void doesNothing() {}
 
+    UTextBillboardComponent* getBillboardComponent();
+
 
 protected:
     FORCEINLINE void noDestroyForNow(float deltaTime)
@@ -114,6 +118,8 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Billboard - Living Text")
         void createTextBillboardWithThisCamera(UCameraComponent* camera);
+
+    void setBillboardInstanceNewCamera(UCameraComponent* camera);
 
     UFUNCTION(BlueprintCallable, Category = "Billboard - Living Text")
         void displayAnimatedIntegerValue(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode = ELivingTextAnimMode::TEXT_ANIM_MOVING);

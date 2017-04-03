@@ -74,8 +74,6 @@ public:
         float m_manaPerPotion;
 
     //Reviving Count
-    UPROPERTY(EditDefaultsOnly, Category = "Reviving")
-        UBoxComponent* m_revivingBox;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
         float m_requiredTimeToRevive;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
@@ -101,8 +99,9 @@ public:
 
     // Maximal Focus distance on items.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
+        float MinUseDistance;
+    UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
-
 
     // Seulement vrai lors de la premi�re image avec un nouveau focus.
     bool bHasNewFocus;
@@ -110,8 +109,15 @@ public:
 
     bool m_tpsMode;
 
+    void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
+
 public:
     APlayableCharacter();
+
+
+private:
+    void doesNothing(){}
+    void deactivatePhysicsWhenKilled();
 
 protected:
     /************************************************************************/
@@ -196,6 +202,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = LobbyWidget)
     void closeLobbyWidget();
 
+    UFUNCTION(BlueprintCallable, Category = CharacterSelection)
+        void closeSelectionWidget();
+
+    void giveInputGameMode(bool status);
+
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
@@ -250,9 +261,6 @@ public:
         void mainFire();
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
-
-    UFUNCTION(NetMulticast, Reliable)
-        void clientMainFireSound();
 
     //CAST SPELL
     template<int32 index>
@@ -366,6 +374,13 @@ public:
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiActivatePhysics(bool mustActive);
 
+
+    UFUNCTION()
+        void onDebugCheat();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverOnDebugCheat();
+
     UFUNCTION()
         void gotoDesert();
     UFUNCTION()
@@ -394,15 +409,14 @@ public:
     {
         return m_isReviving;
     }
-    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        UBoxComponent* getRevivingBox()
-    {
-        return (this->m_revivingBox);
-    }
 
+    UFUNCTION()
+    void giveBombToDrone(ADroneAIController* drone);
 
-    void giveBombToDrone() //Do Later
-    {}
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverGiveBombToDrone(ADroneAIController* drone);
+
+    
 
     int getManaPotionCount()
     {
@@ -427,10 +441,17 @@ public:
 
     void switchView();
 
+    UMeshComponent* getCurrentViewMesh();
+
     virtual void OnPickup(APawn* InstigatorPawn) override;
 
     virtual void OnBeginFocus() override
     {}
     virtual void OnEndFocus() override
     {}
+
+    void enableDroneDisplay();
+
+    UFUNCTION(Reliable, Client)
+        void updateAllCharacterBillboard(UCameraComponent* camToFollow);
 };

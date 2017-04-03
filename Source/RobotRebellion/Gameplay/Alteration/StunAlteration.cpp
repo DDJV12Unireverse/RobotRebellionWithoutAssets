@@ -40,9 +40,11 @@ void UStunAlteration::destroyItself()
     }
     else
     {
-        auto playableOwner = Cast<APlayableCharacter>(m_alteredOwner);
-
-        playableOwner->EnablePlayInput(true);
+        APlayableCharacter* playableOwner = Cast<APlayableCharacter>(m_alteredOwner);
+        if(playableOwner)
+        {
+            playableOwner->EnablePlayInput(true);
+        }
     }
 
     this->DestroyComponent();

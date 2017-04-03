@@ -15,7 +15,7 @@ void AGameMenu::BeginPlay()
     Super::BeginPlay();
 
     HUDCharacterImpl = CreateCustomWidget<UCustomRobotRebellionUserWidget>(HUDCharacterWidget.GetDefaultObject());
-    //HideWidget(HUDCharacterImpl);
+    HUDCharacterImpl->SetVisibility(ESlateVisibility::Hidden);
 
     LobbyImpl = CreateCustomWidget<ULobbyUIWidget>(Cast<ULobbyUIWidget>(LobbyWidget->GetDefaultObject()));
     LobbyImpl->initialiseOnliSubsystem();
@@ -23,19 +23,25 @@ void AGameMenu::BeginPlay()
 
     ReviveTimerWidgetImpl = CreateCustomWidget<UReviveTimerWidget>(ReviveWidget.GetDefaultObject());
     ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+
+    ClassSelectionWidgetImpl = CreateCustomWidget<URobotRebellionWidget>(ClassSelectionWidget.GetDefaultObject());
+    DisplayWidget(ClassSelectionWidgetImpl);
 }
 
 void AGameMenu::Tick(float deltaTime)
 {
     Super::Tick(deltaTime);
     APlayableCharacter* player = Cast<APlayableCharacter>(GetOwningPlayerController()->GetCharacter());
-    if(player->isReviving())
+    if(player)
     {
-        ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Visible);
-    }
-    else
-    {
-        ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+        if(player->isReviving())
+        {
+            ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Visible);
+        }
+        else
+        {
+            ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+        }
     }
 }
 

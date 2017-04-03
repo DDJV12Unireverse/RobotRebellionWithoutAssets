@@ -106,11 +106,7 @@ public:
         PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAtt instigator to ennemy");
     }
 
-    virtual void playSound(ARobotRebellionCharacter* user)
-    {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "BaseAttSound");
-    }
-
+    virtual void playSound(USoundCue* sound, AActor* originator) PURE_VIRTUAL(UWeaponBase::playSound, )
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
 

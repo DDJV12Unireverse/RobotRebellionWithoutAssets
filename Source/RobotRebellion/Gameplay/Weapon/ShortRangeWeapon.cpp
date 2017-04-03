@@ -17,7 +17,7 @@
 /*                  CONSTRUCTORS                                        */
 /************************************************************************/
 
-UShortRangeWeapon::UShortRangeWeapon():UWeaponBase()
+UShortRangeWeapon::UShortRangeWeapon() :UWeaponBase()
 {
     m_weaponForwardRange = 75.f;
     m_weaponVerticallyRange = 75.f;
@@ -29,7 +29,7 @@ UShortRangeWeapon::UShortRangeWeapon():UWeaponBase()
 /************************************************************************/
 void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
-    if (canAttack())
+    if(canAttack())
     {
         PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "ShortAtt");
         bool alreadyHit = false;
@@ -49,46 +49,59 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
         //Result
         TArray<FHitResult> OutHits;
 
-        if (UKismetSystemLibrary::SphereTraceMultiForObjects(
-                user->GetWorld(),
-                MultiSphereStart,
-                MultiSphereEnd,
-                m_weaponForwardRange * user->GetActorForwardVector().Size(),
-                ObjectTypes,
-                false,
-                ActorsToIgnore,
-                EDrawDebugTrace::None,
-                OutHits,
-                true
-         ))
+        if(UKismetSystemLibrary::SphereTraceMultiForObjects(
+            user->GetWorld(),
+            MultiSphereStart,
+            MultiSphereEnd,
+            m_weaponForwardRange * user->GetActorForwardVector().Size(),
+            ObjectTypes,
+            false,
+            ActorsToIgnore,
+            EDrawDebugTrace::None,
+            OutHits,
+            true
+        ))
         {
             ARobotRebellionCharacter** exReceiver = nullptr;
             int32 outCount = OutHits.Num();
-            
-            for (int32 noEnnemy = 0; noEnnemy < outCount; ++noEnnemy)
+
+            if(outCount <= 0)
             {
-                FHitResult hit = OutHits[noEnnemy];
-
-                ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(hit.GetActor());
-                if (receiver && exReceiver != &receiver && !receiver->isDead())
-                {
-                    if (!receiver->isImmortal())
-                    {
-                        DamageCoefficientLogic coeff;
-
-                        Damage damage{ Cast<ARobotRebellionCharacter>(m_owner), receiver };
-                        Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
-
-                        receiver->inflictDamage(damageValue);
-                    }
-                    else
-                    {
-                        receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-                    }
-
-                    exReceiver = &receiver;
-                }
+                playSound(m_missSound, user);
             }
+            else
+            {
+                for(int32 noEnnemy = 0; noEnnemy < outCount; ++noEnnemy)
+                {
+                    FHitResult hit = OutHits[noEnnemy];
+
+                    ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(hit.GetActor());
+                    if(receiver && exReceiver != &receiver && !receiver->isDead())
+                    {
+                        if(!receiver->isImmortal())
+                        {
+                            DamageCoefficientLogic coeff;
+
+                            Damage damage{Cast<ARobotRebellionCharacter>(m_owner), receiver};
+                            Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
+
+                            receiver->inflictDamage(damageValue);
+                        }
+                        //else             // COMMENTED FOR CHEAT CODE
+                        //{
+                        //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+                        //}
+
+                        exReceiver = &receiver;
+                    }
+                }
+
+                playSound(m_hitSound, user);
+            }
+        }
+        else
+        {
+            playSound(m_missSound, user);
         }
 
         reload();
@@ -102,4 +115,12 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 FString UShortRangeWeapon::rangeToFString() const USE_NOEXCEPT
 {
     return "Short Range weapon";
+}
+
+void UShortRangeWeapon::playSound_Implementation(USoundCue* sound, AActor* originator)
+{
+    if(sound && originator)
+    {
+        UGameplayStatics::SpawnSoundAttached(sound, originator->GetRootComponent());
+    }
 }
