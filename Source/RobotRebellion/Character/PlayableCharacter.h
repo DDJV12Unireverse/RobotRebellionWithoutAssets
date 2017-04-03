@@ -11,7 +11,6 @@
 /**
  *  Playable Character for Robot Rebellion Game
  */
-class ADroneAIController;
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter, public Focusable
 {

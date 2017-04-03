@@ -86,7 +86,7 @@ public:
         (this->*m_activeBoomMethod)();
     }
 
-    UFUNCTION(Reliable, NetMulticast, WithValidation)
+    UFUNCTION(Reliable, NetMulticast)
         void multiExplosionOnEveryone();
 
 

@@ -4,6 +4,7 @@
 #include "Drone.h"
 #include "Gameplay/Weapon/Kaboom.h"
 #include "Tool/UtilitaryFunctionLibrary.h"
+#include "Components/SplineComponent.h"
 
 
 ADrone::ADrone() : ANonPlayableCharacter()
@@ -53,11 +54,11 @@ bool ADrone::reload()
         return false;
     }
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "Loading Bomb");
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "Loading Bomb");
 
     UWorld* world = this->GetWorld();
 
-    if (!this->isLoaded() && world)
+    if(!this->isLoaded() && world)
     {
         FActorSpawnParameters spawnParams;
         spawnParams.Owner = this;
@@ -70,11 +71,11 @@ bool ADrone::reload()
             spawnParams
             );
 
-        if (m_currentBomb)
+        if(m_currentBomb)
         {
             m_currentBomb->attachToDrone(this);
 
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "LOADED");
+            //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "LOADED");
 
             return true;
         }
@@ -90,13 +91,13 @@ void ADrone::drop()
         return;
     }
 
-    if (this->isLoaded())
+    if(this->isLoaded())
     {
         m_currentBomb->activateBomb();
 
         m_currentBomb->detachFromDrone();
 
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "DROP");
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "DROP");
 
         m_currentBomb = nullptr;
     }
@@ -106,7 +107,7 @@ void ADrone::autoDrop(float deltaTime)
 {
     m_debugTimer += deltaTime;
 
-    if (m_debugTimer > m_debugAutoDropTimer)
+    if(m_debugTimer > m_debugAutoDropTimer)
     {
         drop();
 
@@ -121,9 +122,5 @@ float ADrone::getBombBaseDamage() const USE_NOEXCEPT
 
 float ADrone::getBombRadius() const USE_NOEXCEPT
 {
-    if (m_currentBomb)
-    {
-        return m_currentBomb->m_detonationRadius;
-    }
-    return 0.f;
+    return m_currentBomb->m_detonationRadius;
 }

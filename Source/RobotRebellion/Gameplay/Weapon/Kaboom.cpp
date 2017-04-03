@@ -158,7 +158,7 @@ void AKaboom::realDestroy()
     m_explosionPCS->DeactivateSystem();
     m_explosionPCS->DestroyComponent();
 
-    this->Destroy();
+    this->BeginDestroy();
 }
 
 void AKaboom::multiExplosionOnEveryone_Implementation()
@@ -171,9 +171,4 @@ void AKaboom::multiExplosionOnEveryone_Implementation()
     m_explosionPCS->SetRelativeScale3D(m_explosionEffectScale);
 
     m_explosionPCS->ActivateSystem();
-}
-
-bool AKaboom::multiExplosionOnEveryone_Validate()
-{
-    return true;
 }

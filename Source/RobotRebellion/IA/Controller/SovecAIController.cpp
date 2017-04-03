@@ -5,8 +5,12 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "Character/NonPlayableCharacter.h"
+#include "Character/PlayableCharacter.h"
+#include "IA/Character/RobotsCharacter.h"
+#include "IA/Character/BeastCharacter.h"
 #include "Gameplay/Weapon/WeaponInventory.h"
 #include "Gameplay/Weapon/WeaponBase.h"
+#include "Global/EntityDataSingleton.h"
 
 
 void ASovecAIController::CheckEnnemyNear(float range)
@@ -22,15 +26,15 @@ void ASovecAIController::CheckEnnemyNear(float range)
     ActorsToIgnore.Add(currentPawn);
     TArray<FHitResult> OutHits;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
-                                                                   MultiSphereStart,
-                                                                   MultiSphereEnd,
-                                                                   range,
-                                                                   ObjectTypes,
-                                                                   false,
-                                                                   ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
-                                                                   OutHits,
-                                                                   true);
+        MultiSphereStart,
+        MultiSphereEnd,
+        range,
+        ObjectTypes,
+        false,
+        ActorsToIgnore,
+        this->debugDrawTraceShowingMode(),
+        OutHits,
+        true);
 
     m_targetToFollow = NULL;
 

@@ -28,7 +28,7 @@ void ABeastAIController::CheckEnnemyNear(float range)
                                                                    ObjectTypes,
                                                                    false,
                                                                    ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
+                                                                   this->debugDrawTraceShowingMode(),
                                                                    OutHits,
                                                                    true);
 

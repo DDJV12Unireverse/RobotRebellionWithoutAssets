@@ -2,18 +2,24 @@
 
 #include "RobotRebellion.h"
 #include "EnnemiAIController.h"
+#include "Character/RobotRebellionCharacter.h"
+#include "Character/NonPlayableCharacter.h"
+#include "Character/PlayableCharacter.h"
+#include "Character/King.h"
+#include "IA/Character/SovecCharacter.h"
+#include "IA/Character/BeastCharacter.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
+#include "Gameplay/Weapon/WeaponBase.h"
+#include "Global/EntityDataSingleton.h"
+#include "IA/Character/RobotsCharacter.h"
+#include "AIController.h"
+#include "Tool/UtilitaryMacros.h"
+
 #include "runtime/AIModule/Classes/BehaviorTree/BlackboardComponent.h"
 #include "Runtime/AIModule/Classes/BrainComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Character/RobotRebellionCharacter.h"
-#include "Character/NonPlayableCharacter.h"
-#include "Gameplay/Weapon/WeaponInventory.h"
-#include "Gameplay/Weapon/WeaponBase.h"
-#include "IA/Character/RobotsCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Tool/UtilitaryMacros.h"
-#include "UnrealString.h"
-#include "AIController.h"
+//#include "UnrealString.h"
 
 void AEnnemiAIController::CheckEnnemyNear(float range)
 {
@@ -40,7 +46,7 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
                                                         ObjectTypes,
                                                         false,
                                                         ActorsToIgnore,
-                                                        EDrawDebugTrace::ForDuration,
+                                                        this->debugDrawTraceShowingMode(),
                                                         OutHits,
                                                         true))
     {

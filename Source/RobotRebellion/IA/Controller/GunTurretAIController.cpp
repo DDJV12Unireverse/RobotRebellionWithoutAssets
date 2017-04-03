@@ -4,8 +4,12 @@
 #include "GunTurretAIController.h"
 
 #include "Character/NonPlayableCharacter.h"
+#include "IA/Character/SovecCharacter.h"
+#include "IA/Character/BeastCharacter.h"
+#include "IA/Character/RobotsCharacter.h"
 #include "Gameplay/Weapon/WeaponInventory.h"
 #include "Gameplay/Weapon/WeaponBase.h"
+#include "Global/EntityDataSingleton.h"
 
 void AGunTurretAIController::CheckEnnemyNear(float range)
 {
@@ -19,15 +23,15 @@ void AGunTurretAIController::CheckEnnemyNear(float range)
     ActorsToIgnore.Add(currentPawn);
     TArray<FHitResult> OutHits;
     bool Result = UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
-                                                                   MultiSphereStart,
-                                                                   MultiSphereEnd,
-                                                                   range,
-                                                                   ObjectTypes,
-                                                                   false,
-                                                                   ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
-                                                                   OutHits,
-                                                                   true);
+        MultiSphereStart,
+        MultiSphereEnd,
+        range,
+        ObjectTypes,
+        false,
+        ActorsToIgnore,
+        this->debugDrawTraceShowingMode(),
+        OutHits,
+        true);
 
     m_targetToFollow = NULL;
 
