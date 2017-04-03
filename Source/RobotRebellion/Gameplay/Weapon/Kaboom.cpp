@@ -62,6 +62,7 @@ void AKaboom::initializeDamagedObjectList()
 {
     m_objectTypesToConsider = {
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3), // Robots
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
     };
@@ -158,7 +159,7 @@ void AKaboom::realDestroy()
     m_explosionPCS->DeactivateSystem();
     m_explosionPCS->DestroyComponent();
 
-    this->Destroy();
+    this->BeginDestroy();
 }
 
 void AKaboom::multiExplosionOnEveryone_Implementation()
@@ -171,9 +172,4 @@ void AKaboom::multiExplosionOnEveryone_Implementation()
     m_explosionPCS->SetRelativeScale3D(m_explosionEffectScale);
 
     m_explosionPCS->ActivateSystem();
-}
-
-bool AKaboom::multiExplosionOnEveryone_Validate()
-{
-    return true;
 }

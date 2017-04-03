@@ -4,13 +4,19 @@
 #include "CustomAIControllerBase.h"
 
 #include "Character/RobotRebellionCharacter.h"
+#include "Global/EntityDataSingleton.h"
 
+ACustomAIControllerBase::ACustomAIControllerBase()
+{
+    PrimaryActorTick.bCanEverTick = true;
+}
 
 void ACustomAIControllerBase::BeginPlay()
 {
     Super::BeginPlay();
     m_isInCombat = false;
     m_hitDirection = FVector(0, 0, 0);
+    m_showDebugSphereTrace = !!EntityDataSingleton::getInstance().m_showEnnemyDetectionSphere;
 }
 
 bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT

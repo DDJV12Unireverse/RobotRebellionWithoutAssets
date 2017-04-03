@@ -11,7 +11,6 @@
 /**
  *  Playable Character for Robot Rebellion Game
  */
-class ADroneAIController;
 UCLASS()
 class ROBOTREBELLION_API APlayableCharacter : public ARobotRebellionCharacter, public Focusable
 {
@@ -111,7 +110,6 @@ public:
     bool m_tpsMode;
 
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
-
 
 public:
     APlayableCharacter();
@@ -376,6 +374,13 @@ public:
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiActivatePhysics(bool mustActive);
 
+
+    UFUNCTION()
+        void onDebugCheat();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverOnDebugCheat();
+
     UFUNCTION()
         void gotoDesert();
     UFUNCTION()
@@ -435,6 +440,8 @@ public:
     void setBombCount(int nbBombs);
 
     void switchView();
+
+    UMeshComponent* getCurrentViewMesh();
 
     virtual void OnPickup(APawn* InstigatorPawn) override;
 

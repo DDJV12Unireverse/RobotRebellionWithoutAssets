@@ -179,6 +179,17 @@ public:
         ptr = ((owner->Role < ROLE_Authority) ? clientMethod : serverMethod);
     }
 
+    /*Get the time in milliseconds of the method execution. Pass a lambda*/
+    template<class Method, class ... Args>
+    static double profilingTimeFor(Method method, Args&& ... args)
+    {
+        double start = FPlatformTime::Seconds();
+        method(std::forward<Args>(args)...);
+        double end = FPlatformTime::Seconds();
+
+        return (end - start) * 1000.0;
+    }
+
     
 
     /************************************************************************/

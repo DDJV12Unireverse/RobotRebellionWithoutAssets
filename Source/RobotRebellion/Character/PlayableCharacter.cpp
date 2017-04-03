@@ -34,6 +34,7 @@
 
 APlayableCharacter::APlayableCharacter()
 {
+
     // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -663,6 +664,37 @@ bool APlayableCharacter::serverSwitchWeapon_Validate()
 /************************************************************************/
 
 
+void APlayableCharacter::onDebugCheat()
+{
+    if(Role == ROLE_Authority)
+    {
+        if(this->isImmortal())
+        {
+            this->setImmortal(false);
+        }
+        else
+        {
+            this->setImmortal(true);
+        }
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Immortality Status : %d"), this->isImmortal()));
+    }
+    else
+    {
+        serverOnDebugCheat();
+    }
+}
+
+bool APlayableCharacter::serverOnDebugCheat_Validate()
+{
+    return true;
+}
+
+void APlayableCharacter::serverOnDebugCheat_Implementation()
+{
+    onDebugCheat();
+}
+
+
 FString APlayableCharacter::typeToString() const USE_NOEXCEPT
 {
     static const FString typeLookUpTable[] = {
@@ -755,6 +787,8 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
         PlayerInputComponent->BindAction("Debug_GotoRuins", IE_Released, this, &APlayableCharacter::gotoRuins);
         PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
+
+        PlayerInputComponent->BindAction("Debug_CheatCode", IE_Released, this, &APlayableCharacter::onDebugCheat);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -1129,11 +1163,28 @@ void APlayableCharacter::switchView()
     m_tpsMode = !m_tpsMode;
 
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if(characterMesh)
+    if(m_isInvisible)
     {
-        characterMesh->SetVisibility(m_tpsMode);
-        m_fpsMesh->SetVisibility(!m_tpsMode);
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(false);
+            m_fpsMesh->SetVisibility(false);
+        }
     }
+    else
+    {
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(m_tpsMode);
+            m_fpsMesh->SetVisibility(!m_tpsMode);
+        }
+    }
+}
+
+UMeshComponent * APlayableCharacter::getCurrentViewMesh()
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    return m_tpsMode ? characterMesh : m_fpsMesh;
 }
 
 void APlayableCharacter::activatePhysics(bool mustActive)
