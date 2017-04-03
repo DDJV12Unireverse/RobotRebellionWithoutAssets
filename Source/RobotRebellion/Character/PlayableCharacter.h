@@ -73,12 +73,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
         float m_manaPerPotion;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact")
-        float m_interactRange;
-
     //Reviving Count
-    UPROPERTY(EditDefaultsOnly, Category = "Reviving")
-        UBoxComponent* m_revivingBox;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reviving")
         float m_requiredTimeToRevive;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Reviving")
@@ -103,6 +98,8 @@ public:
         float m_FPSCameraDistance;
 
     // Maximal Focus distance on items.
+    UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
+        float MinUseDistance;
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
@@ -259,9 +256,6 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverMainFire();
 
-    UFUNCTION(NetMulticast, Reliable)
-        void clientMainFireSound();
-
     //CAST SPELL
     template<int32 index>
     void castSpellInputHanlder()
@@ -402,11 +396,6 @@ public:
     {
         return m_isReviving;
     }
-    UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        UBoxComponent* getRevivingBox()
-    {
-        return (this->m_revivingBox);
-    }
 
     UFUNCTION()
     void giveBombToDrone(ADroneAIController* drone);
@@ -438,6 +427,8 @@ public:
     void setBombCount(int nbBombs);
 
     void switchView();
+
+    UMeshComponent* getCurrentViewMesh();
 
     virtual void OnPickup(APawn* InstigatorPawn) override;
 

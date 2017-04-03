@@ -78,7 +78,8 @@ APlayableCharacter::APlayableCharacter()
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
-    MaxUseDistance = 800;
+    MinUseDistance = 75.0f;
+    MaxUseDistance = 250.0f;
     PrimaryActorTick.bCanEverTick = true;
     //GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
     GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Players");
@@ -91,8 +92,6 @@ APlayableCharacter::APlayableCharacter()
     //Revive
 
     m_isReviving = false;
-    m_revivingBox = CreateDefaultSubobject<UBoxComponent>(TEXT("revivingBox"));
-    m_revivingBox->SetupAttachment(RootComponent);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -110,14 +109,6 @@ void APlayableCharacter::BeginPlay()
     m_bombCount = m_nbBombStart;
     m_healthPotionsCount = m_nbHealthPotionStart;
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
-
-#ifdef WE_RE_ON_DEBUG
-    m_revivingBox->SetVisibility(true);
-    m_revivingBox->SetHiddenInGame(false);
-#else
-    m_revivingBox->SetVisibility(false);
-    m_revivingBox->SetHiddenInGame(true);
-#endif
 
     m_tpsMode = true;
 
@@ -388,7 +379,6 @@ void APlayableCharacter::mainFire()
     else
     {
         m_weaponInventory->getCurrentWeapon()->cppAttack(this);
-        clientMainFireSound();
     }
 }
 
@@ -400,15 +390,6 @@ void APlayableCharacter::serverMainFire_Implementation()
 bool APlayableCharacter::serverMainFire_Validate()
 {
     return true;
-}
-
-void APlayableCharacter::clientMainFireSound_Implementation()
-{
-    UWeaponBase* currentWeapon = m_weaponInventory->getCurrentWeapon();
-    if (currentWeapon)
-    {
-        currentWeapon->playSound(this);
-    }
 }
 
 //DEAD
@@ -453,7 +434,7 @@ void APlayableCharacter::openLobbyWidget()
     if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
-        if (myHud->LobbyImpl->IsVisible())
+        if(myHud->LobbyImpl->IsVisible())
         {
             closeLobbyWidget();
             return;
@@ -467,7 +448,7 @@ void APlayableCharacter::closeLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
 
-    if (MyPC)
+    if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
@@ -532,18 +513,16 @@ void APlayableCharacter::interact(AActor* focusedActor)
         {
             if(Usable->getObjectType() == EObjectType::MANA_POTION)
             {
-                if (m_manaPotionsCount < m_nbManaPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
-                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+                if(m_manaPotionsCount < m_nbManaPotionMax)
                 {
                     clientInteract(Usable);
                     ++m_manaPotionsCount;
                 }
-                
+
             }
             else if(Usable->getObjectType() == EObjectType::HEALTH_POTION)
             {
-                if (m_healthPotionsCount < m_nbHealthPotionMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
-                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+                if(m_healthPotionsCount < m_nbHealthPotionMax)
                 {
                     clientInteract(Usable);
                     ++m_healthPotionsCount;
@@ -551,34 +530,28 @@ void APlayableCharacter::interact(AActor* focusedActor)
             }
             else if(Usable->getObjectType() == EObjectType::BOMB)
             {
-                if (m_bombCount < m_nbBombMax && FVector::DotProduct(Usable->GetActorLocation() - this->GetActorLocation(),
-                    Usable->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+                if(m_bombCount < m_nbBombMax)
                 {
                     clientInteract(Usable);
                     ++m_bombCount;
                 }
-                
+
             }
             else
             {
                 PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("INVALID OBJECT"));
             }
         }
-        else if(deadBody&&deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
+        else if(deadBody && deadBody->isDead() && m_currentRevivingTime < m_requiredTimeToRevive) //Focused Actor is a corpse
         {
-            if (FVector::DotProduct(deadBody->GetActorLocation() - this->GetActorLocation(),
-                deadBody->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
-            {
-                PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
-                clientRevive();
-                m_isReviving = true;
-            }
+            PRINT_MESSAGE_ON_SCREEN(FColor::Blue, TEXT("Dead Body"));
+            clientRevive();
+            m_isReviving = true;
         }
-        else if (drone)
+        else if(drone)
         {
             ADroneAIController* droneController = Cast<ADroneAIController>(drone->GetController());
-            if (droneController && FVector::DotProduct(drone->GetActorLocation() - this->GetActorLocation(),
-                drone->GetActorLocation() - this->GetActorLocation()) < m_interactRange)
+            if(droneController)
             {
                 PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "InteractDroneControler");
                 giveBombToDrone(droneController);
@@ -611,9 +584,9 @@ void APlayableCharacter::interactEnd()
 
 void APlayableCharacter::giveBombToDrone(ADroneAIController* drone)
 {
-    if (Role >= ROLE_Authority)
+    if(Role >= ROLE_Authority)
     {
-        if (!drone->HasABomb() && m_bombCount > 0)
+        if(!drone->HasABomb() && m_bombCount > 0)
         {
             drone->receiveBomb();
             --m_bombCount;
@@ -627,7 +600,7 @@ void APlayableCharacter::giveBombToDrone(ADroneAIController* drone)
 
 void APlayableCharacter::serverGiveBombToDrone_Implementation(ADroneAIController* drone)
 {
-    if (!drone->HasABomb() && m_bombCount > 0)
+    if(!drone->HasABomb() && m_bombCount > 0)
     {
         drone->receiveBomb();
         --m_bombCount;
@@ -902,25 +875,28 @@ GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(APlayableCharacter,
 AActor* APlayableCharacter::GetUsableInView()
 {
     FVector CamLoc;
+    FVector eyeLoc;
     FRotator CamRot;
+    FRotator eyeRot;
 
     if(Controller == NULL)
     {
         return NULL;
     }
 
+    GetActorEyesViewPoint(eyeLoc, eyeRot);
     Controller->GetPlayerViewPoint(CamLoc, CamRot);
 
-    const FVector TraceStart = CamLoc;
     const FVector Direction = CamRot.Vector();
+    const FVector TraceStart = GetActorLocation() + Direction * MinUseDistance + FVector(0.0f, 0.0f, BaseEyeHeight);
     const FVector TraceEnd = TraceStart + (Direction * MaxUseDistance);
 
     FCollisionQueryParams TraceParams(FName(TEXT("TraceUsableActor")), true, this);
     TraceParams.bTraceAsyncScene = true;
     TraceParams.bReturnPhysicalMaterial = false;
-    TraceParams.bTraceComplex = true;
+    //TraceParams.bTraceComplex = true;
     FHitResult Hit(ForceInit);
-    GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
+    GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_WorldStatic, TraceParams);
 
     //TODO: Comment or remove once implemented in post-process.
     //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f);
@@ -1132,11 +1108,28 @@ void APlayableCharacter::switchView()
     m_tpsMode = !m_tpsMode;
 
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if(characterMesh)
+    if(m_isInvisible)
     {
-        characterMesh->SetVisibility(m_tpsMode);
-        m_fpsMesh->SetVisibility(!m_tpsMode);
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(false);
+            m_fpsMesh->SetVisibility(false);
+        }
     }
+    else
+    {
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(m_tpsMode);
+            m_fpsMesh->SetVisibility(!m_tpsMode);
+        }
+    }
+}
+
+UMeshComponent * APlayableCharacter::getCurrentViewMesh()
+{
+    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
+    return m_tpsMode ? characterMesh : m_fpsMesh;
 }
 
 void APlayableCharacter::activatePhysics(bool mustActive)
@@ -1144,12 +1137,10 @@ void APlayableCharacter::activatePhysics(bool mustActive)
     if(mustActive)
     {
         this->GetCapsuleComponent()->CreatePhysicsState();
-        this->getRevivingBox()->DestroyPhysicsState();
     }
     else
     {
         this->GetCapsuleComponent()->DestroyPhysicsState();
-        this->getRevivingBox()->CreatePhysicsState();
     }
 
     if(Role >= ROLE_Authority)
@@ -1168,28 +1159,26 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     if(mustActive)
     {
         this->GetCapsuleComponent()->CreatePhysicsState();
-        this->getRevivingBox()->DestroyPhysicsState();
 
     }
     else
     {
         this->GetCapsuleComponent()->DestroyPhysicsState();
-        this->getRevivingBox()->CreatePhysicsState();
     }
 }
 
 
 void APlayableCharacter::enableDroneDisplay()
 {
-    ADroneAIController* droneController=nullptr;
+    ADroneAIController* droneController = nullptr;
     TArray<AActor*> drone;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADroneAIController::StaticClass(), drone);
-    if (drone.Num() > 0) //The king is here
+    if(drone.Num() > 0) //The king is here
     {
         droneController = Cast<ADroneAIController>(drone.Top());
-       
+
     }
-    if (droneController) 
+    if(droneController)
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
     }

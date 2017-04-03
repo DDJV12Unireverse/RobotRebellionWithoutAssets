@@ -278,10 +278,29 @@ void ARobotRebellionCharacter::inflictInvisibility()
 void ARobotRebellionCharacter::setInvisible(bool isInvisible)
 {
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if(characterMesh)
+    APlayableCharacter* player = Cast<APlayableCharacter>(this);
+    if(player)
     {
-        characterMesh->SetVisibility(!isInvisible);
+        if(isInvisible)
+        {
+            characterMesh->SetVisibility(!isInvisible);
+            player->m_fpsMesh->SetVisibility(!isInvisible);
+        }
+        else
+        {
+            UMeshComponent* mesh = player->getCurrentViewMesh();
+            mesh->SetVisibility(!isInvisible);
+        }
     }
+    else
+    {
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(!isInvisible);
+        }
+    }
+
+    m_isInvisible = isInvisible;
 
     if(Role >= ROLE_Authority)
     {
@@ -292,9 +311,17 @@ void ARobotRebellionCharacter::setInvisible(bool isInvisible)
 bool ARobotRebellionCharacter::isVisible()
 {
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if(characterMesh)
+    APlayableCharacter* player = Cast<APlayableCharacter>(this);
+    if(player)
     {
-        return characterMesh->IsVisible();
+        return player->getCurrentViewMesh()->IsVisible();
+    }
+    else
+    {
+        if(characterMesh)
+        {
+            return characterMesh->IsVisible();
+        }
     }
 
     return false;
@@ -326,10 +353,29 @@ void ARobotRebellionCharacter::restoreMana(float value, ELivingTextAnimMode anim
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
 {
     UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    if(characterMesh)
+    APlayableCharacter* player = Cast<APlayableCharacter>(this);
+    if(player)
     {
-        characterMesh->SetVisibility(!isInvisible);
+        if(isInvisible)
+        {
+            characterMesh->SetVisibility(!isInvisible);
+            player->m_fpsMesh->SetVisibility(!isInvisible);
+        }
+        else
+        {
+            UMeshComponent* mesh = player->getCurrentViewMesh();
+            mesh->SetVisibility(!isInvisible);
+        }
     }
+    else
+    {
+        if(characterMesh)
+        {
+            characterMesh->SetVisibility(!isInvisible);
+        }
+    }
+
+    m_isInvisible = isInvisible;
 }
 
 UTextBillboardComponent* ARobotRebellionCharacter::getBillboardComponent()

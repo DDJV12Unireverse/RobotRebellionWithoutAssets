@@ -54,7 +54,7 @@ bool ADrone::reload()
         return false;
     }
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "Loading Bomb");
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "Loading Bomb");
 
     UWorld* world = this->GetWorld();
 
@@ -75,7 +75,7 @@ bool ADrone::reload()
         {
             m_currentBomb->attachToDrone(this);
 
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "LOADED");
+            //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "LOADED");
 
             return true;
         }
@@ -97,7 +97,7 @@ void ADrone::drop()
 
         m_currentBomb->detachFromDrone();
 
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "DROP");
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Silver, "DROP");
 
         m_currentBomb = nullptr;
     }

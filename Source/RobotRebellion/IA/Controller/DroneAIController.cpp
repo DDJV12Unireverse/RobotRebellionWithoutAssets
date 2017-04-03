@@ -403,7 +403,36 @@ void ADroneAIController::dropBomb()
         {
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
         }
-        drone->drop();
+        // Check if there is still living enemy in the drop zone
+        TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{
+            UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3), // Robots
+            UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
+            UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6), // Beasts
+        };
+        TArray<AActor*> ActorsToIgnore{drone};
+        TArray<FHitResult> OutHits;
+
+        
+        FVector dropLocation = drone->GetActorLocation();
+        dropLocation.Z -= m_stationaryElevation;
+
+        UKismetSystemLibrary::SphereTraceMultiForObjects(
+            GetWorld(),
+            dropLocation,
+            dropLocation,
+            drone->getBombRadius(),
+            ObjectTypes,
+            false,
+            ActorsToIgnore,
+            EDrawDebugTrace::None,
+            OutHits,
+            true
+        );
+        
+        if(OutHits.Num())
+        {
+            drone->drop();
+        }
     }
 }
 
@@ -448,9 +477,13 @@ void ADroneAIController::followFireZone()
 
 void ADroneAIController::followSafeZone()
 {
-    if(this->HasABomb() || m_idleTimer > m_updateSafeZoneCooldownTime)
+    if(this->HasABomb())// || m_idleTimer > m_updateSafeZoneCooldownTime)
     {
-        m_actionFinished = true;
+        
+        FVector newHeight = GetPawn()->GetActorLocation();
+        newHeight.Z = m_stationaryElevation;
+        setDestination(newHeight);
+        m_performAction = &ADroneAIController::followGroup;
         return;
     }
     if(MoveToTarget() == EPathFollowingRequestResult::AlreadyAtGoal)
@@ -611,7 +644,6 @@ void ADroneAIController::CheckEnnemyNearPosition(const FVector& position, float 
                     continue;
                 }
                 m_sensedEnnemies.Add(RRCharacter);
-                //break; //DISABLE BREAKS BOMB SEARCH 
             }
         }
     }
@@ -635,7 +667,7 @@ float ADroneAIController::getBombScore(const FVector& position)
 
     float playerWillBeKilled = 0.f;
     float numberFriendlyAttacked = 0.f;
-    float gameEndIsNear = 0.f; //TODO
+    float gameEndIsNear = 0.f; // TODO
     float enemiesAttacked = 0.f;
     float enemiesKilled{};
 
@@ -709,7 +741,7 @@ float ADroneAIController::getBombScore(const FVector& position)
     //score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemIsAttacked / getNbEnnemiesInScene()) / c_Normalize);
     
     //float temp = FMath::Clamp((m_sensedEnnemies.Num() - getNbAliveAllies()) / 4.f, 0.f, 1.f);
-    float minimalEnemyNumber = 4.f;
+    float minimalEnemyNumber = 1.f;
     float temp = enemiesAttacked / minimalEnemyNumber;
     temp = temp > 1.f ? 1.f : temp;
     return temp * score; //> temp ? temp : score;

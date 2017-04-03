@@ -121,7 +121,11 @@ public:
         void FindSessions();
     UFUNCTION(BlueprintCallable, Category = "LobbyServer | Session")
         void JoinLanSession();
-
     UFUNCTION(BlueprintCallable, Category = "LobbyServer | Session")
         void DestroySessionAndLeaveGame();
+    UFUNCTION(BlueprintCallable, Category = "LobbyServer | Session")
+        bool isSessionSelected()
+    {
+        return m_selectedSessionIndex >= 0;
+    }
 };

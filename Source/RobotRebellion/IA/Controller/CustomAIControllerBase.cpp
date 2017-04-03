@@ -14,7 +14,8 @@ ACustomAIControllerBase::ACustomAIControllerBase()
 void ACustomAIControllerBase::BeginPlay()
 {
     Super::BeginPlay();
-
+    m_isInCombat = false;
+    m_hitDirection = FVector(0, 0, 0);
     m_showDebugSphereTrace = !!EntityDataSingleton::getInstance().m_showEnnemyDetectionSphere;
 }
 
@@ -26,5 +27,18 @@ bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
 {
     EPathFollowingRequestResult::Type MoveToActorResult = MoveToActor(Cast<AActor>(m_targetToFollow));
+
     return MoveToActorResult;
+}
+
+void ACustomAIControllerBase::setCombat(bool isCombat, ARobotRebellionCharacter* attacker)
+{
+    m_isInCombat = isCombat;
+    if(isCombat)
+    {
+        if(!hasALivingTarget())
+        {
+            m_targetToFollow = attacker;
+        }
+    }
 }
