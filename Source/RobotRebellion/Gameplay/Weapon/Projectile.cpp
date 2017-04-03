@@ -105,10 +105,10 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
                 setReceiverInCombat(receiver);
                 receiver->inflictDamage(currentDamage);
             }
-            else
-            {
-                receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-            }
+            //else             // COMMENTED FOR CHEAT CODE
+            //{
+            //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+            //}
         }
 
         Destroy();

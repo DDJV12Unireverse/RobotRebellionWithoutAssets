@@ -110,7 +110,6 @@ public:
 
     bool m_tpsMode;
 
-
 public:
     APlayableCharacter();
 
@@ -368,6 +367,13 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiActivatePhysics(bool mustActive);
+
+
+    UFUNCTION()
+        void onDebugCheat();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverOnDebugCheat();
 
     UFUNCTION()
         void gotoDesert();

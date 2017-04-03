@@ -87,10 +87,10 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
                             receiver->inflictDamage(damageValue);
                         }
-                        else
-                        {
-                            receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-                        }
+                        //else             // COMMENTED FOR CHEAT CODE
+                        //{
+                        //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
+                        //}
 
                         exReceiver = &receiver;
                     }
