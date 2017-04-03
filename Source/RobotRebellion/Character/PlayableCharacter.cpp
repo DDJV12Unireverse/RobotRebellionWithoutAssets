@@ -1145,8 +1145,6 @@ void APlayableCharacter::activatePhysics(bool mustActive)
     }
     else
     {
-  //      this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-//        this->GetCapsuleComponent()->SetEnableGravity(false);
         //this->GetCapsuleComponent()->DestroyPhysicsState();
         GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
     }
@@ -1171,10 +1169,7 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     }
     else
     {
-        //this->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
         //this->GetCapsuleComponent()->DestroyPhysicsState();
-        //this->GetCapsuleComponent()->SetEnableGravity(false);
-
         GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
         
     }
