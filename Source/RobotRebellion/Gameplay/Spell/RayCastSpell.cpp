@@ -41,7 +41,7 @@ void URayCastSpell::cast()
         // offset the shoot to avoid collision with the capsule of the player
         const FVector startLocation = caster->GetActorLocation() + (aimDir * 100.f) + FVector(0.f, 0.f, caster->BaseEyeHeight);
         //Draw debug line
-        DrawDebugLine(world, startLocation, endLocation, FColor::Red, false, 5.f);
+        DRAW_DEBUG_LINE(world, startLocation, endLocation, FColor::Red);
 
         // Cast the RAY!
         FHitResult hitActors(ForceInit);
