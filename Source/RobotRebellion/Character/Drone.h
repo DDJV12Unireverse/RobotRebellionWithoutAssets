@@ -45,7 +45,7 @@ public:
     virtual void Tick(float deltaTime) override;
 
 
-    void displayScore(float scores[5]);
+    void displayScore(float scores[4]);
 
 
     /************************************************************************/
