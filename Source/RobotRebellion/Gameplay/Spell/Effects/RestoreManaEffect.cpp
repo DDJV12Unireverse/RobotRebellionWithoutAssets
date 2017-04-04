@@ -36,7 +36,7 @@ void URestoreManaEffect::exec(const FVector impactPoint)
                                                                    ObjectTypes,
                                                                    false,
                                                                    ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
+                                                                   SPHERECAST_DISPLAY_DURATION,
                                                                    hitActors,
                                                                    true);
     PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, "Restore mana on : " + FString::FromInt(hitActors.Num()) + " actors");

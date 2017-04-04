@@ -3,6 +3,8 @@
 #pragma once
 
 //#define ENABLE_PRINT_ON_SCREEN
+//#define ENABLE_SPELL_DISPLAY_SHERECAST
+//#define ENABLE_DRAW_DEBUG_LINE
 
 
 
@@ -31,6 +33,32 @@
 #define PRINT_MESSAGE_TO_TEST_OBJECT_NULLITY_WITH_PREMESSAGE(message, object, color)
 
 #endif //ENABLE_PRINT_ON_SCREEN
+
+#ifdef ENABLE_SPELL_DISPLAY_SHERECAST
+
+#define SPHERECAST_DISPLAY_ONE_FRAME EDrawDebugTrace::ForOneFrame
+#define SPHERECAST_DISPLAY_DURATION EDrawDebugTrace::ForDuration
+#define SPHERECAST_DISPLAY_PERSISTENT EDrawDebugTrace::Persistent
+#define SPHERECAST_DISPLAY_NONE EDrawDebugTrace::None
+
+#else 
+
+#define SPHERECAST_DISPLAY_ONE_FRAME EDrawDebugTrace::None
+#define SPHERECAST_DISPLAY_DURATION EDrawDebugTrace::None
+#define SPHERECAST_DISPLAY_PERSISTENT EDrawDebugTrace::None
+#define SPHERECAST_DISPLAY_NONE EDrawDebugTrace::None
+
+#endif // ENABLE_SPELL_DISPLAY_SHERECAST
+
+#ifdef ENABLE_DRAW_DEBUG_LINE
+
+#define DRAW_DEBUG_LINE(world, startLocation, endLocation, color) DrawDebugLine(world, startLocation, endLocation, color, false, 5.f);
+
+#else
+
+#define DRAW_DEBUG_LINE(world, startLocation, endLocation, color) 
+
+#endif // ENABLE_DRAW_DEBUG_LINE
 
 
 

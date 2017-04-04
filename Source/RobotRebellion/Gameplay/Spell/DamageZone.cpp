@@ -48,7 +48,7 @@ void ADamageZone::Tick( float DeltaTime )
                                                                        ObjectTypes,
                                                                        false,
                                                                        ActorsToIgnore,
-                                                                       EDrawDebugTrace::ForDuration,
+                                                                       SPHERECAST_DISPLAY_DURATION,
                                                                        hitActors,
                                                                        true);
 //         GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Tick after : " 
