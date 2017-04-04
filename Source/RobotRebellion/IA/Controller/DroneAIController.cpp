@@ -21,10 +21,11 @@ ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
 
     m_splinePath = CreateDefaultSubobject<USplineComponent>(TEXT("Path"));
     m_splinePath->DefaultUpVector = {0.f, 0.f, 1.f};
-    m_splinePath->ScaleVisualizationWidth = 30.f;
-    m_splinePath->SetSelectedSplineSegmentColor(FLinearColor::Blue);
-    m_splinePath->bShouldVisualizeScale = true;
-    m_splinePath->bAllowDiscontinuousSpline = false;
+    //m_splinePath->SetSelectedSplineSegmentColor(FLinearColor::Blue);
+    // EDITOR MODE ONLY - PACKAGE COMPILE ERROR
+    //m_splinePath->ScaleVisualizationWidth = 30.f;
+    //m_splinePath->bShouldVisualizeScale = true;
+    //m_splinePath->bAllowDiscontinuousSpline = false;
 
     m_idleTimer = 0.f;
     m_actionFinished = true;
