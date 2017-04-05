@@ -71,3 +71,5 @@ DerivedDataCache/*
 
 enc_temp_folder/*
 *.TMP
+
+Content/InfinityBlade**/**
