@@ -630,7 +630,7 @@ void ADroneAIController::CheckEnnemyNearPosition(const FVector& position, float 
         ObjectTypes,
         false,
         ActorsToIgnore,
-        EDrawDebugTrace::ForOneFrame,
+        SPHERECAST_DISPLAY_ONE_FRAME,
         OutHits,
         true
     ))
