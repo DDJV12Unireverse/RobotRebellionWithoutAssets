@@ -31,4 +31,7 @@ public:
     virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) override;
     // The behavior of the effect when it's point effect
     virtual void exec(const FVector impactPoint, ARobotRebellionCharacter* caster = nullptr) override;
+
+    void inflictEffectDamage(ARobotRebellionCharacter* target, class ARobotRebellionCharacter* caster);
+
 };

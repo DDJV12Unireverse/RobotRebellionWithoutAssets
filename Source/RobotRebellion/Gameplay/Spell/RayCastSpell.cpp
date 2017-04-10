@@ -70,10 +70,11 @@ void URayCastSpell::applyEffect(ARobotRebellionCharacter* affectedTarget)
 
 void URayCastSpell::applyEffect(FVector impactPoint)
 {
+    ARobotRebellionCharacter* caster = Cast<ARobotRebellionCharacter>(GetOwner());
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on point"));
     for(int i = 0; i < m_effects.Num(); ++i)
     {
-        m_effects[i]->exec(impactPoint);
+        m_effects[i]->exec(impactPoint, caster);
     }
 }
 
