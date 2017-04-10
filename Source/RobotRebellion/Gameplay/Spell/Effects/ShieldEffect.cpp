@@ -3,9 +3,6 @@
 #include "RobotRebellion.h"
 #include "ShieldEffect.h"
 
-
-
-
 void UShieldEffect::BeginPlay()
 {
     Super::BeginPlay();
@@ -19,7 +16,7 @@ void UShieldEffect::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 void UShieldEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
 {
     // Inflict shield alteration on target
-    // target->inflictShield(m_shieldDuration, m_shieldAmount)
+    target->addShield(m_shieldAmount, m_duration);
     PRINT_MESSAGE_ON_SCREEN(FColor::Magenta, "shielded for : " + FString::SanitizeFloat(m_shieldAmount)
                             + "during : " + FString::SanitizeFloat(m_duration) + "s");
 }
@@ -52,7 +49,7 @@ void UShieldEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* ca
         if(temp)
         {
             // Apply shield effect
-            // temp->inflictShield(m_shieldDuration, m_shieldAmount)
+            temp->addShield(m_shieldAmount, m_duration);
         }
     }
 }
