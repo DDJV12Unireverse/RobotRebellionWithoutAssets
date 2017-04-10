@@ -24,7 +24,7 @@ void UShieldEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharac
                             + "during : " + FString::SanitizeFloat(m_duration) + "s");
 }
 
-void UShieldEffect::exec(const FVector impactPoint)
+void UShieldEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
 {
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players

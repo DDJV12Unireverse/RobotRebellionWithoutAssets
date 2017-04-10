@@ -29,7 +29,7 @@ void UDamageEffect::exec(class ARobotRebellionCharacter* caster, ARobotRebellion
     target->inflictDamage(damage);
 }
 
-void UDamageEffect::exec(const FVector impactPoint)
+void UDamageEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
 {
     // Not implemented in this Effect
 }

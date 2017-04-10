@@ -22,7 +22,7 @@ void USpawnEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharact
     // TODO
 }
 
-void USpawnEffect::exec(const FVector impactPoint)
+void USpawnEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
 {
     // TODO - Spawn the actor!
     // update position

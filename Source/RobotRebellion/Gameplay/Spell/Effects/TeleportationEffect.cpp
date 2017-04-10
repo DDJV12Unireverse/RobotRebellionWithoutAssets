@@ -39,7 +39,7 @@ void UTeleportationEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellio
     caster->SetActorRotation(newRotation, ETeleportType::TeleportPhysics);
 }
 
-void UTeleportationEffect::exec(const FVector impactPoint)
+void UTeleportationEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
 {
     // No one hit, just go to the "impact point"
 
