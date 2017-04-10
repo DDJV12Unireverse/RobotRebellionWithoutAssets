@@ -178,12 +178,18 @@ void ARobotRebellionCharacter::displayAnimatedText(const FString& textToDisplay,
 
 void ARobotRebellionCharacter::netMultidisplayAnimatedIntegerValue_Implementation(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode)
 {
-    m_textBillboardInstance->beginDisplayingInteger(this->GetActorLocation(), valueToDisplay, color, mode);
+    if (m_textBillboardInstance)
+    {
+        m_textBillboardInstance->beginDisplayingInteger(this->GetActorLocation(), valueToDisplay, color, mode);
+    }
 }
 
 void ARobotRebellionCharacter::netMultidisplayAnimatedText_Implementation(const FString& textToDisplay, const FColor& color, ELivingTextAnimMode mode)
 {
-    m_textBillboardInstance->beginDisplayingText(this->GetActorLocation(), textToDisplay, color, mode);
+    if(m_textBillboardInstance)
+    {
+        m_textBillboardInstance->beginDisplayingText(this->GetActorLocation(), textToDisplay, color, mode);
+    }
 }
 
 bool ARobotRebellionCharacter::netMultidisplayAnimatedIntegerValue_Validate(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode)

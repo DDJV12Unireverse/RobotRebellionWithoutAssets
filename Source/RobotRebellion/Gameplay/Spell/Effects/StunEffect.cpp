@@ -37,11 +37,10 @@ void UStunEffect::exec(const FVector impactPoint)
                                                                    ObjectTypes,
                                                                    false,
                                                                    ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
+                                                                   SPHERECAST_DISPLAY_DURATION,
                                                                    hitActors,
                                                                    true);
-    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Stun applyed on : " 
-                                     + FString::FromInt(hitActors.Num()) + " actors");
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, "Stun applyed on : " + FString::FromInt(hitActors.Num()) + " actors");
     for(FHitResult& currentHit : hitActors)
     {
         ARobotRebellionCharacter* temp = Cast<ARobotRebellionCharacter>(currentHit.GetActor());

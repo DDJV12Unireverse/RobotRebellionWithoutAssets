@@ -32,8 +32,8 @@ void UTeleportationEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellio
     FQuat newRotation = target->GetActorForwardVector().Rotation().Quaternion();
 
     // Inverse front vector and add offset
-    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Emerald, "targetPos = " + targetLoc.ToString()
-                                     + " TeleportLocation = " + teleportationLoc.ToString());
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, 
+        "targetPos = " + targetLoc.ToString() + " TeleportLocation = " + teleportationLoc.ToString());
 
     caster->SetActorLocation(teleportationLoc);
     caster->SetActorRotation(newRotation, ETeleportType::TeleportPhysics);

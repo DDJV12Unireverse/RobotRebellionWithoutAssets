@@ -41,7 +41,7 @@ void URayCastSpell::cast()
         // offset the shoot to avoid collision with the capsule of the player
         const FVector startLocation = caster->GetActorLocation() + (aimDir * 100.f) + FVector(0.f, 0.f, caster->BaseEyeHeight);
         //Draw debug line
-        DrawDebugLine(world, startLocation, endLocation, FColor::Red, false, 5.f);
+        DRAW_DEBUG_LINE(world, startLocation, endLocation, FColor::Red);
 
         // Cast the RAY!
         FHitResult hitActors(ForceInit);
@@ -87,13 +87,13 @@ void URayCastSpell::processHitActor(const FHitResult& hitResult)
             ARobotRebellionCharacter* hitCharacter = Cast<ARobotRebellionCharacter>(hitResult.GetActor());
             if(hitCharacter)
             {
-                GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Ray cast spell done -> apply effect on target");
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Ray cast spell done -> apply effect on target");
                 applyEffect(hitCharacter);
             }
         }
         else
         {
-            GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, "Ray cast spell done -> apply effect on impactpoint");
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Ray cast spell done -> apply effect on impactpoint");
             applyEffect(hitResult.ImpactPoint);
         }
     }

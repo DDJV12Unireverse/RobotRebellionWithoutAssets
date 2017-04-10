@@ -36,11 +36,10 @@ void URestoreManaEffect::exec(const FVector impactPoint)
                                                                    ObjectTypes,
                                                                    false,
                                                                    ActorsToIgnore,
-                                                                   EDrawDebugTrace::ForDuration,
+                                                                   SPHERECAST_DISPLAY_DURATION,
                                                                    hitActors,
                                                                    true);
-    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, "Restore mana on : "
-                                     + FString::FromInt(hitActors.Num()) + " actors");
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, "Restore mana on : " + FString::FromInt(hitActors.Num()) + " actors");
     for(FHitResult& currentHit : hitActors)
     {
         ARobotRebellionCharacter* temp = Cast<ARobotRebellionCharacter>(currentHit.GetActor());

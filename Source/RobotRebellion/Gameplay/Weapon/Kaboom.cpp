@@ -124,7 +124,7 @@ void AKaboom::detonationImplementation()
         m_objectTypesToConsider,
         false,
         { this },
-        EDrawDebugTrace::ForDuration,
+        SPHERECAST_DISPLAY_DURATION,
         OutHits,
         true
     ))

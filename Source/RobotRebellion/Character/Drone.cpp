@@ -39,9 +39,8 @@ void ADrone::displayScore(float scores[5])
 {
     if (this->getBillboardComponent())
     {
-        this->displayAnimatedText(FString::Printf(TEXT("Follow :%f \n Reload :%f \n Attack :%f \n Drop :%f \n Wait :%f"),
-            scores[0], scores[1], scores[2], scores[3], scores[4]), FColor::Blue, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-
+        this->displayAnimatedText(FString::Printf(TEXT("Wait :%f \n Follow :%f \n Attack :%f \n Reload :%f \n"),
+            scores[0], scores[1], scores[2], scores[3]), FColor::Blue, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
     }
 }
 
