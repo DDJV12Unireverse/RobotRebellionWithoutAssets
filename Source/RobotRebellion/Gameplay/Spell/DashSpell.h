@@ -30,4 +30,7 @@ private:
     // Return corrected aim direction
     FVector getRealAimingVector(const ARobotRebellionCharacter* caster);
 	
+    // Check if the caster can be placed at the end point may modify dashEndPoint to fill
+    // return false if its impossible to reach the end point for the caster.
+    bool computeDashHeight(FVector& dashEndPoint, const ARobotRebellionCharacter* caster);
 };

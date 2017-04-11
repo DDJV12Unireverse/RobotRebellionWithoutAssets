@@ -50,25 +50,19 @@ void UDashSpell::cast()
         TraceParams.bReturnPhysicalMaterial = true;
         // atm only should only proc on static mesh
         world->LineTraceSingleByChannel(hitActors, startLocation, endLocation, ECC_WorldStatic, TraceParams);
+
         // hit Actors countains hit actors now
         if(hitActors.GetActor() == nullptr)
         {
             // We've hit nothing
-            // check if endlocation has engouh height
-            float casterHalfHeight = caster->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-            float offsetHeight = 2.f;
-            FVector endTestLocation = endLocation - FVector{0.f, 0.f,casterHalfHeight + offsetHeight};
-            world->LineTraceSingleByChannel(hitActors, endLocation, endTestLocation, ECC_WorldStatic, TraceParams);
-            if(hitActors.GetActor() != nullptr)
+            if(computeDashHeight(endLocation, caster))
             {
-                // We've hit something
-                TArray<FHitResult> testHeightHits{};
-                const FVector& impactPosition = hitActors.ImpactPoint;
-                // let enough space below the character
-                endLocation.Z = endLocation.Z + (impactPosition.Z - endTestLocation.Z);
+                applyEffect(endLocation);
             }
-            applyEffect(endLocation);
-            // TODO - check for top collisions
+            else
+            {
+                return; // We cannot tp the caster at the position : cancel the spell
+            }
         }
         else
         {
@@ -88,23 +82,16 @@ void UDashSpell::cast()
                 endLocation = impactPoint - (aimDir * capsuleRadius);
 
                 // check if endlocation has engouh height
-                float casterHalfHeight = caster->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-                float offsetHeight = 2.f;
-                FVector endTestLocation = endLocation - FVector{0.f, 0.f,casterHalfHeight + offsetHeight};
-                world->LineTraceSingleByChannel(hitActors, endLocation, endTestLocation, ECC_WorldStatic, TraceParams);
-                if(hitActors.GetActor() != nullptr)
+                if(computeDashHeight(endLocation, caster))
                 {
-                    // We've hit something
-                    TArray<FHitResult> testHeightHits{};
-                    const FVector& impactPosition = hitActors.ImpactPoint;
-                    // let enough space below the character
-                    endLocation.Z = endLocation.Z + (impactPosition.Z - endTestLocation.Z);
+                    applyEffect(endLocation);
                 }
-                applyEffect(endLocation);
-                // TODO - check for top collisions
+                else
+                {
+                    return; // We cannot tp the caster at the position : cancel the spell
+                }
             }
         }
-
 
         // the spell is successfully cast consumme mana and launch CD
         caster->consumeMana(m_manaCost);
@@ -145,4 +132,51 @@ FVector UDashSpell::getRealAimingVector(const ARobotRebellionCharacter* caster)
         return caster->GetBaseAimRotation().Vector();
     }
     return FVector::ZeroVector;
+}
+
+
+bool UDashSpell::computeDashHeight(FVector& dashEndPoint, const ARobotRebellionCharacter* caster)
+{
+    UWorld* world = caster->GetWorld();
+    bool hasBeenMoved = false;
+
+    // test bottom colision
+    FHitResult hitActorsTop(ForceInit);
+    FCollisionQueryParams TraceParams(TEXT("No hit raycast spell"), true, caster->Instigator);
+    TraceParams.bTraceAsyncScene = true;
+    TraceParams.bReturnPhysicalMaterial = true;
+
+    float casterHalfHeight = caster->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+    float offsetHeight = 2.f;
+    FVector endTestLocation = dashEndPoint - FVector{0.f, 0.f,casterHalfHeight + offsetHeight};
+
+    // check if endlocation has engouh height
+    world->LineTraceSingleByChannel(hitActorsTop, dashEndPoint, endTestLocation, ECC_WorldStatic, TraceParams);
+    if(hitActorsTop.GetActor() != nullptr)
+    {
+        // We've hit something
+        hasBeenMoved = true;
+        const FVector& impactPosition = hitActorsTop.ImpactPoint;
+        // let enough space below the character
+        dashEndPoint.Z = dashEndPoint.Z + (impactPosition.Z - endTestLocation.Z);
+    }
+
+
+    // test top colision
+    endTestLocation = dashEndPoint + FVector{0.f, 0.f,casterHalfHeight + offsetHeight};
+    FHitResult hitActorsBot(ForceInit);
+
+    world->LineTraceSingleByChannel(hitActorsBot, dashEndPoint, endTestLocation, ECC_WorldStatic, TraceParams);
+    if(hitActorsBot.GetActor() != nullptr)
+    {
+        if(hasBeenMoved)
+        { // we cannot tp the caster here
+            return false;
+        }
+        // We've hit something
+        const FVector& impactPosition = hitActorsBot.ImpactPoint;
+        // let enough space below the character
+        dashEndPoint.Z = dashEndPoint.Z - (endTestLocation.Z - impactPosition.Z);
+    }
+    return true;
 }
