@@ -4,21 +4,22 @@
 #include "RobotRebellionCharacter.h"
 
 #include "PlayableCharacter.h"
+
+#include "Gameplay/Weapon/WeaponBase.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
+
+#include "Gameplay/Alteration/StunAlteration.h"
+#include "Gameplay/Alteration/InvisibilityAlteration.h"
+
+#include "UI/TextBillboardComponent.h"
+#include "UI/LivingTextRenderComponent.h"
+
+#include "Tool/UtilitaryMacros.h"
+#include "Tool/UtilitaryFunctionLibrary.h"
+
+#include "Global/GameInstaller.h"
+
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
-
-#include "../Gameplay/Weapon/WeaponBase.h"
-#include "../Gameplay/Weapon/WeaponInventory.h"
-
-#include "../Gameplay/Alteration/StunAlteration.h"
-#include "../Gameplay/Alteration/InvisibilityAlteration.h"
-
-#include "../UI/TextBillboardComponent.h"
-#include "../UI/LivingTextRenderComponent.h"
-
-#include "../Tool/UtilitaryMacros.h"
-#include "../Tool/UtilitaryFunctionLibrary.h"
-
-#include "../Global/GameInstaller.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -31,6 +32,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
     m_alterationController = CreateDefaultSubobject<UAlterationController>(TEXT("AlterationController"));
+
+    m_isInCombat = false;
 }
 
 void ARobotRebellionCharacter::BeginPlay()

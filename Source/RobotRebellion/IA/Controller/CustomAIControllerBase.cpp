@@ -30,3 +30,15 @@ EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
 
     return MoveToActorResult;
 }
+
+bool ACustomAIControllerBase::isInCombat()
+{
+    return Cast<ARobotRebellionCharacter>(GetPawn())->m_isInCombat;
+}
+
+void ACustomAIControllerBase::setTarget(class ARobotRebellionCharacter* attacker)
+{
+    m_targetToFollow = attacker;
+
+    Cast<ARobotRebellionCharacter>(GetPawn())->m_isInCombat = (attacker != nullptr);
+}

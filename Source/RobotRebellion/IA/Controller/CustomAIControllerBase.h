@@ -13,10 +13,12 @@ class ROBOTREBELLION_API ACustomAIControllerBase : public AAIController
 {
     GENERATED_BODY()
 
+
+private:
+    class ARobotRebellionCharacter* m_targetToFollow;
+
+
 protected:
-    class ARobotRebellionCharacter *m_targetToFollow;
-
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
         bool m_showDebugSphereTrace;
 
@@ -40,6 +42,10 @@ public:
         return m_targetToFollow;
     }
 
+    bool isInCombat();
+
+    void setTarget(class ARobotRebellionCharacter* attacker);
+
     bool hasALivingTarget() const USE_NOEXCEPT;
 
     FORCEINLINE EDrawDebugTrace::Type debugDrawTraceShowingMode() const USE_NOEXCEPT
@@ -57,14 +63,4 @@ public:
     virtual void CheckEnnemyNear(FVector position, float range) PURE_VIRTUAL(ACustomAIControllerBase::CheckEnnemyNear, );
 
     virtual void AttackTarget() const PURE_VIRTUAL(ACustomAIControllerBase::AttackTarget, );
-
-    FORCEINLINE bool isInCombat()
-    {
-        return hasALivingTarget();
-    }
-
-    FORCEINLINE void setTarget(class ARobotRebellionCharacter* attacker)
-    {
-        m_targetToFollow = attacker;
-    }
 };

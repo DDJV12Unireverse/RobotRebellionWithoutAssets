@@ -35,8 +35,6 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
 
     TArray<AActor*> ActorsToIgnore{ currentPawn };
 
-    m_targetToFollow = NULL;
-
     TArray<FHitResult> OutHits;
     if(UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
                                                         MultiSphereStart,
@@ -49,7 +47,8 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
                                                         OutHits,
                                                         true))
     {
-        for(int32 i = 0; i < OutHits.Num(); i++)
+        int32 countHit = OutHits.Num();
+        for(int32 i = 0; i < countHit; i++)
         {
             FHitResult Hit = OutHits[i];
             ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
@@ -59,20 +58,24 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
                 {
                     continue;
                 }
-                m_targetToFollow = RRCharacter;
+                setTarget(RRCharacter);
                 break;
             }
         }
+    }
+    else
+    {
+        setTarget(nullptr);
     }
 }
 
 void AEnnemiAIController::AttackTarget() const
 {
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
-    if(m_targetToFollow)
+    if(this->getTarget())
     {
         FVector hitDirection = UKismetMathLibrary::GetForwardVector(
-            UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), m_targetToFollow->GetActorLocation()));
+            UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), this->getTarget()->GetActorLocation()));
         hitDirection.Z = 0.f;
         hitDirection.Normalize();
         FVector front = GetPawn()->GetActorForwardVector();
@@ -82,17 +85,17 @@ void AEnnemiAIController::AttackTarget() const
         float moveDirection = vert.Z;
         float sinAngle = vert.Size();
 
-         if(moveDirection > 0.f)
-         {
-             GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(sinAngle)), true); //Correct
-         }
-         else
-         {
-             GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(-sinAngle)), true);
-         }
+        if(moveDirection > 0.f)
+        {
+            GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(sinAngle)), true); //Correct
+        }
+        else
+        {
+            GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(-sinAngle)), true);
+        }
         
         
-        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, m_targetToFollow);
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, this->getTarget());
     }
     else
     {

@@ -6,24 +6,26 @@
 
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 
-#include "../Gameplay/Damage/Damage.h"
-#include "../Global/GlobalDamageMethod.h"
-#include "../UI/GameMenu.h"
-#include "../Gameplay/Weapon/WeaponBase.h"
-#include "../Gameplay/Weapon/WeaponInventory.h"
+#include "Gameplay/Damage/Damage.h"
+#include "Global/GlobalDamageMethod.h"
+#include "UI/GameMenu.h"
+#include "Gameplay/Weapon/WeaponBase.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
 #include "CustomPlayerController.h"
-#include "../Gameplay/Item/PickupActor.h"
+#include "IA/Controller/DroneAIController.h"
+#include "Gameplay/Item/PickupActor.h"
 
-#include "../Gameplay/Debug/RobotRobellionSpawnerClass.h"
+#include "Gameplay/Debug/RobotRobellionSpawnerClass.h"
 
 #include "Assassin.h"
 #include "Wizard.h"
 #include "Soldier.h"
 #include "Healer.h"
-
-#include "../Tool/UtilitaryMacros.h"
 #include "Drone.h"
-#include "IA/Controller/DroneAIController.h"
+#include "IA/Character/RobotsCharacter.h"
+
+#include "Tool/UtilitaryMacros.h"
+#include "Global/EntityDataSingleton.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -171,6 +173,30 @@ void APlayableCharacter::Tick(float DeltaTime)
     }
 
     (this->*deactivatePhysicsKilledMethodPtr)();
+
+    this->updateIfInCombat();
+
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
+}
+
+void APlayableCharacter::updateIfInCombat()
+{
+    EntityDataSingleton& data = EntityDataSingleton::getInstance();
+
+    TArray<ARobotsCharacter*>& robots = data.m_robotArray;
+    uint32 robotCount = robots.Num();
+
+    for(uint32 iter = 0; iter < robotCount; ++iter)
+    {
+        ARobotsCharacter* rob = robots[iter];
+        if(rob && !rob->IsPendingKillOrUnreachable() && rob->m_isInCombat)
+        {
+            m_isInCombat = true;
+            return;
+        }
+    }
+
+    m_isInCombat = false;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
