@@ -1,21 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RobotRebellion.h"
-#include "NoHitRayCastSpell.h"
+#include "DashSpell.h"
 #include "Gameplay/Spell/Effects/Effect.h"
 #include "Character/RobotRebellionCharacter.h"
 
 
 
-UNoHitRayCastSpell::UNoHitRayCastSpell() : USpell()
+UDashSpell::UDashSpell() : USpell()
 {}
 
-void UNoHitRayCastSpell::BeginPlay()
+void UDashSpell::BeginPlay()
 {
     Super::BeginPlay();
 }
 
-void UNoHitRayCastSpell::cast()
+void UDashSpell::cast()
 {
     if(!canCast())
     {
@@ -112,7 +112,7 @@ void UNoHitRayCastSpell::cast()
     }
 }
 
-void UNoHitRayCastSpell::applyEffect(ARobotRebellionCharacter* affectedTarget)
+void UDashSpell::applyEffect(ARobotRebellionCharacter* affectedTarget)
 {
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on target"));
     for(int i = 0; i < m_effects.Num(); ++i)
@@ -121,7 +121,7 @@ void UNoHitRayCastSpell::applyEffect(ARobotRebellionCharacter* affectedTarget)
     }
 }
 
-void UNoHitRayCastSpell::applyEffect(FVector impactPoint)
+void UDashSpell::applyEffect(FVector impactPoint)
 {
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on point"));
     for(int i = 0; i < m_effects.Num(); ++i)
@@ -130,7 +130,7 @@ void UNoHitRayCastSpell::applyEffect(FVector impactPoint)
     }
 }
 
-FVector UNoHitRayCastSpell::getRealAimingVector(const ARobotRebellionCharacter* caster)
+FVector UDashSpell::getRealAimingVector(const ARobotRebellionCharacter* caster)
 {
     APlayerController* playerController = Cast<APlayerController>(caster->Controller);
     if(playerController)

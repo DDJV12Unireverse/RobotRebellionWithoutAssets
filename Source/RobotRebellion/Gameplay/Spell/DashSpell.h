@@ -3,19 +3,19 @@
 #pragma once
 
 #include "Gameplay/Spell/Spell.h"
-#include "NoHitRayCastSpell.generated.h"
+#include "DashSpell.generated.h"
 
 /**
  * Similar to the Ray cast spell
  * This kind of spell doesnt need to hit object to apply effect
  */
 UCLASS()
-class ROBOTREBELLION_API UNoHitRayCastSpell : public USpell
+class ROBOTREBELLION_API UDashSpell : public USpell
 {
 	GENERATED_BODY()
 	
 public:
-    UNoHitRayCastSpell();
+    UDashSpell();
 
     virtual void BeginPlay() override;
 
