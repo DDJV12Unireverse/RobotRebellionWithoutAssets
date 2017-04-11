@@ -26,22 +26,21 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
     APawn *currentPawn = GetPawn();
 
     FVector MultiSphereStart = currentPawn->GetActorLocation();
-    FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
 
-    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
+    };
 
-    TArray<AActor*> ActorsToIgnore;
-    ActorsToIgnore.Add(currentPawn);
+    TArray<AActor*> ActorsToIgnore{ currentPawn };
 
     m_targetToFollow = NULL;
 
     TArray<FHitResult> OutHits;
     if(UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
                                                         MultiSphereStart,
-                                                        MultiSphereEnd,
+                                                        MultiSphereStart,
                                                         range,
                                                         ObjectTypes,
                                                         false,
@@ -74,22 +73,22 @@ void AEnnemiAIController::AttackTarget() const
     {
         FVector hitDirection = UKismetMathLibrary::GetForwardVector(
             UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), m_targetToFollow->GetActorLocation()));
-        hitDirection.Z = 0;
+        hitDirection.Z = 0.f;
         hitDirection.Normalize();
         FVector front = GetPawn()->GetActorForwardVector();
-        front.Z = 0;
+        front.Z = 0.f;
         front.Normalize();
         FVector vert = FVector::CrossProduct(front, hitDirection);
         float moveDirection = vert.Z;
         float sinAngle = vert.Size();
 
-         if(moveDirection > 0)
+         if(moveDirection > 0.f)
          {
-             GetPawn()->AddActorLocalRotation(FQuat(FVector(0, 0, 1), asinf(sinAngle)), true); //Correct
+             GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(sinAngle)), true); //Correct
          }
          else
          {
-             GetPawn()->AddActorLocalRotation(FQuat(FVector(0, 0, 1), asinf(-sinAngle)), true);
+             GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(-sinAngle)), true);
          }
         
         

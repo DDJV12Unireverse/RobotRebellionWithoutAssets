@@ -125,7 +125,7 @@ void AProjectile::setReceiverInCombat(ARobotRebellionCharacter* receiver)
         ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(ennemy->GetController());
         if(controller)
         {
-            controller->setCombat(true, m_owner);
+            controller->setTarget(m_owner);
         }
     }
 }

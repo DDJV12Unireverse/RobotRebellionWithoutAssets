@@ -22,7 +22,6 @@ protected:
 
 
 public:
-    bool m_isInCombat;
 	FVector m_hitDirection;
 
 public:
@@ -36,7 +35,7 @@ public:
         return m_targetToFollow != NULL;
     }
 
-    ARobotRebellionCharacter* getTarget() const USE_NOEXCEPT
+    FORCEINLINE ARobotRebellionCharacter* getTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow;
     }
@@ -59,11 +58,13 @@ public:
 
     virtual void AttackTarget() const PURE_VIRTUAL(ACustomAIControllerBase::AttackTarget, );
 
-    bool IsInCombat()
+    FORCEINLINE bool isInCombat()
     {
-        return m_isInCombat;
+        return hasALivingTarget();
     }
 
-    //Set in combat mode and give information from combat direction
-    void setCombat(bool isCombat, ARobotRebellionCharacter* attacker);
+    FORCEINLINE void setTarget(class ARobotRebellionCharacter* attacker)
+    {
+        m_targetToFollow = attacker;
+    }
 };
