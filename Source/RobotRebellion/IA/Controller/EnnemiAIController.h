@@ -18,10 +18,4 @@ public:
     void CheckEnnemyNear(float range) override;
 
     void AttackTarget() const override;
-
-    void setIsInConmbat(bool isCombat)
-    {
-        m_isInCombat = isCombat;
-    }
-
 };

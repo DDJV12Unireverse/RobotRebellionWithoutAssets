@@ -4,7 +4,6 @@
 #include "RobotRebellionCharacter.h"
 
 #include "PlayableCharacter.h"
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 
 #include "Gameplay/Weapon/WeaponBase.h"
 #include "Gameplay/Weapon/WeaponInventory.h"
@@ -21,6 +20,8 @@
 
 #include "Global/GameInstaller.h"
 
+#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
 {
@@ -32,6 +33,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
     m_alterationController = CreateDefaultSubobject<UAlterationController>(TEXT("AlterationController"));
+
+    m_isInCombat = false;
 }
 
 void ARobotRebellionCharacter::BeginPlay()
