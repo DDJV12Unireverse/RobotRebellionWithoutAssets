@@ -28,10 +28,13 @@ void USpawnEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* cas
     // update position
     FVector spawnLocation = impactPoint + m_offsetFromImpactPoint;
     AActor* temp = GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
-    if (temp)
+    if(temp)
     {
         temp->SetLifeSpan(m_actorLifeTime);
-
+        if(caster != nullptr)
+        {
+            temp->SetOwner(caster);
+        }
         // If actor is a pawn with controller we need to manually spawn it
         if(m_hasDefaultAIController)
         {
