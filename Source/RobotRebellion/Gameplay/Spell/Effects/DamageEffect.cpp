@@ -7,6 +7,12 @@
 //#include "../../../Tool/Algorithm.h"
 #include "Character/RobotRebellionCharacter.h"
 
+UDamageEffect::UDamageEffect()
+    : m_hpPercent{}, m_flatDamage{}, m_reducedDamage{}
+{
+    PrimaryComponentTick.bCanEverTick = true;
+}
+
 void UDamageEffect::BeginPlay()
 {
     Super::BeginPlay();
@@ -25,13 +31,12 @@ void UDamageEffect::exec(class ARobotRebellionCharacter* caster, ARobotRebellion
 void UDamageEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
 {
     //Considered Actors
-    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beast
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)  // Robots
+    };
 
-    //Ignored actors, only user
+    //Ignored actors
     TArray<AActor*> ActorsToIgnore;
 
     //Result

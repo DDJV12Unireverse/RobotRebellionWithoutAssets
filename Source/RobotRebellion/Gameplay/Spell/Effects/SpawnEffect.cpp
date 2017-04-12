@@ -19,7 +19,30 @@ void USpawnEffect::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void USpawnEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
 {
-    // TODO
+    FVector spawnLocation = target->GetActorLocation() + m_offsetFromImpactPoint;
+    AActor* temp = GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
+    if(temp)
+    {
+        temp->SetLifeSpan(m_actorLifeTime);
+
+        // If actor is a pawn with controller we need to manually spawn it
+        if(m_hasDefaultAIController)
+        {
+            // try to cast to NonPlayableCharacter
+            ANonPlayableCharacter* npc = Cast<ANonPlayableCharacter>(temp);
+            if(npc)
+            {
+                npc->SpawnDefaultController();
+            }
+        }
+        TArray<UProjectileMovementComponent*> movementComp;
+        temp->GetComponents<UProjectileMovementComponent>(movementComp);
+        if(movementComp.Num() > 0) // then we could set initiale speed
+        {
+            movementComp[0]->MaxSpeed = m_MaxSpeed;
+            movementComp[0]->Velocity = m_startSpeed;
+        }
+    }
 }
 
 void USpawnEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)

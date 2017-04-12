@@ -115,7 +115,6 @@ void APlayableCharacter::BeginPlay()
 
     m_tpsMode = true;
 
-
     // InputMode UI to select classes
     APlayerController* MyPC = Cast<APlayerController>(GetController());
     if(MyPC)

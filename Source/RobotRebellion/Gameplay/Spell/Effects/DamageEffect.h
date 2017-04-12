@@ -22,6 +22,8 @@ public:
         float m_reducedDamage; // do not ignore defense
 
 public:
+    UDamageEffect();
+
     // Called when the game starts
     virtual void BeginPlay() override;
     // Called every frame
