@@ -39,6 +39,7 @@ void ARobotRebellionCharacter::BeginPlay()
 
     this->m_timedDestroyDelegate = &ARobotRebellionCharacter::noDestroyForNow;
     this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::disablingEverything;
+    m_isParticleSpawned = false;
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)
@@ -55,6 +56,18 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     }
 
     (this->*m_timedDestroyDelegate)(deltaTime);
+
+    if(m_isParticleSpawned)
+    {
+        m_effectTimer += deltaTime;
+        if(m_effectTimer >= m_effectDuration)
+        {
+           // m_particleSystem->DestroyComponent();
+            m_particleSystem->EndTrails();
+            m_isParticleSpawned = false;
+        }
+
+    }
 }
 
 void ARobotRebellionCharacter::disablingEverything()
@@ -73,6 +86,8 @@ void ARobotRebellionCharacter::disablingEverything()
     GetCapsuleComponent()->DestroyComponent();
 
     this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::endDisabling;
+
+    
 }
 
 void ARobotRebellionCharacter::startTimedDestroy() USE_NOEXCEPT
@@ -354,6 +369,14 @@ void ARobotRebellionCharacter::restoreMana(float value, ELivingTextAnimMode anim
 {
     m_attribute->restoreMana(value);
     displayAnimatedIntegerValue(value, FColor::Blue, animType);
+}
+
+
+void ARobotRebellionCharacter::spawnManaParticle()
+{
+   
+    m_particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_restoreManaParticuleEffect, GetActorLocation() - FVector(0, 0, 100.f));
+    m_isParticleSpawned = true;
 }
 
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)

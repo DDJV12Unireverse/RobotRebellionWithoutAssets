@@ -43,6 +43,18 @@ protected:
     bool m_isInvisible;
 
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
+        UParticleSystem* m_restoreManaParticuleEffect;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
+        float m_effectDuration;
+
+    UParticleSystemComponent* m_particleSystem;
+
+    bool m_isParticleSpawned;
+
+    float m_effectTimer;
+
 
     /************************************************************************/
     /* PROPERTY                                                             */
@@ -160,5 +172,8 @@ public:
 
     UFUNCTION()
         void restoreMana(float value, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+    UFUNCTION()
+        void spawnManaParticle();
 };
 
