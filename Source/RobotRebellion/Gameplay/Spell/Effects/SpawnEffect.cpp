@@ -48,8 +48,6 @@ void USpawnEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* cas
         {
             movementComp[0]->MaxSpeed = m_MaxSpeed;
             movementComp[0]->Velocity = m_startSpeed;
-            auto test = 0;
-            test++;
         }
     }
 }
