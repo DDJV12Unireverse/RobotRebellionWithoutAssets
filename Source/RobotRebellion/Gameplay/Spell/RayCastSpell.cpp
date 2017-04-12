@@ -48,6 +48,7 @@ void URayCastSpell::cast()
         FCollisionQueryParams TraceParams(TEXT("WeaponTrace"), true, caster->Instigator);
         TraceParams.bTraceAsyncScene = true;
         TraceParams.bReturnPhysicalMaterial = true;
+        TraceParams.AddIgnoredActor(caster);
         // atm only should only proc on static mesh
         world->LineTraceSingleByChannel(hitActors, startLocation, endLocation, ECC_WorldStatic, TraceParams);
         // hit Actors countains hit actors now

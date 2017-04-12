@@ -99,7 +99,7 @@ void AWizardMeteor::explode()
                         // use strenght and shield cause it's fun to use shield
                         int32 ratio = (caster->getStrength() + (caster->getShield() * 2.f)) / (target->getDefense());
                         return static_cast<Damage::DamageValue>(ratio * meteorDamage);
-                    }, coeff.getCoefficientValue());
+                    }, 1.0f);
 
                     target->inflictDamage(currentDamage);
                 }
