@@ -9,13 +9,13 @@
 ACustomAIControllerBase::ACustomAIControllerBase()
 {
     PrimaryActorTick.bCanEverTick = true;
+    m_targetToFollow = nullptr;
+    m_hitDirection = FVector(0, 0, 0);
 }
 
 void ACustomAIControllerBase::BeginPlay()
 {
     Super::BeginPlay();
-    m_isInCombat = false;
-    m_hitDirection = FVector(0, 0, 0);
     m_showDebugSphereTrace = !!EntityDataSingleton::getInstance().m_showEnnemyDetectionSphere;
 }
 
@@ -31,14 +31,14 @@ EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
     return MoveToActorResult;
 }
 
-void ACustomAIControllerBase::setCombat(bool isCombat, ARobotRebellionCharacter* attacker)
+bool ACustomAIControllerBase::isInCombat()
 {
-    m_isInCombat = isCombat;
-    if(isCombat)
-    {
-        if(!hasALivingTarget())
-        {
-            m_targetToFollow = attacker;
-        }
-    }
+    return Cast<ARobotRebellionCharacter>(GetPawn())->m_isInCombat;
+}
+
+void ACustomAIControllerBase::setTarget(class ARobotRebellionCharacter* attacker)
+{
+    m_targetToFollow = attacker;
+
+    Cast<ARobotRebellionCharacter>(GetPawn())->m_isInCombat = (attacker != nullptr);
 }

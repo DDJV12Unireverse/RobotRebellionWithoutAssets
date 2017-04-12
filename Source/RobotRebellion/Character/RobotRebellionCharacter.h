@@ -32,6 +32,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BillBoard")
         class UTextBillboardComponent* m_textBillboardInstance;
 
+    UPROPERTY()
+        bool m_isInCombat;
+
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
@@ -39,6 +42,7 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
         UAlterationController* m_alterationController;
+
 
     bool m_isInvisible;
 
@@ -88,6 +92,8 @@ public:
     void doesNothing() {}
 
     UTextBillboardComponent* getBillboardComponent();
+
+    void updateIfInCombat();
 
 
 protected:

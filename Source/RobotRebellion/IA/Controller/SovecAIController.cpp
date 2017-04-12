@@ -36,8 +36,6 @@ void ASovecAIController::CheckEnnemyNear(float range)
         OutHits,
         true);
 
-    m_targetToFollow = NULL;
-
     if(Result == true)
     {
         for(int32 i = 0; i < OutHits.Num(); i++)
@@ -50,10 +48,14 @@ void ASovecAIController::CheckEnnemyNear(float range)
                 {
                     continue;
                 }
-                m_targetToFollow = RRCharacter;
+                setTarget(RRCharacter);
                 break;
             }
         }
+    }
+    else
+    {
+        setTarget(nullptr);
     }
 }
 
