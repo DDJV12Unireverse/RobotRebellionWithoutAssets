@@ -13,14 +13,19 @@ UCLASS()
 class ROBOTREBELLION_API AWizardMeteor : public AActor
 {
 	GENERATED_BODY()
-	
 private:
-    float m_unreducedDamage;
+    class ARobotRebellionCharacter* m_caster;
 
 public:
     /** Movement component */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement)
         UProjectileMovementComponent* m_projectileMovement;
+    /** How many damage will be made (won't be reduced) */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion Properties")
+        float m_unreducedDamage;
+    /** Explosion radius */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion Properties")
+        float m_explosionRadius;
 
 public:	
 	// Sets default values for this actor's properties
@@ -31,6 +36,9 @@ public:
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
+
+    // Set the caster
+    void setCaster(ARobotRebellionCharacter* p);
 
     // Replication method
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;

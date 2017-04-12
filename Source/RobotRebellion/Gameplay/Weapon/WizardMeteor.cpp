@@ -3,11 +3,17 @@
 #include "RobotRebellion.h"
 #include "WizardMeteor.h"
 
+#include "Character/RobotRebellionCharacter.h"
+
+#include "Gameplay/Damage/Damage.h"
+#include "Gameplay/Damage/DamageCoefficientLogic.h"
+#include "Global/GlobalDamageMethod.h"
 
 // Sets default values
 AWizardMeteor::AWizardMeteor()
     : AActor(),
-    m_unreducedDamage{}
+    m_unreducedDamage{},
+    m_explosionRadius{}
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
@@ -50,7 +56,55 @@ void AWizardMeteor::explode()
     PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "explode");
     if(Role == ROLE_Authority)
     {
-        // TODO - Explode and deals damage to every character hit
+        // Can hit every character
+        TArray<TEnumAsByte<EObjectTypeQuery>> objectType = {
+            UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
+            UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3), // Robots
+            UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
+            UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
+        };
+
+        TArray<FHitResult> OutHits;
+        UKismetSystemLibrary::SphereTraceMultiForObjects(
+            GetWorld(),
+            GetActorLocation(),
+            GetActorLocation(),
+            m_explosionRadius,
+            objectType,
+            false,
+            {this},
+            EDrawDebugTrace::ForDuration,
+            OutHits,
+            true
+        );
+        {
+            for(int32 iter = 0; iter < OutHits.Num(); ++iter)
+            {
+                FHitResult Hit = OutHits[iter];
+
+                ARobotRebellionCharacter* target = Cast<ARobotRebellionCharacter>(Hit.GetActor());
+
+                if(target)
+                {
+                    DamageCoefficientLogic coeff;
+
+                    // This line could crash if owner is not RobotRebellion Charcater but it shouldn't
+                    // happen...
+                    Damage damage{Cast<ARobotRebellionCharacter>(GetOwner()), target};
+
+                    float meteorDamage = m_unreducedDamage;
+                    Damage::DamageValue currentDamage = damage(
+                        [meteorDamage](const ARobotRebellionCharacter* caster, const ARobotRebellionCharacter* target)
+                    {
+                        // use strenght and shield cause it's fun to use shield
+                        int32 ratio = (caster->getStrength() + (caster->getShield() * 2.f)) / (target->getDefense());
+                        return static_cast<Damage::DamageValue>(ratio * meteorDamage);
+                    }, coeff.getCoefficientValue());
+
+                    target->inflictDamage(currentDamage);
+                }
+            }
+        }
     }
 
     // now destroye the actor
@@ -60,5 +114,10 @@ void AWizardMeteor::explode()
 void AWizardMeteor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
+void AWizardMeteor::setCaster(ARobotRebellionCharacter* p)
+{
+    m_caster = p;
 }
 
