@@ -33,11 +33,6 @@ void ADamageZone::Tick( float DeltaTime )
 
         // proceed sphere cast
         FVector MultiSphereStart = GetActorLocation();
-        TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3)); // Robots
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
-        ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beast
         TArray<AActor*> ActorsToIgnore;
         ActorsToIgnore.Add(this);
         TArray<FHitResult> hitActors;
@@ -45,7 +40,7 @@ void ADamageZone::Tick( float DeltaTime )
                                                                        MultiSphereStart,
                                                                        MultiSphereStart,
                                                                        m_radius,
-                                                                       ObjectTypes,
+                                                                       m_objectTypes,
                                                                        false,
                                                                        ActorsToIgnore,
                                                                        SPHERECAST_DISPLAY_DURATION,

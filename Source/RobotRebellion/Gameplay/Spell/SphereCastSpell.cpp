@@ -69,6 +69,10 @@ void USphereCastSpell::cast()
                 applyEffect(tempCharacter);
             }
         }
+
+        // the spell is successfully cast consumme mana and launch CD
+        caster->consumeMana(m_manaCost);
+        m_nextAllowedCastTimer = FPlatformTime::Seconds() + m_cooldown;
     }
 }
 

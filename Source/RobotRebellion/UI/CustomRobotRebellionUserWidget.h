@@ -15,9 +15,9 @@ class ROBOTREBELLION_API UCustomRobotRebellionUserWidget : public URobotRebellio
 	
 
 public:
-    //For blueprint : 3 output : ratio, health and maxHealth
+    //For blueprint : 4 output : ratio, health, shield and maxHealth
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
-        void getHealthRatio(float& ratio, float& health, float& maxHealth) const;
+        void getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const;
 
     //For blueprint : 3 output : ratio, mana and maxMana
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
@@ -25,7 +25,7 @@ public:
 
     //Parse into FString = health / healthMax
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
-        FString healthParseToScreen(float health, float maxHealth) const;
+        FString healthParseToScreen(float health, float shield, float maxHealth) const;
 
     //Parse into FString = mana / manaMax
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")

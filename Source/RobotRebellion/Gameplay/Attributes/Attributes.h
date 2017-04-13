@@ -15,6 +15,7 @@ float getMaxMana()   const USE_NOEXCEPT { return attributeName##operator##getMax
 float getStrength()  const USE_NOEXCEPT { return attributeName##operator##getStrength(); } \
 float getDefense()   const USE_NOEXCEPT { return attributeName##operator##getDefense(); } \
 float getAgility()   const USE_NOEXCEPT { return attributeName##operator##getAgility(); } \
+float getShield()   const USE_NOEXCEPT { return attributeName##operator##getShield(); } \
 void setHealth(float newValue)    USE_NOEXCEPT { attributeName##operator##setHealth(newValue); } \
 void setMaxHealth(float newValue) USE_NOEXCEPT { attributeName##operator##setMaxHealth(newValue); } \
 void setMana(float newValue)      USE_NOEXCEPT { attributeName##operator##setMana(newValue); } \
@@ -22,6 +23,7 @@ void setMaxMana(float newValue)   USE_NOEXCEPT { attributeName##operator##setMax
 void setStrength(float newValue) USE_NOEXCEPT { attributeName##operator##setStrength(newValue); } \
 void setDefense(float newValue)  USE_NOEXCEPT { attributeName##operator##setDefense(newValue); } \
 void setAgility(float newValue)  USE_NOEXCEPT { attributeName##operator##setAgility(newValue); } \
+void removeShield(float newValue) USE_NOEXCEPT { attributeName##operator##removeShield(newValue); } \
 bool isDead() const USE_NOEXCEPT { return !attributeName##operator##isImmortal() && attributeName##operator##isDead(); } \
 void setImmortal(bool isImmortal) const USE_NOEXCEPT { attributeName##operator##setImmortal(isImmortal); } \
 bool isImmortal() const USE_NOEXCEPT { return attributeName##operator##isImmortal(); } \
@@ -29,10 +31,10 @@ void consumeMana(float manaAmount) USE_NOEXCEPT { return attributeName##operator
 
 
 
-UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class ROBOTREBELLION_API UAttributes : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 
 protected:
@@ -42,25 +44,28 @@ protected:
 
 
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
-    float m_health;
+        float m_health;
 
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
-    float m_maxHealth;
+        float m_maxHealth;
 
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
-    float m_mana;
+        float m_mana;
 
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
-    float m_maxMana;
+        float m_maxMana;
 
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
-    float m_strength;
+        float m_strength;
 
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
-    float m_defense;
+        float m_defense;
 
     UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
-    float m_agility;
+        float m_agility;
+
+    UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = Attribute)
+        float m_shield;
 
 
 
@@ -80,16 +85,16 @@ public:
     /************************************************************************/
 
 
-	// Sets default values for this component's properties
-	UAttributes();
-        
+    // Sets default values for this component's properties
+    UAttributes();
 
 
-	// Called when the game starts
-	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+
+    // Called when the game starts
+    virtual void BeginPlay() override;
+
+    // Called every frame
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
@@ -144,6 +149,13 @@ public:
         return m_agility;
     }
 
+    /*******SHIELD********/
+    // get the current shield
+    float getShield() const USE_NOEXCEPT
+    {
+        return m_shield;
+    }
+
     /************************************************************************/
     /*                          SETTER                                      */
     /************************************************************************/
@@ -188,6 +200,13 @@ public:
         m_agility = newValue;
     }
 
+    /*******SHIELD********/
+    // set the current shield value
+    void setShield(float newValue) USE_NOEXCEPT
+    {
+        m_shield = newValue;
+    }
+
 
     /************************************************************************/
     /*                          UTILITARY                                   */
@@ -223,6 +242,15 @@ public:
 
     bool isImmortal() const USE_NOEXCEPT;
 
+    // Add some shield (Do not use negative value, use removeShield)
+    void addShield(float amount)
+    {
+        m_shield += amount;
+    }
+
+    // Remove some shield
+    void removeShield(float amount);
+
 
 private:
     void inflictDamageMortal(float damage);
@@ -237,7 +265,7 @@ private:
         setMana(m_mana + restoreValue);
     }
 
-    void immortalMethod(float) 
+    void immortalMethod(float)
     {
         PRINT_MESSAGE_ON_SCREEN(FColor::Magenta, "IMMORTAL OBJECT");
     }

@@ -22,6 +22,8 @@ public:
         float m_reducedDamage; // do not ignore defense
 
 public:
+    UDamageEffect();
+
     // Called when the game starts
     virtual void BeginPlay() override;
     // Called every frame
@@ -30,5 +32,8 @@ public:
     // The behavior of the effect when it's a targeted effect
     virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) override;
     // The behavior of the effect when it's point effect
-    virtual void exec(const FVector impactPoint) override;
+    virtual void exec(const FVector& impactPoint, ARobotRebellionCharacter* caster = nullptr) override;
+
+    void inflictEffectDamage(ARobotRebellionCharacter* target, class ARobotRebellionCharacter* caster);
+
 };

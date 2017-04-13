@@ -21,7 +21,7 @@ void URestoreManaEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionC
     target->spawnManaParticle();
 }
 
-void URestoreManaEffect::exec(const FVector impactPoint)
+void URestoreManaEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* caster)
 {
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players

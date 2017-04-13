@@ -19,16 +19,9 @@ void USpawnEffect::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void USpawnEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
 {
-    // TODO
-}
-
-void USpawnEffect::exec(const FVector impactPoint)
-{
-    // TODO - Spawn the actor!
-    // update position
-    FVector spawnLocation = impactPoint + m_offsetFromImpactPoint;
+    FVector spawnLocation = target->GetActorLocation() + m_offsetFromImpactPoint;
     AActor* temp = GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
-    if (temp)
+    if(temp)
     {
         temp->SetLifeSpan(m_actorLifeTime);
 
@@ -48,8 +41,39 @@ void USpawnEffect::exec(const FVector impactPoint)
         {
             movementComp[0]->MaxSpeed = m_MaxSpeed;
             movementComp[0]->Velocity = m_startSpeed;
-            auto test = 0;
-            test++;
+        }
+    }
+}
+
+void USpawnEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* caster)
+{
+    // TODO - Spawn the actor!
+    // update position
+    FVector spawnLocation = impactPoint + m_offsetFromImpactPoint;
+    AActor* temp = GetWorld()->SpawnActor<AActor>(m_actorClassToSpawn, spawnLocation, FRotator{0.f});
+    if(temp)
+    {
+        temp->SetLifeSpan(m_actorLifeTime);
+        if(caster != nullptr)
+        {
+            temp->SetOwner(caster);
+        }
+        // If actor is a pawn with controller we need to manually spawn it
+        if(m_hasDefaultAIController)
+        {
+            // try to cast to NonPlayableCharacter
+            ANonPlayableCharacter* npc = Cast<ANonPlayableCharacter>(temp);
+            if(npc)
+            {
+                npc->SpawnDefaultController();
+            }
+        }
+        TArray<UProjectileMovementComponent*> movementComp;
+        temp->GetComponents<UProjectileMovementComponent>(movementComp);
+        if(movementComp.Num() > 0) // then we could set initiale speed
+        {
+            movementComp[0]->MaxSpeed = m_MaxSpeed;
+            movementComp[0]->Velocity = m_startSpeed;
         }
     }
 }
