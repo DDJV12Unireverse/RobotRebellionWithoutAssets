@@ -16,7 +16,6 @@
 void EntityDataSingleton::update(const UWorld* world)
 {
     m_playableCharacterArray.Reset();
-    m_sovecArray.Reset();
     m_robotArray.Reset();
 
     if (world)
@@ -27,8 +26,6 @@ void EntityDataSingleton::update(const UWorld* world)
         for(AActor* current : foundActors)
         {
             if( updateType(current, m_robotArray) ||
-                updateType(current, m_sovecArray) ||
-                updateType(current, m_beastArray) ||
                 updateType(current, m_playableCharacterArray)
                 )
             {

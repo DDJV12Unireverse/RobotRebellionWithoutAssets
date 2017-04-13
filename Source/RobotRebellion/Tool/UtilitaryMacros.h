@@ -2,7 +2,7 @@
 
 #pragma once
 
-//#define ENABLE_PRINT_ON_SCREEN
+#define ENABLE_PRINT_ON_SCREEN
 //#define ENABLE_SPELL_DISPLAY_SHERECAST
 //#define ENABLE_DRAW_DEBUG_LINE
 
