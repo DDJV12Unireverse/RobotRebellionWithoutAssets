@@ -21,6 +21,6 @@ void UInvisibilityEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellion
     caster->inflictInvisibility();
 }
 
-void UInvisibilityEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
+void UInvisibilityEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* caster)
 {
 }
