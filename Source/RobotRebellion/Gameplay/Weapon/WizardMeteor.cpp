@@ -42,8 +42,8 @@ void AWizardMeteor::Tick(float DeltaTime)
 
     //Use life Time 
     float delta = 0.5f;
-    PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "lifeSpan : " + FString::SanitizeFloat(GetLifeSpan()) 
-                            + " - delta : " + FString::SanitizeFloat(delta));
+//    PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "lifeSpan : " + FString::SanitizeFloat(GetLifeSpan()) 
+//                            + " - delta : " + FString::SanitizeFloat(delta));
     if(GetLifeSpan() <= delta)
     {
         explode();
@@ -53,7 +53,7 @@ void AWizardMeteor::Tick(float DeltaTime)
 // Call when actor reach it target location
 void AWizardMeteor::explode()
 {
-    PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "explode");
+    //PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "explode");
     if(Role == ROLE_Authority)
     {
         // Can hit every character
@@ -64,11 +64,12 @@ void AWizardMeteor::explode()
             UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
         };
 
+		const FVector& actorLocation = GetActorLocation();
         TArray<FHitResult> OutHits;
         UKismetSystemLibrary::SphereTraceMultiForObjects(
             GetWorld(),
-            GetActorLocation(),
-            GetActorLocation(),
+			actorLocation,
+            actorLocation,
             m_explosionRadius,
             objectType,
             false,
