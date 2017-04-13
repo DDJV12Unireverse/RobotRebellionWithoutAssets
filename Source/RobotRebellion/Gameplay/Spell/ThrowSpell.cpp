@@ -63,7 +63,7 @@ void UThrowSpell::cast()
 
 void UThrowSpell::onHit(UPrimitiveComponent*, AActor* target, UPrimitiveComponent*, FVector, const FHitResult& hitResult)
 {
-    if(m_isTargetThrow)
+    if(m_isTargetThrow && target != this->GetOwner())
     {
         ARobotRebellionCharacter* hitChar = Cast<ARobotRebellionCharacter>(target);
         if(hitChar)

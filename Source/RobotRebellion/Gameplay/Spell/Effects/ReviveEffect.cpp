@@ -27,5 +27,5 @@ void UReviveEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharac
     }
 }
 
-void UReviveEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
+void UReviveEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* caster)
 {}

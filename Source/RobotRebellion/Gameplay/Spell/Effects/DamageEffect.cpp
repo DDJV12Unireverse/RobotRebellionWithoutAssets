@@ -28,7 +28,7 @@ void UDamageEffect::exec(class ARobotRebellionCharacter* caster, ARobotRebellion
     inflictEffectDamage(target, caster);
 }
 
-void UDamageEffect::exec(const FVector impactPoint, ARobotRebellionCharacter* caster)
+void UDamageEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* caster)
 {
     //Considered Actors
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{

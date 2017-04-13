@@ -175,7 +175,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 
     this->updateIfInCombat();
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
 }
 
 void APlayableCharacter::updateIfInCombat()

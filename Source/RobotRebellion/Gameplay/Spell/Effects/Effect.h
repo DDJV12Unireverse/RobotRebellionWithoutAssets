@@ -34,5 +34,5 @@ public:
     // The behavior of the effect when it's a targeted effect
     virtual void exec(class ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target) PURE_VIRTUAL(UEffect::exec, );
     // The behavior of the effect when it's point effect
-    virtual void exec(const FVector impactPoint, ARobotRebellionCharacter* caster = nullptr) PURE_VIRTUAL(UEffect::exec, );
+    virtual void exec(const FVector& impactPoint, ARobotRebellionCharacter* caster = nullptr) PURE_VIRTUAL(UEffect::exec, );
 };

@@ -43,6 +43,8 @@ void ARobotRebellionCharacter::BeginPlay()
 
     this->m_timedDestroyDelegate = &ARobotRebellionCharacter::noDestroyForNow;
     this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::disablingEverything;
+    m_isParticleSpawned = false;
+
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)
@@ -59,6 +61,17 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     }
 
     (this->*m_timedDestroyDelegate)(deltaTime);
+
+    if(m_isParticleSpawned)
+    {
+        m_effectTimer += deltaTime;
+        if(m_effectTimer >= m_effectDuration)
+        {
+            unspawnManaParticle();
+            m_effectTimer = 0.f;
+        }
+
+    }
 }
 
 void ARobotRebellionCharacter::disablingEverything()
@@ -77,6 +90,8 @@ void ARobotRebellionCharacter::disablingEverything()
     GetCapsuleComponent()->DestroyComponent();
 
     this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::endDisabling;
+
+
 }
 
 void ARobotRebellionCharacter::startTimedDestroy() USE_NOEXCEPT
@@ -182,7 +197,7 @@ void ARobotRebellionCharacter::displayAnimatedText(const FString& textToDisplay,
 
 void ARobotRebellionCharacter::netMultidisplayAnimatedIntegerValue_Implementation(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode)
 {
-    if (m_textBillboardInstance)
+    if(m_textBillboardInstance)
     {
         m_textBillboardInstance->beginDisplayingInteger(this->GetActorLocation(), valueToDisplay, color, mode);
     }
@@ -375,6 +390,84 @@ void ARobotRebellionCharacter::restoreMana(float value, ELivingTextAnimMode anim
 {
     m_attribute->restoreMana(value);
     displayAnimatedIntegerValue(value, FColor::Blue, animType);
+}
+
+
+void ARobotRebellionCharacter::spawnManaParticle()
+{
+
+    //m_particleSystem->SetHiddenInGame(false);
+    if(!m_particleSystem)
+    {
+        //         //m_particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_restoreManaParticuleEffect, GetActorLocation() - FVector(0, 0, 100.f), GetActorRotation(), false);
+        //         //m_particleSystem->SetupAttachment(RootComponent);
+        m_particleSystem = UGameplayStatics::SpawnEmitterAttached(m_restoreManaParticuleEffect, RootComponent, NAME_None,
+                                                                  GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                                  GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+    }
+    m_particleSystem->ActivateSystem(true);
+    m_isParticleSpawned = true;
+    if(Role >= ROLE_Authority)
+    {
+        multiSpawnManaParticle();
+    }
+}
+
+void ARobotRebellionCharacter::unspawnManaParticle()
+{
+    // m_particleSystem->DestroyComponent();
+    //m_particleSystem->EndTrails();
+    //m_particleSystem->SetHiddenInGame(true);
+    //m_particleSystem->ActivateSystem(false);
+    m_particleSystem->DeactivateSystem();
+    //m_particleSystem->DetachFromParent();
+     //m_particleSystem->DestroyComponent();
+//     m_particleSystem = nullptr;
+    m_isParticleSpawned = false;
+    if(Role >= ROLE_Authority)
+    {
+        multiUnspawnManaParticle();
+    }
+}
+
+
+
+void ARobotRebellionCharacter::multiSpawnManaParticle_Implementation()
+{
+    //m_particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_restoreManaParticuleEffect, GetActorLocation() - FVector(0, 0, 100.f), GetActorRotation(), false);
+    //m_particleSystem->SetHiddenInGame(false);
+     if(!m_particleSystem)
+     {
+//         //m_particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_restoreManaParticuleEffect, GetActorLocation() - FVector(0, 0, 100.f), GetActorRotation(), false);
+//         //m_particleSystem->SetupAttachment(RootComponent);
+        m_particleSystem = UGameplayStatics::SpawnEmitterAttached(m_restoreManaParticuleEffect, RootComponent, NAME_None,
+                                                                  GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                                  GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+     }
+     m_particleSystem->ActivateSystem(true);
+
+    m_isParticleSpawned = true;
+}
+
+bool ARobotRebellionCharacter::multiSpawnManaParticle_Validate()
+{
+    return true;
+}
+
+void ARobotRebellionCharacter::multiUnspawnManaParticle_Implementation()
+{
+    //m_particleSystem->EndTrails();
+    m_particleSystem->DeactivateSystem();
+    //m_particleSystem->DestroyComponent();
+    //m_particleSystem = nullptr;
+    //m_particleSystem->SetHiddenInGame(true);
+    m_isParticleSpawned = false;
+
+}
+
+bool ARobotRebellionCharacter::multiUnspawnManaParticle_Validate()
+{
+    return true;
 }
 
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
