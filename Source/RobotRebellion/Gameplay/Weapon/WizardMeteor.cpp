@@ -66,7 +66,6 @@ void AWizardMeteor::explode()
 
 		const FVector& actorLocation = GetActorLocation();
         TArray<FHitResult> OutHits;
-        const FVector& actorLocation = GetActorLocation();
         UKismetSystemLibrary::SphereTraceMultiForObjects(
             GetWorld(),
 			actorLocation,
