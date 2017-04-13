@@ -64,11 +64,12 @@ void AWizardMeteor::explode()
             UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
         };
 
+		const FVector& actorLocation = GetActorLocation();
         TArray<FHitResult> OutHits;
         const FVector& actorLocation = GetActorLocation();
         UKismetSystemLibrary::SphereTraceMultiForObjects(
             GetWorld(),
-            actorLocation,
+			actorLocation,
             actorLocation,
             m_explosionRadius,
             objectType,
