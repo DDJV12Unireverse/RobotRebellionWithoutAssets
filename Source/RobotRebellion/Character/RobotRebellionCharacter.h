@@ -88,6 +88,8 @@ public:
     void inflictStun(float duration);
 
     void inflictInvisibility();
+    
+    void addShield(float amount, float duration);
 
     void doesNothing() {}
 
@@ -152,6 +154,12 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiSetInvisible(bool isInvisible);
+
+    UFUNCTION()
+        UAttributes* getAttributes()
+    {
+        return m_attribute;
+    }
 
 
 // Attributs relatives functions added by macro

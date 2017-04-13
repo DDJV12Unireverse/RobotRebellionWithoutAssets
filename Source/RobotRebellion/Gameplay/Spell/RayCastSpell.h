@@ -6,7 +6,8 @@
 #include "RayCastSpell.generated.h"
 
 /**
- * Implemente logic for spell that doesnt have projectile and stuff
+ * Implemente logic for spell that doesnt have projectile
+ * That kin d of spell must hit something into his range
  *   It will just use rayCast to know how the spell is cast.
  */
 UCLASS()

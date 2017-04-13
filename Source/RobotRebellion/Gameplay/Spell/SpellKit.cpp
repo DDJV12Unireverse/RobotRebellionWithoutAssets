@@ -21,18 +21,10 @@ USpellKit::USpellKit()
 void USpellKit::BeginPlay()
 {
     Super::BeginPlay();
-    // ...
 
     for(int i = 0; i < m_spellsClass.Num(); ++i)
     {
         USpell* tempSpell;
-
-//         UUtilitaryFunctionLibrary::createObjectFromDefault<USpell>(
-//             &tempSpell,
-//             m_spellsClass[i],
-//             this,
-//             TEXT("Spell")
-//             );
         tempSpell = NewObject<USpell>(this, m_spellsClass[i]);
 
         if(tempSpell)

@@ -10,7 +10,7 @@
 
 USpell::USpell()
 {
-    // TODO
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
 void USpell::BeginPlay()

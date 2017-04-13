@@ -21,7 +21,7 @@ void UStunEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacte
     target->inflictStun(m_duration);
 }
 
-void UStunEffect::exec(const FVector impactPoint)
+void UStunEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* caster)
 {
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players

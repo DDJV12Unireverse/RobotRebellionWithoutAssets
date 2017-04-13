@@ -10,6 +10,7 @@
 
 #include "Gameplay/Alteration/StunAlteration.h"
 #include "Gameplay/Alteration/InvisibilityAlteration.h"
+#include "Gameplay/Alteration/ShieldAlteration.h"
 
 #include "UI/TextBillboardComponent.h"
 #include "UI/LivingTextRenderComponent.h"
@@ -279,6 +280,23 @@ void ARobotRebellionCharacter::inflictInvisibility()
             ))
         {
             m_alterationController->addAlteration(invisibilityAlteration);
+        }
+    }
+}
+
+void ARobotRebellionCharacter::addShield(float amount, float duration)
+{
+    if(!this->isImmortal())
+    {
+        UShieldAlteration* shieldAlteration;
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UShieldAlteration>(
+            &shieldAlteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UShieldAlteration>()
+            ))
+        {
+            shieldAlteration->m_lifeTime = duration;
+            shieldAlteration->m_amount = amount;
+            m_alterationController->addAlteration(shieldAlteration);
         }
     }
 }
