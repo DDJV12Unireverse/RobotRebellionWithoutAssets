@@ -5,15 +5,17 @@
 #include "Character/RobotRebellionCharacter.h"
 
 
-void UCustomRobotRebellionUserWidget::getHealthRatio(float& ratio, float& health, float& maxHealth) const
+void UCustomRobotRebellionUserWidget::getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const
 {
     ARobotRebellionCharacter* character = Cast<ARobotRebellionCharacter>(GetOwningPlayerPawn());
 
     if (character)
     {
         health = character->getHealth();
+        shield = character->getShield();
         maxHealth = character->getMaxHealth();
         ratio = health / maxHealth;
+        ratioShield = (health + shield) / maxHealth;
     }
     else
     {
@@ -41,9 +43,16 @@ void UCustomRobotRebellionUserWidget::getManaRatio(float& ratio, float& mana, fl
     }
 }
 
-FString UCustomRobotRebellionUserWidget::healthParseToScreen(float health, float maxHealth) const
+FString UCustomRobotRebellionUserWidget::healthParseToScreen(float health, float shield, float maxHealth) const
 {
-    return FString::FromInt(health) + TEXT("/") + FString::FromInt(maxHealth);
+    if(shield > 0)
+    {
+        return FString::FromInt(health) + TEXT("(") + FString::FromInt(shield) + TEXT(")") + TEXT("/") + FString::FromInt(maxHealth);
+    }
+    else
+    {
+        return FString::FromInt(health) + TEXT("/") + FString::FromInt(maxHealth);
+    }
 }
 
 FString UCustomRobotRebellionUserWidget::manaParseToScreen(float mana, float maxMana) const

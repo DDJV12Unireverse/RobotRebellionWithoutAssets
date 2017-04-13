@@ -48,6 +48,7 @@ void URayCastSpell::cast()
         FCollisionQueryParams TraceParams(TEXT("WeaponTrace"), true, caster->Instigator);
         TraceParams.bTraceAsyncScene = true;
         TraceParams.bReturnPhysicalMaterial = true;
+        TraceParams.AddIgnoredActor(caster);
         // atm only should only proc on static mesh
         world->LineTraceSingleByChannel(hitActors, startLocation, endLocation, ECC_WorldStatic, TraceParams);
         // hit Actors countains hit actors now
@@ -70,10 +71,11 @@ void URayCastSpell::applyEffect(ARobotRebellionCharacter* affectedTarget)
 
 void URayCastSpell::applyEffect(FVector impactPoint)
 {
+    ARobotRebellionCharacter* caster = Cast<ARobotRebellionCharacter>(GetOwner());
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on point"));
     for(int i = 0; i < m_effects.Num(); ++i)
     {
-        m_effects[i]->exec(impactPoint);
+        m_effects[i]->exec(impactPoint, caster);
     }
 }
 

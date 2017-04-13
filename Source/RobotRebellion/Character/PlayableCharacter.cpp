@@ -117,7 +117,6 @@ void APlayableCharacter::BeginPlay()
 
     m_tpsMode = true;
 
-
     // InputMode UI to select classes
     APlayerController* MyPC = Cast<APlayerController>(GetController());
     if(MyPC)
@@ -176,7 +175,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 
     this->updateIfInCombat();
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
 }
 
 void APlayableCharacter::updateIfInCombat()
