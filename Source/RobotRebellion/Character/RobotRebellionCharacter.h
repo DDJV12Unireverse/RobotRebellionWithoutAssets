@@ -48,11 +48,11 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
         float m_effectDuration;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
     UParticleSystemComponent* m_particleSystem;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,  Category = Particule)
     bool m_isParticleSpawned;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
     float m_effectTimer;
 
 
@@ -175,5 +175,15 @@ public:
 
     UFUNCTION()
         void spawnManaParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSpawnManaParticle();
+
+
+    UFUNCTION()
+        void unspawnManaParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiUnspawnManaParticle();
 };
 

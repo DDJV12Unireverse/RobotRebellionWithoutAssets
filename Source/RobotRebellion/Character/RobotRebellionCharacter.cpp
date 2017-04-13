@@ -62,9 +62,7 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
         m_effectTimer += deltaTime;
         if(m_effectTimer >= m_effectDuration)
         {
-           // m_particleSystem->DestroyComponent();
-            m_particleSystem->EndTrails();
-            m_isParticleSpawned = false;
+            unspawnManaParticle();
         }
 
     }
@@ -87,7 +85,7 @@ void ARobotRebellionCharacter::disablingEverything()
 
     this->m_disableBeforeDestroyDelegate = &ARobotRebellionCharacter::endDisabling;
 
-    
+
 }
 
 void ARobotRebellionCharacter::startTimedDestroy() USE_NOEXCEPT
@@ -193,7 +191,7 @@ void ARobotRebellionCharacter::displayAnimatedText(const FString& textToDisplay,
 
 void ARobotRebellionCharacter::netMultidisplayAnimatedIntegerValue_Implementation(int32 valueToDisplay, const FColor& color, ELivingTextAnimMode mode)
 {
-    if (m_textBillboardInstance)
+    if(m_textBillboardInstance)
     {
         m_textBillboardInstance->beginDisplayingInteger(this->GetActorLocation(), valueToDisplay, color, mode);
     }
@@ -374,9 +372,52 @@ void ARobotRebellionCharacter::restoreMana(float value, ELivingTextAnimMode anim
 
 void ARobotRebellionCharacter::spawnManaParticle()
 {
-   
-    m_particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_restoreManaParticuleEffect, GetActorLocation() - FVector(0, 0, 100.f));
+    m_particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_restoreManaParticuleEffect, GetActorLocation() - FVector(0, 0, 100.f), GetActorRotation(), false);
+    m_particleSystem->SetHiddenInGame(false);
     m_isParticleSpawned = true;
+    if(Role >= ROLE_Authority)
+    {
+        multiSpawnManaParticle();
+    }
+}
+
+void ARobotRebellionCharacter::unspawnManaParticle()
+{
+    // m_particleSystem->DestroyComponent();
+    //m_particleSystem->EndTrails();
+    m_particleSystem->SetHiddenInGame(true);
+    m_isParticleSpawned = false;
+    if(Role >= ROLE_Authority)
+    {
+        multiUnspawnManaParticle();
+    }
+}
+
+
+
+void ARobotRebellionCharacter::multiSpawnManaParticle_Implementation()
+{
+    m_particleSystem = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_restoreManaParticuleEffect, GetActorLocation() - FVector(0, 0, 100.f), GetActorRotation(), false);
+    m_particleSystem->SetHiddenInGame(false);
+    m_isParticleSpawned = true;
+}
+
+bool ARobotRebellionCharacter::multiSpawnManaParticle_Validate()
+{
+    return true;
+}
+
+void ARobotRebellionCharacter::multiUnspawnManaParticle_Implementation()
+{
+    //m_particleSystem->EndTrails();
+
+    m_particleSystem->SetHiddenInGame(true);
+    m_isParticleSpawned = false;
+}
+
+bool ARobotRebellionCharacter::multiUnspawnManaParticle_Validate()
+{
+    return true;
 }
 
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
