@@ -54,8 +54,13 @@ void AWizardMeteor::Tick(float DeltaTime)
 void AWizardMeteor::explode()
 {
     //PRINT_MESSAGE_ON_SCREEN(FColor::Purple, "explode");
+    const FVector& actorLocation = GetActorLocation();
+    
+
     if(Role == ROLE_Authority)
     {
+        
+        //m_explosionEffectComp->SetIsReplicated(true);
         // Can hit every character
         TArray<TEnumAsByte<EObjectTypeQuery>> objectType = {
             UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
@@ -64,7 +69,8 @@ void AWizardMeteor::explode()
             UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
         };
 
-		const FVector& actorLocation = GetActorLocation();
+		
+
         TArray<FHitResult> OutHits;
         UKismetSystemLibrary::SphereTraceMultiForObjects(
             GetWorld(),
@@ -106,15 +112,31 @@ void AWizardMeteor::explode()
                 }
             }
         }
+    spawnEffect();
     }
-
-    // now destroye the actor
+    // now destroy the actor
     this->Destroy();
 }
 
-void AWizardMeteor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+void AWizardMeteor::spawnEffect()
 {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    m_explosionEffectComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_explosionEffect,
+                                                                                             GetActorLocation(), GetActorRotation(), true);
+    if(Role >= ROLE_Authority)
+    {
+        multiSpawnEffect(GetActorLocation());
+    }
+}
+
+void AWizardMeteor::multiSpawnEffect_Implementation(FVector location)
+{
+    m_explosionEffectComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_explosionEffect,
+                                                                     location, GetActorRotation(), true);
+}
+
+bool AWizardMeteor::multiSpawnEffect_Validate(FVector location)
+{
+    return true;
 }
 
 void AWizardMeteor::setCaster(ARobotRebellionCharacter* p)
