@@ -16,13 +16,20 @@ private:
     class UThrowSpell* m_parentSpell;
 
 public:
+    /** Emitter system launche on impact*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
         UParticleSystem* m_particleSystem;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
         UParticleSystemComponent* m_particleSystemComp;
+    /** Specify if the projectil have to launche particule emitter on hit*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
         bool m_hasEffect;
-
+    /** Scale the particule emitter*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
+        FVector m_effectScale;
+    /** offset particule emitter*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Particule)
+        FVector m_effectOffset;
 
 public:
     AProjectileEffect();

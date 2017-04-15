@@ -53,8 +53,8 @@ void AProjectileEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void AProjectileEffect::spawnEffect()
 {
     m_particleSystemComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_particleSystem,
-                                                                    GetActorLocation(), GetActorRotation(), true);
-    m_particleSystemComp->SetRelativeScale3D(FVector{5.f,5.f,5.f});
+                                                                    GetActorLocation() + m_effectOffset, GetActorRotation(), true);
+    m_particleSystemComp->SetRelativeScale3D(m_effectScale);
     if(Role >= ROLE_Authority)
     {
         multiSpawnEffect(GetActorLocation());
@@ -64,8 +64,8 @@ void AProjectileEffect::spawnEffect()
 void AProjectileEffect::multiSpawnEffect_Implementation(FVector location)
 {
     m_particleSystemComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_particleSystem,
-                                                                    location, GetActorRotation(), true);
-    m_particleSystemComp->SetRelativeScale3D(FVector{5.f,5.f,5.f});
+                                                                    location + m_effectOffset, GetActorRotation(), true);
+    m_particleSystemComp->SetRelativeScale3D(m_effectScale);
 }
 
 bool AProjectileEffect::multiSpawnEffect_Validate(FVector location)
