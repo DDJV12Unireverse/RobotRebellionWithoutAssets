@@ -3,7 +3,8 @@
 #include "RobotRebellion.h"
 #include "NonPlayableCharacter.h"
 
-#include "../UI/TextBillboardComponent.h"
+#include "UI/TextBillboardComponent.h"
+#include "IA/Controller/CustomAIControllerBase.h"
 
 ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 {
@@ -16,6 +17,12 @@ void ANonPlayableCharacter::cppOnDeath()
 {
     dropLoot();
     this->m_alterationController->removeAllAlteration();
+
+    ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(this->GetController());
+    if (controller)
+    {
+        controller->setTarget(nullptr);
+    }
 
     this->startTimedDestroy();
 }

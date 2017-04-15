@@ -28,6 +28,7 @@ void UAttributes::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
     DOREPLIFETIME(UAttributes, m_strength);
     DOREPLIFETIME(UAttributes, m_defense);
     DOREPLIFETIME(UAttributes, m_agility);
+    DOREPLIFETIME(UAttributes, m_shield);
 }
 
 // Called when the game starts
@@ -72,6 +73,19 @@ void UAttributes::setMaxHealth(float newValue) USE_NOEXCEPT
 
 void UAttributes::inflictDamageMortal(float damage)
 {
+    if(m_shield > 0)
+    {
+        float saveDmg = damage;
+
+        damage -= m_shield;
+
+        removeShield(saveDmg);
+        if(damage <= 0)
+        {
+            return;
+        }
+    }
+
     if(damage < m_health)
     {
         m_health -= damage;
@@ -115,4 +129,16 @@ void UAttributes::setImmortal(bool isImmortal) USE_NOEXCEPT
 bool UAttributes::isImmortal() const USE_NOEXCEPT
 {
     return m_inflictDamageDelegate == &UAttributes::immortalMethod;
+}
+
+void UAttributes::removeShield(float amount)
+{
+    if(amount < m_shield)
+    {
+        m_shield -= amount;
+    }
+    else
+    {
+        m_shield = 0;
+    }
 }

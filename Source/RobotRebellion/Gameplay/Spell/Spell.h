@@ -13,6 +13,8 @@ UCLASS(Blueprintable)
 class ROBOTREBELLION_API USpell : public UActorComponent
 {
     GENERATED_BODY()
+private:
+    float m_realeaseInputTimeAfterCasting;
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
@@ -23,6 +25,10 @@ public:
         float m_cooldown;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
         float m_manaCost;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
+        bool m_hasMotionlessCastingTime;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
+        float m_castingTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
         TArray<TSubclassOf<class UEffect>> m_effectsClass;

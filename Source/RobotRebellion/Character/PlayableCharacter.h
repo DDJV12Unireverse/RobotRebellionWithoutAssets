@@ -169,6 +169,7 @@ public:
     ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
+    void updateIfInCombat();
 
     UFUNCTION()
         void cppPreRevive(APlayableCharacter* characterToRevive);

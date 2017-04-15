@@ -28,6 +28,7 @@ void ARobotRebellionGameMode::BeginPlay()
     GameAlterationInstaller& installer = GameAlterationInstaller::getInstance();
     installer.installAlteration<UStunAlteration>(&m_stunDefault);
     installer.installAlteration<UInvisibilityAlteration>(&m_invisibleDefault);
+    installer.installAlteration<UShieldAlteration>(&m_shieldDefault);
 
     EntityDataSingleton& datas = EntityDataSingleton::getInstance();
     datas.m_showVolumeBox = this->m_showVolumeBox;

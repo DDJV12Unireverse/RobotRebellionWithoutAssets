@@ -13,8 +13,6 @@ class ROBOTREBELLION_API EntityDataSingleton : private IsSingleton<EntityDataSin
 
 public:
     TArray<class ARobotsCharacter*> m_robotArray;
-    TArray<class ASovecCharacter*> m_sovecArray;
-    TArray<class ABeastCharacter*> m_beastArray;
     TArray<class APlayableCharacter*> m_playableCharacterArray;
 
     class AKing* m_king;

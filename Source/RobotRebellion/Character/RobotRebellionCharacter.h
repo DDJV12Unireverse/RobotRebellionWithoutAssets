@@ -32,6 +32,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BillBoard")
         class UTextBillboardComponent* m_textBillboardInstance;
 
+    UPROPERTY()
+        bool m_isInCombat;
+
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
@@ -39,6 +42,7 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
         UAlterationController* m_alterationController;
+
 
     bool m_isInvisible;
 
@@ -84,10 +88,14 @@ public:
     void inflictStun(float duration);
 
     void inflictInvisibility();
+    
+    void addShield(float amount, float duration);
 
     void doesNothing() {}
 
     UTextBillboardComponent* getBillboardComponent();
+
+    void updateIfInCombat();
 
 
 protected:
@@ -146,6 +154,12 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiSetInvisible(bool isInvisible);
+
+    UFUNCTION()
+        UAttributes* getAttributes()
+    {
+        return m_attribute;
+    }
 
 
 // Attributs relatives functions added by macro

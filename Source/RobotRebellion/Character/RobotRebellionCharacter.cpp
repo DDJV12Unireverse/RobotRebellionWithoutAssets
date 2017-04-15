@@ -4,21 +4,23 @@
 #include "RobotRebellionCharacter.h"
 
 #include "PlayableCharacter.h"
+
+#include "Gameplay/Weapon/WeaponBase.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
+
+#include "Gameplay/Alteration/StunAlteration.h"
+#include "Gameplay/Alteration/InvisibilityAlteration.h"
+#include "Gameplay/Alteration/ShieldAlteration.h"
+
+#include "UI/TextBillboardComponent.h"
+#include "UI/LivingTextRenderComponent.h"
+
+#include "Tool/UtilitaryMacros.h"
+#include "Tool/UtilitaryFunctionLibrary.h"
+
+#include "Global/GameInstaller.h"
+
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
-
-#include "../Gameplay/Weapon/WeaponBase.h"
-#include "../Gameplay/Weapon/WeaponInventory.h"
-
-#include "../Gameplay/Alteration/StunAlteration.h"
-#include "../Gameplay/Alteration/InvisibilityAlteration.h"
-
-#include "../UI/TextBillboardComponent.h"
-#include "../UI/LivingTextRenderComponent.h"
-
-#include "../Tool/UtilitaryMacros.h"
-#include "../Tool/UtilitaryFunctionLibrary.h"
-
-#include "../Global/GameInstaller.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -31,6 +33,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_attribute = CreateDefaultSubobject<UAttributes>(TEXT("Attributes"));
 
     m_alterationController = CreateDefaultSubobject<UAlterationController>(TEXT("AlterationController"));
+
+    m_isInCombat = false;
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -276,6 +280,23 @@ void ARobotRebellionCharacter::inflictInvisibility()
             ))
         {
             m_alterationController->addAlteration(invisibilityAlteration);
+        }
+    }
+}
+
+void ARobotRebellionCharacter::addShield(float amount, float duration)
+{
+    if(!this->isImmortal())
+    {
+        UShieldAlteration* shieldAlteration;
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UShieldAlteration>(
+            &shieldAlteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<UShieldAlteration>()
+            ))
+        {
+            shieldAlteration->m_lifeTime = duration;
+            shieldAlteration->m_amount = amount;
+            m_alterationController->addAlteration(shieldAlteration);
         }
     }
 }
