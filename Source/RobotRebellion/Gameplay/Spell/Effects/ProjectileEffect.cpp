@@ -32,10 +32,10 @@ void AProjectileEffect::OnHit(UPrimitiveComponent* ThisComp, AActor* OtherActor,
     {
         spawnEffect();
     }
+
     if(Role == ROLE_Authority)
     {
         m_parentSpell->onHit(ThisComp, OtherActor, OtherComp, NormalImpulse, Hit);
-        if(m_hasEffect)
             Destroy();
     }
     else
