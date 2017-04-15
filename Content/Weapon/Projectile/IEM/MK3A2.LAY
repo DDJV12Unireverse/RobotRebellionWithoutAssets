@@ -1,0 +1,58 @@
+
+Lightscape Layer Table (V1)
+
+Layer Table:
+	Layer: Cap
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Container
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Pin
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Pin_Grip
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Pin_Pin
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Release
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Spot01
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Spot02
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Spot03
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Spot04
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Spot05
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: Spot06
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+	Layer: 0
+		Flags: 0x2300
+		Attr: .Default Attr
+		Focus Point: 0 0 0
+
+Table End

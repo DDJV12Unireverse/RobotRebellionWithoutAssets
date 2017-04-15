@@ -28,9 +28,11 @@ void AProjectileEffect::setParent(UThrowSpell* effect)
 
 void AProjectileEffect::OnHit(UPrimitiveComponent* ThisComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+    spawnEffect();
     if(Role == ROLE_Authority)
     {
         m_parentSpell->onHit(ThisComp, OtherActor, OtherComp, NormalImpulse, Hit);
+        if(m_hasEffect)
         Destroy();
     }
     else
@@ -43,4 +45,27 @@ void AProjectileEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     //DOREPLIFETIME(AProjectile, m_owner);
+}
+
+void AProjectileEffect::spawnEffect()
+{
+    m_particleSystemComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_particleSystem,
+                                                                     GetActorLocation(), GetActorRotation(), true);
+    m_particleSystemComp->SetRelativeScale3D(FVector{5.f,5.f,5.f});
+    if(Role >= ROLE_Authority)
+    {
+        multiSpawnEffect(GetActorLocation());
+    }
+}
+
+void AProjectileEffect::multiSpawnEffect_Implementation(FVector location)
+{
+    m_particleSystemComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_particleSystem,
+                                                                     location, GetActorRotation(), true);
+    m_particleSystemComp->SetRelativeScale3D(FVector{5.f,5.f,5.f});
+}
+
+bool AProjectileEffect::multiSpawnEffect_Validate(FVector location)
+{
+    return true;
 }
