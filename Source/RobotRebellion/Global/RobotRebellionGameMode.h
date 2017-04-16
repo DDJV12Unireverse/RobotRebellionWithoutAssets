@@ -11,6 +11,12 @@ class ARobotRebellionGameMode : public AGameModeBase
 
 
 public:
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_gameAudioComp;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WidgetSound")
+        USoundCue* m_combatSound;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Default")
         TSubclassOf<class UAlterationBase> m_invisibleDefault;
 
