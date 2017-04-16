@@ -12,14 +12,55 @@ AKingActivateTriggerBox::AKingActivateTriggerBox()
     GetCollisionComponent()->OnComponentHit.AddDynamic(this, &AKingActivateTriggerBox::onHit);
 }
 
+void AKingActivateTriggerBox::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
 void AKingActivateTriggerBox::onHit(UPrimitiveComponent* var1, AActor* var2, UPrimitiveComponent* var3, FVector var4, const FHitResult& var5)
 {
     AKingAIController* kingController = Cast<AKingAIController>(EntityDataSingleton::getInstance().m_king->GetController());
 
-    if (kingController)
+    ensure(kingController);
+
+    kingController->activate(true);
+
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "COLLISION, KING ACTIVATED");
+
+    this->killItself();
+}
+
+void AKingActivateTriggerBox::correctDestruction()
+{
+    this->Destroy(true);
+}
+
+void AKingActivateTriggerBox::killItself()
+{
+    if (Role < ROLE_Authority)
     {
-        kingController->activate(true);
+        this->serverKills();
+    }
+    else
+    {
+        this->multiKills();
     }
 
-    this->Destroy();
+    this->correctDestruction();
+}
+
+void AKingActivateTriggerBox::serverKills_Implementation()
+{
+    this->multiKills(); 
+    this->correctDestruction();
+}
+
+bool AKingActivateTriggerBox::serverKills_Validate()
+{
+    return true;
+}
+
+void AKingActivateTriggerBox::multiKills_Implementation()
+{
+    this->correctDestruction();
 }
