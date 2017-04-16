@@ -41,8 +41,4 @@ void AKingAIController::computeTarget()
     ensure(droneController);
     
     m_destination = droneController->getAllyBarycenter();
-
-    FVector alliesToEnnemies = droneController->getEnnemyBarycenter() - m_destination;
-
-    m_destination -= alliesToEnnemies;
 }
