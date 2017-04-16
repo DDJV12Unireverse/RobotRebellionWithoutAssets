@@ -783,6 +783,9 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //FIRE
         PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &APlayableCharacter::mainFire);
+        /* Removed cause feature cut
+        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::secondFire);
+        */
 
         //ESCAPE
         PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
@@ -803,7 +806,6 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         //USE OBJECTS
         PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
         PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
-        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::loseMana);
 
         //VIEW
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
@@ -1067,26 +1069,6 @@ void APlayableCharacter::setBombCount(int nbBombs)
     }
 }
 
-void APlayableCharacter::loseMana()
-{
-    this->consumeMana(150.f);
-
-    if(Role < ROLE_Authority)
-    {
-        serverLoseMana();
-    }
-}
-
-void APlayableCharacter::serverLoseMana_Implementation()
-{
-    loseMana();
-}
-
-bool APlayableCharacter::serverLoseMana_Validate()
-{
-    return true;
-}
-
 void APlayableCharacter::loseBomb()
 {
     m_bombCount = 0;
@@ -1107,7 +1089,6 @@ bool APlayableCharacter::serverLoseBomb_Validate()
 {
     return true;
 }
-
 
 void APlayableCharacter::gotoDesert()
 {
