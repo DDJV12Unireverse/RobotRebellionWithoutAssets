@@ -10,7 +10,7 @@ ACustomAIControllerBase::ACustomAIControllerBase()
 {
     PrimaryActorTick.bCanEverTick = true;
     m_targetToFollow = nullptr;
-    m_hitDirection = FVector(0, 0, 0);
+    m_hitDirection = FVector::ZeroVector;
 }
 
 void ACustomAIControllerBase::BeginPlay()
