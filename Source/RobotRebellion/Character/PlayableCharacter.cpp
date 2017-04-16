@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RobotRebellion.h"
+#include "Global/RobotRebellionGameMode.h"
 #include "PlayableCharacter.h"
 
 
@@ -801,7 +802,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<0>);
         PlayerInputComponent->BindAction("Spell2", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<1>);
         PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<2>);
-        /* Removed cause feature cut 
+        /* Removed cause feature cut
         PlayerInputComponent->BindAction("Spell4", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<3>);
         */
 
@@ -810,7 +811,9 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
 
         //VIEW
+        /* Remove to ensure we dont switch to FPV during presentation
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
+        */
 
         //CHANGE MAP
         PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
@@ -1230,7 +1233,7 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     {
         //this->GetCapsuleComponent()->DestroyPhysicsState();
         GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
-        
+
     }
 }
 
