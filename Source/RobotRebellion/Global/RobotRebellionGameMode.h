@@ -4,18 +4,68 @@
 #include "GameInstaller.h"
 #include "RobotRebellionGameMode.generated.h"
 
+
+enum e_currentGameMode
+{
+	
+};
+
+UENUM(BlueprintType)
+enum class ECurrentGameMode : uint8
+{
+	NONE,
+	AMBIENT,
+	COMBAT,
+	BOSS,
+	WIN,
+	LOSE,
+	GAME_MODE_COUNT
+};
+
 UCLASS(minimalapi)
 class ARobotRebellionGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+private:
+		UPROPERTY(VisibleDefaultsOnly)
+		ECurrentGameMode m_gameMode;
 
+		void setupAudioComponents();
+		ECurrentGameMode m_previousGameMode;
+
+		bool m_bossIsDead;
 public:
-    UPROPERTY(VisibleDefaultsOnly)
-        UAudioComponent* m_gameAudioComp;
+	UPROPERTY(VisibleDefaultsOnly)
+		UAudioComponent* m_ambientAudioComp;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WidgetSound")
-        USoundCue* m_combatSound;
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_combatAudioComp;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		UAudioComponent* m_bossAudioComp;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		UAudioComponent* m_winAudioComp;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		UAudioComponent* m_loseAudioComp;
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_ambientSounds;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+		USoundCue* m_combatSounds;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+		USoundCue* m_bossSounds;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+		USoundCue* m_winSounds;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+		USoundCue* m_loseSounds;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Default")
         TSubclassOf<class UAlterationBase> m_invisibleDefault;
@@ -42,6 +92,10 @@ public:
     virtual void BeginPlay() override;
 
     virtual void Tick(float deltaTime) override;
+
+	void setBossGameMode();
+
+	void setBossDead();
 };
 
 

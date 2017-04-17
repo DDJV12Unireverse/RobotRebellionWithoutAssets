@@ -3,6 +3,39 @@
 #include "ActiveSound.h"
 
 
+void AudioManager::stopBackgroundMusicWithException(UAudioComponent* soundToNotMute)
+{
+	//if (GEngine)
+	//{
+	//	for (auto audioComp : m_backgroundSounds)
+	//	{
+	//			if (audioComp->GetAudioComponentID() != soundToNotMute->GetAudioComponentID())
+	//			{
+	//				if(audioComp->IsPlaying())
+	//				{
+	//					audioComp->Stop();
+	//				}
+	//			}
+	//	}
+	//}
+
+	if (GEngine)
+	{
+		const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
+		for (auto sound : sounds)
+		{
+			UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
+			if (audioComp)
+			{
+				if (audioComp->GetAudioComponentID() != soundToNotMute->GetAudioComponentID())
+				{
+					audioComp->Stop();
+				}
+			}
+		}
+	}
+}
+
 void AudioManager::muteAllBackgroundSoundsWithException(UAudioComponent* soundToNotMute)
 {
         if(GEngine)
@@ -22,36 +55,20 @@ void AudioManager::muteAllBackgroundSoundsWithException(UAudioComponent* soundTo
         }
 }
 
-void AudioManager::playMenuSound()
+void AudioManager::playBackgroundMusic(UAudioComponent * audioComponent)
 {
-
-}
-void AudioManager::playBossSound()
-{
-
-}
-void AudioManager::playAmbientSound()
-{
-
-}
-
-void AudioManager::playCombatSound()
-{
-
+	if (audioComponent)
+	{
+		stopBackgroundMusicWithException(audioComponent);
+		if(!audioComponent->IsPlaying())
+		{
+			audioComponent->Play();
+		}
+	}
 }
 
-
-void AudioManager::playWinSound()
-{
-
-}
-
-void AudioManager::playLoseSound()
-{
-
-}
-
-void AudioManager::setGlobalVolume(float volume)
-{
-
-}
+//
+//void AudioManager::setGlobalVolume(float volume)
+//{
+//
+//}

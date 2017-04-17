@@ -7,26 +7,23 @@ class ROBOTREBELLION_API AudioManager : private IsSingleton<AudioManager>
 {
     GENERATED_USING_FROM_IsSingleton(AudioManager)
 
-
+private:
+	TArray<UAudioComponent *> m_backgroundSounds;
+	void stopBackgroundMusicWithException(UAudioComponent* soundToNotMute);
 
 public:
     void muteAllBackgroundSoundsWithException(UAudioComponent* soundToNotMute);
 
-    void playMenuSound();
+	void configureBackgroundMusic(UAudioComponent * audioComponent)
+	{
+		m_backgroundSounds.Add(audioComponent);
+	}
 
-    void playBossSound();
+	void playBackgroundMusic(UAudioComponent * audioComponent);
 
-    void playAmbientSound();
+    //void setGlobalVolume(float volume);
 
-    void playCombatSound();
-
-    void playWinSound();
-
-    void playLoseSound();
-
-    void setGlobalVolume(float volume);
-
-    private:
-    float m_globalVolume = 1.0;
+    //private:
+    //float m_globalVolume = 1.0;
 
 };

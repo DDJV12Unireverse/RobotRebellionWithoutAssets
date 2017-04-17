@@ -14,93 +14,131 @@
 #include "IA/Navigation/NavigationVolumeGraph.h"
 #include "Tool/UtilitaryMacros.h"
 
+
 ARobotRebellionGameMode::ARobotRebellionGameMode()
 {
-    // set default pawn class to our Blueprinted character
-    static ConstructorHelpers::FClassFinder<APawn> defaultPawn(TEXT("/Game/ThirdPersonCPP/Blueprints/DefaultSpawn_BP"));
-    DefaultPawnClass = defaultPawn.Class;
-    bUseSeamlessTravel = true;
+	// set default pawn class to our Blueprinted character
+	static ConstructorHelpers::FClassFinder<APawn> defaultPawn(TEXT("/Game/ThirdPersonCPP/Blueprints/DefaultSpawn_BP"));
+	DefaultPawnClass = defaultPawn.Class;
+	bUseSeamlessTravel = true;
 
-    PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 
+	m_gameMode = ECurrentGameMode::AMBIENT;
+	m_previousGameMode = ECurrentGameMode::NONE;
+	m_bossIsDead = false;
 }
 
 void ARobotRebellionGameMode::BeginPlay()
 {
-    if(m_combatSound && !m_gameAudioComp)
-    {
-        //m_gameAudioComp = UGameplayStatics::SpawnSoundAttached(m_combatSound, UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-        m_gameAudioComp = NewObject<UAudioComponent>(this);
-        m_gameAudioComp->SetSound(m_combatSound);
-    }
+	setupAudioComponents();
 
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    GameAlterationInstaller& installer = GameAlterationInstaller::getInstance();
-    installer.installAlteration<UStunAlteration>(&m_stunDefault);
-    installer.installAlteration<UInvisibilityAlteration>(&m_invisibleDefault);
-    installer.installAlteration<UShieldAlteration>(&m_shieldDefault);
+	GameAlterationInstaller& installer = GameAlterationInstaller::getInstance();
+	installer.installAlteration<UStunAlteration>(&m_stunDefault);
+	installer.installAlteration<UInvisibilityAlteration>(&m_invisibleDefault);
+	installer.installAlteration<UShieldAlteration>(&m_shieldDefault);
 
-    EntityDataSingleton& datas = EntityDataSingleton::getInstance();
-    datas.m_showVolumeBox = this->m_showVolumeBox;
-    datas.m_showEnnemyDetectionSphere = this->m_showEnnemyDetectionSphere;
+	EntityDataSingleton& datas = EntityDataSingleton::getInstance();
+	datas.m_showVolumeBox = this->m_showVolumeBox;
+	datas.m_showEnnemyDetectionSphere = this->m_showEnnemyDetectionSphere;
 
-    NavigationVolumeGraph& navGraph = NavigationVolumeGraph::getInstance();
-    navGraph.m_showConnection = this->m_showVolumeConnection;
+	NavigationVolumeGraph& navGraph = NavigationVolumeGraph::getInstance();
+	navGraph.m_showConnection = this->m_showVolumeConnection;
 
+	AudioManager& audioMan = AudioManager::getInstance();
+
+	audioMan.configureBackgroundMusic(m_ambientAudioComp);
+	audioMan.configureBackgroundMusic(m_combatAudioComp);
+	audioMan.configureBackgroundMusic(m_bossAudioComp);
+	audioMan.configureBackgroundMusic(m_winAudioComp);
+	audioMan.configureBackgroundMusic(m_loseAudioComp);
 }
 
 void ARobotRebellionGameMode::Tick(float deltaTime)
 {
-    EntityDataSingleton& data = EntityDataSingleton::getInstance();
-    data.update(this->GetWorld());
-    for(int i = 0 ; i < data.m_playableCharacterArray.Num() ; i++)
-    {
-        APlayableCharacter* playableCharacter = data.m_playableCharacterArray[i];
-        // PLAY COMBAT SOUND
-        if(playableCharacter->m_isInCombat)
-        {
-            //TODO
-            //AudioManager& audioMan = AudioManager::getInstance();
-            //audioMan.playCombatSound();
 
+	EntityDataSingleton& data = EntityDataSingleton::getInstance();
+	data.update(this->GetWorld());
+	for (int i = 0; i < data.m_playableCharacterArray.Num(); i++)
+	{
+		APlayableCharacter* playableCharacter = data.m_playableCharacterArray[i];
+		// PLAY COMBAT SOUND
+		if (playableCharacter->m_isInCombat && (m_gameMode != ECurrentGameMode::BOSS || m_bossIsDead))
+		{
+			m_gameMode = ECurrentGameMode::COMBAT;
+		}
+		else if (m_gameMode != ECurrentGameMode::BOSS || m_bossIsDead)
+		{
+			m_gameMode = ECurrentGameMode::AMBIENT;
+		}
+		// TODO Boss Dead: Win GAME
+	}
 
-            // Background Loop
-            if(m_gameAudioComp && !m_gameAudioComp->IsPlaying())
-            {
-                m_gameAudioComp->Play();
-            }
+	if (m_gameMode != m_previousGameMode)
+	{
+		AudioManager& audioMan = AudioManager::getInstance();
+		switch (m_gameMode)
+		{
+		case ECurrentGameMode::NONE:
+		case ECurrentGameMode::AMBIENT:
+			audioMan.playBackgroundMusic(m_ambientAudioComp);
+			break;
+		case ECurrentGameMode::COMBAT:
+			audioMan.playBackgroundMusic(m_combatAudioComp);
+			break;
+		case ECurrentGameMode::BOSS:
+			audioMan.playBackgroundMusic(m_bossAudioComp);
+			break;
+		case ECurrentGameMode::WIN:
+			audioMan.playBackgroundMusic(m_winAudioComp);
+			break;
+		case ECurrentGameMode::LOSE:
+			audioMan.playBackgroundMusic(m_loseAudioComp);
+			break;
+		}
+	}
 
-            //// TEST AUDIO FOR NOW UNTIL MANAGER IS DONE
-            if(GEngine && m_gameAudioComp)
-            {
-                const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
-                for(auto sound : sounds)
-                {
-                    UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
-                    if(audioComp)
-                    {
-                        if(audioComp->GetAudioComponentID() != m_gameAudioComp->GetAudioComponentID())
-                        {
-                            audioComp->Stop();
-                        }
-                    }
-                }
-            }
-            //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "GameMode IS IN Combat Player: " + FString::FromInt(playableCharacter->m_isInCombat));
-        }
-        else
-        {
-            if(m_gameAudioComp && m_combatSound)
-            {
-                // Stop loop
-                if(m_gameAudioComp->IsPlaying())
-                {
-                    //m_gameAudioComp->SetVolumeMultiplier(0.f);
-                    m_gameAudioComp->Stop();
-                }
-            }
-        }
+	m_previousGameMode = m_gameMode;
+}
 
-    }
+void ARobotRebellionGameMode::setBossGameMode()
+{
+	m_gameMode = ECurrentGameMode::BOSS;
+}
+
+void ARobotRebellionGameMode::setBossDead()
+{
+	m_bossIsDead = true;
+}
+
+void ARobotRebellionGameMode::setupAudioComponents()
+{
+
+	if (m_ambientSounds && !m_ambientAudioComp)
+	{
+		m_ambientAudioComp = NewObject<UAudioComponent>(this);
+		m_ambientAudioComp->SetSound(m_ambientSounds);
+	}
+	if (m_combatSounds && !m_combatAudioComp)
+	{
+		m_combatAudioComp = NewObject<UAudioComponent>(this);
+		m_combatAudioComp->SetSound(m_combatSounds);
+	}
+	if (m_bossSounds && !m_bossAudioComp)
+	{
+		m_bossAudioComp = NewObject<UAudioComponent>(this);
+		m_bossAudioComp->SetSound(m_bossSounds);
+	}
+	if (m_winSounds && !m_winAudioComp)
+	{
+		m_winAudioComp = NewObject<UAudioComponent>(this);
+		m_winAudioComp->SetSound(m_winSounds);
+	}
+	if (m_loseSounds && !m_loseAudioComp)
+	{
+		m_loseAudioComp = NewObject<UAudioComponent>(this);
+		m_loseAudioComp->SetSound(m_loseSounds);
+	}
 }
