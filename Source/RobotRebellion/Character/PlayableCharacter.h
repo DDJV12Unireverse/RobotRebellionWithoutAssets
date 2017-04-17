@@ -358,12 +358,6 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverUseManaPotion();
 
-
-    //Remove later
-    void loseMana();
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverLoseMana();
-
     void loseBomb();
     UFUNCTION(Reliable, Server, WithValidation)
         void serverLoseBomb();
