@@ -254,6 +254,16 @@ public:
         return m_isDebugEnabled;
     }
 
+    FORCEINLINE const FVector& getAllyBarycenter() const USE_NOEXCEPT
+    {
+        return m_groupBarycenter;
+    }
+
+    FORCEINLINE const FVector& getEnnemyBarycenter() const USE_NOEXCEPT
+    {
+        return m_ennemyNearBarycenter;
+    }
+
     void clearSplinePath();
 
     /*
