@@ -51,7 +51,7 @@ private:
     //the current time
     float m_currentTime;
 
-    float m_nextDebugDisplayTime;
+    float m_debugCooldownDisplayTime;
 
     bool m_isDebugEnabled;
 
@@ -107,6 +107,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
         float m_epsilonSquaredDistanceTolerance;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Utility Theory")
+        float m_cooldown;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move")
         class USplineComponent* m_splinePath;
