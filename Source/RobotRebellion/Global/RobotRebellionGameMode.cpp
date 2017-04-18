@@ -46,14 +46,6 @@ void ARobotRebellionGameMode::BeginPlay()
 
 	NavigationVolumeGraph& navGraph = NavigationVolumeGraph::getInstance();
 	navGraph.m_showConnection = this->m_showVolumeConnection;
-
-	AudioManager& audioMan = AudioManager::getInstance();
-
-	audioMan.configureBackgroundMusic(m_ambientAudioComp);
-	audioMan.configureBackgroundMusic(m_combatAudioComp);
-	audioMan.configureBackgroundMusic(m_bossAudioComp);
-	audioMan.configureBackgroundMusic(m_winAudioComp);
-	audioMan.configureBackgroundMusic(m_loseAudioComp);
 }
 
 void ARobotRebellionGameMode::Tick(float deltaTime)
@@ -81,22 +73,22 @@ void ARobotRebellionGameMode::Tick(float deltaTime)
 		AudioManager& audioMan = AudioManager::getInstance();
 		switch (m_gameMode)
 		{
-		case ECurrentGameMode::NONE:
-		case ECurrentGameMode::AMBIENT:
-			audioMan.playBackgroundMusic(m_ambientAudioComp);
-			break;
-		case ECurrentGameMode::COMBAT:
-			audioMan.playBackgroundMusic(m_combatAudioComp);
-			break;
-		case ECurrentGameMode::BOSS:
-			audioMan.playBackgroundMusic(m_bossAudioComp);
-			break;
-		case ECurrentGameMode::WIN:
-			audioMan.playBackgroundMusic(m_winAudioComp);
-			break;
-		case ECurrentGameMode::LOSE:
-			audioMan.playBackgroundMusic(m_loseAudioComp);
-			break;
+			case ECurrentGameMode::NONE:
+			case ECurrentGameMode::AMBIENT:
+				audioMan.playBackgroundMusic(m_ambientAudioComp);
+				break;
+			case ECurrentGameMode::COMBAT:
+				audioMan.playBackgroundMusic(m_combatAudioComp);
+				break;
+			case ECurrentGameMode::BOSS:
+				audioMan.playBackgroundMusic(m_bossAudioComp);
+				break;
+			case ECurrentGameMode::WIN:
+				audioMan.playBackgroundMusic(m_winAudioComp);
+				break;
+			case ECurrentGameMode::LOSE:
+				audioMan.playBackgroundMusic(m_loseAudioComp);
+				break;
 		}
 	}
 

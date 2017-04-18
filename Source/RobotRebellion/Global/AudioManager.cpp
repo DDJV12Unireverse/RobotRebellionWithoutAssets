@@ -5,20 +5,6 @@
 
 void AudioManager::stopBackgroundMusicWithException(UAudioComponent* soundToNotMute)
 {
-	//if (GEngine)
-	//{
-	//	for (auto audioComp : m_backgroundSounds)
-	//	{
-	//			if (audioComp->GetAudioComponentID() != soundToNotMute->GetAudioComponentID())
-	//			{
-	//				if(audioComp->IsPlaying())
-	//				{
-	//					audioComp->Stop();
-	//				}
-	//			}
-	//	}
-	//}
-
 	if (GEngine)
 	{
 		const TArray<FActiveSound*> sounds = GEngine->GetActiveAudioDevice()->GetActiveSounds();
