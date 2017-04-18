@@ -24,9 +24,10 @@ ARobotRebellionGameMode::ARobotRebellionGameMode()
 
 	PrimaryActorTick.bCanEverTick = true;
 
-	m_gameMode = ECurrentGameMode::AMBIENT;
+	m_gameMode = ECurrentGameMode::INTRO;
 	m_previousGameMode = ECurrentGameMode::NONE;
 	m_bossIsDead = false;
+    m_gameIsStarted = false;
 }
 
 void ARobotRebellionGameMode::BeginPlay()
@@ -53,26 +54,36 @@ void ARobotRebellionGameMode::Tick(float deltaTime)
 
 	EntityDataSingleton& data = EntityDataSingleton::getInstance();
 	data.update(this->GetWorld());
+    bool playerInCombat = false;
 	for (int i = 0; i < data.m_playableCharacterArray.Num(); i++)
 	{
 		APlayableCharacter* playableCharacter = data.m_playableCharacterArray[i];
-		// PLAY COMBAT SOUND
-		if (playableCharacter->m_isInCombat && (m_gameMode != ECurrentGameMode::BOSS || m_bossIsDead))
+        if (playableCharacter->m_isInCombat)
 		{
-			m_gameMode = ECurrentGameMode::COMBAT;
+            playerInCombat = true;
 		}
-		else if (m_gameMode != ECurrentGameMode::BOSS || m_bossIsDead)
-		{
-			m_gameMode = ECurrentGameMode::AMBIENT;
-		}
-		// TODO Boss Dead: Win GAME
 	}
+    if(playerInCombat && m_gameMode != ECurrentGameMode::BOSS)
+    {
+        m_gameMode = ECurrentGameMode::COMBAT;
+    }
+    else if(m_gameIsStarted && m_gameMode != ECurrentGameMode::BOSS)
+    { 
+        m_gameMode = ECurrentGameMode::AMBIENT;
+    }
+    if(m_bossIsDead)
+    {
+        m_gameMode = ECurrentGameMode::WIN;
+    }
 
 	if (m_gameMode != m_previousGameMode)
 	{
 		AudioManager& audioMan = AudioManager::getInstance();
 		switch (m_gameMode)
 		{
+            case ECurrentGameMode::INTRO:
+                audioMan.playBackgroundMusic(m_introAudioComp);
+                break;
 			case ECurrentGameMode::NONE:
 			case ECurrentGameMode::AMBIENT:
 				audioMan.playBackgroundMusic(m_ambientAudioComp);
@@ -105,9 +116,18 @@ void ARobotRebellionGameMode::setBossDead()
 	m_bossIsDead = true;
 }
 
+void ARobotRebellionGameMode::setStartGameMode()
+{
+    m_gameIsStarted = true;
+}
+
 void ARobotRebellionGameMode::setupAudioComponents()
 {
-
+    if(m_introSounds && !m_introAudioComp)
+    {
+        m_introAudioComp = NewObject<UAudioComponent>(this);
+        m_introAudioComp->SetSound(m_introSounds);
+    }
 	if (m_ambientSounds && !m_ambientAudioComp)
 	{
 		m_ambientAudioComp = NewObject<UAudioComponent>(this);

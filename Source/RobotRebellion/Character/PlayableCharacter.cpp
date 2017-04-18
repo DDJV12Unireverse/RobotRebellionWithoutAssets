@@ -26,6 +26,7 @@
 
 #include "Tool/UtilitaryMacros.h"
 #include "Global/EntityDataSingleton.h"
+#include "Global/RobotRebellionGameMode.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -736,6 +737,12 @@ FString APlayableCharacter::typeToString() const USE_NOEXCEPT
 void APlayableCharacter::changeInstanceTo(EClassType toType)
 {
     m_spawner->spawnAndReplace(this, toType);
+    UWorld* w = this->GetWorld();
+    ARobotRebellionGameMode* gameMode = Cast<ARobotRebellionGameMode>(w->GetAuthGameMode());
+    if(gameMode)
+    {
+        gameMode->setStartGameMode();
+    }
 }
 
 void APlayableCharacter::changeToAssassin()

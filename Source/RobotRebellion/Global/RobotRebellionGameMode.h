@@ -14,6 +14,7 @@ UENUM(BlueprintType)
 enum class ECurrentGameMode : uint8
 {
 	NONE,
+    INTRO,
 	AMBIENT,
 	COMBAT,
 	BOSS,
@@ -35,7 +36,11 @@ private:
 		ECurrentGameMode m_previousGameMode;
 
 		bool m_bossIsDead;
+        bool m_gameIsStarted;
 public:
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_introAudioComp;
+
 	UPROPERTY(VisibleDefaultsOnly)
 		UAudioComponent* m_ambientAudioComp;
 
@@ -51,6 +56,8 @@ public:
 	UPROPERTY(VisibleDefaultsOnly)
 		UAudioComponent* m_loseAudioComp;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_introSounds;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
         USoundCue* m_ambientSounds;
@@ -96,6 +103,8 @@ public:
 	void setBossGameMode();
 
 	void setBossDead();
+
+    void setStartGameMode();
 };
 
 
