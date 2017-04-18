@@ -51,7 +51,7 @@ void URobotRebellionWidget::endSound()
     // Closing sound
     UGameplayStatics::SpawnSoundAttached(m_widgetCloseSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
 
-    if(m_stopAmbiantSound)
+    if(m_loopAudioComp && m_stopAmbiantSound)
     {
         if(GEngine)
         {
