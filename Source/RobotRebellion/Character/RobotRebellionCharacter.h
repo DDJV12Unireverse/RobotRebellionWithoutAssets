@@ -81,6 +81,24 @@ protected:
 
 
 
+    ////SHIELD EFFECT
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        UParticleSystem* m_shieldParticuleEffect;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        float m_shieldEffectDuration;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        UParticleSystemComponent* m_shieldParticleSystem;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        bool m_isShieldParticleSpawned;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        float m_shieldEffectTimer;
+
+
+
     /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
@@ -239,5 +257,20 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiUnspawnReviveParticle();
+
+
+    ////Shield Effect
+
+    UFUNCTION()
+        void spawnShieldParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSpawnShieldParticle();
+
+    UFUNCTION()
+        void unspawnShieldParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiUnspawnShieldParticle();
 };
 
