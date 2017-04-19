@@ -34,7 +34,7 @@ private:
     UPROPERTY(VisibleDefaultsOnly)
         ECurrentGameMode m_gameMode;
 
-    void setupAudioComponents();
+    
     ECurrentGameMode m_previousGameMode;
 
     bool m_bossIsDead;
@@ -87,8 +87,32 @@ public:
 
     void setBossGameMode();
 
+//     UFUNCTION(Reliable, NetMultiCast)
+//         void multiSetBossGameMode();
+//     UFUNCTION(Reliable, Server, WithValidation)
+//         void serverSetBossGameMode();
+
     void setBossDead();
+// 
+//     UFUNCTION(Reliable, NetMultiCast)
+//         void multiSetBossDead();
+//     UFUNCTION(Reliable, Server, WithValidation)
+//         void serverSetBossDead();
 
     void setStartGameMode();
 	
+//     UFUNCTION(Reliable, NetMultiCast)
+//         void multiSetStartGameMode();
+// 
+//     UFUNCTION(Reliable, Server, WithValidation)
+//         void serverSetStartGameMode();
+
+    void setupAudioComponents();
+
+//     UFUNCTION(Reliable, NetMultiCast)
+//         void multiSetupAudioComponents();
+// 
+//     UFUNCTION(Reliable, Server, WithValidation)
+//         void serverSetupAudioComponents();
+
 };
