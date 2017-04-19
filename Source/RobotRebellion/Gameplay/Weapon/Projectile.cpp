@@ -146,11 +146,23 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
 
             if (coeff.establishCritical(hit.BoneName))
             {
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "Critical");
                 coeff.criticalHit();
             }
             if (!receiver->m_isInCombat)
             {
+
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "Engagement");
                 coeff.engagementHit();
+            }
+
+            FVector ownerToReceiver = receiver->GetActorLocation() - m_owner->GetActorLocation();
+            ownerToReceiver.Normalize();
+
+            if (FVector::DotProduct(ownerToReceiver, otherActor->GetActorForwardVector()) > 0.25f)
+            {
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "BackStab");
+                coeff.backstab();
             }
 
             Damage damage{ m_owner, receiver };
