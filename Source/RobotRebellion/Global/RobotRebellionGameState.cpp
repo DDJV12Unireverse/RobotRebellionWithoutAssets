@@ -129,10 +129,10 @@ void ARobotRebellionGameState::setBossDead()
 void ARobotRebellionGameState::setStartGameMode()
 {
     m_gameIsStarted = true;
-    if(Role >= ROLE_Authority)
-    {
-        multiSetStartGameMode();
-    }
+//     if(Role >= ROLE_Authority)
+//     {
+//         multiSetStartGameMode();
+//     }
 }
 
 // void ARobotRebellionGameState::multiSetStartGameMode_Implementation()
@@ -153,11 +153,11 @@ void ARobotRebellionGameState::setStartGameMode()
 
 void ARobotRebellionGameState::setupAudioComponents()
 {
-    if (Role<ROLE_Authority)
-    {
-        serverSetupAudioComponents();
-        return;
-    }
+//     if (Role<ROLE_Authority)
+//     {
+//         serverSetupAudioComponents();
+//         return;
+//     }
 
     if(m_introSounds && !m_introAudioComp)
     {
