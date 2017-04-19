@@ -17,6 +17,7 @@ ARobotRebellionGameState::ARobotRebellionGameState()
     m_previousGameMode = ECurrentGameMode::NONE;
     m_bossIsDead = false;
     m_gameIsStarted = false;
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 void ARobotRebellionGameState::BeginPlay()
