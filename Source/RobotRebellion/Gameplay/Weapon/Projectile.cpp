@@ -148,6 +148,10 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
             {
                 coeff.criticalHit();
             }
+            if (!receiver->m_isInCombat)
+            {
+                coeff.engagementHit();
+            }
 
             Damage damage{ m_owner, receiver };
 
