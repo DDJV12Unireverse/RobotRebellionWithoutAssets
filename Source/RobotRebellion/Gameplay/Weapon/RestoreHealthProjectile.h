@@ -25,10 +25,11 @@ public:
 
     // Called every frame
     virtual void Tick(float DeltaSeconds) override;
-
-    // On hit function called every collision
-    UFUNCTION()
-        virtual void OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent*
-                           OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 	
+    virtual void inflictDamageLogic(class AActor* OtherActor, const FHitResult& Hit) override;
+
+    FORCEINLINE virtual bool isRaycast() const USE_NOEXCEPT
+    {
+        return true;
+    }
 };

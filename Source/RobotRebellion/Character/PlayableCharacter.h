@@ -99,7 +99,7 @@ public:
 
     //camera broom distance from player pawn while in tps mode
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-        float m_YSlightOffset;
+        FVector m_mireOffset;
 
     // Maximal Focus distance on items.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")

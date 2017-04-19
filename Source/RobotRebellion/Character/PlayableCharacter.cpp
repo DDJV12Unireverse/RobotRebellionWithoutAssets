@@ -100,7 +100,7 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-    CameraBoom->SocketOffset = FVector(0.f, m_YSlightOffset, 0.f);
+    CameraBoom->SocketOffset = m_mireOffset;
 
     // Set up gameplay key bindings
     check(PlayerInputComponent);
