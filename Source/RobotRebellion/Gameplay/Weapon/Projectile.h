@@ -53,7 +53,7 @@ public:
 
     
     /** Initialize velocity */
-    virtual void InitVelocity(const FVector& shootDirection);
+    virtual void InitProjectileParams(const FVector& shootDirection, float distanceRange);
 
     //ON HIT
    /* UFUNCTION()
@@ -62,5 +62,22 @@ public:
             ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
+    void inflictDamageLogic(class AActor* OtherActor, const FHitResult& Hit);
 
+    void simulateInstant(const FVector& shootDirection, float distance);
+
+    void simulateInstantRealMethod(const FVector& shootDirection, float distanceRange);
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSimulateInstant(const FVector& shootDirection, float distanceRange);
+
+    void suicide();
+
+    UFUNCTION(NetMulticast, Reliable)
+        void destroyOnClients();
+
+    FORCEINLINE virtual bool isRaycast() const USE_NOEXCEPT
+    {
+        return false;
+    }
 };

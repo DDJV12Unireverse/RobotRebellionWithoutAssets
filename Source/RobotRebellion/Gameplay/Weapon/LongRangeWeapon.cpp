@@ -13,6 +13,18 @@ ULongRangeWeapon::ULongRangeWeapon() :
     UWeaponBase()
 {}
 
+void ULongRangeWeapon::fireMethod(AProjectile* projectile, const FVector& fireDirection)
+{
+    if(projectile->isRaycast())
+    {
+        projectile->simulateInstant(fireDirection, m_WeaponRadiusRange);
+    }
+    else
+    {
+        projectile->InitProjectileParams(fireDirection, m_WeaponRadiusRange);
+    }
+}
+
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
     bool canFire = canAttack();
@@ -49,8 +61,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
 
                 // Fire
-                const FVector fireDirection = muzzleRotation.Vector();
-                projectile->InitVelocity(fireDirection);
+                fireMethod(projectile, muzzleRotation.Vector());
 
                 playSound(m_longRangeWeaponFireSound, user);
 
@@ -106,7 +117,8 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
                 // Fire
                 const FVector fireDirection = UKismetMathLibrary::GetForwardVector(
                     UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation()));
-                projectile->InitVelocity(fireDirection);
+
+                fireMethod(projectile, fireDirection);
                 
                 playSound(m_longRangeWeaponFireSound, user);
 
