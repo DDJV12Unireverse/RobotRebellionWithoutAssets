@@ -178,7 +178,7 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
 
             if (isCritical)
             {
-                receiver->inflictDamage(currentDamage, ELivingTextAnimMode::TEXT_ANIM_BOING_BIGGER_TEXT_ON_CRITICAL, FColor::Yellow);
+                receiver->inflictDamage(currentDamage, ELivingTextAnimMode::TEXT_ANIM_BOING_BIGGER_TEXT_ON_CRITICAL, FColor::Orange);
             }
             else
             {
