@@ -6,6 +6,7 @@
 #include "UI/TextBillboardComponent.h"
 #include "IA/Controller/CustomAIControllerBase.h"
 
+
 ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 {
     // fill it
@@ -51,14 +52,15 @@ bool ANonPlayableCharacter::serverDropLoot_Validate()
 }
 
 FVector ANonPlayableCharacter::aim(const FVector& directionToShoot) const
-{
-    constexpr float fallOffAngle = 0.12f;
-
+{                                                                                                        
     FVector result = directionToShoot;
-    result.Y += FMath::RandRange(-fallOffAngle, fallOffAngle);
-    result.Z += FMath::RandRange(-fallOffAngle, fallOffAngle);
 
-    result.Normalize();
+    ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(Controller);
+
+    //No ACustomAIControllerBase. Please attach one in BP if you want to fire
+    ensure(controller);
+
+    controller->aim(result);
 
     return result;
 }
