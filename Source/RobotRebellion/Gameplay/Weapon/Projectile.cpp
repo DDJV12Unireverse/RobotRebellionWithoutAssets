@@ -140,6 +140,7 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
     {
         if(!receiver->isImmortal())
         {
+            bool isCritical = false;
             DamageCoefficientLogic coeff;
 
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, hit.BoneName.ToString());
@@ -148,6 +149,7 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
             {
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "Critical");
                 coeff.criticalHit();
+                isCritical = true;
             }
             if (!receiver->m_isInCombat)
             {
@@ -173,7 +175,15 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
             );
 
             setReceiverInCombat(receiver);
-            receiver->inflictDamage(currentDamage);
+
+            if (isCritical)
+            {
+                receiver->inflictDamage(currentDamage, ELivingTextAnimMode::TEXT_ANIM_BOING_BIGGER_TEXT_ON_CRITICAL, FColor::Yellow);
+            }
+            else
+            {
+                receiver->inflictDamage(currentDamage);
+            }
         }
         //else             // COMMENTED FOR CHEAT CODE
         //{
