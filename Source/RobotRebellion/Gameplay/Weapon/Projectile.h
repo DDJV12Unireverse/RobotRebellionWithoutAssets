@@ -71,6 +71,11 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverSimulateInstant(const FVector& shootDirection, float distanceRange);
 
+    UFUNCTION(NetMulticast, Reliable)
+        void multiDrawLineOnClients(const FVector& start, const FVector& end);
+
+    void drawProjectileLineMethod(UWorld* world, const FVector& start, const FVector& end);
+
     void suicide();
 
     UFUNCTION(NetMulticast, Reliable)

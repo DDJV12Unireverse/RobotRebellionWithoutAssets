@@ -4,13 +4,11 @@
 #include "Projectile.h"
 
 #include "Character/RobotRebellionCharacter.h"
-#include "../Damage/Damage.h"
-#include "../Damage/DamageCoefficientLogic.h"
+#include "Gameplay/Damage/Damage.h"
+#include "Gameplay/Damage/DamageCoefficientLogic.h"
 
-#include "../../Global/GlobalDamageMethod.h"
-#include "../../Tool/UtilitaryFunctionLibrary.h"
-#include "IA/Controller/CustomAIControllerBase.h"
-#include "Character/NonPlayableCharacter.h"
+#include "Global/GlobalDamageMethod.h"
+#include "Tool/UtilitaryFunctionLibrary.h"
 
 
 
@@ -146,28 +144,33 @@ void AProjectile::simulateInstantRealMethod(const FVector& shootDirection, float
 
     if(world)
     {
-        TArray<FHitResult> hitResult;
+        FHitResult hitResult;
 
-        FVector start = this->GetActorLocation();
+        FVector start = this->GetActorLocation() + shootDirection * (m_collisionComp->GetScaledSphereRadius() + 0.001f);
+        FVector end = start + shootDirection * distance;
 
-        if(world->LineTraceMultiByChannel(
+        ARobotRebellionCharacter* targetTouched = nullptr;
+
+        if(world->LineTraceSingleByChannel(
             hitResult,
-            start + shootDirection * m_collisionComp->GetScaledSphereRadius() * 1.5f,
-            start + shootDirection * distance,
+            start,
+            end,
             ECC_GameTraceChannel1
         ))
         {
-            hitResult.Sort([](const FHitResult& hit1, const FHitResult& hit2) {return hit1.Distance < hit2.Distance; });
-
-            FHitResult& firstHit = hitResult[0];
-
-            ARobotRebellionCharacter* targetTouched = Cast<ARobotRebellionCharacter>(firstHit.GetActor());
+            targetTouched = Cast<ARobotRebellionCharacter>(hitResult.GetActor());
 
             if(targetTouched)
             {
-                this->inflictDamageLogic(targetTouched, firstHit);
+                this->inflictDamageLogic(targetTouched, hitResult);
             }
+
+            end = hitResult.ImpactPoint;
         }
+
+        this->drawProjectileLineMethod(world, start, end);
+
+        multiDrawLineOnClients(start, end);
     }
 }
 
@@ -194,6 +197,16 @@ void AProjectile::serverSimulateInstant_Implementation(const FVector& shootDirec
 bool AProjectile::serverSimulateInstant_Validate(const FVector& shootDirection, float distance)
 {
     return true;
+}
+
+void AProjectile::drawProjectileLineMethod(UWorld* world, const FVector& start, const FVector& end)
+{
+    UUtilitaryFunctionLibrary::drawObligatoryPersistentLineInWorld(world, start, end, FColor::White, 1.f, 1.f);
+}
+
+void AProjectile::multiDrawLineOnClients_Implementation(const FVector& start, const FVector& end)
+{
+    this->drawProjectileLineMethod(this->GetWorld(), start, end);
 }
 
 void AProjectile::suicide()

@@ -60,8 +60,10 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
 
+                FVector fireDirection = muzzleRotation.Vector();
+
                 // Fire
-                fireMethod(projectile, muzzleRotation.Vector());
+                fireMethod(projectile, fireDirection);
 
                 playSound(m_longRangeWeaponFireSound, user);
 
