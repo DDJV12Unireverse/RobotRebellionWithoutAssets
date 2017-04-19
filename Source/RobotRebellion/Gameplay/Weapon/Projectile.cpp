@@ -91,8 +91,43 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
     //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Hit"));
     if(Role == ROLE_Authority)
     {
-        this->inflictDamageLogic(OtherActor, Hit);
+        UWorld* world = this->GetWorld();
 
+        if(world)
+        {
+            FHitResult hitResult;
+
+            FVector direction = this->m_projectileMovement->Velocity;
+            direction.Normalize();
+
+            FVector start = this->GetActorLocation();// +shootDirection * (m_collisionComp->GetScaledSphereRadius() + 0.001f);
+            FVector end = start + direction * m_collisionComp->GetScaledSphereRadius() * 2.f;
+
+            ARobotRebellionCharacter* targetTouched = nullptr;
+
+            FCollisionQueryParams collisionQueryParams;
+            collisionQueryParams.bTraceComplex = true;
+            collisionQueryParams.AddIgnoredActor({ this });
+            collisionQueryParams.AddIgnoredComponents({
+                TWeakObjectPtr<UPrimitiveComponent>{ ThisComp },
+                TWeakObjectPtr<UPrimitiveComponent>{ OtherComp }
+            });
+
+            if(world->LineTraceSingleByChannel(
+                hitResult,
+                start,
+                end,
+                ECC_GameTraceChannel10,
+                collisionQueryParams
+            ))
+            {
+                this->inflictDamageLogic(OtherActor, hitResult);
+            }
+            else
+            {
+                this->inflictDamageLogic(OtherActor, Hit);
+            }
+        }
         Destroy();
 
         //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, TEXT("Destroy on Server"));
@@ -107,6 +142,13 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
         if(!receiver->isImmortal())
         {
             DamageCoefficientLogic coeff;
+
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, hit.BoneName.ToString());
+
+            if (coeff.establishCritical(hit.BoneName))
+            {
+                coeff.criticalHit();
+            }
 
             Damage damage{ m_owner, receiver };
 
@@ -146,26 +188,59 @@ void AProjectile::simulateInstantRealMethod(const FVector& shootDirection, float
     {
         FHitResult hitResult;
 
-        FVector start = this->GetActorLocation() + shootDirection * (m_collisionComp->GetScaledSphereRadius() + 0.001f);
+        FVector start = this->GetActorLocation();// +shootDirection * (m_collisionComp->GetScaledSphereRadius() + 0.001f);
         FVector end = start + shootDirection * distance;
 
         ARobotRebellionCharacter* targetTouched = nullptr;
+
+        FCollisionQueryParams collisionQueryParams;
+        collisionQueryParams.bTraceComplex = true;
+        collisionQueryParams.AddIgnoredActor({ this });
 
         if(world->LineTraceSingleByChannel(
             hitResult,
             start,
             end,
-            ECC_GameTraceChannel1
+            ECC_GameTraceChannel10,
+            collisionQueryParams
         ))
         {
             targetTouched = Cast<ARobotRebellionCharacter>(hitResult.GetActor());
 
             if(targetTouched)
             {
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, hitResult.BoneName.ToString());
+
+                if (!Cast<USkeletalMeshComponent>(hitResult.GetComponent()))
+                {
+                    //collisionQueryParams.AddIgnoredComponent(hitResult.GetComponent());
+
+                    FVector impact = hitResult.ImpactPoint;
+                    end = impact + shootDirection * m_collisionComp->GetScaledSphereRadius() * 2.f;
+
+
+                    if(world->LineTraceSingleByChannel(
+                        hitResult,
+                        impact,
+                        end,
+                        ECC_GameTraceChannel10,
+                        collisionQueryParams
+                    ))
+                    {
+                        end = hitResult.ImpactPoint;
+                    }
+                    else
+                    {
+                        end = impact;
+                    }
+                }
+
                 this->inflictDamageLogic(targetTouched, hitResult);
             }
-
-            end = hitResult.ImpactPoint;
+            else
+            {
+                end = hitResult.ImpactPoint;
+            }
         }
 
         this->drawProjectileLineMethod(world, start, end);

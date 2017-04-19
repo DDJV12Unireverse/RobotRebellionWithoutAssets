@@ -90,4 +90,5 @@ public:
         return m_damageCoefficient;
     }
 
+    bool establishCritical(const FName& boneName) const USE_NOEXCEPT;
 };
