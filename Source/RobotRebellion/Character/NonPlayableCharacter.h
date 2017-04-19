@@ -24,4 +24,6 @@ public:
     UFUNCTION(Server, Reliable, WithValidation)
         void serverDropLoot();
     virtual void cppOnDeath() override;
+
+    virtual FVector aim(const FVector& directionToShoot) const override;
 };

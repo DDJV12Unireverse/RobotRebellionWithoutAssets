@@ -10,7 +10,6 @@ ACustomAIControllerBase::ACustomAIControllerBase()
 {
     PrimaryActorTick.bCanEverTick = true;
     m_targetToFollow = nullptr;
-    m_hitDirection = FVector(0, 0, 0);
 }
 
 void ACustomAIControllerBase::BeginPlay()
@@ -41,4 +40,12 @@ void ACustomAIControllerBase::setTarget(class ARobotRebellionCharacter* attacker
     m_targetToFollow = attacker;
 
     Cast<ARobotRebellionCharacter>(GetPawn())->m_isInCombat = (attacker != nullptr);
+}
+
+void ACustomAIControllerBase::aim(FVector& inOutFireDirection) const USE_NOEXCEPT
+{
+    inOutFireDirection.Y += FMath::RandRange(-m_aimYMaxFallOffAngle, m_aimYMaxFallOffAngle);
+    inOutFireDirection.Z += FMath::RandRange(-m_aimZMaxFallOffAngle, m_aimZMaxFallOffAngle);
+
+    inOutFireDirection.Normalize();
 }

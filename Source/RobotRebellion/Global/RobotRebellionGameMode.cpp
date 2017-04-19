@@ -29,28 +29,11 @@ ARobotRebellionGameMode::ARobotRebellionGameMode()
 
 void ARobotRebellionGameMode::BeginPlay()
 {
-
-
-	Super::BeginPlay();
-
-	GameAlterationInstaller& installer = GameAlterationInstaller::getInstance();
-	installer.installAlteration<UStunAlteration>(&m_stunDefault);
-	installer.installAlteration<UInvisibilityAlteration>(&m_invisibleDefault);
-	installer.installAlteration<UShieldAlteration>(&m_shieldDefault);
-
-	EntityDataSingleton& datas = EntityDataSingleton::getInstance();
-	datas.m_showVolumeBox = this->m_showVolumeBox;
-	datas.m_showEnnemyDetectionSphere = this->m_showEnnemyDetectionSphere;
-
-	NavigationVolumeGraph& navGraph = NavigationVolumeGraph::getInstance();
-	navGraph.m_showConnection = this->m_showVolumeConnection;
+    Super::BeginPlay();
 }
 
 void ARobotRebellionGameMode::Tick(float deltaTime)
 {
-
-	EntityDataSingleton& data = EntityDataSingleton::getInstance();
-	data.update(this->GetWorld());
-   
+    Super::Tick(deltaTime);
 }
 
