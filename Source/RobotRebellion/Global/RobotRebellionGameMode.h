@@ -11,26 +11,6 @@ class ARobotRebellionGameMode : public AGameModeBase
 
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Default")
-        TSubclassOf<class UAlterationBase> m_invisibleDefault;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Default")
-        TSubclassOf<class UAlterationBase> m_stunDefault;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Alteration Default")
-        TSubclassOf<class UAlterationBase> m_shieldDefault;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Debug Display")
-        bool m_showVolumeBox;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
-        bool m_showVolumeConnection;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
-        bool m_showEnnemyDetectionSphere;
-
-
-public:
 	ARobotRebellionGameMode();
 
     virtual void BeginPlay() override;
