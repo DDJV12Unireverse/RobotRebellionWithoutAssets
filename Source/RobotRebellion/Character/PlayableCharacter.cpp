@@ -27,6 +27,7 @@
 #include "Tool/UtilitaryMacros.h"
 #include "Global/EntityDataSingleton.h"
 #include "Global/RobotRebellionGameMode.h"
+#include "Global/RobotRebellionGameState.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -738,10 +739,10 @@ void APlayableCharacter::changeInstanceTo(EClassType toType)
 {
     m_spawner->spawnAndReplace(this, toType);
     UWorld* w = this->GetWorld();
-    ARobotRebellionGameMode* gameMode = Cast<ARobotRebellionGameMode>(w->GetAuthGameMode());
-    if(gameMode)
+    ARobotRebellionGameState* gameState = Cast<ARobotRebellionGameState>(w->GetGameState());
+    if(gameState)
     {
-        gameMode->setStartGameMode();
+        gameState->setStartGameMode();
     }
 }
 

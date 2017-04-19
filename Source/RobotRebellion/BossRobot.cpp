@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "BossRobot.h"
 #include "Global/RobotRebellionGameMode.h"
+#include "Global/RobotRebellionGameState.h"
 
 ABossRobot::ABossRobot()
 {
@@ -14,10 +15,10 @@ ABossRobot::ABossRobot()
 void ABossRobot::cppOnDeath()
 {
     UWorld* w = this->GetWorld();
-    ARobotRebellionGameMode* gameMode = Cast<ARobotRebellionGameMode>(w->GetAuthGameMode());
-    if(gameMode)
+    ARobotRebellionGameState* gameState = Cast<ARobotRebellionGameState>(w->GetGameState());
+    if(gameState)
     {
-        gameMode->setBossDead();
+        gameState->setBossDead();
     }
     Super::cppOnDeath();
 }

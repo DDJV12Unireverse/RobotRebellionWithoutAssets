@@ -21,10 +21,10 @@ void ABossActivateTriggerBox::onHit(UPrimitiveComponent* var1, AActor* var2, UPr
 	PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "COLLISION, BOSS SOUND ACTIVATED");
 
 	UWorld* w = this->GetWorld();
-	ARobotRebellionGameMode* gameMode = Cast<ARobotRebellionGameMode>(w->GetAuthGameMode());
-	if(gameMode)
+    ARobotRebellionGameState* gameState = Cast<ARobotRebellionGameState>(w->GetGameState());
+	if(gameState)
 	{
-		gameMode->setBossGameMode();
+		gameState->setBossGameMode();
 	}
 
 	this->killItself();
