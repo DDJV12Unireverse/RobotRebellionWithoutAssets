@@ -97,6 +97,11 @@ public:
 
     void updateIfInCombat();
 
+    virtual FVector aim(const FVector& directionToShoot) const
+    {
+        return directionToShoot;
+    }
+
 
 protected:
     FORCEINLINE void noDestroyForNow(float deltaTime)

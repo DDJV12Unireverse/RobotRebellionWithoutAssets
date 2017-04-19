@@ -60,7 +60,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
 
-                FVector fireDirection = muzzleRotation.Vector();
+                FVector fireDirection = user->aim(muzzleRotation.Vector());
 
                 // Fire
                 fireMethod(projectile, fireDirection);
@@ -117,8 +117,8 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
 
                 // Fire
-                const FVector fireDirection = UKismetMathLibrary::GetForwardVector(
-                    UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation()));
+                const FVector fireDirection = user->aim(UKismetMathLibrary::GetForwardVector(
+                    UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation())));
 
                 fireMethod(projectile, fireDirection);
                 

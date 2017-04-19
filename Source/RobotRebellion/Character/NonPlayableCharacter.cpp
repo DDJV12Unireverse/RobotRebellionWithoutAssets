@@ -49,3 +49,16 @@ bool ANonPlayableCharacter::serverDropLoot_Validate()
 {
     return true;
 }
+
+FVector ANonPlayableCharacter::aim(const FVector& directionToShoot) const
+{
+    constexpr float fallOffAngle = 0.12f;
+
+    FVector result = directionToShoot;
+    result.Y += FMath::RandRange(-fallOffAngle, fallOffAngle);
+    result.Z += FMath::RandRange(-fallOffAngle, fallOffAngle);
+
+    result.Normalize();
+
+    return result;
+}
