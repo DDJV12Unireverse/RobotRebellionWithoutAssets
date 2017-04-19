@@ -109,8 +109,7 @@ void AProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* Other
             collisionQueryParams.bTraceComplex = true;
             collisionQueryParams.AddIgnoredActor({ this });
             collisionQueryParams.AddIgnoredComponents({
-                TWeakObjectPtr<UPrimitiveComponent>{ ThisComp },
-                TWeakObjectPtr<UPrimitiveComponent>{ OtherComp }
+                TWeakObjectPtr<UPrimitiveComponent>{ ThisComp }
             });
 
             if(world->LineTraceSingleByChannel(
@@ -209,38 +208,28 @@ void AProjectile::simulateInstantRealMethod(const FVector& shootDirection, float
 
             if(targetTouched)
             {
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, hitResult.BoneName.ToString());
-
-                if (!Cast<USkeletalMeshComponent>(hitResult.GetComponent()))
-                {
-                    //collisionQueryParams.AddIgnoredComponent(hitResult.GetComponent());
-
-                    FVector impact = hitResult.ImpactPoint;
-                    end = impact + shootDirection * m_collisionComp->GetScaledSphereRadius() * 2.f;
-
-
-                    if(world->LineTraceSingleByChannel(
-                        hitResult,
-                        impact,
-                        end,
-                        ECC_GameTraceChannel10,
-                        collisionQueryParams
-                    ))
-                    {
-                        end = hitResult.ImpactPoint;
-                    }
-                    else
-                    {
-                        end = impact;
-                    }
-                }
-
                 this->inflictDamageLogic(targetTouched, hitResult);
             }
-            else
+
+            end = hitResult.ImpactPoint;
+        }
+        else if(
+            world->LineTraceSingleByChannel(
+                hitResult,
+                start,
+                end,
+                ECC_GameTraceChannel1,
+                collisionQueryParams
+        ))
+        {
+            targetTouched = Cast<ARobotRebellionCharacter>(hitResult.GetActor());
+
+            if(targetTouched)
             {
-                end = hitResult.ImpactPoint;
+                this->inflictDamageLogic(targetTouched, hitResult);
             }
+
+            end = hitResult.ImpactPoint;
         }
 
         this->drawProjectileLineMethod(world, start, end);
