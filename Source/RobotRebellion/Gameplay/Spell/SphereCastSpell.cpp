@@ -67,6 +67,18 @@ void USphereCastSpell::cast()
             if(tempCharacter)
             {
                 applyEffect(tempCharacter);
+                if(m_useEffect)
+                {
+                    AActor* temp = GetWorld()->SpawnActor<AActor>(m_effectActor, startLocation + m_offset * aimDir, FRotator{0.f});
+                    if(temp)
+                    {
+                        auto lol = 5;
+                    }
+                    else
+                    {
+                        auto lol = 5;
+                    }
+                }
             }
         }
 
