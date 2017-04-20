@@ -399,7 +399,7 @@ void ADroneAIController::dropBomb()
     {
         if(drone->isLoaded())
         {
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
+           // PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
         }
         // Check if there is still living enemy in the drop zone
         TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{
@@ -569,10 +569,10 @@ void ADroneAIController::chooseNextAction()
         drone->displayScore(scoresArray);
     }
 
-    GEngine->AddOnScreenDebugMessage(15, 5.f, FColor::White, "waitScore : " + FString::SanitizeFloat(scoresArray[DRONE_WAITING]));
-    GEngine->AddOnScreenDebugMessage(16, 5.f, FColor::White, "followScore : " + FString::SanitizeFloat(scoresArray[DRONE_MOVING]));
-    GEngine->AddOnScreenDebugMessage(18, 5.f, FColor::White, "attackScore : " + FString::SanitizeFloat(scoresArray[DRONE_COMBAT]));
-    GEngine->AddOnScreenDebugMessage(17, 5.f, FColor::White, "reloadScore : " + FString::SanitizeFloat(scoresArray[DRONE_RECHARGE]));
+    //GEngine->AddOnScreenDebugMessage(15, 5.f, FColor::White, "waitScore : " + FString::SanitizeFloat(scoresArray[DRONE_WAITING]));
+    //GEngine->AddOnScreenDebugMessage(16, 5.f, FColor::White, "followScore : " + FString::SanitizeFloat(scoresArray[DRONE_MOVING]));
+    //GEngine->AddOnScreenDebugMessage(18, 5.f, FColor::White, "attackScore : " + FString::SanitizeFloat(scoresArray[DRONE_COMBAT]));
+    //GEngine->AddOnScreenDebugMessage(17, 5.f, FColor::White, "reloadScore : " + FString::SanitizeFloat(scoresArray[DRONE_RECHARGE]));
 
     float bestScore = -1.f;
 
@@ -906,7 +906,7 @@ void ADroneAIController::processPath()
             }
             m_path.Append(myGraph.processAStar(currentLocId, targetId)); 
             m_path.Emplace(droneLocation);
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
+            //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
             smoothPath();
             debugDrawPath();
@@ -923,7 +923,7 @@ void ADroneAIController::processPath()
                 }
                 m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
                 m_path.Emplace(droneLocation);
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
+                //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
                 smoothPath();
                 debugDrawPath();

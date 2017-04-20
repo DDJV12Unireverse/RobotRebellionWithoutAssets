@@ -41,4 +41,5 @@ void AKingAIController::computeTarget()
     check(droneController);
     
     m_destination = droneController->getAllyBarycenter();
+    m_destination += FVector(100, 100, 100);
 }
