@@ -4,6 +4,7 @@
 #include "BossRobot.h"
 #include "Global/RobotRebellionGameMode.h"
 #include "Global/RobotRebellionGameState.h"
+#include "Global/WorldInstanceEntity.h"
 
 ABossRobot::ABossRobot()
 {
@@ -15,10 +16,11 @@ ABossRobot::ABossRobot()
 void ABossRobot::cppOnDeath()
 {
     UWorld* w = this->GetWorld();
-    ARobotRebellionGameState* gameState = Cast<ARobotRebellionGameState>(w->GetGameState());
-    if(gameState)
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
     {
-        gameState->setBossDead();
+        Cast<AWorldInstanceEntity>(entity[0])->setBossDead();
     }
     Super::cppOnDeath();
 }

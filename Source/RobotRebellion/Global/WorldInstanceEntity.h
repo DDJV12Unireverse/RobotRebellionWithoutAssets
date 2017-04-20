@@ -5,13 +5,34 @@
 #include "GameFramework/Actor.h"
 #include "WorldInstanceEntity.generated.h"
 
+UENUM(BlueprintType)
+enum class ECurrentGameMode : uint8
+{
+    NONE,
+    INTRO,
+    AMBIENT,
+    COMBAT,
+    BOSS,
+    WIN,
+    LOSE,
+    GAME_MODE_COUNT
+};
+
+
 UCLASS()
 class ROBOTREBELLION_API AWorldInstanceEntity : public AActor
 {
 	GENERATED_BODY()
 	
-public:
+private:
+    UPROPERTY(VisibleDefaultsOnly)
+        ECurrentGameMode m_gameMode;
 
+
+    ECurrentGameMode m_previousGameMode;
+
+    bool m_bossIsDead;
+    bool m_gameIsStarted;
 public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Debug Display")
         bool m_showVolumeBox;
@@ -33,6 +54,43 @@ public:
         TSubclassOf<class UAlterationBase> m_shieldDefault;
 
 
+         UPROPERTY(VisibleDefaultsOnly)
+             UAudioComponent* m_introAudioComp;
+     
+         UPROPERTY(VisibleDefaultsOnly)
+             UAudioComponent* m_ambientAudioComp;
+     
+         UPROPERTY(VisibleDefaultsOnly)
+             UAudioComponent* m_combatAudioComp;
+     
+         UPROPERTY(VisibleDefaultsOnly)
+             UAudioComponent* m_bossAudioComp;
+     
+         UPROPERTY(VisibleDefaultsOnly)
+             UAudioComponent* m_winAudioComp;
+     
+         UPROPERTY(VisibleDefaultsOnly)
+             UAudioComponent* m_loseAudioComp;
+     
+         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+             USoundCue* m_introSounds;
+     
+         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+             USoundCue* m_ambientSounds;
+     
+         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+             USoundCue* m_combatSounds;
+     
+         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+             USoundCue* m_bossSounds;
+     
+         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+             USoundCue* m_winSounds;
+     
+         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+             USoundCue* m_loseSounds;
+
+
 	// Sets default values for this actor's properties
 	AWorldInstanceEntity();
 
@@ -41,4 +99,13 @@ public:
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
+
+    void setBossGameMode();
+
+    void setBossDead();
+
+    void setStartGameMode();
+
+    void setupAudioComponents();
+
 };
