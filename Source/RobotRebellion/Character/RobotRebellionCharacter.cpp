@@ -70,7 +70,6 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
         if(m_restoreManaEffectTimer >= m_restoreManaEffectDuration)
         {
             unspawnManaParticle();
-            m_restoreManaEffectTimer = 0.f;
         }
     }
     if(m_isReviveParticleSpawned)
@@ -79,7 +78,6 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
         if(m_reviveEffectTimer >= m_reviveEffectDuration)
         {
             unspawnReviveParticle();
-            m_reviveEffectTimer = 0.f;
         }
     }
 }
@@ -427,6 +425,7 @@ void ARobotRebellionCharacter::unspawnManaParticle()
     m_isRestoreManaParticleSpawned = false;
     if(Role >= ROLE_Authority)
     {
+        m_restoreManaEffectTimer = 0.f;
         multiUnspawnManaParticle();
     }
 }
@@ -454,7 +453,7 @@ void ARobotRebellionCharacter::multiUnspawnManaParticle_Implementation()
 {
     m_restoreManaParticleSystem->DeactivateSystem();
     m_isRestoreManaParticleSpawned = false;
-
+    m_restoreManaEffectTimer = 0.f;
 }
 
 bool ARobotRebellionCharacter::multiUnspawnManaParticle_Validate()
@@ -488,6 +487,7 @@ void ARobotRebellionCharacter::unspawnReviveParticle()
     m_isReviveParticleSpawned = false;
     if(Role >= ROLE_Authority)
     {
+        m_reviveEffectTimer = 0.f;
         multiUnspawnReviveParticle();
     }
 }
@@ -515,6 +515,7 @@ void ARobotRebellionCharacter::multiUnspawnReviveParticle_Implementation()
 {
     m_reviveParticleSystem->DeactivateSystem();
     m_isReviveParticleSpawned = false;
+    m_reviveEffectTimer = 0.f;
 }
 
 bool ARobotRebellionCharacter::multiUnspawnReviveParticle_Validate()
