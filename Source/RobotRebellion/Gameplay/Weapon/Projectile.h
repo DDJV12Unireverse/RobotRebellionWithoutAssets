@@ -62,7 +62,7 @@ public:
             ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
-    void inflictDamageLogic(class AActor* OtherActor, const FHitResult& Hit);
+    virtual void inflictDamageLogic(class AActor* OtherActor, const FHitResult& Hit);
 
     void simulateInstant(const FVector& shootDirection, float distance);
 

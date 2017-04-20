@@ -10,11 +10,11 @@
 class ROBOTREBELLION_API DamageCoefficientLogic
 {
 public:
-    static constexpr const float CRITICAL_EFFECT_MULTIPLICATOR = 3.0f;
+    static constexpr const float CRITICAL_EFFECT_MULTIPLICATOR = 2.0f;
     static constexpr const float SUPER_EFFICIENT_EFFECT_MULTIPLICATOR = 1.5f;
     static constexpr const float MULTIPLE_HIT_EFFECT_MULTIPLICATOR = 0.3f;
     static constexpr const float ENGAGEMENT_EFFECT_MULTIPLICATOR = 1.1f;
-    static constexpr const float BACKSTAB_EFFECT_MULTIPLICATOR = 1.2f;
+    static constexpr const float BACKSTAB_EFFECT_MULTIPLICATOR = 1.5f;
 
     static constexpr const float MIN_COEFFICIENT_VALUE = 0.1f;
 
