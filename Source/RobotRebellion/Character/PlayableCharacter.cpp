@@ -61,7 +61,6 @@ APlayableCharacter::APlayableCharacter()
     CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
     // Slight camera offset to aid with object selection
-    //CameraBoom->SocketOffset = FVector(0, 35, 0);
     CameraBoom->TargetOffset = FVector(0.f, 0.f, STAND_UP_HEIGHT);
 
     // Create a follow camera
@@ -101,6 +100,8 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
+    CameraBoom->SocketOffset = m_mireOffset;
+
     // Set up gameplay key bindings
     check(PlayerInputComponent);
     inputOnLiving(PlayerInputComponent);
