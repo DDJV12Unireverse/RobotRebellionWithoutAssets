@@ -91,6 +91,6 @@ void UThrowSpell::applyEffect(FVector impactPoint)
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on point"));
     for(int i = 0; i < m_effects.Num(); ++i)
     {
-        m_effects[i]->exec(impactPoint);
+        m_effects[i]->exec(impactPoint, Cast<ARobotRebellionCharacter>(GetOwner()));
     }
 }
