@@ -24,7 +24,6 @@ ARobotRebellionGameMode::ARobotRebellionGameMode()
 
 	PrimaryActorTick.bCanEverTick = true;
 
-    //GameStateClass = ARobotRebellionGameState::StaticClass();
 }
 
 void ARobotRebellionGameMode::BeginPlay()

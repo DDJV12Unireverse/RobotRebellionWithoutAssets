@@ -27,7 +27,6 @@
 #include "Tool/UtilitaryMacros.h"
 #include "Global/EntityDataSingleton.h"
 #include "Global/RobotRebellionGameMode.h"
-#include "Global/RobotRebellionGameState.h"
 #include "Global/WorldInstanceEntity.h"
 
 
@@ -741,7 +740,6 @@ void APlayableCharacter::changeInstanceTo(EClassType toType)
 {
     m_spawner->spawnAndReplace(this, toType);
     UWorld* w = this->GetWorld();
-    //ARobotRebellionGameState* gameState = Cast<ARobotRebellionGameState>(w->GetGameState());
     TArray<AActor*> entity;
     UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(),entity);
     if(entity.Num()>0)
