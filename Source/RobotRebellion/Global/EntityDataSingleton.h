@@ -24,11 +24,29 @@ public:
     int8 fill : 6;
 
 
+private:
+    class AKing* m_serverKing;
+    class ADrone* m_serverDrone;
+
 
 public:
     void update(const class UWorld* world);
 
     void clean();
+
+    //Retrieve the king on the server side. Return nullptr if we're on client side. 
+    //Gives an AActor* (i.e this) for the method to check on what side we are...
+    FORCEINLINE class AKing* getServerKing(AActor* askingActor) const
+    {
+        return retrieveIfRoleCorrect(askingActor, m_serverKing);
+    }
+
+    //Retrieve the drone on the server side. Return nullptr if we're on client side. 
+    //Gives an AActor* (i.e this) for the method to check on what side we are...
+    FORCEINLINE class ADrone* getServerDrone(AActor* askingActor) const
+    {
+        return retrieveIfRoleCorrect(askingActor, m_serverDrone);
+    }
 
 
 private:
@@ -56,5 +74,16 @@ private:
             return true;
         }
         return false;
+    }
+
+    template<class AskedClass>
+    AskedClass* retrieveIfRoleCorrect(AActor* askingActor, AskedClass* toSend) const
+    {
+        if(askingActor->GetRootComponent()->GetOwnerRole() >= ROLE_Authority)
+        {
+            return toSend;
+        }
+
+        return nullptr;
     }
 };

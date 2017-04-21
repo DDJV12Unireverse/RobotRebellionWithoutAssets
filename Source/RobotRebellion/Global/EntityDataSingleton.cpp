@@ -35,6 +35,18 @@ void EntityDataSingleton::update(const UWorld* world)
             if(!updateType(current, m_king))
             {
                 updateType(current, m_drone);
+
+                if(m_drone->Role >= ROLE_Authority)
+                {
+                    m_serverDrone = m_drone;
+                }
+            }
+            else
+            {
+                if (m_king->Role >= ROLE_Authority)
+                {
+                    m_serverKing = m_king;
+                }
             }
         }
     }
