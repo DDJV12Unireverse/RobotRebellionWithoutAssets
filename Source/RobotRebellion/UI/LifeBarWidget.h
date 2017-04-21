@@ -13,7 +13,8 @@ class ROBOTREBELLION_API ULifeBarWidget : public URobotRebellionWidget
 {
 	GENERATED_BODY()
 	
-	
-	
+public:
+        UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        void getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const;
 	
 };
