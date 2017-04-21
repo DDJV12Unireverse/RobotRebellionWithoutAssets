@@ -4,11 +4,6 @@
 #include "GameInstaller.h"
 #include "RobotRebellionGameMode.generated.h"
 
-enum e_currentGameMode
-{
-
-};
-
 
 UCLASS(minimalapi)
 class ARobotRebellionGameMode : public AGameModeBase
