@@ -121,6 +121,33 @@ void ULivingTextRenderComponent::updateBoingBoing(float deltaTime)
     }
 }
 
+void ULivingTextRenderComponent::updateBoingBiggerText(float deltaTime)
+{
+    if(IsPendingKillOrUnreachable())
+    {
+        return;
+    }
+
+    m_currentTime += deltaTime;
+
+    if(!this->isAtEndOfLife())
+    {
+        m_savedBeginPosition.Z += m_zTranslationSpeed * deltaTime;
+        this->SetWorldLocation(m_savedBeginPosition);
+
+        float animationTransfertMethod = m_currentTime * PI_MUL_3 / m_lifeTime; //normalized time over 6 PI
+        animationTransfertMethod = FMath::Abs(FMath::Sin(animationTransfertMethod)) + 0.5f; //result will be between 0.3f and 1.3f
+        //this->SetRelativeScale3D({ this->RelativeScale3D.X, animationTransfertMethod, animationTransfertMethod });
+
+        this->SetXScale(animationTransfertMethod);
+        this->SetYScale(animationTransfertMethod);
+    }
+    else
+    {
+        this->destroyLivingText();
+    }
+}
+
 void ULivingTextRenderComponent::copyFrom(const ULivingTextRenderComponent& objectToCopyFrom)
 {
     m_lifeTime = objectToCopyFrom.m_lifeTime;
@@ -137,7 +164,8 @@ void ULivingTextRenderComponent::setDelegateAccordingToAnimMode(ELivingTextAnimM
         &ULivingTextRenderComponent::doesNothing,
         &ULivingTextRenderComponent::updateEverything,
         &ULivingTextRenderComponent::updateWithoutMoving,
-        &ULivingTextRenderComponent::updateBoingBoing
+        &ULivingTextRenderComponent::updateBoingBoing,
+        &ULivingTextRenderComponent::updateBoingBiggerText
     };
 
     this->m_updateMethod = delegateArrayMapperLookUpTable[static_cast<uint8>(mode)];

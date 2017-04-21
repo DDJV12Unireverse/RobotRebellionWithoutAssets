@@ -41,6 +41,11 @@ public:
         USoundCue* m_longRangeWeaponFireSound;
 
     /************************************************************************/
+    /*                  PROPERTY                                            */
+    /************************************************************************/
+
+
+    /************************************************************************/
     /*                  UFUNCTION                                           */
     /************************************************************************/
     UFUNCTION(BlueprintCallable, Category = "General")
@@ -49,9 +54,14 @@ public:
         return EWeaponRange::LONG_RANGE_WEAPON;
     }
 
+    UFUNCTION(NetMulticast, Reliable)
+        virtual void playSound(USoundCue* sound, AActor* originator) override;
+
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
+
+    ULongRangeWeapon();
 
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
     
@@ -59,8 +69,5 @@ public:
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
 
-    ULongRangeWeapon();
-
-    UFUNCTION(NetMulticast, Reliable)
-        virtual void playSound(USoundCue* sound, AActor* originator) override;
+    void fireMethod(class AProjectile* projectile, const FVector& fireDirection);
 };

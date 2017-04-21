@@ -75,6 +75,8 @@ protected:
 
     void updateBoingBoing(float deltaTime);
 
+    void updateBoingBiggerText(float deltaTime);
+
 
     void setDelegateAccordingToAnimMode(ELivingTextAnimMode mode);
 
