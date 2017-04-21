@@ -9,7 +9,10 @@
 
 AKingActivateTriggerBox::AKingActivateTriggerBox()
 {
-    GetCollisionComponent()->OnComponentHit.AddDynamic(this, &AKingActivateTriggerBox::onHit);
+    UShapeComponent* collisionComponent = GetCollisionComponent();
+    collisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
+    collisionComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+    collisionComponent->OnComponentHit.AddDynamic(this, &AKingActivateTriggerBox::onHit);
 }
 
 void AKingActivateTriggerBox::BeginPlay()
@@ -21,11 +24,12 @@ void AKingActivateTriggerBox::onHit(UPrimitiveComponent* var1, AActor* var2, UPr
 {
     AKingAIController* kingController = Cast<AKingAIController>(EntityDataSingleton::getInstance().m_king->GetController());
 
-    check(kingController);
+    if(kingController)
+    {
+        kingController->activate(true);
 
-    kingController->activate(true);
-
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "COLLISION, KING ACTIVATED");
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "COLLISION, KING ACTIVATED");
+    }
 
     this->killItself();
 }

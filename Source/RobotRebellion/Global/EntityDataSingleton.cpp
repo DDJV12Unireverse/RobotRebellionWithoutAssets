@@ -39,3 +39,12 @@ void EntityDataSingleton::update(const UWorld* world)
         }
     }
 }
+
+void EntityDataSingleton::clean()
+{
+    m_playableCharacterArray.Reset();
+    m_robotArray.Reset();
+
+    m_king = nullptr;
+    m_drone = nullptr;
+}

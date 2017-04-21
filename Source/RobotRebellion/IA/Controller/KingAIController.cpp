@@ -4,6 +4,7 @@
 #include "KingAIController.h"
 #include "Global/EntityDataSingleton.h"
 #include "DroneAIController.h"
+#include "Tool/UtilitaryFunctionLibrary.h"
 
 
 void AKingAIController::BeginPlay()
@@ -38,7 +39,12 @@ void AKingAIController::computeTarget()
 
     ADroneAIController* droneController = Cast<ADroneAIController>(datas.m_drone->GetController());
 
-    check(droneController);
-    
-    m_destination = droneController->getAllyBarycenter();
+    if(droneController)
+    {
+        m_destination = droneController->getAllyBarycenter();
+    }
+    else
+    {
+        m_destination = UUtilitaryFunctionLibrary::getBarycenter(datas.m_playableCharacterArray);
+    }
 }

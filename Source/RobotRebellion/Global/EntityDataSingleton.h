@@ -28,6 +28,8 @@ public:
 public:
     void update(const class UWorld* world);
 
+    void clean();
+
 
 private:
     template<class Base, class GenericType>
@@ -39,6 +41,8 @@ private:
             typeToUpdate = temp;
             return true;
         }
+
+        typeToUpdate = nullptr;
         return false;
     }
 
