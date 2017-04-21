@@ -97,6 +97,11 @@ public:
 
     void updateIfInCombat();
 
+    virtual FVector aim(const FVector& directionToShoot) const
+    {
+        return directionToShoot;
+    }
+
 
 protected:
     FORCEINLINE void noDestroyForNow(float deltaTime)
@@ -167,7 +172,7 @@ public:
     GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
 
     UFUNCTION()
-        void inflictDamage(float damage, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING);
+        void inflictDamage(float damage, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING, const FColor& damageColor = FColor::Red);
 
     UFUNCTION()
         void restoreHealth(float value, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING);

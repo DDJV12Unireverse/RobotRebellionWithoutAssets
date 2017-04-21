@@ -201,4 +201,19 @@ public:
     {
         return static_cast<ReturnType>(FMath::Rand()) * coeff;
     }
+
+    static FORCEINLINE void drawObligatoryPersistentLineInWorld(
+        UWorld* world, 
+        const FVector& start, 
+        const FVector& end, 
+        const FColor& color, 
+        float thickness, 
+        float duration
+    )
+    {
+        if(world->PersistentLineBatcher)
+        {
+            world->PersistentLineBatcher->DrawLine(start, end, color, SDPG_Foreground, thickness, duration);
+        }
+    }
 };

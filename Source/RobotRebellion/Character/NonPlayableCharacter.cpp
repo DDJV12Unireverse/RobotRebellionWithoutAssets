@@ -6,6 +6,7 @@
 #include "UI/TextBillboardComponent.h"
 #include "IA/Controller/CustomAIControllerBase.h"
 
+
 ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 {
     // fill it
@@ -48,4 +49,18 @@ void ANonPlayableCharacter::serverDropLoot_Implementation()
 bool ANonPlayableCharacter::serverDropLoot_Validate()
 {
     return true;
+}
+
+FVector ANonPlayableCharacter::aim(const FVector& directionToShoot) const
+{                                                                                                        
+    FVector result = directionToShoot;
+
+    ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(Controller);
+
+    //No ACustomAIControllerBase. Please attach one in BP if you want to fire
+    check(controller);
+
+    controller->aim(result);
+
+    return result;
 }

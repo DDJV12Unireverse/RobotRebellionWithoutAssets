@@ -354,10 +354,10 @@ bool ARobotRebellionCharacter::isVisible()
     return false;
 }
 
-void ARobotRebellionCharacter::inflictDamage(float damage, ELivingTextAnimMode animType)
+void ARobotRebellionCharacter::inflictDamage(float damage, ELivingTextAnimMode animType, const FColor& damageColor)
 {
     m_attribute->inflictDamage(damage);
-    displayAnimatedIntegerValue(damage, FColor::Red, animType);
+    displayAnimatedIntegerValue(damage, damageColor, animType);
 
     if(isDead())
     {
