@@ -1,0 +1,55 @@
+# 3ds Max Wavefront OBJ Exporter v0.94b - (c)2007 guruware
+# File Created: 15.07.2013 17:19:32
+
+newmtl Material__26
+	Ns 29.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.4410 0.4410 0.4410
+	Ke 0.0000 0.0000 0.0000
+	map_Ka maps\MK3A2 Container Skin.jpg
+	map_Kd maps\MK3A2 Container Skin.jpg
+	map_Ks maps\MK3A2 Container Bump Skin.jpg
+	map_bump maps\MK3A2 Container Bump Skin.jpg
+	bump maps\MK3A2 Container Bump Skin.jpg
+
+newmtl Material__30
+	Ns 54.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5098 0.4235 0.2902
+	Ks 0.9000 0.9000 0.9000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Material__29
+	Ns 41.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5412 0.6196 0.6157
+	Ks 0.9000 0.9000 0.9000
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Hook
+	Ns 41.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 1.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.3020 0.3922 0.4078
+	Ks 0.9000 0.9000 0.9000
+	Ke 0.0000 0.0000 0.0000

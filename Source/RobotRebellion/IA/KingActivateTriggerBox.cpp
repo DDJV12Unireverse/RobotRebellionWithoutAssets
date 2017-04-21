@@ -21,7 +21,7 @@ void AKingActivateTriggerBox::onHit(UPrimitiveComponent* var1, AActor* var2, UPr
 {
     AKingAIController* kingController = Cast<AKingAIController>(EntityDataSingleton::getInstance().m_king->GetController());
 
-    ensure(kingController);
+    check(kingController);
 
     kingController->activate(true);
 

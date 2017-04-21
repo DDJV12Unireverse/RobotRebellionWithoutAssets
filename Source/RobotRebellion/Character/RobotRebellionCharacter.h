@@ -21,7 +21,7 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
         float m_moveSpeed;
 
-     ////Weapon Inventory/////
+    ////Weapon Inventory/////
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
         class UWeaponInventory* m_weaponInventory;
 
@@ -45,6 +45,57 @@ protected:
 
 
     bool m_isInvisible;
+
+    ////RESTORE MANA EFFECT
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RestoreMana)
+        UParticleSystem* m_restoreManaParticuleEffect;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RestoreMana)
+        float m_restoreManaEffectDuration;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RestoreMana)
+        UParticleSystemComponent* m_restoreManaParticleSystem;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RestoreMana)
+        bool m_isRestoreManaParticleSpawned;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RestoreMana)
+        float m_restoreManaEffectTimer;
+
+
+    ////REVIVE EFFECT
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Revive)
+        UParticleSystem* m_reviveParticuleEffect;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Revive)
+        float m_reviveEffectDuration;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Revive)
+        UParticleSystemComponent* m_reviveParticleSystem;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Revive)
+        bool m_isReviveParticleSpawned;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Revive)
+        float m_reviveEffectTimer;
+
+
+
+    ////SHIELD EFFECT
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        UParticleSystem* m_shieldParticuleEffect;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        float m_shieldEffectDuration;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        UParticleSystemComponent* m_shieldParticleSystem;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        bool m_isShieldParticleSpawned;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
+        float m_shieldEffectTimer;
 
 
 
@@ -73,7 +124,7 @@ public:
     virtual void Tick(float deltaTime) override;
 
 
-   ////Server
+    ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 
@@ -88,10 +139,11 @@ public:
     void inflictStun(float duration);
 
     void inflictInvisibility();
-    
+
     void addShield(float amount, float duration);
 
-    void doesNothing() {}
+    void doesNothing()
+    {}
 
     UTextBillboardComponent* getBillboardComponent();
 
@@ -167,7 +219,7 @@ public:
     }
 
 
-// Attributs relatives functions added by macro
+    // Attributs relatives functions added by macro
 public:
     GENERATED_USING_AND_METHODS_FROM_Attributes(m_attribute, ->);
 
@@ -179,5 +231,51 @@ public:
 
     UFUNCTION()
         void restoreMana(float value, ELivingTextAnimMode animType = ELivingTextAnimMode::TEXT_ANIM_MOVING);
+
+
+    ////Restore Mana Effect
+    UFUNCTION()
+        void spawnManaParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSpawnManaParticle();
+
+
+    UFUNCTION()
+        void unspawnManaParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiUnspawnManaParticle();
+
+
+    ////Revive Effect
+
+    UFUNCTION()
+        void spawnReviveParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSpawnReviveParticle();
+
+
+    UFUNCTION()
+        void unspawnReviveParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiUnspawnReviveParticle();
+
+
+    ////Shield Effect
+
+    UFUNCTION()
+        void spawnShieldParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSpawnShieldParticle();
+
+    UFUNCTION()
+        void unspawnShieldParticle();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiUnspawnShieldParticle();
 };
 

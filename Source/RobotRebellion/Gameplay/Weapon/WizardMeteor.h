@@ -27,6 +27,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion Properties")
         float m_explosionRadius;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion Effect")
+        UParticleSystem* m_explosionEffect;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Explosion Effect")
+        UParticleSystemComponent* m_explosionEffectComp;
+
 public:	
 	// Sets default values for this actor's properties
 	AWizardMeteor();
@@ -41,10 +47,14 @@ public:
     void setCaster(ARobotRebellionCharacter* p);
 
     // Replication method
-    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+   // void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 private:
     // Inflict damage then destroye it self
     void explode();
 	
+    void spawnEffect();
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+        void multiSpawnEffect(FVector location);
 };

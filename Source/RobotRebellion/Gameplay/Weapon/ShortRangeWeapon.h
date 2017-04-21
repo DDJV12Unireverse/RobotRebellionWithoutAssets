@@ -35,16 +35,20 @@ public:
     /************************************************************************/
 
     UShortRangeWeapon();
+
+
     /************************************************************************/
     /*                  UFUNCTION                                           */
     /************************************************************************/
-
-
     UFUNCTION(BlueprintCallable, Category = "General")
         virtual EWeaponRange getWeaponRange() const USE_NOEXCEPT override
     {
         return EWeaponRange::SHORT_RANGE_WEAPON;
     }
+
+    UFUNCTION(NetMulticast, Reliable)
+        virtual void playSound(USoundCue* sound, AActor* originator) override;
+
 
     /************************************************************************/
     /*                  METHODS                                             */
@@ -54,8 +58,7 @@ public:
 
     //virtual void playSound(ARobotRebellionCharacter* user) override;
 
-    UFUNCTION(NetMulticast, Reliable)
-        virtual void playSound(USoundCue* sound, AActor* originator) override;
-
     virtual FString rangeToFString() const USE_NOEXCEPT;
+
+    virtual void inflictDamageLogic(ARobotRebellionCharacter* receiver, const FHitResult& hit);
 };

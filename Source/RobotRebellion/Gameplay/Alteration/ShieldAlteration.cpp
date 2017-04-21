@@ -16,6 +16,7 @@ UShieldAlteration::UShieldAlteration() :
 void UShieldAlteration::destroyItself()
 {
     m_alteredOwner->getAttributes()->removeShield(m_amount);
+    m_alteredOwner->unspawnShieldParticle();
 
     this->DestroyComponent();
 }
@@ -23,7 +24,7 @@ void UShieldAlteration::destroyItself()
 void UShieldAlteration::onCreate(ARobotRebellionCharacter* alteredOwner)
 {
     m_alteredOwner = alteredOwner;
-
+    m_alteredOwner->spawnShieldParticle();
     alteredOwner->getAttributes()->addShield(m_amount);
 }
 

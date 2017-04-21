@@ -78,19 +78,7 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                     ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(hit.GetActor());
                     if(receiver && exReceiver != &receiver && !receiver->isDead())
                     {
-                        if(!receiver->isImmortal())
-                        {
-                            DamageCoefficientLogic coeff;
-
-                            Damage damage{Cast<ARobotRebellionCharacter>(m_owner), receiver};
-                            Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
-
-                            receiver->inflictDamage(damageValue);
-                        }
-                        //else             // COMMENTED FOR CHEAT CODE
-                        //{
-                        //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-                        //}
+                        this->inflictDamageLogic(receiver, hit);
 
                         exReceiver = &receiver;
                     }
@@ -109,6 +97,28 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     else
     {
         PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack! Let me breath!");
+    }
+}
+
+void UShortRangeWeapon::inflictDamageLogic(ARobotRebellionCharacter* receiver, const FHitResult& hit)
+{
+    if(!receiver->isImmortal())
+    {
+        DamageCoefficientLogic coeff;
+
+        FVector ownerToReceiver = receiver->GetActorLocation() - m_owner->GetActorLocation();
+        ownerToReceiver.Normalize();
+
+        if(FVector::DotProduct(ownerToReceiver, receiver->GetActorForwardVector()) > 0.25f)
+        {
+            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "BackStab");
+            coeff.backstab();
+        }
+
+        Damage damage{ Cast<ARobotRebellionCharacter>(m_owner), receiver };
+        Damage::DamageValue damageValue = damage(&UGlobalDamageMethod::normalHitWithWeaponComputed, coeff.getCoefficientValue());
+
+        receiver->inflictDamage(damageValue);
     }
 }
 

@@ -24,6 +24,7 @@ void UReviveEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharac
     if(playableCaster && playableTarget)
     {
         playableCaster->cppPreRevive(playableTarget);
+        playableTarget->spawnReviveParticle();
     }
 }
 

@@ -158,15 +158,6 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
                 coeff.engagementHit();
             }
 
-            FVector ownerToReceiver = receiver->GetActorLocation() - m_owner->GetActorLocation();
-            ownerToReceiver.Normalize();
-
-            if (FVector::DotProduct(ownerToReceiver, otherActor->GetActorForwardVector()) > 0.25f)
-            {
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "BackStab");
-                coeff.backstab();
-            }
-
             Damage damage{ m_owner, receiver };
 
             Damage::DamageValue currentDamage = damage(
