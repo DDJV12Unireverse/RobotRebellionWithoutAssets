@@ -102,10 +102,30 @@ public:
 
     void setBossGameMode();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSetBossGameMode();
+
+    UFUNCTION(Reliable, NetMulticast)
+        void multiSetBossGameMode();
+    
     void setBossDead();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSetBossDead();
+    UFUNCTION(Reliable, NetMulticast)
+        void multiSetBossDead();
 
     void setStartGameMode();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSetStartGameMode();
+    UFUNCTION(Reliable, NetMulticast)
+        void multiSetStartGameMode();
+
     void setupAudioComponents();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSetupAudioComponents();
+    UFUNCTION(Reliable, NetMulticast)
+        void multiSetupAudioComponents();
 };
