@@ -65,7 +65,7 @@ void USphereCastSpell::cast()
                                                                        ObjectTypes,
                                                                        false,
                                                                        ActorsToIgnore,
-                                                                       EDrawDebugTrace::ForDuration,
+                                                                       EDrawDebugTrace::None,
                                                                        hitActors,
                                                                        true);
 
