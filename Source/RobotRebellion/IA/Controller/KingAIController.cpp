@@ -4,6 +4,8 @@
 #include "KingAIController.h"
 #include "Global/EntityDataSingleton.h"
 #include "DroneAIController.h"
+#include "Tool/UtilitaryFunctionLibrary.h"
+#include "Character/Drone.h"
 
 
 void AKingAIController::BeginPlay()
@@ -34,11 +36,18 @@ EPathFollowingRequestResult::Type AKingAIController::MoveToTarget()
 
 void AKingAIController::computeTarget()
 {
-    EntityDataSingleton& datas = EntityDataSingleton::getInstance();
+    ADrone* drone = EntityDataSingleton::getInstance().getServerDrone(this);
 
-    ADroneAIController* droneController = Cast<ADroneAIController>(datas.m_drone->GetController());
+    //always good. Never nullptr because AKingAIController only lives on server side.
+    if (drone)
+    {
+        ADroneAIController* droneController = Cast<ADroneAIController>(drone->GetController());
 
-    check(droneController);
-    
-    m_destination = droneController->getAllyBarycenter();
+        check(droneController);
+
+        if(FVector::DistSquared(m_destination, droneController->getAllyBarycenter()) > m_minimaleDistanceToMove)
+        {
+            m_destination = droneController->getAllyBarycenter();
+        }
+    }
 }
