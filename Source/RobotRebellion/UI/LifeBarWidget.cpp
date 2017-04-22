@@ -7,13 +7,11 @@
 
 void ULifeBarWidget::getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const
 {
-    ARobotRebellionCharacter* character = Cast<ARobotRebellionCharacter>(this->GetOwningPlayerPawn());
-
-    if(character)
+    if(m_owner)
     {
-        health = character->getHealth();
-        shield = character->getShield();
-        maxHealth = character->getMaxHealth();
+        health = m_owner->getHealth();
+        shield = m_owner->getShield();
+        maxHealth = m_owner->getMaxHealth();
         ratio = health / maxHealth;
         ratioShield = (health + shield) / maxHealth;
     }

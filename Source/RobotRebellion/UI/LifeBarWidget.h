@@ -3,6 +3,7 @@
 #pragma once
 
 #include "UI/RobotRebellionWidget.h"
+#include "Character/RobotRebellionCharacter.h"
 #include "LifeBarWidget.generated.h"
 
 /**
@@ -14,7 +15,13 @@ class ROBOTREBELLION_API ULifeBarWidget : public URobotRebellionWidget
 	GENERATED_BODY()
 	
 public:
+        ARobotRebellionCharacter* m_owner;
         UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         void getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const;
+
+        void setOwner(ARobotRebellionCharacter* character)
+        {
+            m_owner = character;
+        }
 	
 };

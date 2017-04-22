@@ -22,6 +22,7 @@
 
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "WidgetComponent.h"
+#include "UI/LifeBarWidget.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -49,6 +50,14 @@ void ARobotRebellionCharacter::BeginPlay()
     m_isReviveParticleSpawned = false;
     m_isShieldParticleSpawned = false;
     m_healthBar = Cast<UWidgetComponent>(GetComponentByClass(UWidgetComponent::StaticClass()));
+    if (m_healthBar)
+    {
+        ULifeBarWidget* widget = Cast<ULifeBarWidget>(m_healthBar->GetUserWidgetObject());
+        if (widget)
+        {
+            widget->setOwner(this);
+        }
+    }
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)
