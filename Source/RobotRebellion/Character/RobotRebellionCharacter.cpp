@@ -149,6 +149,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
+    DOREPLIFETIME(ARobotRebellionCharacter, m_isInCombat);
 }
 
 UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT

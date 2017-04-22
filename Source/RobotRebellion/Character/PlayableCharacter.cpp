@@ -3,9 +3,6 @@
 #include "RobotRebellion.h"
 #include "PlayableCharacter.h"
 
-
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
-
 #include "Gameplay/Damage/Damage.h"
 #include "Global/GlobalDamageMethod.h"
 #include "UI/GameMenu.h"
@@ -26,6 +23,9 @@
 
 #include "Tool/UtilitaryMacros.h"
 #include "Global/EntityDataSingleton.h"
+#include "Global/WorldInstanceEntity.h"
+
+#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -737,6 +737,13 @@ FString APlayableCharacter::typeToString() const USE_NOEXCEPT
 void APlayableCharacter::changeInstanceTo(EClassType toType)
 {
     m_spawner->spawnAndReplace(this, toType);
+    UWorld* w = this->GetWorld();
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(),entity);
+    if(entity.Num()>0)
+    {
+        Cast<AWorldInstanceEntity>(entity[0])->setStartGameMode();
+    }
 }
 
 void APlayableCharacter::changeToAssassin()
