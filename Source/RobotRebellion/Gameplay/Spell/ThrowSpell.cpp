@@ -63,7 +63,7 @@ void UThrowSpell::cast()
 
 void UThrowSpell::onHit(UPrimitiveComponent*, AActor* target, UPrimitiveComponent*, FVector, const FHitResult& hitResult)
 {
-    if(m_isTargetThrow)
+    if(m_isTargetThrow && target != this->GetOwner())
     {
         ARobotRebellionCharacter* hitChar = Cast<ARobotRebellionCharacter>(target);
         if(hitChar)
@@ -91,6 +91,6 @@ void UThrowSpell::applyEffect(FVector impactPoint)
     PRINT_MESSAGE_ON_SCREEN(FColor::Emerald, TEXT("ApplicateEffect on point"));
     for(int i = 0; i < m_effects.Num(); ++i)
     {
-        m_effects[i]->exec(impactPoint);
+        m_effects[i]->exec(impactPoint, Cast<ARobotRebellionCharacter>(GetOwner()));
     }
 }

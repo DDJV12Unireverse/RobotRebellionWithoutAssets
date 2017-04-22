@@ -58,7 +58,7 @@ FVector ANonPlayableCharacter::aim(const FVector& directionToShoot) const
     ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(Controller);
 
     //No ACustomAIControllerBase. Please attach one in BP if you want to fire
-    ensure(controller);
+    check(controller);
 
     controller->aim(result);
 

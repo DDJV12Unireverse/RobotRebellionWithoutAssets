@@ -38,7 +38,7 @@ void AKingAIController::computeTarget()
 
     ADroneAIController* droneController = Cast<ADroneAIController>(datas.m_drone->GetController());
 
-    ensure(droneController);
+    check(droneController);
     
     m_destination = droneController->getAllyBarycenter();
 }

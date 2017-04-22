@@ -50,7 +50,7 @@ void UDamageEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* c
         ObjectTypes,
         false,
         ActorsToIgnore,
-        SPHERECAST_DISPLAY_NONE,
+        SPHERECAST_DISPLAY_DURATION,
         OutHits,
         true
     ))

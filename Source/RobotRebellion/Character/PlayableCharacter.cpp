@@ -3,9 +3,6 @@
 #include "RobotRebellion.h"
 #include "PlayableCharacter.h"
 
-
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
-
 #include "Gameplay/Damage/Damage.h"
 #include "Global/GlobalDamageMethod.h"
 #include "UI/GameMenu.h"
@@ -27,6 +24,8 @@
 #include "Tool/UtilitaryMacros.h"
 #include "Global/EntityDataSingleton.h"
 #include "Global/WorldInstanceEntity.h"
+
+#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -62,7 +61,6 @@ APlayableCharacter::APlayableCharacter()
     CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
     // Slight camera offset to aid with object selection
-    //CameraBoom->SocketOffset = FVector(0, 35, 0);
     CameraBoom->TargetOffset = FVector(0.f, 0.f, STAND_UP_HEIGHT);
 
     // Create a follow camera
@@ -102,6 +100,8 @@ APlayableCharacter::APlayableCharacter()
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
+    CameraBoom->SocketOffset = m_mireOffset;
+
     // Set up gameplay key bindings
     check(PlayerInputComponent);
     inputOnLiving(PlayerInputComponent);
@@ -738,7 +738,6 @@ void APlayableCharacter::changeInstanceTo(EClassType toType)
 {
     m_spawner->spawnAndReplace(this, toType);
     UWorld* w = this->GetWorld();
-    //ARobotRebellionGameState* gameState = Cast<ARobotRebellionGameState>(w->GetGameState());
     TArray<AActor*> entity;
     UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(),entity);
     if(entity.Num()>0)

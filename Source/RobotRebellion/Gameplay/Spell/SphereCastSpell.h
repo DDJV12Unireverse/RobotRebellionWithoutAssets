@@ -22,6 +22,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SphereCastSpell)
         float m_sphereRadius;
 
+    /** acctor spawnable for effect visual*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = VisualEffect)
+        TSubclassOf<AActor> m_effectActor;
+    /** specifie if the effect must be moved away from the caster*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = VisualEffect)
+        float m_offset;
+    /** specifie if the effect must be moved away from the caster*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = VisualEffect)
+        bool m_useEffect;
+
 public:
     USphereCastSpell();
 
