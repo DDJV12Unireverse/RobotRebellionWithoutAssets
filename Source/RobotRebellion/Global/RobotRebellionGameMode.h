@@ -4,18 +4,23 @@
 #include "GameInstaller.h"
 #include "RobotRebellionGameMode.generated.h"
 
+
 UCLASS(minimalapi)
 class ARobotRebellionGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 
+		
 public:
+
 	ARobotRebellionGameMode();
 
     virtual void BeginPlay() override;
 
     virtual void Tick(float deltaTime) override;
+
+	
 };
 
 

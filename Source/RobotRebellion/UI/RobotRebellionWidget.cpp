@@ -43,7 +43,7 @@ void URobotRebellionWidget::startSound()
 void URobotRebellionWidget::endSound()
 {
     // Stop loop
-    if(m_loopAudioComp->IsPlaying())
+    if(m_loopAudioComp && m_loopAudioComp->IsPlaying())
     {
         m_loopAudioComp->Stop();
     }
@@ -51,7 +51,7 @@ void URobotRebellionWidget::endSound()
     // Closing sound
     UGameplayStatics::SpawnSoundAttached(m_widgetCloseSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
 
-    if(m_stopAmbiantSound)
+    if(m_loopAudioComp && m_stopAmbiantSound)
     {
         if(GEngine)
         {
@@ -59,7 +59,7 @@ void URobotRebellionWidget::endSound()
             for(auto sound : sounds)
             {
                 UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
-                if(audioComp)
+                if(audioComp && m_loopAudioComp)
                 {
                     if(audioComp->GetAudioComponentID() != m_loopAudioComp->GetAudioComponentID())
                     {
