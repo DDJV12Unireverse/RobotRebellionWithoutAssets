@@ -45,6 +45,9 @@ void AKingAIController::computeTarget()
 
         check(droneController);
 
-        m_destination = droneController->getAllyBarycenter();
+        if(FVector::DistSquared(m_destination, droneController->getAllyBarycenter()) > m_minimaleDistanceToMove)
+        {
+            m_destination = droneController->getAllyBarycenter();
+        }
     }
 }
