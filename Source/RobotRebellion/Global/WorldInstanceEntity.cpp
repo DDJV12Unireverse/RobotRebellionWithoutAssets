@@ -14,8 +14,6 @@ AWorldInstanceEntity::AWorldInstanceEntity()
     m_previousGameMode = ECurrentGameMode::NONE;
     m_bossIsDead = false;
     m_gameIsStarted = false;
-    PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -43,9 +41,9 @@ void AWorldInstanceEntity::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    EntityDataSingleton::getInstance().update(this->GetWorld());
-
     EntityDataSingleton& data = EntityDataSingleton::getInstance();
+
+    data.update(this->GetWorld());
 
     bool playerInCombat = false;
     //UWorld* w = this->GetWorld();
@@ -57,6 +55,7 @@ void AWorldInstanceEntity::Tick(float DeltaTime)
         if(playableCharacter->m_isInCombat)
         {
             playerInCombat = true;
+            break;
         }
     }
     if(playerInCombat && m_gameMode != ECurrentGameMode::BOSS)
@@ -198,36 +197,7 @@ void AWorldInstanceEntity::setupAudioComponents()
         //return;
     }
 
-    if(m_introSounds && !m_introAudioComp)
-    {
-        m_introAudioComp = NewObject<UAudioComponent>(this);
-        m_introAudioComp->SetSound(m_introSounds);
-    }
-    if(m_ambientSounds && !m_ambientAudioComp)
-    {
-        m_ambientAudioComp = NewObject<UAudioComponent>(this);
-        m_ambientAudioComp->SetSound(m_ambientSounds);
-    }
-    if(m_combatSounds && !m_combatAudioComp)
-    {
-        m_combatAudioComp = NewObject<UAudioComponent>(this);
-        m_combatAudioComp->SetSound(m_combatSounds);
-    }
-    if(m_bossSounds && !m_bossAudioComp)
-    {
-        m_bossAudioComp = NewObject<UAudioComponent>(this);
-        m_bossAudioComp->SetSound(m_bossSounds);
-    }
-    if(m_winSounds && !m_winAudioComp)
-    {
-        m_winAudioComp = NewObject<UAudioComponent>(this);
-        m_winAudioComp->SetSound(m_winSounds);
-    }
-    if(m_loseSounds && !m_loseAudioComp)
-    {
-        m_loseAudioComp = NewObject<UAudioComponent>(this);
-        m_loseAudioComp->SetSound(m_loseSounds);
-    }
+    this->internalSetupAudioComponents();
 
     if(Role >= ROLE_Authority)
     {
@@ -246,6 +216,11 @@ bool AWorldInstanceEntity::serverSetupAudioComponents_Validate()
 }
 
 void AWorldInstanceEntity::multiSetupAudioComponents_Implementation()
+{
+    this->internalSetupAudioComponents();
+}
+
+void AWorldInstanceEntity::internalSetupAudioComponents()
 {
     if(m_introSounds && !m_introAudioComp)
     {

@@ -26,8 +26,6 @@
 
 #include "Tool/UtilitaryMacros.h"
 #include "Global/EntityDataSingleton.h"
-#include "Global/RobotRebellionGameMode.h"
-#include "Global/RobotRebellionGameState.h"
 #include "Global/WorldInstanceEntity.h"
 
 

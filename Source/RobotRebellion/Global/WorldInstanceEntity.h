@@ -22,8 +22,8 @@ enum class ECurrentGameMode : uint8
 UCLASS()
 class ROBOTREBELLION_API AWorldInstanceEntity : public AActor
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 private:
     UPROPERTY(VisibleDefaultsOnly)
         ECurrentGameMode m_gameMode;
@@ -54,51 +54,51 @@ public:
         TSubclassOf<class UAlterationBase> m_shieldDefault;
 
 
-         UPROPERTY(VisibleDefaultsOnly)
-             UAudioComponent* m_introAudioComp;
-     
-         UPROPERTY(VisibleDefaultsOnly)
-             UAudioComponent* m_ambientAudioComp;
-     
-         UPROPERTY(VisibleDefaultsOnly)
-             UAudioComponent* m_combatAudioComp;
-     
-         UPROPERTY(VisibleDefaultsOnly)
-             UAudioComponent* m_bossAudioComp;
-     
-         UPROPERTY(VisibleDefaultsOnly)
-             UAudioComponent* m_winAudioComp;
-     
-         UPROPERTY(VisibleDefaultsOnly)
-             UAudioComponent* m_loseAudioComp;
-     
-         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
-             USoundCue* m_introSounds;
-     
-         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
-             USoundCue* m_ambientSounds;
-     
-         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
-             USoundCue* m_combatSounds;
-     
-         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
-             USoundCue* m_bossSounds;
-     
-         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
-             USoundCue* m_winSounds;
-     
-         UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
-             USoundCue* m_loseSounds;
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_introAudioComp;
+
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_ambientAudioComp;
+
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_combatAudioComp;
+
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_bossAudioComp;
+
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_winAudioComp;
+
+    UPROPERTY(VisibleDefaultsOnly)
+        UAudioComponent* m_loseAudioComp;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_introSounds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_ambientSounds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_combatSounds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_bossSounds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_winSounds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Soundcues")
+        USoundCue* m_loseSounds;
 
 
-	// Sets default values for this actor's properties
-	AWorldInstanceEntity();
+// Sets default values for this actor's properties
+    AWorldInstanceEntity();
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
+
+    // Called every frame
+    virtual void Tick(float DeltaSeconds) override;
 
     void setBossGameMode();
 
@@ -107,7 +107,7 @@ public:
 
     UFUNCTION(Reliable, NetMulticast)
         void multiSetBossGameMode();
-    
+
     void setBossDead();
 
     UFUNCTION(Reliable, Server, WithValidation)
@@ -128,4 +128,7 @@ public:
         void serverSetupAudioComponents();
     UFUNCTION(Reliable, NetMulticast)
         void multiSetupAudioComponents();
+
+private:
+    void internalSetupAudioComponents();
 };
