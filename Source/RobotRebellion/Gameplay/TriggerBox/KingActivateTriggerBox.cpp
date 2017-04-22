@@ -4,7 +4,7 @@
 #include "KingActivateTriggerBox.h"
 
 #include "Global/EntityDataSingleton.h"
-#include "Controller/KingAIController.h"
+#include "IA/Controller/KingAIController.h"
 #include "Character/King.h"
 
 
