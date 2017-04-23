@@ -101,8 +101,8 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
          {
              UCameraComponent* camera = charac->GetFollowCamera();
              FRotator camRot = camera->GetComponentRotation() ;
-             m_healthBar->SetWorldRotation(FRotator(camRot.Pitch, camRot.Yaw + 180, camRot.Roll));
-             m_healthBar->SetRelativeLocation(FVector(0, 0, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+50.f));
+             m_healthBar->SetWorldRotation(FRotator(camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
+             m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+50.f));
          }
      }
 }
@@ -174,6 +174,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
+    DOREPLIFETIME(ARobotRebellionCharacter, m_isInCombat);
 }
 
 UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT

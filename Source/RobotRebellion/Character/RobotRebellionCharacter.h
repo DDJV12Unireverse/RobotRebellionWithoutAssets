@@ -31,7 +31,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BillBoard")
         class UTextBillboardComponent* m_textBillboardInstance;
 
-    UPROPERTY()
+    UPROPERTY(Replicated)
         bool m_isInCombat;
 
 

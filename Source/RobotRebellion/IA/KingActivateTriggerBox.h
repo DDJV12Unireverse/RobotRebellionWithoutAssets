@@ -24,6 +24,8 @@ public:
 
 
 private:
+    void internal_signalToServer();
+
     void correctDestruction();
 
     void killItself();
@@ -33,4 +35,7 @@ private:
         
     UFUNCTION(Reliable, NetMulticast)
         void multiKills();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void signalToServer();
 };

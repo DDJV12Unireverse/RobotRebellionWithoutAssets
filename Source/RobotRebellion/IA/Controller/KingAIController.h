@@ -21,6 +21,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_moveThreshold;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
+        float m_minimaleDistanceToMove;
+
 
     FVector m_destination;
 
