@@ -24,6 +24,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot location", meta = (ClampMin = 0.f, ClampMax = 1.f))
         float m_distanceToShoot;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eyes Height")
+        float m_crouchEyesHeight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eyes Height")
+        float m_standingEyesHeight;
+
 public:
 
     void CheckEnnemyNear(float range) override;

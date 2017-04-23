@@ -52,6 +52,7 @@ void ARobotShooterController::crouch() const
     // TODO - Crouch the pawn if necessary
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     ennemiCharacter->m_isCrouch = true;
+    ennemiCharacter->BaseEyeHeight = m_crouchEyesHeight;
 }
 
 void ARobotShooterController::uncrouch() const
@@ -59,6 +60,7 @@ void ARobotShooterController::uncrouch() const
     // TODO - Uncrouch the pawn if necessary
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     ennemiCharacter->m_isCrouch = false;
+    ennemiCharacter->BaseEyeHeight = m_standingEyesHeight;
 }
 
 void ARobotShooterController::updateShootLocation()
