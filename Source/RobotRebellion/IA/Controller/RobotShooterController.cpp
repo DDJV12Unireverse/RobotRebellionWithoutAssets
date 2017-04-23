@@ -77,3 +77,11 @@ void ARobotShooterController::updateShootLocation()
                     false,
                     5.f, 0, 5.f);
 }
+
+
+EPathFollowingRequestResult::Type ARobotShooterController::moveToShootLocation()
+{
+    EPathFollowingRequestResult::Type MoveToActorResult = MoveToLocation(m_shootLocation);
+
+    return MoveToActorResult;
+}

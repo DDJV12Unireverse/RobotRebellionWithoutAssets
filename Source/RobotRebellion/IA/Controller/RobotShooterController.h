@@ -37,4 +37,8 @@ public:
 
     // Update shootposition
     void updateShootLocation();
+
+    // Same as moveToTartget function but use shootLocation instead of target to follow
+    EPathFollowingRequestResult::Type moveToShootLocation();
+
 };
