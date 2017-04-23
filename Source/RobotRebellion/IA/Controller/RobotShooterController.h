@@ -12,10 +12,29 @@ UCLASS()
 class ROBOTREBELLION_API ARobotShooterController : public AEnnemiAIController
 {
 	GENERATED_BODY()
+private:
+    FVector m_shootLocation;
+
+public:
+    // specifie the distance to the target for the shoot position (percentage of weapon range)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot location", meta = (ClampMin = 0.f, ClampMax = 1.f))
+        float m_distanceToShoot;
 
 public:
 
     void CheckEnnemyNear(float range) override;
 
     void AttackTarget() const override;
+
+    /** Crouch the animation   */
+    void crouch();
+
+    // Uncrouch the pawn
+    void uncrouch();
+
+    /** return true if the pawn is crouch*/
+    bool isCrouch();
+
+    // Update shootposition
+    void updateShootLocation();
 };

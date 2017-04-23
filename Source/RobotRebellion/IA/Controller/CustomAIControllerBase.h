@@ -30,6 +30,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = 0.f))
         float m_aimZMaxFallOffAngle;
 
+protected:
+    FVector getTargetToFollowLocation() const;
 
 public:
     ACustomAIControllerBase();

@@ -18,6 +18,12 @@ void ACustomAIControllerBase::BeginPlay()
     m_showDebugSphereTrace = !!EntityDataSingleton::getInstance().m_showEnnemyDetectionSphere;
 }
 
+
+FVector ACustomAIControllerBase::getTargetToFollowLocation() const
+{
+    return m_targetToFollow ? m_targetToFollow->GetActorLocation() : FVector::ZeroVector;
+}
+
 bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
 {
     return this->hasTarget() && !m_targetToFollow->IsActorBeingDestroyed() && !m_targetToFollow->isDead();
