@@ -144,9 +144,9 @@ void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* worl
     {
         m_spawned.Add(spawned);
 
-        if(Role >= ROLE_Authority && m_autoActivateCombat)
+        if (spawned->Controller && m_autoActivateCombat)
         {
-            setNearTarget(spawned);
+             setNearTarget(spawned);
         }
     }
 }
