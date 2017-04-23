@@ -16,6 +16,10 @@ private:
     FVector m_shootLocation;
 
 public:
+    // Debug use
+    float m_detectionRange;
+
+public:
     // specifie the distance to the target for the shoot position (percentage of weapon range)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot location", meta = (ClampMin = 0.f, ClampMax = 1.f))
         float m_distanceToShoot;
@@ -41,4 +45,6 @@ public:
     // Same as moveToTartget function but use shootLocation instead of target to follow
     EPathFollowingRequestResult::Type moveToShootLocation();
 
+    //Draw debug on screen
+    void drawDebug();
 };

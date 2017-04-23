@@ -30,7 +30,7 @@ EBTNodeResult::Type UMoveToShootLocBTTaskNode::ExecuteTask(UBehaviorTreeComponen
             // update shoot position
             shooterController->updateShootLocation();
             // TODO - Switch to moveToShootLocation!
-            EPathFollowingRequestResult::Type MoveToActorResult = shooterController->MoveToTarget();
+            EPathFollowingRequestResult::Type MoveToActorResult = shooterController->moveToShootLocation();
         }
         else
         {

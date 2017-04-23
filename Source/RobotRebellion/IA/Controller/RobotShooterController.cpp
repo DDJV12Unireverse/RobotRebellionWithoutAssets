@@ -11,13 +11,16 @@
 
 void ARobotShooterController::CheckEnnemyNear(float range)
 {
+    //debug use
+    m_detectionRange = range;
+
     DrawDebugSphere(GetWorld(),
                     GetPawn()->GetActorLocation(),
                     range,
                     32,
                     FColor::Cyan,
                     false,
-                    5.f, 0, 5.f);
+                    5.f, 0, 0.5f);
 
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     float weaponRange = ennemiCharacter->m_weaponInventory->getCurrentWeapon()->m_WeaponRadiusRange;
@@ -27,7 +30,7 @@ void ARobotShooterController::CheckEnnemyNear(float range)
                     32,
                     FColor::Red,
                     false,
-                    5.f, 0, 5.f);
+                    5.f, 0, 0.5f);
     AEnnemiAIController::CheckEnnemyNear(range);
 }
 
@@ -78,10 +81,31 @@ void ARobotShooterController::updateShootLocation()
                     5.f, 0, 5.f);
 }
 
-
 EPathFollowingRequestResult::Type ARobotShooterController::moveToShootLocation()
 {
     EPathFollowingRequestResult::Type MoveToActorResult = MoveToLocation(m_shootLocation);
 
     return MoveToActorResult;
+}
+
+// DEBUG
+void ARobotShooterController::drawDebug()
+{
+    DrawDebugSphere(GetWorld(),
+                    GetPawn()->GetActorLocation(),
+                    m_detectionRange,
+                    32,
+                    FColor::Cyan,
+                    false,
+                    1.f, 0, 5.f);
+
+    ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
+    float weaponRange = ennemiCharacter->m_weaponInventory->getCurrentWeapon()->m_WeaponRadiusRange;
+    DrawDebugSphere(GetWorld(),
+                    GetPawn()->GetActorLocation(),
+                    weaponRange,
+                    32,
+                    FColor::Red,
+                    false,
+                    1.f, 0, 5.f);
 }
