@@ -16,6 +16,7 @@ UMoveToShootLocBTTaskNode::UMoveToShootLocBTTaskNode()
 EBTNodeResult::Type UMoveToShootLocBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8*
                                                          NodeMemory)
 {
+
     ACustomAIControllerBase* AIController = Cast<ACustomAIControllerBase>(OwnerComp.GetOwner());
 
     EBTNodeResult::Type NodeResult = EBTNodeResult::Failed;
@@ -29,6 +30,7 @@ EBTNodeResult::Type UMoveToShootLocBTTaskNode::ExecuteTask(UBehaviorTreeComponen
         {
             // update shoot position
             shooterController->updateShootLocation();
+            shooterController->uncrouch();
             // TODO - Switch to moveToShootLocation!
             EPathFollowingRequestResult::Type MoveToActorResult = shooterController->moveToShootLocation();
         }

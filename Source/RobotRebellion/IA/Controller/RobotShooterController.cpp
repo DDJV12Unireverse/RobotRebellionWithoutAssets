@@ -39,20 +39,26 @@ void ARobotShooterController::AttackTarget() const
     AEnnemiAIController::AttackTarget();
 }
 
-bool ARobotShooterController::isCrouch()
+bool ARobotShooterController::isCrouch() const
 {
     // TODO - return m_crouch
-    return true;
+    ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
+    return ennemiCharacter->m_isCrouch;
+    
 }
 
-void ARobotShooterController::crouch()
+void ARobotShooterController::crouch() const
 {
     // TODO - Crouch the pawn if necessary
+    ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
+    ennemiCharacter->m_isCrouch = true;
 }
 
-void ARobotShooterController::uncrouch()
+void ARobotShooterController::uncrouch() const
 {
     // TODO - Uncrouch the pawn if necessary
+    ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
+    ennemiCharacter->m_isCrouch = false;
 }
 
 void ARobotShooterController::updateShootLocation()
@@ -97,7 +103,7 @@ void ARobotShooterController::drawDebug()
                     32,
                     FColor::Cyan,
                     false,
-                    1.f, 0, 5.f);
+                    2.f, 0, 5.f);
 
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
     float weaponRange = ennemiCharacter->m_weaponInventory->getCurrentWeapon()->m_WeaponRadiusRange;
@@ -107,5 +113,22 @@ void ARobotShooterController::drawDebug()
                     32,
                     FColor::Red,
                     false,
-                    1.f, 0, 5.f);
+                    2.f, 0, 5.f);
+
+    FColor positionColor;
+    if(isCrouch())
+    {
+        positionColor = FColor::Red;
+    }
+    else
+    {
+        positionColor = FColor::Blue;
+    }
+    DrawDebugSphere(GetWorld(),
+                    GetPawn()->GetActorLocation() + FVector{0.f, 0.f, 100.f},
+                    5.f,
+                    12,
+                    positionColor,
+                    false,
+                    2.f, 0, 5.f);
 }

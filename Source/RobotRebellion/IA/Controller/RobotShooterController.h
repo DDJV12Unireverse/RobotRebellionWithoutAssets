@@ -31,13 +31,13 @@ public:
     void AttackTarget() const override;
 
     /** Crouch the animation   */
-    void crouch();
+    void crouch() const;
 
     // Uncrouch the pawn
-    void uncrouch();
+    void uncrouch() const;
 
     /** return true if the pawn is crouch*/
-    bool isCrouch();
+    bool isCrouch() const;
 
     // Update shootposition
     void updateShootLocation();
