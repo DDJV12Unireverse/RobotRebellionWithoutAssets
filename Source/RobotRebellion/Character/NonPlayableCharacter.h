@@ -15,9 +15,9 @@ class ROBOTREBELLION_API ANonPlayableCharacter : public ARobotRebellionCharacter
 	GENERATED_BODY()
        
 public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool m_isCrouch;
 
-public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         ULootTable* m_lootTable;
 public:
