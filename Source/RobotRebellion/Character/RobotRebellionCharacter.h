@@ -277,5 +277,29 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiUnspawnShieldParticle();
+
+
+    ///////Burn Effects
+
+    bool isEffectEnabled;
+
+    void spawnFireEffect(FVector location);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
+        UParticleSystem* m_fireEffect;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
+        UParticleSystemComponent* m_particuleComponent;
+
+    TArray<int32> m_burningBones;
+    TArray<UParticleSystemComponent*> m_fireEffects;
+    float m_tickCount;
+    void UpdateBurnEffect(float DeltaTime);
+    void displayFireOnBone(FName bone);
+    int m_burningBonesCount;
+    TMap<UParticleSystemComponent*, float> m_effectTimer;
+    bool isBurning()
+    {
+        return (m_burningBonesCount > 0);
+    }
 };
 

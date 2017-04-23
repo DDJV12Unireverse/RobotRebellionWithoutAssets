@@ -63,7 +63,12 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
         }
 
         //TODO display burn effect on Mesh
-
+        //ASurvivalCharacter* hitActor = Cast<ASurvivalCharacter>(Impact.GetActor());
+        if(receiver)
+        {
+            //SpawnFireEffect(Impact);
+            receiver->spawnFireEffect(Hit.Location);
+        }
         Destroy();
     }
 }
