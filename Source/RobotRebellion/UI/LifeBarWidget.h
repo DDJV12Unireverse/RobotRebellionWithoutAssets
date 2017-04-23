@@ -17,7 +17,7 @@ class ROBOTREBELLION_API ULifeBarWidget : public URobotRebellionWidget
 public:
         ARobotRebellionCharacter* m_owner;
         UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
-        void getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const;
+        void getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth);
 
         void setOwner(ARobotRebellionCharacter* character)
         {

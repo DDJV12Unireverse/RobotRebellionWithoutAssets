@@ -5,7 +5,7 @@
 
 
 
-void ULifeBarWidget::getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const
+void ULifeBarWidget::getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth)
 {
     if(m_owner)
     {
