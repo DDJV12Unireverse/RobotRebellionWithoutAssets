@@ -101,7 +101,7 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
          {
              UCameraComponent* camera = charac->GetFollowCamera();
              FRotator camRot = camera->GetComponentRotation() ;
-             m_healthBar->SetWorldRotation(FRotator(camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
+             m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
              m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+50.f));
          }
      }
