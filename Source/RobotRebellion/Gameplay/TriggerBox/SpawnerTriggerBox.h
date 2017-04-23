@@ -6,21 +6,21 @@
 #include "SpawnerTriggerBox.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class ROBOTREBELLION_API ASpawnerTriggerBox : public ATriggerBox
 {
-	GENERATED_BODY()
-	
-	
+    GENERATED_BODY()
+
+
 public:
     /************************************************************************/
     /* UPROPERTY                                                            */
     /************************************************************************/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search")
         float m_scope;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CONDITION")
         uint8 m_destroyWhenPassed : 1;
 
@@ -39,10 +39,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CONDITION")
         uint8 m_relativePosition : 1;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CONDITION")
-        uint8 m_stronglyTryToSpawn : 1;
-
-    uint8 m_padding : 1;
+    uint8 m_padding : 2;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Population")
         TArray<FTransform> m_populationTransform;
@@ -51,17 +48,14 @@ public:
         TArray<TSubclassOf<class ANonPlayableCharacter>> m_populationToSpawn;
 
 
+
     /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
-    TArray<class APawn*> m_spawned;
     TArray<class ARobotRebellionCharacter*> m_characterOnBox;
+    TArray<class APawn*> m_spawned;
 
     float m_maxDist;
-
-
-protected:
-    void(ASpawnerTriggerBox::* m_onHitDelegate)(UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FVector&, const FHitResult&);
 
 
 public:
@@ -75,11 +69,9 @@ public:
     /************************************************************************/
     /* METHODS                                                              */
     /************************************************************************/
-    virtual void BeginPlay() override;
+    virtual void BeginPlay() override; 
 
-    void setOnHitMethod(void(ASpawnerTriggerBox::* onHitDelegate)(UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FVector&, const FHitResult&));
 
-    
 private:
     void correctDestruction();
 
@@ -87,11 +79,12 @@ private:
 
     void internalSpawn();
 
-    void internalSpawnCharacterAtIndex(int32 index, UWorld* world, const FActorSpawnParameters& spawnParams);
+    void internalSpawnCharacterAtIndex(int32 index, UWorld* world);
 
     void setNearTarget(class ANonPlayableCharacter* spawned);
 
     void checkCharactersOnBox();
+
 
 
 public:
@@ -114,7 +107,4 @@ private:
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverSpawnEnnemies();
-
-    UFUNCTION(Reliable, NetMulticast)
-        void multiSpawnEnnemies(const TArray<APawn*>& spawnedPawns);
 };

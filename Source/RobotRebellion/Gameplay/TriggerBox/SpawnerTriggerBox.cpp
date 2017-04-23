@@ -29,14 +29,8 @@ void ASpawnerTriggerBox::BeginPlay()
     check(m_populationTransform.Num() == m_populationToSpawn.Num());
 }
 
-void ASpawnerTriggerBox::setOnHitMethod(void(ASpawnerTriggerBox::* onHitDelegate)(UPrimitiveComponent*, AActor*, UPrimitiveComponent*, const FVector&, const FHitResult&))
-{
-    m_onHitDelegate = onHitDelegate;
-}
-
 void ASpawnerTriggerBox::onHit(UPrimitiveComponent* var1, AActor* enteredActor, UPrimitiveComponent* var3, int32 var4, bool var5, const FHitResult& var6)
 {
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "OVERLAP");
     if(m_activeOnlyWhenKingHere && !Cast<AKing>(enteredActor))
     {
         return;
@@ -107,15 +101,7 @@ void ASpawnerTriggerBox::internalSpawn()
 
     if(world)
     {
-        FActorSpawnParameters spawnParams;
-
-        if(m_stronglyTryToSpawn)
-        {
-            spawnParams.bNoFail = true;
-            spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-        }
-
-        if (m_random)
+        if(m_random)
         {
             int32 ennemyCountToSpawn = FMath::RandRange(1, m_populationToSpawn.Num());
             int32 lastIndex = m_populationToSpawn.Num() - 1;
@@ -123,7 +109,7 @@ void ASpawnerTriggerBox::internalSpawn()
             m_spawned.Reserve(ennemyCountToSpawn);
             for(int32 iter = 0; iter < ennemyCountToSpawn; ++iter)
             {
-                this->internalSpawnCharacterAtIndex(FMath::RandRange(1, lastIndex), world, spawnParams);
+                this->internalSpawnCharacterAtIndex(FMath::RandRange(0, lastIndex), world);
             }
         }
         else
@@ -131,7 +117,7 @@ void ASpawnerTriggerBox::internalSpawn()
             m_spawned.Reserve(m_populationToSpawn.Num());
             for(int32 iter = 0; iter < m_populationToSpawn.Num(); ++iter)
             {
-                this->internalSpawnCharacterAtIndex(iter, world, spawnParams);
+                this->internalSpawnCharacterAtIndex(iter, world);
             }
         }
 
@@ -139,7 +125,7 @@ void ASpawnerTriggerBox::internalSpawn()
     }
 }
 
-void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* world, const FActorSpawnParameters& spawnParams)
+void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* world)
 {
     ANonPlayableCharacter* spawned;
 
@@ -147,19 +133,11 @@ void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* worl
     {
         FTransform intermediary = this->GetTransform().GetRelativeTransform(m_populationTransform[index]);
 
-        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(
-            m_populationToSpawn[index],
-            &intermediary,
-            spawnParams
-        ));
+        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(m_populationToSpawn[index], &intermediary));
     }
     else
     {
-        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(
-            m_populationToSpawn[index],
-            &m_populationTransform[index],
-            spawnParams
-        ));
+        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(m_populationToSpawn[index], &m_populationTransform[index]));
     }
 
     if(spawned)
@@ -175,35 +153,24 @@ void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* worl
 
 void ASpawnerTriggerBox::spawnEnnemies()
 {
-    m_spawned.Reset();
     if(Role < ROLE_Authority)
     {
         this->serverSpawnEnnemies();
     }
     else
     {
-        this->internalSpawn();
-        this->multiSpawnEnnemies(m_spawned);
+        this->internalSpawn(); 
     }
 }
 
 void ASpawnerTriggerBox::serverSpawnEnnemies_Implementation()
 {
     this->internalSpawn();
-    this->multiSpawnEnnemies(m_spawned);
 }
 
 bool ASpawnerTriggerBox::serverSpawnEnnemies_Validate()
 {
     return true;
-}
-
-void ASpawnerTriggerBox::multiSpawnEnnemies_Implementation(const TArray<APawn*>& spawnedPawns)
-{
-    for (APawn* pawn : spawnedPawns)
-    {
-        this->GetWorld()->AddPawn(pawn);
-    }
 }
 
 
@@ -246,7 +213,7 @@ void ASpawnerTriggerBox::setNearTarget(ANonPlayableCharacter* spawned)
 {
     FVector spawnedLocation = spawned->GetActorLocation();
     float minDist = m_maxDist * m_maxDist;
-    
+
     ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(spawned->Controller);
 
     if(controller)
