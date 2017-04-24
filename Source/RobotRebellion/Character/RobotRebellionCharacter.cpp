@@ -21,6 +21,8 @@
 #include "Global/GameInstaller.h"
 
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+#include "WidgetComponent.h"
+#include "UI/LifeBarWidget.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -47,6 +49,15 @@ void ARobotRebellionCharacter::BeginPlay()
     m_isRestoreManaParticleSpawned = false;
     m_isReviveParticleSpawned = false;
     m_isShieldParticleSpawned = false;
+    m_healthBar = Cast<UWidgetComponent>(GetComponentByClass(UWidgetComponent::StaticClass()));
+    if (m_healthBar)
+    {
+        ULifeBarWidget* widget = Cast<ULifeBarWidget>(m_healthBar->GetUserWidgetObject());
+        if (widget)
+        {
+            widget->setOwner(this);
+        }
+    }
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)
@@ -80,6 +91,20 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
             unspawnReviveParticle();
         }
     }
+
+
+     if(m_healthBar)
+     {
+         //Orient lifeBar for player camera
+         APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+         if(charac)
+         {
+             UCameraComponent* camera = charac->GetFollowCamera();
+             FRotator camRot = camera->GetComponentRotation() ;
+             m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
+             m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+50.f));
+         }
+     }
 }
 
 void ARobotRebellionCharacter::disablingEverything()
@@ -582,8 +607,8 @@ void ARobotRebellionCharacter::spawnShieldParticle()
     if(!m_isShieldParticleSpawned)
     {
         m_shieldParticleSystem = UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
-                                                                             GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
-                                                                             GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+                                                                        GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                                        GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
     }
     m_shieldParticleSystem->ActivateSystem(true);
     m_isShieldParticleSpawned = true;
@@ -609,8 +634,8 @@ void ARobotRebellionCharacter::multiSpawnShieldParticle_Implementation()
     if(!m_isShieldParticleSpawned)
     {
         m_shieldParticleSystem = UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
-                                                                             GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
-                                                                             GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+                                                                        GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                                        GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
     }
     m_shieldParticleSystem->ActivateSystem(true);
 
