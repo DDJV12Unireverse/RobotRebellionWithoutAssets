@@ -95,6 +95,11 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
     }
 }
 
+void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellionCharacter* ennemy)
+{
+    cppAttack(user);
+}
+
 void UShortRangeWeapon::inflictDamageLogic(ARobotRebellionCharacter* receiver, const FHitResult& hit)
 {
     if(!receiver->isImmortal())
