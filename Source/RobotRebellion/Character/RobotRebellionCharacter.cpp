@@ -152,9 +152,24 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     DOREPLIFETIME(ARobotRebellionCharacter, m_isInCombat);
 }
 
+bool ARobotRebellionCharacter::hasDoubleWeapon() const USE_NOEXCEPT
+{
+    return m_weaponInventory->m_hasDoubleWeapon;
+}
+
 UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
 {
     return m_weaponInventory->getCurrentWeapon();
+}
+
+const UWeaponBase* ARobotRebellionCharacter::getMainWeapon() const USE_NOEXCEPT
+{
+    return m_weaponInventory->getMainWeapon();
+}
+
+const UWeaponBase* ARobotRebellionCharacter::getSecondaryWeapon() const USE_NOEXCEPT
+{
+    return m_weaponInventory->getSecondaryWeapon();
 }
 
 void ARobotRebellionCharacter::cppOnDeath()

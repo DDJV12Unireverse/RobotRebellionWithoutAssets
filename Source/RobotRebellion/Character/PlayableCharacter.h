@@ -394,17 +394,17 @@ public:
         void serverGotoGym();
 
     UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        float getReviveTimer()
+        float getReviveTimer() const USE_NOEXCEPT
     {
         return m_currentRevivingTime;
     }
     UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        float getRequiredReviveTime()
+        float getRequiredReviveTime() const USE_NOEXCEPT
     {
         return m_requiredTimeToRevive;
     }
     UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        bool isReviving()
+        bool isReviving() const USE_NOEXCEPT
     {
         return m_isReviving;
     }

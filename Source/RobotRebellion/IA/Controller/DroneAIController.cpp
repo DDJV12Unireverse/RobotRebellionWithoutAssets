@@ -40,6 +40,7 @@ void ADroneAIController::BeginPlay()
     m_bestBombLocation = FVector::ZeroVector;
 
     m_currentTime = 0.f;
+    m_debugCooldownDisplayTime = 1.5f;
 
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
@@ -352,7 +353,7 @@ void ADroneAIController::updateTargetedHeight() USE_NOEXCEPT
 
 void ADroneAIController::IAUpdate(float deltaTime)
 {
-    if(!m_actionFinished)
+    if(!m_actionFinished && m_currentTime < m_cooldown)
     {
         (this->*m_performAction)();
     }
@@ -377,6 +378,8 @@ void ADroneAIController::IAUpdate(float deltaTime)
                 setFollowSafeZone();
                 break;
         }
+
+        m_currentTime = 0.f;
     }
 
     if (m_showDestination)
@@ -496,7 +499,7 @@ void ADroneAIController::followSafeZone()
 
 void  ADroneAIController::waiting()
 {
-    m_actionFinished = true;
+    //m_actionFinished = true;
     m_idleTimer += m_timeSinceLastUpdate;
 }
 
@@ -547,6 +550,8 @@ void ADroneAIController::setFollowSafeZone()
 
 void ADroneAIController::setWaiting()
 {
+    GetPawn()->GetMovementComponent()->Velocity = FVector::ZeroVector;
+
     m_actionFinished = false;
     this->m_performAction = &ADroneAIController::waiting;
     // TODO - find and set the destination
@@ -562,9 +567,8 @@ void ADroneAIController::chooseNextAction()
         getReloadScore()
     };
 
-    if(m_currentTime >= m_nextDebugDisplayTime && m_isDebugEnabled)
+    if(m_currentTime >= m_debugCooldownDisplayTime && m_isDebugEnabled)
     {
-        m_nextDebugDisplayTime = m_currentTime + 1.5f;
         ADrone * drone = Cast<ADrone>(this->GetPawn());
         drone->displayScore(scoresArray);
     }

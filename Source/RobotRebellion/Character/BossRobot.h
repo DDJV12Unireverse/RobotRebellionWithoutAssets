@@ -6,16 +6,18 @@
 #include "BossRobot.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class ROBOTREBELLION_API ABossRobot : public ANonPlayableCharacter
 {
     GENERATED_BODY()
 
+
 public:
-        ABossRobot();
-        virtual void cppOnDeath() override;
-	
-	
+    ABossRobot();
+
+    virtual void BeginPlay() override;
+
+    virtual void cppOnDeath() override;
 };
