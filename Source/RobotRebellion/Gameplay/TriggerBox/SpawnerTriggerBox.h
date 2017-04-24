@@ -55,7 +55,9 @@ public:
     TArray<class ARobotRebellionCharacter*> m_characterOnBox;
     TArray<class APawn*> m_spawned;
 
-    float m_maxDist;
+    float m_maxDist; 
+    
+    FActorSpawnParameters m_spawnParams;
 
 
 public:

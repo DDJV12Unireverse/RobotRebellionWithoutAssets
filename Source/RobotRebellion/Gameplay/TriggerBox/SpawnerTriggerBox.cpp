@@ -20,6 +20,8 @@ ASpawnerTriggerBox::ASpawnerTriggerBox()
     collisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
     collisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel7, ECollisionResponse::ECR_Overlap);
     collisionComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &ASpawnerTriggerBox::onHit);
+
+    m_spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
 }
 
 void ASpawnerTriggerBox::BeginPlay()
@@ -133,11 +135,11 @@ void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* worl
     {
         FTransform intermediary = this->GetTransform().GetRelativeTransform(m_populationTransform[index]);
 
-        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(m_populationToSpawn[index], &intermediary));
+        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(m_populationToSpawn[index], &intermediary, m_spawnParams));
     }
     else
     {
-        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(m_populationToSpawn[index], &m_populationTransform[index]));
+        spawned = Cast<ANonPlayableCharacter>(world->SpawnActor(m_populationToSpawn[index], &m_populationTransform[index], m_spawnParams));
     }
 
     if(spawned)
