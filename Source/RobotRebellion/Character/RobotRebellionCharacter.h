@@ -4,7 +4,6 @@
 #include "../Gameplay/Alteration/AlterationController.h"
 #include "../UI/ELivingTextAnimMode.h"
 #include "GameFramework/Character.h"
-
 #include "RobotRebellionCharacter.generated.h"
 
 
@@ -106,7 +105,11 @@ protected:
     void(ARobotRebellionCharacter::* m_disableBeforeDestroyDelegate)();
 
 
+public:
+    ////HEALTH BAR
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HealthBar)
+       class UWidgetComponent* m_healthBar;
 
 public:
     /************************************************************************/
