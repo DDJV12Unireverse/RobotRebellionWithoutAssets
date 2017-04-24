@@ -288,18 +288,36 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
         UParticleSystem* m_fireEffect;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
-        UParticleSystemComponent* m_particuleComponent;
+        class UParticleSystemComponent* m_particuleComponent;
 
     TArray<int32> m_burningBones;
     TArray<UParticleSystemComponent*> m_fireEffects;
     float m_tickCount;
     void UpdateBurnEffect(float DeltaTime);
     void displayFireOnBone(FName bone);
-    int m_burningBonesCount;
+
+    UFUNCTION(Reliable, NetMulticast)
+        void multiDisplayFireOnBone(FName bone);
+    UPROPERTY(BlueprintReadOnly, Replicated)
+        int m_burningBonesCount;
     TMap<UParticleSystemComponent*, float> m_effectTimer;
     bool isBurning()
     {
         return (m_burningBonesCount > 0);
     }
+    
+    UFUNCTION(Reliable, NetMulticast)
+        void multiSpawnFireEffect(FVector location);
+
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSpawnFireEffect(FVector location);
+
+    void cleanFireComp();
+    UFUNCTION(Reliable, NetMultiCast)
+        void multiCleanFireComp();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverCleanFireComp();
+
 };
 
