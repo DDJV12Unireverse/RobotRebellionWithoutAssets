@@ -73,6 +73,16 @@ public:
     //return true if the current equipped weapon is the secondary weapon, false otherwise
     bool isSecondaryWeaponEquipped() const USE_NOEXCEPT;
 
+    FORCEINLINE const UWeaponBase* getMainWeapon() const USE_NOEXCEPT
+    {
+        return m_mainWeaponInstance;
+    }
+
+    FORCEINLINE const UWeaponBase* getSecondaryWeapon() const USE_NOEXCEPT
+    {
+        return m_secondaryWeaponInstance;
+    }
+
 
 public:
     //Debug string
