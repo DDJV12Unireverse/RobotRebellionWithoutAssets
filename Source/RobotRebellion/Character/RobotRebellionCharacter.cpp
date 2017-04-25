@@ -52,7 +52,6 @@ void ARobotRebellionCharacter::BeginPlay()
 
     m_tickCount = 0.f;
     m_burningBonesCount = 0;
-    m_effectTimer.Empty();
 
     TArray<AActor*> entity;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
@@ -60,6 +59,8 @@ void ARobotRebellionCharacter::BeginPlay()
     {
         m_worldEntity = Cast<AWorldInstanceEntity>(entity[0]);
     }
+    m_bonesToUpdate = 0;
+    m_bonesSet = 3;
 
 }
 
@@ -99,7 +100,7 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     if(this->isBurning())
     {
         m_tickCount += deltaTime;
-        if(m_tickCount >= 1.f)
+        if(m_tickCount >= 0.33f)
         {
             GEngine->AddOnScreenDebugMessage(0 + 1, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
             UpdateBurnEffect(m_tickCount);
@@ -650,13 +651,12 @@ bool ARobotRebellionCharacter::multiUnspawnShieldParticle_Validate()
 
 void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
 {
-    // GEngine->AddOnScreenDebugMessage(0, 10, FColor::Green, FString::Printf(TEXT("update: %i"), m_tickCount));
     int burningBonesNumber = m_burningBones.Num();
-    // TArray<int32> particlesToRemove;
     for(int noCurrentBone = 0; noCurrentBone < burningBonesNumber; ++noCurrentBone)
     {
         int32 currentBoneId = m_burningBones[noCurrentBone];
         FName currentBoneName = GetMesh()->GetBoneName(currentBoneId);
+
         //compute if effect must be deactivated on this bone
         m_effectTimer[m_fireEffects[noCurrentBone]] += DeltaTime;
         if(m_effectTimer[m_fireEffects[noCurrentBone]] >= 5.f && (m_fireEffects[noCurrentBone])->IsActive())
@@ -684,8 +684,29 @@ void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
             displayFireOnBone(parentName);
 
             //CHILDRENBONE
-            // Not very good performances, no other ways found
-            for(int i = 0; i < GetMesh()->GetNumBones(); ++i)
+            // Not very good performances, no other ways found (only update half of bones for better performances)
+            int min;
+            int max;
+            switch(m_bonesToUpdate)
+            {
+                case 0:
+                    min = 0;
+                    max = nbBones / 3;
+                    ++m_bonesToUpdate;
+                    break;
+
+                case 1:
+                    min = nbBones / 3;
+                    max = nbBones * 2 / 3;
+                    ++m_bonesToUpdate;
+                    break;
+                case 2:
+                    min = nbBones * 2 / 3;
+                    max = nbBones;
+                    m_bonesToUpdate = 0;
+                    break;
+            }
+            for(int i = min; i < max; ++i)
             {
                 int32 isChildPresent = m_burningBones.Find(i); //Check if children already on fire
                 if(GetMesh()->BoneIsChildOf(GetMesh()->GetBoneName(i), currentBoneName) && isChildPresent == -1)
@@ -708,7 +729,6 @@ void ARobotRebellionCharacter::displayFireOnBone(FName bone)
     if(bone != FName("None"))
     {
         FVector boneLocation = GetMesh()->GetBoneLocation(bone);
-        //GEngine->AddOnScreenDebugMessage(GetMesh()->GetBoneIndex(bone), 5, FColor::Black, FString::Printf(TEXT("Bone %i"), GetMesh()->GetBoneIndex(bone)));
         FTransform boneTransform = GetMesh()->GetBoneTransform(GetMesh()->GetBoneIndex(bone));
 
         UParticleSystemComponent* fireEffect = UGameplayStatics::SpawnEmitterAttached(m_fireEffect, GetRootComponent(),
@@ -718,12 +738,9 @@ void ARobotRebellionCharacter::displayFireOnBone(FName bone)
         {
             fireEffect->SetRelativeScale3D(FVector(0.4f, 0.4f, 0.4f));
             m_burningBones.Add(GetMesh()->GetBoneIndex(bone));
-            // GEngine->AddOnScreenDebugMessage(0, 15, FColor::Cyan, FString::Printf(TEXT("size %i"), m_fireEffects.Num()));
-
             m_fireEffects.Add(fireEffect);
             m_effectTimer.Add(fireEffect, 0.f);
             ++m_burningBonesCount;
-            GEngine->AddOnScreenDebugMessage(1, 10, FColor::Blue, FString::Printf(TEXT("number %i"), m_burningBonesCount));
         }
     }
 
@@ -808,7 +825,6 @@ void ARobotRebellionCharacter::multiSpawnFireEffect_Implementation(FVector locat
 {
     if(m_worldEntity->IsBurnEffectEnabled())
     {
-        //receiver->spawnFireEffect(Hit.Location);
 
         FName bone = GetMesh()->FindClosestBone(location);
         int32 boneIndex = GetMesh()->GetBoneIndex(bone);
@@ -858,16 +874,13 @@ void ARobotRebellionCharacter::cleanFireComp()
 void ARobotRebellionCharacter::multiCleanFireComp_Implementation()
 {
     m_burningBones.Empty();
-    // m_burningBones.RemoveAll(true);
     m_fireEffects.Empty();
+    m_effectTimer.Empty();
     GEngine->AddOnScreenDebugMessage(7, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
-    //m_fireEffects.RemoveAll(true);
-    //m_fireEffects.Shrink()
     m_burningBonesCount = 0;
     TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());
     fireComponents.RemoveAll([&](UActorComponent* comp) {
         UParticleSystemComponent* systComp = Cast<UParticleSystemComponent>(comp);
-        //systComp->Get
         if(systComp)
         {
             return true;

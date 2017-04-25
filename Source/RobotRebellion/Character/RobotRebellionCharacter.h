@@ -293,6 +293,9 @@ public:
     TArray<int32> m_burningBones;
     TArray<UParticleSystemComponent*> m_fireEffects;
     float m_tickCount;
+    int m_bonesToUpdate;
+    int m_bonesSet;
+
     void UpdateBurnEffect(float DeltaTime);
     void displayFireOnBone(FName bone);
 
