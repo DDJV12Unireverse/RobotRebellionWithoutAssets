@@ -80,10 +80,6 @@ void ANonPlayableCharacter::goAway(const FVector& fromWhere, float delta)
 
         toMove *= delta;
 
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Green, toMove.ToString());
-
-        EPathFollowingRequestResult::Type res = controller->MoveToLocation(actorLocation + toMove);
-
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, res == EPathFollowingRequestResult::AlreadyAtGoal ? "Goal" : res == EPathFollowingRequestResult::Failed ? "Failed" : res == EPathFollowingRequestResult::RequestSuccessful ? "ReqSucc" : "???");
+        controller->MoveToLocation(actorLocation + toMove);
     }
 }
