@@ -64,3 +64,22 @@ FVector ANonPlayableCharacter::aim(const FVector& directionToShoot) const
 
     return result;
 }
+
+void ANonPlayableCharacter::goAway(const FVector& fromWhere, float delta)
+{
+    ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(Controller);
+
+    if (controller)
+    {
+        FVector actorLocation = this->GetActorLocation();
+        FVector fireDirection = actorLocation - fromWhere;
+        fireDirection.Normalize();
+
+        FVector toMove = FVector::CrossProduct(this->GetActorUpVector(), fireDirection);
+        toMove.Normalize();
+
+        toMove *= delta;
+
+        controller->MoveToLocation(actorLocation + toMove);
+    }
+}

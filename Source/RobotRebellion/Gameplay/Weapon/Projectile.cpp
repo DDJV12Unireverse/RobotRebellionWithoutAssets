@@ -145,13 +145,13 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
 
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, hit.BoneName.ToString());
 
-            if (coeff.establishCritical(hit.BoneName))
+            if(coeff.establishCritical(hit.BoneName))
             {
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "Critical");
                 coeff.criticalHit();
                 isCritical = true;
             }
-            if (!receiver->m_isInCombat)
+            if(!receiver->m_isInCombat)
             {
 
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, "Engagement");
@@ -167,7 +167,7 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
 
             setReceiverInCombat(receiver);
 
-            if (isCritical)
+            if(isCritical)
             {
                 receiver->inflictDamage(currentDamage, ELivingTextAnimMode::TEXT_ANIM_BOING_BIGGER_TEXT_ON_CRITICAL, FColor::Orange);
             }
@@ -185,13 +185,34 @@ void AProjectile::inflictDamageLogic(AActor* otherActor, const FHitResult& hit)
 
 void AProjectile::setReceiverInCombat(ARobotRebellionCharacter* receiver)
 {
-    ANonPlayableCharacter * ennemy = Cast<ANonPlayableCharacter>(receiver);
+    ANonPlayableCharacter* ennemy = Cast<ANonPlayableCharacter>(receiver);
     if(ennemy)
     {
-        ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(ennemy->GetController());
-        if(controller)
+        if(receiver->m_canKillItsAllies || Cast<APlayableCharacter>(m_owner))
         {
-            controller->setTarget(m_owner);
+            ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(ennemy->GetController());
+            if(controller)
+            {
+                controller->setTarget(m_owner);
+            }
+        }
+        else
+        {
+            ACustomAIControllerBase* ennemyController = Cast<ACustomAIControllerBase>(ennemy->GetController());
+
+            if (ennemyController)
+            {
+                if(m_owner->m_canTransmitItsTarget)
+                {
+                    ACustomAIControllerBase* ownerController = Cast<ACustomAIControllerBase>(m_owner->GetController());
+                    if(ownerController)
+                    {
+                        ennemyController->setTarget(ownerController->getTarget());
+                    }
+                }
+
+                ennemy->goAway(m_owner->GetActorLocation(), 130.f);
+            }
         }
     }
 }
@@ -237,7 +258,7 @@ void AProjectile::simulateInstantRealMethod(const FVector& shootDirection, float
                 end,
                 ECC_GameTraceChannel1,
                 collisionQueryParams
-        ))
+            ))
         {
             targetTouched = Cast<ARobotRebellionCharacter>(hitResult.GetActor());
 
@@ -257,7 +278,7 @@ void AProjectile::simulateInstantRealMethod(const FVector& shootDirection, float
 
 void AProjectile::simulateInstant(const FVector& shootDirection, float distance)
 {
-    if (Role < ROLE_Authority)
+    if(Role < ROLE_Authority)
     {
         serverSimulateInstant(shootDirection, distance);
     }

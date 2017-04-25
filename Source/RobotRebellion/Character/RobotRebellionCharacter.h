@@ -31,6 +31,12 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BillBoard")
         class UTextBillboardComponent* m_textBillboardInstance;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IA")
+        bool m_canKillItsAllies;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IA")
+        bool m_canTransmitItsTarget;
+
     UPROPERTY(Replicated)
         bool m_isInCombat;
 
