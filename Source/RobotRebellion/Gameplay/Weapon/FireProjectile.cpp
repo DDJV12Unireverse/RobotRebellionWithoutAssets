@@ -24,6 +24,17 @@ void AFireProjectile::Tick(float DeltaTime)
 
 void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+    ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
+    if(receiver)
+    {
+        TArray<AActor*> entity;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+        if(entity.Num() > 0 && Cast<AWorldInstanceEntity>(entity[0])->IsBurnEffectEnabled())
+        {
+            receiver->spawnFireEffect(Hit.Location);
+        }
+        //SpawnFireEffect(Impact);
+    }
     if(Role == ROLE_Authority)
     {
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
@@ -62,19 +73,11 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
             //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
             //}
         }
+        
 
         //TODO display burn effect on Mesh
         //ASurvivalCharacter* hitActor = Cast<ASurvivalCharacter>(Impact.GetActor());
-        if(receiver)
-        {
-            TArray<AActor*> entity;
-            UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
-            if(entity.Num() > 0 && Cast<AWorldInstanceEntity>(entity[0])->IsBurnEffectEnabled())
-            {
-                receiver->spawnFireEffect(Hit.Location);
-            }
-            //SpawnFireEffect(Impact);
-        }
+        
         Destroy();
     }
 }

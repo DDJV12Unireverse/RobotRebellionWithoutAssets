@@ -20,6 +20,9 @@ public:
     /** how many time the zone should inflict damage in one second*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageZone)
         float m_tickRate;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageZone)
+        bool m_isMolotov;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageZone)
         TArray<TEnumAsByte<EObjectTypeQuery>> m_objectTypes;
 

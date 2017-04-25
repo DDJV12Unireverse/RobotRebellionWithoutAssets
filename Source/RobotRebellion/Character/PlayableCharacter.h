@@ -458,5 +458,4 @@ public:
 
 
     void disableFireEffect();
-
 };

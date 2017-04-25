@@ -96,6 +96,8 @@ APlayableCharacter::APlayableCharacter()
     m_isReviving = false;
 
     this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::doesNothing;
+
+    /*m_isBurnEffectEnabled = true;*/
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
