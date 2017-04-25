@@ -168,7 +168,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
     DOREPLIFETIME(ARobotRebellionCharacter, m_isInCombat);
-    DOREPLIFETIME(ARobotRebellionCharacter, m_burningBonesCount);
+    //DOREPLIFETIME(ARobotRebellionCharacter, m_burningBonesCount);
 }
 
 UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
@@ -651,16 +651,16 @@ void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
         FName currentBoneName = GetMesh()->GetBoneName(currentBoneId);
         //compute if effect must be deactivated on this bone
         m_effectTimer[m_fireEffects[noCurrentBone]] += DeltaTime;
-        if(m_effectTimer[m_fireEffects[noCurrentBone]] >= 5.f)
+        if(m_effectTimer[m_fireEffects[noCurrentBone]] >= 5.f && (m_fireEffects[noCurrentBone])->IsActive())
         {
             //  m_burningBones.Remove(currentBoneId);
-            if(m_fireEffects[noCurrentBone])
-            {
-                m_fireEffects[noCurrentBone]->DestroyComponent();
-            }
-            //m_fireEffects[noCurrentBone]->Deactivate();
+            //if(m_fireEffects[noCurrentBone])
+            //{
+                //m_fireEffects[noCurrentBone]->DestroyComponent();
+                m_fireEffects[noCurrentBone]->Deactivate();
+            //}
             --m_burningBonesCount;
-            GEngine->AddOnScreenDebugMessage(1, 10, FColor::Blue, FString::Printf(TEXT("number %i"), m_burningBonesCount));
+            //GEngine->AddOnScreenDebugMessage(1, 10, FColor::Blue, FString::Printf(TEXT("number %i"), m_burningBonesCount));
             m_effectTimer[m_fireEffects[noCurrentBone]] = 0.f;
         }
 
@@ -807,7 +807,8 @@ void ARobotRebellionCharacter::cleanFireComp()
 
     m_burningBones.Empty();
     m_fireEffects.Empty();
-    GEngine->AddOnScreenDebugMessage(7, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
+    m_effectTimer.Empty();
+   // GEngine->AddOnScreenDebugMessage(7, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
     m_burningBonesCount = 0;
 
     TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());

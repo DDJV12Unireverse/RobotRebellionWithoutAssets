@@ -113,6 +113,8 @@ public:
 
     bool m_tpsMode;
 
+    bool m_isBurnEffectEnabled;
+
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
 
 public:
@@ -456,4 +458,5 @@ public:
 
 
     void disableFireEffect();
+
 };
