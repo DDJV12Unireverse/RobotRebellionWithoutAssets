@@ -48,7 +48,6 @@ public:
         TArray<TSubclassOf<class ANonPlayableCharacter>> m_populationToSpawn;
 
 
-
     /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
@@ -71,7 +70,7 @@ public:
     /************************************************************************/
     /* METHODS                                                              */
     /************************************************************************/
-    virtual void BeginPlay() override; 
+    virtual void BeginPlay() override;
 
 
 private:
@@ -86,7 +85,6 @@ private:
     void setNearTarget(class ANonPlayableCharacter* spawned);
 
     void checkCharactersOnBox();
-
 
 
 public:

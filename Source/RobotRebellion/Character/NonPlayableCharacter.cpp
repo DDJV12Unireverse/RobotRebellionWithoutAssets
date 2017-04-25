@@ -64,3 +64,35 @@ FVector ANonPlayableCharacter::aim(const FVector& directionToShoot) const
 
     return result;
 }
+
+void ANonPlayableCharacter::spawnEffect()
+{
+    UGameplayStatics::SpawnEmitterAtLocation(
+        GetWorld(),
+        m_spawnParticleSystem,
+        GetActorLocation(),
+        GetActorRotation(),
+        true
+    );
+
+    if(RootComponent->GetOwnerRole() >= ROLE_Authority)
+    {
+        multiSpawnEffect();
+    }
+}
+
+void ANonPlayableCharacter::multiSpawnEffect_Implementation()
+{
+    UGameplayStatics::SpawnEmitterAtLocation(
+        GetWorld(),
+        m_spawnParticleSystem,
+        GetActorLocation(),
+        GetActorRotation(),
+        true
+    );
+}
+
+bool ANonPlayableCharacter::multiSpawnEffect_Validate()
+{
+    return true;
+}

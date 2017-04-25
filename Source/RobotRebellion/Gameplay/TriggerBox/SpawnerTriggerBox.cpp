@@ -150,6 +150,8 @@ void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* worl
         {
              setNearTarget(spawned);
         }
+
+        spawned->spawnEffect();
     }
 }
 
