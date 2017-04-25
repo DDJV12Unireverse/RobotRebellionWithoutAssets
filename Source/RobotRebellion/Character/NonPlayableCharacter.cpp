@@ -28,6 +28,14 @@ void ANonPlayableCharacter::cppOnDeath()
     this->startTimedDestroy();
 }
 
+
+void ANonPlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME_CONDITION(ANonPlayableCharacter, m_isCrouch, COND_SkipOwner);
+}
+
 void ANonPlayableCharacter::dropLoot()
 {
     if (Role == ROLE_Authority)
