@@ -120,7 +120,13 @@ public:
     ARobotRebellionCharacter();
 
 
+    bool hasDoubleWeapon() const USE_NOEXCEPT;
+
     class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
+
+    const class UWeaponBase* getMainWeapon() const USE_NOEXCEPT;
+
+    const class UWeaponBase* getSecondaryWeapon() const USE_NOEXCEPT;
 
     virtual void BeginPlay() override;
 

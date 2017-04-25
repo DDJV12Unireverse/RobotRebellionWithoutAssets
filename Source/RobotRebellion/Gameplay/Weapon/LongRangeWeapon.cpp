@@ -28,7 +28,6 @@ void ULongRangeWeapon::fireMethod(AProjectile* projectile, const FVector& fireDi
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
     bool canFire = canAttack();
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "LongAtt");
     if(canFire && m_projectileClass != NULL)
     {
         // Retrieve the camera location and rotation
@@ -57,8 +56,6 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
             if(projectile)
             {
                 projectile->setOwner(user);
-
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
 
                 FVector fireDirection = user->aim(muzzleRotation.Vector());
 
@@ -71,20 +68,11 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
             }
         }
     }
-    else if(!canFire)
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading");
-    }
-    else
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
-    }
 }
 
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellionCharacter* ennemy)
 {
     bool canFire = canAttack();
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "LongAtt");
     if(canFire && m_projectileClass != NULL)
     {
         // Retrieve the camera location and rotation
@@ -114,8 +102,6 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
             {
                 projectile->setOwner(user);
 
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
-
                 // Fire
                 const FVector fireDirection = user->aim(UKismetMathLibrary::GetForwardVector(
                     UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation())));
@@ -127,14 +113,6 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
                 reload();
             }
         }
-    }
-    else if(!canFire)
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading");
-    }
-    else
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
     }
 }
 

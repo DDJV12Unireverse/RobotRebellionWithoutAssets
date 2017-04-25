@@ -31,7 +31,6 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
     if(canAttack())
     {
-        PRINT_MESSAGE_ON_SCREEN(FColor::Cyan, "ShortAtt");
         bool alreadyHit = false;
 
         //Sphere for short range collision
@@ -94,10 +93,11 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
         reload();
     }
-    else
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack! Let me breath!");
-    }
+}
+
+void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellionCharacter* ennemy)
+{
+    cppAttack(user);
 }
 
 void UShortRangeWeapon::inflictDamageLogic(ARobotRebellionCharacter* receiver, const FHitResult& hit)

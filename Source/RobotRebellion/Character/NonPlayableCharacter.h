@@ -13,12 +13,16 @@ UCLASS()
 class ROBOTREBELLION_API ANonPlayableCharacter : public ARobotRebellionCharacter
 {
 	GENERATED_BODY()
-        
+       
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool m_isCrouch;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        ULootTable* m_lootTable;
 public:
     ANonPlayableCharacter();
     //Loot Probability
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        ULootTable* m_lootTable;
 
     void dropLoot();
     UFUNCTION(Server, Reliable, WithValidation)
