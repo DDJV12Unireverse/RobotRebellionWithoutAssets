@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "FireProjectile.h"
 #include "Character/RobotRebellionCharacter.h"
+#include "Global/WorldInstanceEntity.h"
 
 
 AFireProjectile::AFireProjectile()
@@ -23,12 +24,12 @@ void AFireProjectile::Tick(float DeltaTime)
 
 void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    if (Role == ROLE_Authority)
+    if(Role == ROLE_Authority)
     {
         ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
-        if (receiver && m_owner != receiver && !receiver->isDead())
+        if(receiver && m_owner != receiver && !receiver->isDead())
         {
-            if (!receiver->isImmortal())
+            if(!receiver->isImmortal())
             {
                 DamageCoefficientLogic coeff;
 
@@ -45,7 +46,7 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
 
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
 
-                Damage damage{ m_owner, receiver };
+                Damage damage{m_owner, receiver};
 
                 Damage::DamageValue currentDamage = damage(
                     &UGlobalDamageMethod::normalHitWithWeaponComputed,
@@ -66,8 +67,13 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
         //ASurvivalCharacter* hitActor = Cast<ASurvivalCharacter>(Impact.GetActor());
         if(receiver)
         {
+            TArray<AActor*> entity;
+            UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+            if(entity.Num() > 0 && Cast<AWorldInstanceEntity>(entity[0])->IsBurnEffectEnabled())
+            {
+                receiver->spawnFireEffect(Hit.Location);
+            }
             //SpawnFireEffect(Impact);
-            receiver->spawnFireEffect(Hit.Location);
         }
         Destroy();
     }

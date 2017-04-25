@@ -281,8 +281,6 @@ public:
 
     ///////Burn Effects
 
-    bool isEffectEnabled;
-
     void spawnFireEffect(FVector location);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
