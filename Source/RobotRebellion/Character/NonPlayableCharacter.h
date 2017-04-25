@@ -30,4 +30,6 @@ public:
     virtual void cppOnDeath() override;
 
     virtual FVector aim(const FVector& directionToShoot) const override;
+
+    void goAway(const FVector& fromWhere, float delta);
 };
