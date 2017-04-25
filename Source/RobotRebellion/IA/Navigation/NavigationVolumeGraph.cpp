@@ -313,8 +313,8 @@ int32 NavigationVolumeGraph::getNearestVolume(FVector& point, float offset, bool
         TraceParams.bTraceAsyncScene = true;
         // atm only should only proc on static mesh
         FVector centerLocation = m_nodes[idVolume]->GetActorLocation();
-        m_nodes[idVolume]->GetWord()->LineTraceSingleByChannel(hitActors, point, centerLocation, ECC_GameTraceChannel9, TraceParams);
-        DRAW_DEBUG_LINE(m_nodes[idVolume]->GetWord(), point, centerLocation, FColor::Emerald);
+        m_nodes[idVolume]->GetWorld()->LineTraceSingleByChannel(hitActors, point, centerLocation, ECC_GameTraceChannel9, TraceParams);
+        DRAW_DEBUG_LINE(m_nodes[idVolume]->GetWorld(), point, centerLocation, FColor::Emerald);
 
         // get direction and normalize it
         FVector direction = centerLocation - point;
