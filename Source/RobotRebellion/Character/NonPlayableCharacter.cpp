@@ -18,7 +18,7 @@ void ANonPlayableCharacter::cppOnDeath()
 {
     dropLoot();
     this->m_alterationController->removeAllAlteration();
-
+    this->cleanFireComp();
     ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(this->GetController());
     if (controller)
     {

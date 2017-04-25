@@ -47,8 +47,12 @@ void ARobotRebellionCharacter::BeginPlay()
     m_isRestoreManaParticleSpawned = false;
     m_isReviveParticleSpawned = false;
     m_isShieldParticleSpawned = false;
+
+
     m_tickCount = 0.f;
     m_burningBonesCount = 0;
+    m_effectTimer.Empty();
+
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)
@@ -82,13 +86,17 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
             unspawnReviveParticle();
         }
     }
-
-    m_tickCount += deltaTime;
-    if(isBurning() && m_tickCount >= 1.f)
+    
+    
+    if(this->isBurning())
     {
+            m_tickCount += deltaTime;
+        if (m_tickCount >= 1.f)
+        {
         GEngine->AddOnScreenDebugMessage(0 + 1, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
         UpdateBurnEffect(m_tickCount);
         m_tickCount = 0.f;
+        }
     }
 }
 
@@ -160,6 +168,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
     DOREPLIFETIME(ARobotRebellionCharacter, m_isInCombat);
+    DOREPLIFETIME(ARobotRebellionCharacter, m_burningBonesCount);
 }
 
 UWeaponBase* ARobotRebellionCharacter::getCurrentEquippedWeapon() const USE_NOEXCEPT
@@ -645,7 +654,10 @@ void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
         if(m_effectTimer[m_fireEffects[noCurrentBone]] >= 5.f)
         {
             //  m_burningBones.Remove(currentBoneId);
-            m_fireEffects[noCurrentBone]->DestroyComponent();
+            if(m_fireEffects[noCurrentBone])
+            {
+                m_fireEffects[noCurrentBone]->DestroyComponent();
+            }
             //m_fireEffects[noCurrentBone]->Deactivate();
             --m_burningBonesCount;
             GEngine->AddOnScreenDebugMessage(1, 10, FColor::Blue, FString::Printf(TEXT("number %i"), m_burningBonesCount));
@@ -665,12 +677,7 @@ void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
 
             parentName.AppendString(debugName);
 
-            // GEngine->AddOnScreenDebugMessage(noCurrentBone + 1, 10, FColor::Blue, debugName);
-            //             if(parentName != FName("root"))
-            //             {
-            //             }
             displayFireOnBone(parentName);
-
 
             //CHILDRENBONE
             // Not very good performances, no other ways found
@@ -799,12 +806,10 @@ void ARobotRebellionCharacter::cleanFireComp()
 {
 
     m_burningBones.Empty();
-    // m_burningBones.RemoveAll(true);
     m_fireEffects.Empty();
     GEngine->AddOnScreenDebugMessage(7, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
-    //m_fireEffects.RemoveAll(true);
-    //m_fireEffects.Shrink()
     m_burningBonesCount = 0;
+
     TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());
     fireComponents.RemoveAll([&](UActorComponent* comp) {
         UParticleSystemComponent* systComp = Cast<UParticleSystemComponent>(comp);
