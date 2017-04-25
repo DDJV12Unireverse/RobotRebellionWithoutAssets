@@ -140,7 +140,7 @@ public:
 
 
     ////Server
-    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+    virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 
     virtual void cppOnRevive();

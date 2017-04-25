@@ -39,14 +39,20 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CONDITION")
         uint8 m_relativePosition : 1;
 
-    uint8 m_padding : 2;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CONDITION")
+        uint8 m_effectOnSpawn : 1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CONDITION")
+        uint8 m_comeFromUpper : 1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Population")
+        float m_upperOffset;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Population")
         TArray<FTransform> m_populationTransform;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Population")
         TArray<TSubclassOf<class ANonPlayableCharacter>> m_populationToSpawn;
-
 
 
     /************************************************************************/
@@ -71,7 +77,7 @@ public:
     /************************************************************************/
     /* METHODS                                                              */
     /************************************************************************/
-    virtual void BeginPlay() override; 
+    virtual void BeginPlay() override;
 
 
 private:
@@ -86,7 +92,6 @@ private:
     void setNearTarget(class ANonPlayableCharacter* spawned);
 
     void checkCharactersOnBox();
-
 
 
 public:
