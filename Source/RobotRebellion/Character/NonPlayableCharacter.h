@@ -35,6 +35,8 @@ public:
 
     virtual FVector aim(const FVector& directionToShoot) const override;
 
+    void goAway(const FVector& fromWhere, float delta);
+
     //Loot Probability
     void dropLoot();
 
