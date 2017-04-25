@@ -44,6 +44,9 @@ public:
     // Return the id of the volum below the point and update the point in order to be overlapped by volume
     int32 getBelowVolume(FVector& point, float offset) const;
 
+    // Return the id of the nearest volume and set the point to the found volume center
+    int32 getNearestVolume(FVector& point, float offset, bool useCenter = true) const;
+
     int32 getNodeAmount();
     int32 getEdgeAmount();
     bool isReadyToUse();
