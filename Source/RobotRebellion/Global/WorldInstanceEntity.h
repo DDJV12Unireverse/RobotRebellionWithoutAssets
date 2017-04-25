@@ -34,7 +34,7 @@ private:
     bool m_bossIsDead;
     bool m_gameIsStarted;
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Debug Display")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
         bool m_showVolumeBox;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
