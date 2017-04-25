@@ -151,7 +151,18 @@ void ASpawnerTriggerBox::internalSpawnCharacterAtIndex(int32 index, UWorld* worl
              setNearTarget(spawned);
         }
 
-        spawned->spawnEffect();
+        if (m_comeFromUpper)
+        {
+            FVector actorLocation = spawned->GetActorLocation();
+            actorLocation.Z += m_upperOffset;
+
+            spawned->SetActorLocation(actorLocation);
+        }
+
+        if (m_effectOnSpawn)
+        {
+            spawned->spawnEffect();
+        }
     }
 }
 
