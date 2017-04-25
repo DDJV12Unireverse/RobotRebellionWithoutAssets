@@ -653,12 +653,8 @@ void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
         m_effectTimer[m_fireEffects[noCurrentBone]] += DeltaTime;
         if(m_effectTimer[m_fireEffects[noCurrentBone]] >= 5.f && (m_fireEffects[noCurrentBone])->IsActive())
         {
-            //  m_burningBones.Remove(currentBoneId);
-            //if(m_fireEffects[noCurrentBone])
-            //{
-                //m_fireEffects[noCurrentBone]->DestroyComponent();
+            //m_fireEffects[noCurrentBone]->DestroyComponent();
             m_fireEffects[noCurrentBone]->Deactivate();
-            //}
             --m_burningBonesCount;
             //GEngine->AddOnScreenDebugMessage(1, 10, FColor::Blue, FString::Printf(TEXT("number %i"), m_burningBonesCount));
             m_effectTimer[m_fireEffects[noCurrentBone]] = 0.f;
@@ -780,12 +776,16 @@ void ARobotRebellionCharacter::spawnFireEffect(FVector location)
                 {
                     displayFireOnBone(bone);
                 }
-                multiSpawnFireEffect(location);
+                
             }
             else
             {
                 serverSpawnFireEffect(location);
             }
+        }
+        if (Role>=ROLE_Authority)
+        {
+            multiSpawnFireEffect(location);
         }
     }
 }
