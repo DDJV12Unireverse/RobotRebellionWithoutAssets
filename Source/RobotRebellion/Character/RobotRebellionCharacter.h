@@ -98,6 +98,8 @@ protected:
         float m_shieldEffectTimer;
 
 
+    class AWorldInstanceEntity* m_worldEntity;
+
 
     /************************************************************************/
     /* PROPERTY                                                             */

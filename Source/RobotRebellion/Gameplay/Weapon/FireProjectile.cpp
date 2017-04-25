@@ -27,17 +27,10 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
     ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
     if(receiver)
     {
-        TArray<AActor*> entity;
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
-        if(entity.Num() > 0 && Cast<AWorldInstanceEntity>(entity[0])->IsBurnEffectEnabled())
-        {
             receiver->spawnFireEffect(Hit.Location);
-        }
-        //SpawnFireEffect(Impact);
     }
     if(Role == ROLE_Authority)
     {
-        ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
         if(receiver && m_owner != receiver && !receiver->isDead())
         {
             if(!receiver->isImmortal())

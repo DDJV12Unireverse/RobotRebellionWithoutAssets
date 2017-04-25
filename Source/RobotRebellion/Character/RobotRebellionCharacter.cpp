@@ -21,6 +21,7 @@
 #include "Global/GameInstaller.h"
 
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+#include "Global/WorldInstanceEntity.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -52,6 +53,13 @@ void ARobotRebellionCharacter::BeginPlay()
     m_tickCount = 0.f;
     m_burningBonesCount = 0;
     m_effectTimer.Empty();
+
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
+    {
+        m_worldEntity = Cast<AWorldInstanceEntity>(entity[0]);
+    }
 
 }
 
@@ -727,9 +735,7 @@ void ARobotRebellionCharacter::displayFireOnBone(FName bone)
 
 void ARobotRebellionCharacter::multiDisplayFireOnBone_Implementation(FName bone)
 {
-    TArray<AActor*> entity;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
-    if(entity.Num() > 0 && Cast<AWorldInstanceEntity>(entity[0])->IsBurnEffectEnabled())
+    if(m_worldEntity->IsBurnEffectEnabled())
     {
         if(bone != FName("None"))
         {
@@ -759,9 +765,7 @@ void ARobotRebellionCharacter::spawnFireEffect(FVector location)
 {
     if(!isBurning())
     {
-        TArray<AActor*> entity;
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
-        if(entity.Num() > 0 && Cast<AWorldInstanceEntity>(entity[0])->IsBurnEffectEnabled())
+        if(m_worldEntity->IsBurnEffectEnabled())
         {
             //  receiver->spawnFireEffect(Hit.Location);
             if(Role >= ROLE_Authority)
@@ -776,14 +780,14 @@ void ARobotRebellionCharacter::spawnFireEffect(FVector location)
                 {
                     displayFireOnBone(bone);
                 }
-                
+
             }
             else
             {
                 serverSpawnFireEffect(location);
             }
         }
-        if (Role>=ROLE_Authority)
+        if(Role >= ROLE_Authority)
         {
             multiSpawnFireEffect(location);
         }
@@ -802,9 +806,7 @@ bool ARobotRebellionCharacter::serverSpawnFireEffect_Validate(FVector location)
 
 void ARobotRebellionCharacter::multiSpawnFireEffect_Implementation(FVector location)
 {
-    TArray<AActor*> entity;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
-    if(entity.Num() > 0 && Cast<AWorldInstanceEntity>(entity[0])->IsBurnEffectEnabled())
+    if(m_worldEntity->IsBurnEffectEnabled())
     {
         //receiver->spawnFireEffect(Hit.Location);
 
