@@ -20,6 +20,7 @@ void ADamageZone::BeginPlay()
 
     m_secondBetweenTick = 1.f / m_tickRate;
     PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, "spawn molotov zone - tick" + FString::SanitizeFloat(m_secondBetweenTick));
+    m_burnedActors = 0;
 }
 
 // Called every frame
@@ -28,7 +29,7 @@ void ADamageZone::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     if(m_deltaSinceLastTick + DeltaTime > m_secondBetweenTick)// time to deal damage
     {
-
+        
         m_deltaSinceLastTick = 0;// Reset delta
 
         // proceed sphere cast
@@ -57,8 +58,9 @@ void ADamageZone::Tick(float DeltaTime)
             {
                 // this is brut damage 
                 // TODO - use Damage class and more complexe damage calcul
-                if(m_isMolotov)
+                if(m_isMolotov && m_burnedActors<=5)
                 {
+                    ++m_burnedActors;
                     FVector tempLocation = currentHit.Location;
                     tempLocation.Z = 0;
                     temp->spawnFireEffect(tempLocation);

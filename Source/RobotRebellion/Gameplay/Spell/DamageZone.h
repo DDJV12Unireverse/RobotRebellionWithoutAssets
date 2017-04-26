@@ -31,6 +31,7 @@ private:
     float m_secondBetweenTick;
     // Store how many long ago was the last tick
     float m_deltaSinceLastTick;
+    int m_burnedActors;
 
 public:
     // Sets default values for this actor's properties
