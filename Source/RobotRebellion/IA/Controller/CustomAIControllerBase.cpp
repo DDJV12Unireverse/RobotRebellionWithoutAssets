@@ -51,7 +51,7 @@ void ACustomAIControllerBase::setTarget(class ARobotRebellionCharacter* attacker
 void ACustomAIControllerBase::aim(FVector& inOutFireDirection) const USE_NOEXCEPT
 {
     inOutFireDirection.Y += FMath::RandRange(-m_aimYMaxFallOffAngle, m_aimYMaxFallOffAngle);
-    inOutFireDirection.Z += FMath::RandRange(-m_aimZMaxFallOffAngle, m_aimZMaxFallOffAngle);
+    inOutFireDirection.Z += FMath::RandRange(-m_aimZMaxFallOffAngle, m_aimZMaxFallOffAngle) + m_aimZOffsetFallOffAngle;
 
     inOutFireDirection.Normalize();
 }
