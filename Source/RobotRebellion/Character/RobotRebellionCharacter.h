@@ -283,7 +283,7 @@ public:
 
     ///////Burn Effects
 
-    void spawnFireEffect(FVector location);
+    
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
         UParticleSystem* m_fireEffect;
@@ -297,10 +297,22 @@ public:
     int m_bonesSet;
 
     void UpdateBurnEffect(float DeltaTime);
-    void displayFireOnBone(FName bone);
+    void displayFireOnBone(const FName& bone);
 
     UFUNCTION(Reliable, NetMulticast)
-        void multiDisplayFireOnBone(FName bone);
+        void multiDisplayFireOnBone(const FName& bone);
+
+    void internalDisplayFireOnBone(const FName& bone);
+
+    void displayFireOnBoneArray(const TArray<FName>& bone);
+
+    void spawnFireEffect(FVector location);
+
+    UFUNCTION(Reliable, NetMulticast)
+        void multiDisplayFireOnBoneArray(const TArray<FName>& bone);
+
+    void internalDisplayFireOnBoneArray(const TArray<FName>& bone);
+
     UPROPERTY(BlueprintReadOnly, Replicated)
         int m_burningBonesCount;
     TMap<UParticleSystemComponent*, float> m_effectTimer;
@@ -316,11 +328,16 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverSpawnFireEffect(FVector location);
 
+    void internalSpawnFireEffect(FVector location);
+
     void cleanFireComp();
+    
     UFUNCTION(Reliable, NetMultiCast)
         void multiCleanFireComp();
     UFUNCTION(Reliable, Server, WithValidation)
         void serverCleanFireComp();
+
+    void internalCleanFireComp();
 
 };
 

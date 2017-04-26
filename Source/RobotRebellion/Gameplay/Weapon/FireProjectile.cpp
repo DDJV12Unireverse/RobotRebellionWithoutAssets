@@ -25,7 +25,7 @@ void AFireProjectile::Tick(float DeltaTime)
 void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
-    if(receiver)
+    if(receiver && receiver !=m_owner)
     {
             receiver->spawnFireEffect(Hit.Location);
     }
@@ -37,19 +37,6 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
             {
                 DamageCoefficientLogic coeff;
 
-                /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
-                true,
-                coeff,
-                &DamageCoefficientLogic::criticalHit,
-                &DamageCoefficientLogic::engagementHit,
-                &DamageCoefficientLogic::superEfficient,
-                &DamageCoefficientLogic::lessEfficient,
-                &DamageCoefficientLogic::multipleHit,
-                &DamageCoefficientLogic::graze
-                );
-
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
-
                 Damage damage{m_owner, receiver};
 
                 Damage::DamageValue currentDamage = damage(
@@ -60,11 +47,6 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
                 setReceiverInCombat(receiver);
                 receiver->inflictDamage(m_baseDamage*currentDamage);
             }
-            // COMMENTED FOR CHEAT CODE
-            //else
-            //{
-            //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-            //}
         }
         
 
