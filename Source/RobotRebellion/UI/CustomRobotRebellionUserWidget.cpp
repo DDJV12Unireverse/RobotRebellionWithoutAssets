@@ -3,13 +3,16 @@
 #include "RobotRebellion.h"
 #include "CustomRobotRebellionUserWidget.h"
 #include "Character/RobotRebellionCharacter.h"
+#include "Character/PlayableCharacter.h"
+#include "Gameplay/Spell/SpellKit.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 void UCustomRobotRebellionUserWidget::getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const
 {
     ARobotRebellionCharacter* character = Cast<ARobotRebellionCharacter>(GetOwningPlayerPawn());
 
-    if (character)
+    if(character)
     {
         health = character->getHealth();
         shield = character->getShield();
@@ -29,7 +32,7 @@ void UCustomRobotRebellionUserWidget::getManaRatio(float& ratio, float& mana, fl
 {
     ARobotRebellionCharacter* character = Cast<ARobotRebellionCharacter>(GetOwningPlayerPawn());
 
-    if (character)
+    if(character)
     {
         mana = character->getMana();
         maxMana = character->getMaxMana();
@@ -58,4 +61,53 @@ FString UCustomRobotRebellionUserWidget::healthParseToScreen(float health, float
 FString UCustomRobotRebellionUserWidget::manaParseToScreen(float mana, float maxMana) const
 {
     return FString::FromInt(mana) + TEXT("/") + FString::FromInt(maxMana);
+}
+
+TArray<FString> UCustomRobotRebellionUserWidget::cooldownParseToScreen() const
+{
+    // get every actual cooldown - Maybe replicate cooldown on client!
+    APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
+    TArray<FString> cooldownsStr{};
+    if(character)
+    { // Try to reach spell kit comp
+        TArray<USpellKit*> spellKitComps;
+        character->GetComponents<USpellKit>(spellKitComps);
+        if(spellKitComps.Num() > 0)
+        {
+            TArray<float> cooldownsF = spellKitComps[0]->getCooldowns();
+            for(int index{}; index < cooldownsF.Num(); ++index)
+            {
+                cooldownsStr.Emplace(processFloatCooldown(cooldownsF[index]));
+            }
+        }
+    }
+    return cooldownsStr;
+}
+
+
+FString UCustomRobotRebellionUserWidget::processFloatCooldown(float value) const 
+{
+    if(value > 0.f)
+    {
+        if(value >= 1.1f)
+        {
+            // Only print second
+            int32 valueInt = UKismetMathLibrary::FTrunc(value + 1.f);
+            return FString::FromInt(valueInt);
+        }
+        else if(value >= 1.f)
+        {// Only print 1
+            return FString{"1"};
+        }
+        else
+        {
+            // print second value
+            int32 valueInt = UKismetMathLibrary::FTrunc(value * 10.f);
+            return FString::SanitizeFloat(static_cast<float>(valueInt) / 10.f);
+        }
+    }
+    else
+    {
+        return FString{};
+    }
 }

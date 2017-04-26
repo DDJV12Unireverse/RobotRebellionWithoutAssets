@@ -47,6 +47,9 @@ public:
     // Must be called to initialize effect list with Blueprint specified class
     void initializeSpell();
 
-    bool canCast();
+    bool canCast() const;
+
+    // return the actual time remaining before casting is possible if can cast return -1.f
+    float getCurrentCooldown() const;
 
 };

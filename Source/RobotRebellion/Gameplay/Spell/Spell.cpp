@@ -36,8 +36,20 @@ void USpell::initializeSpell()
     }
 }
 
-bool USpell::canCast()
+bool USpell::canCast() const
 {
-    return (FPlatformTime::Seconds() > m_nextAllowedCastTimer) 
+    return (FPlatformTime::Seconds() > m_nextAllowedCastTimer)
         && Cast<ARobotRebellionCharacter>(GetOwner())->getMana() >= m_manaCost;
+}
+
+float USpell::getCurrentCooldown()const
+{
+    if(!canCast())
+    {
+        return m_nextAllowedCastTimer - FPlatformTime::Seconds();
+    }
+    else
+    {
+        return -1.0f;
+    }
 }

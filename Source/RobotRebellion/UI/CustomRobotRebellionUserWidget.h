@@ -12,7 +12,8 @@ UCLASS(Blueprintable)
 class ROBOTREBELLION_API UCustomRobotRebellionUserWidget : public URobotRebellionWidget
 {
 	GENERATED_BODY()
-	
+private:
+    FString processFloatCooldown(float value) const;
 
 public:
     //For blueprint : 4 output : ratio, health, shield and maxHealth
@@ -30,4 +31,9 @@ public:
     //Parse into FString = mana / manaMax
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         FString manaParseToScreen(float mana, float maxMana) const;
+
+    // Parse cooldown into cooldown ofr every spell
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        TArray<FString> cooldownParseToScreen() const;
+
 };

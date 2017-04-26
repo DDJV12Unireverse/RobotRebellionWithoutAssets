@@ -51,3 +51,13 @@ void USpellKit::cast(int32 index)
         m_spells[index]->cast();
     }
 }
+
+TArray<float> USpellKit::getCooldowns()
+{
+    TArray<float> cooldowns{};
+    for(int32 index{}; index < m_spells.Num(); ++index)
+    {
+        cooldowns.Emplace(m_spells[index]->getCurrentCooldown());
+    }
+    return cooldowns;
+}
