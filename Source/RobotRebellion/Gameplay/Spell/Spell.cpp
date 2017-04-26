@@ -11,11 +11,20 @@
 USpell::USpell()
 {
     PrimaryComponentTick.bCanEverTick = true;
+    bReplicates = true;
 }
 
 void USpell::BeginPlay()
 {
     Super::BeginPlay();
+}
+
+
+void USpell::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME_CONDITION(USpell, m_nextAllowedCastTimer, COND_OwnerOnly);
 }
 
 void USpell::cast()
@@ -38,6 +47,8 @@ void USpell::initializeSpell()
 
 bool USpell::canCast() const
 {
+    int bp = 5;
+    bp ++;
     return (FPlatformTime::Seconds() > m_nextAllowedCastTimer)
         && Cast<ARobotRebellionCharacter>(GetOwner())->getMana() >= m_manaCost;
 }

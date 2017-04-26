@@ -25,7 +25,7 @@ public:
         class UCameraComponent* FollowCamera;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
         class URobotRobellionSpawnerClass* m_spawner;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", Replicated)
         USpellKit* m_spellKit;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
         class USkeletalMeshComponent* m_fpsMesh;

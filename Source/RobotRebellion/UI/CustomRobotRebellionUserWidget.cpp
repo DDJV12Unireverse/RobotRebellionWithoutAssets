@@ -68,6 +68,17 @@ TArray<FString> UCustomRobotRebellionUserWidget::cooldownParseToScreen() const
     // get every actual cooldown - Maybe replicate cooldown on client!
     APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
     TArray<FString> cooldownsStr{};
+    if(character->Role != ROLE_Authority)
+    {
+        int bp = 5;
+        bp++;
+    }
+    else
+    {
+        int bp = 5;
+        bp++;
+    }
+
     if(character)
     { // Try to reach spell kit comp
         TArray<USpellKit*> spellKitComps;

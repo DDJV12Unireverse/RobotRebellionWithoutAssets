@@ -32,8 +32,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
         TArray<TSubclassOf<class UEffect>> m_effectsClass;
+
 protected:
-    float m_nextAllowedCastTimer;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
+        float m_nextAllowedCastTimer;
 
     TArray<UEffect *> m_effects;
 
@@ -51,5 +53,7 @@ public:
 
     // return the actual time remaining before casting is possible if can cast return -1.f
     float getCurrentCooldown() const;
+
+    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 
 };

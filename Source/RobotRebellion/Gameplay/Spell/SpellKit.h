@@ -18,6 +18,7 @@ public:
         TArray<TSubclassOf<class USpell>> m_spellsClass; // forward decl
 
 private:
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Spells", meta = (AllowPrivateAccess = "true"), Replicated)
     TArray<USpell *> m_spells;
 
 public:	
@@ -34,5 +35,7 @@ public:
     void cast(int32 index);
 
     TArray<float> getCooldowns();
+
+    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 	
 };
