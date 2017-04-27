@@ -124,7 +124,6 @@ void APlayableCharacter::BeginPlay()
     {
         this->EnablePlayInput(false);
     }
-
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
@@ -1261,5 +1260,18 @@ void APlayableCharacter::enableDroneDisplay()
     if(droneController)
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
+    }
+}
+
+void APlayableCharacter::updateHUD()
+{
+    // If HUD already create destroy it and create a new one
+    APlayerController* MyPC = Cast<APlayerController>(GetController());
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->RemoveWidget(myHud->HUDCharacterImpl);
+
+        myHud->HUDCharacterImpl = myHud->CreateCustomWidget<UCustomRobotRebellionUserWidget>(myHud->HUDCharacterWidget.GetDefaultObject());
     }
 }

@@ -7,6 +7,18 @@
 #include "Gameplay/Spell/SpellKit.h"
 #include "Kismet/KismetMathLibrary.h"
 
+EClassType UCustomRobotRebellionUserWidget::getPlayerClass() const
+{
+    APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
+    if(character)
+    {
+        return character->getClassType();
+    }
+    else
+    {
+        return EClassType::NONE;
+    }
+}
 
 void UCustomRobotRebellionUserWidget::getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const
 {

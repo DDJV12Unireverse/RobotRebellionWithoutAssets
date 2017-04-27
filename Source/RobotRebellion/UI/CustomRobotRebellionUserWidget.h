@@ -3,6 +3,7 @@
 #pragma once
 
 #include "UI/RobotRebellionWidget.h"
+#include "Character/ClassType.h" 
 #include "CustomRobotRebellionUserWidget.generated.h"
 
 /**
@@ -16,6 +17,10 @@ private:
     FString processFloatCooldown(float value) const;
 
 public:
+    //For blueprint : 4 output : ratio, health, shield and maxHealth
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        EClassType getPlayerClass() const;
+
     //For blueprint : 4 output : ratio, health, shield and maxHealth
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         void getHealthRatio(float& ratio, float& ratioShield, float& health, float& shield, float& maxHealth) const;

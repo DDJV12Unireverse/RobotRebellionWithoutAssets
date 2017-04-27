@@ -101,6 +101,7 @@ void URobotRobellionSpawnerClass::spawnAndReplace(APlayableCharacter* owner, ECl
 
             intermediary->createTextBillboardWithThisCamera(intermediary->FollowCamera);
             intermediary->updateAllCharacterBillboard(intermediary->FollowCamera);
+            intermediary->updateHUD();
 
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Black, "Spawn");
         }

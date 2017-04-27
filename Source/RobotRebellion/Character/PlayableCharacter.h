@@ -453,4 +453,6 @@ public:
 
     UFUNCTION(Reliable, Client)
         void updateAllCharacterBillboard(UCameraComponent* camToFollow);
+
+    void updateHUD();
 };
