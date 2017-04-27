@@ -17,6 +17,11 @@ private:
     FString processFloatCooldown(float value) const;
 
 public:
+
+    //For blueprint : 4 output : ratio, health, shield and maxHealth
+    UFUNCTION(BlueprintNativeEvent, Category = "UpdateMethod")
+        void updateClass(EClassType classType);
+
     //For blueprint : 4 output : ratio, health, shield and maxHealth
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         EClassType getPlayerClass() const;

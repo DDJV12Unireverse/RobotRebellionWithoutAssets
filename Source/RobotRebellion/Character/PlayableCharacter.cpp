@@ -517,6 +517,7 @@ void APlayableCharacter::switchWeapon()
     if(Role < ROLE_Authority)
     {
         serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+        m_weaponInventory->switchWeapon(); // switch weapon locally to show it on HUD
     }
     else
     {
@@ -741,8 +742,8 @@ void APlayableCharacter::changeInstanceTo(EClassType toType)
     m_spawner->spawnAndReplace(this, toType);
     UWorld* w = this->GetWorld();
     TArray<AActor*> entity;
-    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(),entity);
-    if(entity.Num()>0)
+    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
     {
         Cast<AWorldInstanceEntity>(entity[0])->setStartGameMode();
     }
@@ -1263,15 +1264,20 @@ void APlayableCharacter::enableDroneDisplay()
     }
 }
 
-void APlayableCharacter::updateHUD()
+void APlayableCharacter::updateHUD(EClassType classType)
 {
     // If HUD already create destroy it and create a new one
     APlayerController* MyPC = Cast<APlayerController>(GetController());
+    if(Role != ROLE_Authority)
+    {
+        int bp = 5;
+    }
     if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
-        myHud->RemoveWidget(myHud->HUDCharacterImpl);
-
-        myHud->HUDCharacterImpl = myHud->CreateCustomWidget<UCustomRobotRebellionUserWidget>(myHud->HUDCharacterWidget.GetDefaultObject());
+        if(myHud)
+        {
+            myHud->HUDCharacterImpl->updateClass(classType);
+        }
     }
 }

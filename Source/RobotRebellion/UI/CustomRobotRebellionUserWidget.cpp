@@ -7,6 +7,11 @@
 #include "Gameplay/Spell/SpellKit.h"
 #include "Kismet/KismetMathLibrary.h"
 
+void UCustomRobotRebellionUserWidget::updateClass_Implementation(EClassType classType)
+{
+    // Does Nothing
+}
+
 EClassType UCustomRobotRebellionUserWidget::getPlayerClass() const
 {
     APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
