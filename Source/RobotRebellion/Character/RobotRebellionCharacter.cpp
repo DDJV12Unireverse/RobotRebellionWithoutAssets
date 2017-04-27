@@ -114,10 +114,6 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     }
 
 
-
-    if(this->isBurning())
-    {
-        m_tickCount += deltaTime;
         if(m_healthBar)
         {
             //Orient lifeBar for player camera
@@ -131,6 +127,10 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
 
             }
         }
+
+    if(this->isBurning())
+    {
+        m_tickCount += deltaTime;
         if(m_tickCount >= 1.33f)
         {
             //GEngine->AddOnScreenDebugMessage(0 + 1, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
