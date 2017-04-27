@@ -122,3 +122,22 @@ FString UCustomRobotRebellionUserWidget::processFloatCooldown(float value) const
         return FString{};
     }
 }
+
+
+FString UCustomRobotRebellionUserWidget::bombParseToScreen() const
+{
+    return FString{};
+}
+
+FString UCustomRobotRebellionUserWidget::healthPotsParseToScreen() const
+{
+    return FString{};
+}
+
+FString UCustomRobotRebellionUserWidget::manaPotsParseToScreen() const
+{
+    return FString{};
+}
+
+
+

@@ -36,4 +36,16 @@ public:
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         TArray<FString> cooldownParseToScreen() const;
 
+    // Parse cooldown into cooldown ofr every spell
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        FString bombParseToScreen() const;
+
+    // Parse health pots amount into cooldown ofr every spell
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        FString healthPotsParseToScreen() const;
+    
+    // Parse mana pots amount into cooldown ofr every spell
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        FString manaPotsParseToScreen() const;
+
 };
