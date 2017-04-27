@@ -32,20 +32,23 @@ public:
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         FString manaParseToScreen(float mana, float maxMana) const;
 
-    // Parse cooldown into cooldown ofr every spell
+    // Parse cooldown into cooldown for every spell
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         TArray<FString> cooldownParseToScreen() const;
 
-    // Parse cooldown into cooldown ofr every spell
+    // Parse cooldown into 
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         FString bombParseToScreen() const;
 
-    // Parse health pots amount into cooldown ofr every spell
+    // Parse health pots amount 
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         FString healthPotsParseToScreen() const;
     
-    // Parse mana pots amount into cooldown ofr every spell
+    // Parse mana pots amount 
     UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
         FString manaPotsParseToScreen() const;
 
-};
+    // Check witch weapon is equipped return true if it's the main
+    UFUNCTION(BlueprintCallable, Category = "UpdateMethod")
+        bool isMainWeaponEquipped()const;
+};  

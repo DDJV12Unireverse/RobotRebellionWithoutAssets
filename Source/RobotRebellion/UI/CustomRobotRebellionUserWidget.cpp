@@ -181,5 +181,13 @@ FString UCustomRobotRebellionUserWidget::manaPotsParseToScreen() const
     return FString{};
 }
 
-
+bool UCustomRobotRebellionUserWidget::isMainWeaponEquipped()const
+{
+    APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
+    if(character)
+    {
+        return character->m_weaponInventory->isMainWeaponEquipped();
+    }
+    return true;
+}
 
