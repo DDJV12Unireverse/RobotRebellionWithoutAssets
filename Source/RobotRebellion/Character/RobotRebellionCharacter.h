@@ -4,7 +4,6 @@
 #include "../Gameplay/Alteration/AlterationController.h"
 #include "../UI/ELivingTextAnimMode.h"
 #include "GameFramework/Character.h"
-
 #include "RobotRebellionCharacter.generated.h"
 
 
@@ -16,6 +15,8 @@ class ARobotRebellionCharacter : public ACharacter
 {
     GENERATED_BODY()
 
+private:
+    bool m_isShieldAnimated;
 
 public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
@@ -32,9 +33,14 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BillBoard")
         class UTextBillboardComponent* m_textBillboardInstance;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IA")
+        bool m_canKillItsAllies;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IA")
+        bool m_canTransmitItsTarget;
+
     UPROPERTY(Replicated)
         bool m_isInCombat;
-
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
@@ -82,20 +88,19 @@ protected:
 
 
     ////SHIELD EFFECT
+    /** Shield effect if animation shield animation is enabled*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         UParticleSystem* m_shieldParticuleEffect;
 
+    /** Shield effect if animation shield animation is dsables*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
-        float m_shieldEffectDuration;
+        UParticleSystem* m_shieldParticuleEffectUnanimated;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         UParticleSystemComponent* m_shieldParticleSystem;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         bool m_isShieldParticleSpawned;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
-        float m_shieldEffectTimer;
 
 
     class AWorldInstanceEntity* m_worldEntity;
@@ -108,7 +113,11 @@ protected:
     void(ARobotRebellionCharacter::* m_disableBeforeDestroyDelegate)();
 
 
+public:
+    ////HEALTH BAR
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HealthBar)
+       class UWidgetComponent* m_healthBar;
 
 public:
     /************************************************************************/
@@ -119,7 +128,13 @@ public:
     ARobotRebellionCharacter();
 
 
+    bool hasDoubleWeapon() const USE_NOEXCEPT;
+
     class UWeaponBase* getCurrentEquippedWeapon() const USE_NOEXCEPT;
+
+    const class UWeaponBase* getMainWeapon() const USE_NOEXCEPT;
+
+    const class UWeaponBase* getSecondaryWeapon() const USE_NOEXCEPT;
 
     virtual void BeginPlay() override;
 
@@ -127,7 +142,7 @@ public:
 
 
     ////Server
-    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+    virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 
     virtual void cppOnRevive();

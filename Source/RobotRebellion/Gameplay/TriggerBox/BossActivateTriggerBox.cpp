@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "BossActivateTriggerBox.h"
-#include "../Global/RobotRebellionGameMode.h"
+
 
 ABossActivateTriggerBox::ABossActivateTriggerBox()
 {

@@ -36,7 +36,7 @@ private:
     bool m_isBurnEffectEnabled;
 
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Debug Display")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
         bool m_showVolumeBox;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
