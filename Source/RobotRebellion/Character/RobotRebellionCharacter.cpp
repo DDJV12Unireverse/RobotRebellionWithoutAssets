@@ -38,6 +38,8 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 
     m_isInCombat = false;
 
+    m_isShieldAnimated = true;
+
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -50,10 +52,10 @@ void ARobotRebellionCharacter::BeginPlay()
     m_isReviveParticleSpawned = false;
     m_isShieldParticleSpawned = false;
     m_healthBar = Cast<UWidgetComponent>(GetComponentByClass(UWidgetComponent::StaticClass()));
-    if (m_healthBar)
+    if(m_healthBar)
     {
         ULifeBarWidget* widget = Cast<ULifeBarWidget>(m_healthBar->GetUserWidgetObject());
-        if (widget)
+        if(widget)
         {
             widget->setOwner(this);
         }
@@ -93,18 +95,18 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     }
 
 
-     if(m_healthBar)
-     {
-         //Orient lifeBar for player camera
-         APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-         if(charac)
-         {
-             UCameraComponent* camera = charac->GetFollowCamera();
-             FRotator camRot = camera->GetComponentRotation() ;
-             m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
-             m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()+50.f));
-         }
-     }
+    if(m_healthBar)
+    {
+        //Orient lifeBar for player camera
+        APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+        if(charac)
+        {
+            UCameraComponent* camera = charac->GetFollowCamera();
+            FRotator camRot = camera->GetComponentRotation();
+            m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
+            m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 50.f));
+        }
+    }
 }
 
 void ARobotRebellionCharacter::disablingEverything()
@@ -606,9 +608,42 @@ void ARobotRebellionCharacter::spawnShieldParticle()
 
     if(!m_isShieldParticleSpawned)
     {
-        m_shieldParticleSystem = UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
-                                                                        GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
-                                                                        GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        if(m_isShieldAnimated)
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
+        else
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffectUnanimated, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
+    }
+
+    // Test if shield animation has changed in option
+    if(/* m_isShieldAnimated != option.animatedShield*/false)
+    {
+        // Destroye old particle emitter and build a new one
+        m_shieldParticleSystem->DestroyComponent();
+        /*m_isShieldAnimated = option.animatedShield*/
+        if(m_isShieldAnimated)
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
+        else
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffectUnanimated, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
     }
     m_shieldParticleSystem->ActivateSystem(true);
     m_isShieldParticleSpawned = true;
@@ -633,10 +668,44 @@ void ARobotRebellionCharacter::multiSpawnShieldParticle_Implementation()
 {
     if(!m_isShieldParticleSpawned)
     {
-        m_shieldParticleSystem = UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
-                                                                        GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
-                                                                        GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        if(m_isShieldAnimated)
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
+        else
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffectUnanimated, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
     }
+
+    // Test if shield animation has changed in option
+    if(/* m_isShieldAnimated != option.animatedShield*/false)
+    {
+        // Destroye old particle emitter and build a new one
+        m_shieldParticleSystem->DestroyComponent();
+        /*m_isShieldAnimated = option.animatedShield*/
+        if(m_isShieldAnimated)
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffect, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
+        else
+        {
+            m_shieldParticleSystem =
+                UGameplayStatics::SpawnEmitterAttached(m_shieldParticuleEffectUnanimated, RootComponent, NAME_None,
+                                                       GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                                                       GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
+        }
+    }
+
     m_shieldParticleSystem->ActivateSystem(true);
 
     m_isShieldParticleSpawned = true;

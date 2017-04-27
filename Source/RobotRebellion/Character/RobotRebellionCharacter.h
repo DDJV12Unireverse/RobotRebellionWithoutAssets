@@ -15,6 +15,8 @@ class ARobotRebellionCharacter : public ACharacter
 {
     GENERATED_BODY()
 
+private:
+    bool m_isShieldAnimated;
 
 public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
@@ -39,7 +41,6 @@ public:
 
     UPROPERTY(Replicated)
         bool m_isInCombat;
-
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
@@ -87,20 +88,19 @@ protected:
 
 
     ////SHIELD EFFECT
+    /** Shield effect if animation shield animation is enabled*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         UParticleSystem* m_shieldParticuleEffect;
 
+    /** Shield effect if animation shield animation is dsables*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
-        float m_shieldEffectDuration;
+        UParticleSystem* m_shieldParticuleEffectUnanimated;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         UParticleSystemComponent* m_shieldParticleSystem;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         bool m_isShieldParticleSpawned;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
-        float m_shieldEffectTimer;
 
 
 
