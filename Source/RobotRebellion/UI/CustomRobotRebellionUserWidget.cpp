@@ -96,7 +96,7 @@ TArray<FString> UCustomRobotRebellionUserWidget::cooldownParseToScreen() const
 }
 
 
-FString UCustomRobotRebellionUserWidget::processFloatCooldown(float value) const 
+FString UCustomRobotRebellionUserWidget::processFloatCooldown(float value) const
 {
     if(value > 0.f)
     {
@@ -126,16 +126,58 @@ FString UCustomRobotRebellionUserWidget::processFloatCooldown(float value) const
 
 FString UCustomRobotRebellionUserWidget::bombParseToScreen() const
 {
-    return FString{};
+    APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
+    if(character)
+    {
+        if(character->m_bombCount == character->m_nbBombMax)
+        {
+            return FString{"MAX"};
+        }
+        else
+        {
+            return FString::FromInt(character->m_bombCount);
+        }
+    }
+    else
+    {
+        return FString{};
+    }
 }
 
 FString UCustomRobotRebellionUserWidget::healthPotsParseToScreen() const
 {
-    return FString{};
+    APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
+    if(character)
+    {
+        if(character->m_healthPotionsCount == character->m_nbHealthPotionMax)
+        {
+            return FString{"MAX"};
+        }
+        else
+        {
+            return FString::FromInt(character->m_healthPotionsCount);
+        }
+    }
+    else
+    {
+        return FString{};
+    }
 }
 
 FString UCustomRobotRebellionUserWidget::manaPotsParseToScreen() const
 {
+    APlayableCharacter* character = Cast<APlayableCharacter>(GetOwningPlayerPawn());
+    if(character)
+    {
+        if(character->m_manaPotionsCount == character->m_nbManaPotionMax)
+        {
+            return FString{"MAX"};
+        }
+        else
+        {
+            return FString::FromInt(character->m_manaPotionsCount);
+        }
+    }
     return FString{};
 }
 
