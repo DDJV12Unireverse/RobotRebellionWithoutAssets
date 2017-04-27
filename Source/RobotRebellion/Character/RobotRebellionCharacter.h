@@ -292,6 +292,7 @@ public:
 
     TArray<int32> m_burningBones;
     TArray<UParticleSystemComponent*> m_fireEffects;
+    TMap<UParticleSystemComponent*, float> m_effectTimer;
     float m_tickCount;
     int m_bonesToUpdate;
     int m_bonesSet;
@@ -315,7 +316,7 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Replicated)
         int m_burningBonesCount;
-    TMap<UParticleSystemComponent*, float> m_effectTimer;
+    
     bool isBurning()
     {
         return (m_burningBonesCount > 0);

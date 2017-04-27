@@ -36,7 +36,7 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
     m_alterationController = CreateDefaultSubobject<UAlterationController>(TEXT("AlterationController"));
 
     m_isInCombat = false;
-
+    
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -61,6 +61,9 @@ void ARobotRebellionCharacter::BeginPlay()
     }
     m_bonesToUpdate = 0;
     m_bonesSet = 5;
+    m_burningBones.Reserve(GetMesh()->GetNumBones());
+    m_fireEffects.Reserve(GetMesh()->GetNumBones());
+    m_effectTimer.Reserve(GetMesh()->GetNumBones());
 
 }
 
@@ -670,6 +673,7 @@ void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
             --m_burningBonesCount;
             //GEngine->AddOnScreenDebugMessage(1, 10, FColor::Blue, FString::Printf(TEXT("number %i"), m_burningBonesCount));
             m_effectTimer[m_fireEffects[noCurrentBone]] = 0.f;
+            continue;
         }
 
 
@@ -681,6 +685,7 @@ void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
         if(intIsPresent == -1)
         {
             bonesToBurn.Emplace(parentName);
+            continue;
 
             //CHILDRENBONE
             // Not very good performances, no other ways found (dont update every bone each time for better performances)
@@ -843,17 +848,17 @@ void ARobotRebellionCharacter::internalCleanFireComp()
     m_effectTimer.Reset();
     m_burningBonesCount = 0;
 
-    TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());
-    fireComponents.RemoveAll([&](UActorComponent* comp) {
-        UParticleSystemComponent* systComp = Cast<UParticleSystemComponent>(comp);
-        //Change for integration
-        systComp->DestroyComponent();
-        if(systComp)
-        {
-            return true;
-        }
-        return false;
-    });
+//    TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());
+//    fireComponents.RemoveAll([&](UActorComponent* comp) {
+//         UParticleSystemComponent* systComp = Cast<UParticleSystemComponent>(comp);
+//         //Change for integration
+//         systComp->DestroyComponent();
+//         if(systComp)
+//         {
+//             return true;
+//         }
+//         return false;
+//     });
 }
 
 void ARobotRebellionCharacter::cleanFireComp()
