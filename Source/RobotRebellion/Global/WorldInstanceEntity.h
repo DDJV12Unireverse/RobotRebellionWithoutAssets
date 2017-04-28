@@ -33,8 +33,10 @@ private:
 
     bool m_bossIsDead;
     bool m_gameIsStarted;
+    bool m_isBurnEffectEnabled;
+
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Debug Display")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
         bool m_showVolumeBox;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
@@ -128,6 +130,16 @@ public:
         void serverSetupAudioComponents();
     UFUNCTION(Reliable, NetMulticast)
         void multiSetupAudioComponents();
+
+    const bool IsBurnEffectEnabled()
+    {
+        return m_isBurnEffectEnabled;
+    }
+
+    void setIsBurnEffectEnabled(bool enable)
+    {
+        m_isBurnEffectEnabled = enable;
+    }
 
 private:
     void internalSetupAudioComponents();

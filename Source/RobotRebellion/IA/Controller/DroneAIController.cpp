@@ -93,7 +93,7 @@ void ADroneAIController::updateEnnemiesCampInfo()
             ++m_ennemyInScene;
             FVector ennemyPosition = GetPawn()->GetActorLocation();
 
-            if (FVector::DistSquared(current->GetActorLocation(), ennemyPosition) < squaredDetectRange)
+            if(FVector::DistSquared(current->GetActorLocation(), ennemyPosition) < squaredDetectRange)
             {
                 ++m_ennemyNear;
                 m_ennemyNearBarycenter += ennemyPosition;
@@ -101,7 +101,7 @@ void ADroneAIController::updateEnnemiesCampInfo()
         }
     }
 
-    if (m_ennemyNear != 0)
+    if(m_ennemyNear != 0)
     {
         m_ennemyNearBarycenter /= m_ennemyNear;
     }
@@ -127,7 +127,7 @@ void ADroneAIController::updateAlliesCampInfo()
         }
     }
 
-    if (m_alliesAliveCount != 0)
+    if(m_alliesAliveCount != 0)
     {
         m_groupBarycenter /= m_alliesAliveCount;
     }
@@ -382,7 +382,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_currentTime = 0.f;
     }
 
-    if (m_showDestination)
+    if(m_showDestination)
     {
         DrawDebugSphere(
             GetWorld(),
@@ -413,7 +413,7 @@ void ADroneAIController::dropBomb()
         TArray<AActor*> ActorsToIgnore{drone};
         TArray<FHitResult> OutHits;
 
-        
+
         FVector dropLocation = drone->GetActorLocation();
         dropLocation.Z -= m_stationaryElevation;
 
@@ -429,7 +429,7 @@ void ADroneAIController::dropBomb()
             OutHits,
             true
         );
-        
+
         if(OutHits.Num())
         {
             drone->drop();
@@ -447,7 +447,7 @@ void ADroneAIController::findDropZone()
 void ADroneAIController::followKing()
 {
     this->setDestination(
-        (m_groupBarycenter * m_alliesAliveCount + m_coeffKing * m_king->GetActorLocation()) / 
+        (m_groupBarycenter * m_alliesAliveCount + m_coeffKing * m_king->GetActorLocation()) /
         (m_alliesAliveCount + m_coeffKing)
     );
 }
@@ -478,7 +478,7 @@ void ADroneAIController::followFireZone()
 
 void ADroneAIController::followSafeZone()
 {
-    if (m_idleTimer > m_updateSafeZoneCooldownTime)
+    if(m_idleTimer > m_updateSafeZoneCooldownTime)
     {
         m_actionFinished = true;
         return;
@@ -508,7 +508,7 @@ void ADroneAIController::setFollowGroup()
     m_actionFinished = false;
     this->m_performAction = &ADroneAIController::followGroup;
 
-    this->setDestination({ m_groupBarycenter.X, m_groupBarycenter.Y, m_stationaryElevation });
+    this->setDestination({m_groupBarycenter.X, m_groupBarycenter.Y, m_stationaryElevation});
     // TODO - find and set the destination
 }
 
@@ -580,28 +580,28 @@ void ADroneAIController::chooseNextAction()
 
     float bestScore = -1.f;
 
-    for (int iter = 0; iter < DRONE_ACTION_COUNT; ++iter)
+    for(int iter = 0; iter < DRONE_ACTION_COUNT; ++iter)
     {
-        if (scoresArray[iter] > bestScore)
+        if(scoresArray[iter] > bestScore)
         {
             bestScore = scoresArray[iter];
-            switch (iter)
+            switch(iter)
             {
-            case DRONE_MOVING:
-                m_state = DRONE_MOVING;
-                break;
+                case DRONE_MOVING:
+                    m_state = DRONE_MOVING;
+                    break;
 
-            case DRONE_COMBAT:
-                m_state = DRONE_COMBAT;
-                break;
+                case DRONE_COMBAT:
+                    m_state = DRONE_COMBAT;
+                    break;
 
-            case DRONE_RECHARGE:
-                m_state = DRONE_RECHARGE;
-                break;
+                case DRONE_RECHARGE:
+                    m_state = DRONE_RECHARGE;
+                    break;
 
-            case DRONE_WAITING:
-            default:
-                m_state = DRONE_WAITING;
+                case DRONE_WAITING:
+                default:
+                    m_state = DRONE_WAITING;
             }
         }
     }
@@ -621,7 +621,7 @@ void ADroneAIController::CheckEnnemyNearPosition(const FVector& position, float 
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6), // Beasts
     };
-    TArray<AActor*> ActorsToIgnore{ this->GetPawn() };
+    TArray<AActor*> ActorsToIgnore{this->GetPawn()};
     TArray<FHitResult> OutHits;
 
     m_sensedEnnemies.Reset();
@@ -685,7 +685,7 @@ float ADroneAIController::getBombScore(const FVector& position)
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6), // Beasts
         UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel7), // King
     };
-    TArray<AActor*> ActorsToIgnore{ owner };
+    TArray<AActor*> ActorsToIgnore{owner};
     TArray<FHitResult> OutHits;
 
     if(UKismetSystemLibrary::SphereTraceMultiForObjects(
@@ -745,7 +745,7 @@ float ADroneAIController::getBombScore(const FVector& position)
     score += 0.35f * (enemiesAttacked / m_sensedEnnemies.Num());
     score += 0.25f * ((4.f - numberFriendlyAttacked) / 4.f);
     //score = (1.f - playerWillBeKilled - gameEndIsNear) * ((1.f / (numberFriendlyAttacked + 1.f) + ennemIsAttacked / getNbEnnemiesInScene()) / c_Normalize);
-    
+
     //float temp = FMath::Clamp((m_sensedEnnemies.Num() - getNbAliveAllies()) / 4.f, 0.f, 1.f);
     float minimalEnemyNumber = 4.f;
     float temp = enemiesAttacked / minimalEnemyNumber;
@@ -829,8 +829,8 @@ void ADroneAIController::smoothPath()
 
 bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector& endPoint)
 {
-    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{ UEngineTypes::ConvertToObjectType(ECC_WorldStatic) };
-    TArray<AActor*> ActorsToIgnore{ GetPawn()};
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{UEngineTypes::ConvertToObjectType(ECC_WorldStatic)};
+    TArray<AActor*> ActorsToIgnore{GetPawn()};
     AKaboom* bomb = Cast<ADrone>(GetPawn())->m_currentBomb;
     if(bomb)
     {
@@ -855,13 +855,13 @@ bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector&
 void ADroneAIController::debugDrawPath() const
 {
     //path
-    if (m_showOriginPath)
+    if(m_showOriginPath)
     {
         this->debugElementaryDrawPath(m_path, FColor::Red);
     }
 
     // smoothed path
-    if (m_showSmoothedPath)
+    if(m_showSmoothedPath)
     {
         this->debugElementaryDrawPath(m_smoothedPath, FColor::Green);
     }
@@ -891,14 +891,15 @@ void ADroneAIController::processPath()
     FVector droneLocation = GetPawn()->GetActorLocation();
     int32 currentLocId = myGraph.getOverlappingVolumeId(droneLocation);
     float offset = Cast<ADrone>(GetPawn())->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() + 10.f;
+    int32 targetId;
 
-    if (currentLocId == -1)
+    if(currentLocId == -1)
     {
         currentLocId = myGraph.getBelowVolume(droneLocation, offset);
     }
     if(currentLocId != -1)
     {
-        int32 targetId = myGraph.getOverlappingVolumeId(m_destination);
+        targetId = myGraph.getOverlappingVolumeId(m_destination);
 
         if(targetId != -1)
         {
@@ -908,7 +909,7 @@ void ADroneAIController::processPath()
             {
                 m_path.Add(m_destination);
             }
-            m_path.Append(myGraph.processAStar(currentLocId, targetId)); 
+            m_path.Append(myGraph.processAStar(currentLocId, targetId));
             m_path.Emplace(droneLocation);
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
@@ -927,6 +928,7 @@ void ADroneAIController::processPath()
                 }
                 m_path.Append(myGraph.processAStar(currentLocId, targetId)); // always begin at id 0 node
                 m_path.Emplace(droneLocation);
+                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "start id : " + FString::FromInt(currentLocId));
                 PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "new target id : " + FString::FromInt(targetId));
 
                 smoothPath();
@@ -934,9 +936,49 @@ void ADroneAIController::processPath()
             }
             else
             {
-                // No volume found
+                // No volume found 
+
             }
         }
+    }
+    else
+    {
+        // agent is out of the navigation volume swtich to steering behaviour
+        FVector steeringLocation = droneLocation;
+        targetId = myGraph.getNearestVolume(steeringLocation, offset);
+
+        FHitResult hitActors{ForceInit};
+        TArray<AActor*> actorsToIgnore{this};
+        AKaboom* bomb = Cast<ADrone>(GetPawn())->m_currentBomb;
+        if(bomb)
+        {
+            actorsToIgnore.Emplace(bomb);
+        }
+
+        // Cast to check if there is an obstacle between agent and sterring destination
+        if(UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(),
+                                                             droneLocation,
+                                                             steeringLocation,
+                                                             offset,
+                                                             {UEngineTypes::ConvertToObjectType(ECC_WorldStatic)},
+                                                             false,
+                                                             actorsToIgnore,
+                                                             SPHERECAST_DISPLAY_DURATION,
+                                                             hitActors,
+                                                             true))
+        {
+            // there is an obstacle -> just teleport the agent to the steering location
+            GetPawn()->SetActorLocation(steeringLocation);
+        }
+        else
+        {
+            m_path.Reset();
+            m_path.Emplace(steeringLocation);
+            m_path.Emplace(droneLocation);
+            smoothPath();
+            //debugDrawPath();
+        }
+
     }
 }
 

@@ -20,6 +20,9 @@ public:
     /** how many time the zone should inflict damage in one second*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageZone)
         float m_tickRate;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageZone)
+        bool m_isMolotov;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = DamageZone)
         TArray<TEnumAsByte<EObjectTypeQuery>> m_objectTypes;
 
@@ -28,6 +31,7 @@ private:
     float m_secondBetweenTick;
     // Store how many long ago was the last tick
     float m_deltaSinceLastTick;
+    int m_burnedActors;
 
 public:
     // Sets default values for this actor's properties

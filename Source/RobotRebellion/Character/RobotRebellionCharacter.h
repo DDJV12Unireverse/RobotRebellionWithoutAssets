@@ -15,6 +15,8 @@ class ARobotRebellionCharacter : public ACharacter
 {
     GENERATED_BODY()
 
+private:
+    bool m_isShieldAnimated;
 
 public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
@@ -31,9 +33,14 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BillBoard")
         class UTextBillboardComponent* m_textBillboardInstance;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IA")
+        bool m_canKillItsAllies;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IA")
+        bool m_canTransmitItsTarget;
+
     UPROPERTY(Replicated)
         bool m_isInCombat;
-
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
@@ -81,11 +88,13 @@ protected:
 
 
     ////SHIELD EFFECT
+    /** Shield effect if animation shield animation is enabled*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         UParticleSystem* m_shieldParticuleEffect;
 
+    /** Shield effect if animation shield animation is dsables*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
-        float m_shieldEffectDuration;
+        UParticleSystem* m_shieldParticuleEffectUnanimated;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         UParticleSystemComponent* m_shieldParticleSystem;
@@ -93,9 +102,8 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         bool m_isShieldParticleSpawned;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
-        float m_shieldEffectTimer;
 
+    class AWorldInstanceEntity* m_worldEntity;
 
 
     /************************************************************************/
@@ -134,7 +142,7 @@ public:
 
 
     ////Server
-    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
+    virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 
     virtual void cppOnRevive();
@@ -286,5 +294,66 @@ public:
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiUnspawnShieldParticle();
+
+
+    ///////Burn Effects
+
+    
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
+        UParticleSystem* m_fireEffect;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
+        class UParticleSystemComponent* m_particuleComponent;
+
+    TArray<int32> m_burningBones;
+    TArray<UParticleSystemComponent*> m_fireEffects;
+    TMap<UParticleSystemComponent*, float> m_effectTimer;
+    float m_tickCount;
+    int m_bonesToUpdate;
+    int m_bonesSet;
+
+    void UpdateBurnEffect(float DeltaTime);
+    void displayFireOnBone(const FName& bone);
+
+    UFUNCTION(Reliable, NetMulticast)
+        void multiDisplayFireOnBone(const FName& bone);
+
+    void internalDisplayFireOnBone(const FName& bone);
+
+    void displayFireOnBoneArray(const TArray<FName>& bone);
+
+    void spawnFireEffect(FVector location);
+
+    UFUNCTION(Reliable, NetMulticast)
+        void multiDisplayFireOnBoneArray(const TArray<FName>& bone);
+
+    void internalDisplayFireOnBoneArray(const TArray<FName>& bone);
+
+    UPROPERTY(BlueprintReadOnly, Replicated)
+        int m_burningBonesCount;
+    
+    bool isBurning()
+    {
+        return (m_burningBonesCount > 0);
+    }
+    
+    UFUNCTION(Reliable, NetMulticast)
+        void multiSpawnFireEffect(FVector location);
+
+
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverSpawnFireEffect(FVector location);
+
+    void internalSpawnFireEffect(FVector location);
+
+    void cleanFireComp();
+    
+    UFUNCTION(Reliable, NetMultiCast)
+        void multiCleanFireComp();
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverCleanFireComp();
+
+    void internalCleanFireComp();
+
 };
 
