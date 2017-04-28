@@ -34,8 +34,10 @@ public:
         TArray<TSubclassOf<class UEffect>> m_effectsClass;
 
 protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"))
         float m_nextAllowedCastTimer;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attribute, meta = (AllowPrivateAccess = "true"), Replicated)
+        float m_currentCooldown;
 
     TArray<UEffect *> m_effects;
 
@@ -45,6 +47,8 @@ public:
     virtual void cast();
 
     virtual void BeginPlay() override;
+
+    virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
     // Must be called to initialize effect list with Blueprint specified class
     void initializeSpell();

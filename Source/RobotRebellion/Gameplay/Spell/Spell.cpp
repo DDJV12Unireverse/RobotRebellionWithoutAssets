@@ -20,11 +20,26 @@ void USpell::BeginPlay()
 }
 
 
+void USpell::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
+    if(GetOwner()->Role == ROLE_Authority)
+    {
+        if(!canCast())
+        {
+            m_currentCooldown = m_nextAllowedCastTimer - FPlatformTime::Seconds();
+        }
+        else
+        {
+            m_currentCooldown = -1.f;
+        }
+    }
+}
+
 void USpell::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME_CONDITION(USpell, m_nextAllowedCastTimer, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USpell, m_currentCooldown, COND_OwnerOnly);
 }
 
 void USpell::cast()
@@ -43,24 +58,16 @@ void USpell::initializeSpell()
             m_effects.Emplace(tempEffect);
         }
     }
+    this->RegisterComponent();
 }
 
 bool USpell::canCast() const
 {
-    int bp = 5;
-    bp ++;
     return (FPlatformTime::Seconds() > m_nextAllowedCastTimer)
         && Cast<ARobotRebellionCharacter>(GetOwner())->getMana() >= m_manaCost;
 }
 
-float USpell::getCurrentCooldown()const
+float USpell::getCurrentCooldown() const
 {
-    if(!canCast())
-    {
-        return m_nextAllowedCastTimer - FPlatformTime::Seconds();
-    }
-    else
-    {
-        return -1.0f;
-    }
+    return m_currentCooldown;
 }
