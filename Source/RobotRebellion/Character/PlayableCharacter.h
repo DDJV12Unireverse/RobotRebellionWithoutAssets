@@ -113,6 +113,8 @@ public:
 
     bool m_tpsMode;
 
+    bool m_isBurnEffectEnabled;
+
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
 
 public:
@@ -453,4 +455,7 @@ public:
 
     UFUNCTION(Reliable, Client)
         void updateAllCharacterBillboard(UCameraComponent* camToFollow);
+
+
+    void disableFireEffect();
 };

@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "FireProjectile.h"
 #include "Character/RobotRebellionCharacter.h"
+#include "Global/WorldInstanceEntity.h"
 
 
 AFireProjectile::AFireProjectile()
@@ -23,29 +24,20 @@ void AFireProjectile::Tick(float DeltaTime)
 
 void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    if (Role == ROLE_Authority)
+    ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
+    if(receiver && receiver !=m_owner)
     {
-        ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
-        if (receiver && m_owner != receiver && !receiver->isDead())
+            receiver->spawnFireEffect(Hit.Location);
+    }
+    if(Role == ROLE_Authority)
+    {
+        if(receiver && m_owner != receiver && !receiver->isDead())
         {
-            if (!receiver->isImmortal())
+            if(!receiver->isImmortal())
             {
                 DamageCoefficientLogic coeff;
 
-                /*UUtilitaryFunctionLibrary::randomApplyObjectMethod<1>(
-                true,
-                coeff,
-                &DamageCoefficientLogic::criticalHit,
-                &DamageCoefficientLogic::engagementHit,
-                &DamageCoefficientLogic::superEfficient,
-                &DamageCoefficientLogic::lessEfficient,
-                &DamageCoefficientLogic::multipleHit,
-                &DamageCoefficientLogic::graze
-                );
-
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, FString::Printf(TEXT("Coefficient value at : %f"), coeff.getCoefficientValue()));*/
-
-                Damage damage{ m_owner, receiver };
+                Damage damage{m_owner, receiver};
 
                 Damage::DamageValue currentDamage = damage(
                     &UGlobalDamageMethod::normalHitWithWeaponComputed,
@@ -55,15 +47,12 @@ void AFireProjectile::OnHit(class UPrimitiveComponent* ThisComp, class AActor* O
                 setReceiverInCombat(receiver);
                 receiver->inflictDamage(m_baseDamage*currentDamage);
             }
-            // COMMENTED FOR CHEAT CODE
-            //else
-            //{
-            //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-            //}
         }
+        
 
         //TODO display burn effect on Mesh
-
+        //ASurvivalCharacter* hitActor = Cast<ASurvivalCharacter>(Impact.GetActor());
+        
         Destroy();
     }
 }

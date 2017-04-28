@@ -18,7 +18,7 @@ void ANonPlayableCharacter::cppOnDeath()
 {
     dropLoot();
     this->m_alterationController->removeAllAlteration();
-
+    this->cleanFireComp();
     ACustomAIControllerBase* controller = Cast<ACustomAIControllerBase>(this->GetController());
     if (controller)
     {
@@ -26,6 +26,14 @@ void ANonPlayableCharacter::cppOnDeath()
     }
 
     this->startTimedDestroy();
+}
+
+
+void ANonPlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME_CONDITION(ANonPlayableCharacter, m_isCrouch, COND_SkipOwner);
 }
 
 void ANonPlayableCharacter::dropLoot()

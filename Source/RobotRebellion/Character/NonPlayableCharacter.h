@@ -15,7 +15,7 @@ class ROBOTREBELLION_API ANonPlayableCharacter : public ARobotRebellionCharacter
 	GENERATED_BODY()
        
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated)
         bool m_isCrouch;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -28,6 +28,8 @@ public:
 public:
     ANonPlayableCharacter();
 
+    ////Server
+    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
     void spawnEffect();
 
