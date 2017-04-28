@@ -21,6 +21,7 @@
 #include "Global/GameInstaller.h"
 
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
+#include "Global/WorldInstanceEntity.h"
 #include "WidgetComponent.h"
 #include "UI/LifeBarWidget.h"
 
@@ -38,6 +39,7 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 
     m_isInCombat = false;
 
+
     m_isShieldAnimated = true;
 
 }
@@ -51,6 +53,23 @@ void ARobotRebellionCharacter::BeginPlay()
     m_isRestoreManaParticleSpawned = false;
     m_isReviveParticleSpawned = false;
     m_isShieldParticleSpawned = false;
+
+    m_tickCount = 0.f;
+    m_burningBonesCount = 0;
+
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
+    {
+        m_worldEntity = Cast<AWorldInstanceEntity>(entity[0]);
+    }
+    m_bonesToUpdate = 0;
+    m_bonesSet = 5;
+    m_burningBones.Reserve(GetMesh()->GetNumBones());
+    m_fireEffects.Reserve(GetMesh()->GetNumBones());
+    m_effectTimer.Reserve(GetMesh()->GetNumBones());
+
+
     m_healthBar = Cast<UWidgetComponent>(GetComponentByClass(UWidgetComponent::StaticClass()));
     if(m_healthBar)
     {
@@ -95,16 +114,28 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     }
 
 
-    if(m_healthBar)
-    {
-        //Orient lifeBar for player camera
-        APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-        if(charac)
+        if(m_healthBar)
         {
-            UCameraComponent* camera = charac->GetFollowCamera();
-            FRotator camRot = camera->GetComponentRotation();
-            m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
-            m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 50.f));
+            //Orient lifeBar for player camera
+            APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+            if(charac)
+            {
+                UCameraComponent* camera = charac->GetFollowCamera();
+                FRotator camRot = camera->GetComponentRotation();
+                m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
+                m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 50.f));
+
+            }
+        }
+
+    if(this->isBurning())
+    {
+        m_tickCount += deltaTime;
+        if(m_tickCount >= 1.33f)
+        {
+            //GEngine->AddOnScreenDebugMessage(0 + 1, 10, FColor::Blue, FString::Printf(TEXT("size: %i"), m_burningBones.Num()));
+            UpdateBurnEffect(m_tickCount);
+            m_tickCount = 0.f;
         }
     }
 }
@@ -177,6 +208,7 @@ void ARobotRebellionCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePrope
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ARobotRebellionCharacter, m_attribute);
     DOREPLIFETIME(ARobotRebellionCharacter, m_isInCombat);
+    //DOREPLIFETIME(ARobotRebellionCharacter, m_burningBonesCount);
 }
 
 bool ARobotRebellionCharacter::hasDoubleWeapon() const USE_NOEXCEPT
@@ -608,6 +640,7 @@ void ARobotRebellionCharacter::spawnShieldParticle()
 
     if(!m_isShieldParticleSpawned)
     {
+
         if(m_isShieldAnimated)
         {
             m_shieldParticleSystem =
@@ -644,6 +677,7 @@ void ARobotRebellionCharacter::spawnShieldParticle()
                                                        GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
                                                        GetActorRotation(), EAttachLocation::KeepWorldPosition, false);
         }
+
     }
     m_shieldParticleSystem->ActivateSystem(true);
     m_isShieldParticleSpawned = true;
@@ -668,6 +702,7 @@ void ARobotRebellionCharacter::multiSpawnShieldParticle_Implementation()
 {
     if(!m_isShieldParticleSpawned)
     {
+
         if(m_isShieldAnimated)
         {
             m_shieldParticleSystem =
@@ -723,6 +758,248 @@ void ARobotRebellionCharacter::multiUnspawnShieldParticle_Implementation()
 }
 
 bool ARobotRebellionCharacter::multiUnspawnShieldParticle_Validate()
+{
+    return true;
+}
+
+
+////Burn Effect
+
+
+
+void ARobotRebellionCharacter::UpdateBurnEffect(float DeltaTime)
+{
+    int burningBonesNumber = m_burningBones.Num();
+    int nbBones = GetMesh()->GetNumBones();
+    TArray<FName> bonesToBurn;
+    for(int noCurrentBone = 0; noCurrentBone < burningBonesNumber; ++noCurrentBone)
+    {
+        int32 currentBoneId = m_burningBones[noCurrentBone];
+        FName currentBoneName = GetMesh()->GetBoneName(currentBoneId);
+
+        //compute if effect must be deactivated on this bone
+        m_effectTimer[m_fireEffects[noCurrentBone]] += DeltaTime;
+        if(m_effectTimer[m_fireEffects[noCurrentBone]] >= 3.f && (m_fireEffects[noCurrentBone])->IsActive())
+        {
+            //m_fireEffects[noCurrentBone]->DestroyComponent();
+            m_fireEffects[noCurrentBone]->Deactivate();
+            --m_burningBonesCount;
+            //GEngine->AddOnScreenDebugMessage(1, 10, FColor::Blue, FString::Printf(TEXT("number %i"), m_burningBonesCount));
+            m_effectTimer[m_fireEffects[noCurrentBone]] = 0.f;
+            continue;
+        }
+
+
+        // PARENT Bone
+        FName parentName = GetMesh()->GetParentBone(currentBoneName);
+        int32 parentid = GetMesh()->GetBoneIndex(parentName);
+        int32 intIsPresent = m_burningBones.Find(parentid);
+
+        if(intIsPresent == -1)
+        {
+            bonesToBurn.Emplace(parentName);
+            continue;
+
+            //CHILDRENBONE
+            // Not very good performances, no other ways found (dont update every bone each time for better performances)
+            for(int i = currentBoneId + 1 + m_bonesToUpdate; i < nbBones; i += m_bonesSet)
+            {
+                m_bonesToUpdate = (m_bonesToUpdate + 1) % m_bonesSet;
+                int32 isChildPresent = m_burningBones.Find(i); //Check if children already on fire
+                FName boneName = GetMesh()->GetBoneName(i);
+                if(GetMesh()->BoneIsChildOf(boneName, currentBoneName) && isChildPresent == -1)
+                {
+                    bonesToBurn.Emplace(boneName);
+                }
+            }
+        }
+    }
+
+    displayFireOnBoneArray(bonesToBurn);
+
+    if(m_burningBonesCount <= 0)
+    {
+        cleanFireComp();
+    }
+
+}
+
+void ARobotRebellionCharacter::displayFireOnBone(const FName& bone)
+{
+    internalDisplayFireOnBone(bone);
+
+    if(Role >= ROLE_Authority)
+    {
+        multiDisplayFireOnBone(bone);
+    }
+}
+
+void ARobotRebellionCharacter::multiDisplayFireOnBone_Implementation(const FName& bone)
+{
+    if(m_worldEntity->IsBurnEffectEnabled())
+    {
+        internalDisplayFireOnBone(bone);
+    }
+}
+
+
+void ARobotRebellionCharacter::internalDisplayFireOnBone(const FName& bone)
+{
+    FVector boneLocation = GetMesh()->GetBoneLocation(bone);
+    FTransform boneTransform = GetMesh()->GetBoneTransform(GetMesh()->GetBoneIndex(bone));
+
+    UParticleSystemComponent* fireEffect = UGameplayStatics::SpawnEmitterAttached(m_fireEffect, GetRootComponent(),
+                                                                                  NAME_None, boneLocation,
+                                                                                  FRotator::ZeroRotator, EAttachLocation::KeepWorldPosition, false);
+    if(fireEffect)
+    {
+        fireEffect->SetRelativeScale3D(FVector(0.4f, 0.4f, 0.4f));
+        m_burningBones.Emplace(GetMesh()->GetBoneIndex(bone));
+        m_fireEffects.Emplace(fireEffect);
+        m_effectTimer.Emplace(fireEffect, 0.f);
+        ++m_burningBonesCount;
+    }
+}
+
+void ARobotRebellionCharacter::displayFireOnBoneArray(const TArray<FName>& bones)
+{
+
+    internalDisplayFireOnBoneArray(bones);
+
+    if(Role >= ROLE_Authority)
+    {
+        multiDisplayFireOnBoneArray(bones);
+    }
+}
+
+void ARobotRebellionCharacter::internalDisplayFireOnBoneArray(const TArray<FName>& bones)
+{
+    int size = bones.Num();
+    int max = (size >= 5 ? 5 : size); // limit size for performance
+    for(int i = 0; i < max; ++i)
+    {
+        FName bone = bones[i];
+        int32 boneLocationIndex = GetMesh()->GetBoneIndex(bone);
+        FVector boneLocation = GetMesh()->GetBoneLocation(bone);
+
+        UParticleSystemComponent* fireEffect = UGameplayStatics::SpawnEmitterAttached(m_fireEffect, GetRootComponent(),
+                                                                                      NAME_None, boneLocation,
+                                                                                      FRotator::ZeroRotator, EAttachLocation::KeepWorldPosition, false);
+        if(fireEffect)
+        {
+            fireEffect->SetRelativeScale3D({0.4f, 0.4f, 0.4f});
+            m_burningBones.Emplace(boneLocationIndex);
+            m_fireEffects.Emplace(fireEffect);
+            m_effectTimer.Emplace(fireEffect, 0.f);
+            ++m_burningBonesCount;
+        }
+    }
+}
+
+void ARobotRebellionCharacter::multiDisplayFireOnBoneArray_Implementation(const TArray<FName>& bones)
+{
+    if(m_worldEntity->IsBurnEffectEnabled())
+    {
+        internalDisplayFireOnBoneArray(bones);
+    }
+}
+
+void ARobotRebellionCharacter::internalSpawnFireEffect(FVector location)
+{
+    if(m_worldEntity->IsBurnEffectEnabled())
+    {
+        if(Role >= ROLE_Authority)
+        {
+            FName bone = GetMesh()->FindClosestBone(location);
+            int32 boneIndex = GetMesh()->GetBoneIndex(bone);
+            int32 intIsPresent = (m_burningBones.Find(boneIndex));
+            if(intIsPresent == -1)
+            {
+                displayFireOnBone(bone);
+            }
+        }
+        else
+        {
+            serverSpawnFireEffect(location);
+        }
+    }
+}
+
+
+void ARobotRebellionCharacter::spawnFireEffect(FVector location)
+{
+    if(!isBurning())
+    {
+        internalSpawnFireEffect(location);
+
+        if(Role >= ROLE_Authority)
+        {
+            multiSpawnFireEffect(location);
+        }
+    }
+}
+
+void ARobotRebellionCharacter::serverSpawnFireEffect_Implementation(FVector location)
+{
+    spawnFireEffect(location);
+}
+
+bool ARobotRebellionCharacter::serverSpawnFireEffect_Validate(FVector location)
+{
+    return true;
+}
+
+void ARobotRebellionCharacter::multiSpawnFireEffect_Implementation(FVector location)
+{
+    internalSpawnFireEffect(location);
+}
+
+void ARobotRebellionCharacter::internalCleanFireComp()
+{
+    m_burningBones.Reset();
+    m_fireEffects.Reset();
+    m_effectTimer.Reset();
+    m_burningBonesCount = 0;
+
+    //    TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());
+    //    fireComponents.RemoveAll([&](UActorComponent* comp) {
+    //         UParticleSystemComponent* systComp = Cast<UParticleSystemComponent>(comp);
+    //         //Change for integration
+    //         systComp->DestroyComponent();
+    //         if(systComp)
+    //         {
+    //             return true;
+    //         }
+    //         return false;
+    //     });
+}
+
+void ARobotRebellionCharacter::cleanFireComp()
+{
+    internalCleanFireComp();
+
+    if(Role >= ROLE_Authority)
+    {
+        multiCleanFireComp();
+    }
+    else
+    {
+        serverCleanFireComp();
+    }
+
+
+}
+
+void ARobotRebellionCharacter::multiCleanFireComp_Implementation()
+{
+    internalCleanFireComp();
+}
+
+void ARobotRebellionCharacter::serverCleanFireComp_Implementation()
+{
+    cleanFireComp();
+}
+bool ARobotRebellionCharacter::serverCleanFireComp_Validate()
 {
     return true;
 }
