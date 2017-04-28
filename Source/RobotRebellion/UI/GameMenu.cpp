@@ -26,6 +26,9 @@ void AGameMenu::BeginPlay()
 
     ClassSelectionWidgetImpl = CreateCustomWidget<URobotRebellionWidget>(ClassSelectionWidget.GetDefaultObject());
     DisplayWidget(ClassSelectionWidgetImpl);
+
+    TopWidgetImpl = CreateCustomWidget<UTopWidget>(TopWidget.GetDefaultObject());
+    //DisplayWidget(TopWidgetImpl);
 }
 
 void AGameMenu::Tick(float deltaTime)

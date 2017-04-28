@@ -7,6 +7,7 @@
 #include "ReviveTimerWidget.h"
 #include "CustomRobotRebellionUserWidget.h"
 #include "RobotRebellionWidget.h"
+#include "TopWidget.h"
 #include "GameMenu.generated.h"
 
 /**
@@ -21,6 +22,10 @@ public:
     AGameMenu();
     virtual void BeginPlay() override;
     virtual void Tick(float deltaTime) override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | Top Game Menu")
+        TSubclassOf<UTopWidget> TopWidget;
+    UTopWidget* TopWidgetImpl;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | UI Game Menu Lobby")
         TSubclassOf<ULobbyUIWidget> LobbyWidget;
@@ -37,6 +42,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | Classes Selection")
         TSubclassOf<URobotRebellionWidget> ClassSelectionWidget;
     URobotRebellionWidget* ClassSelectionWidgetImpl;
+
+    //TODO OPTIONS MENU
 
     template <class T>
     T* CreateCustomWidget(T *Widget)
