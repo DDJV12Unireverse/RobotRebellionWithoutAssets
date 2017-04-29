@@ -133,6 +133,14 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 2))
         int32 m_splinePointCountIntraSegment;
 
+    //acceleration between 0 percent and m_accelPercentPath. Beyond, the drone is at its travel speed.
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
+        float m_accelPercentPath;
+
+    //decceleration between m_deccelPercentPath percent and 100 percent. Before, the drone is at its travel speed.
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
+        float m_deccelPercentPath;
+
 
 private:
     TArray<FVector> m_path;
@@ -140,6 +148,11 @@ private:
     TArray<FVector> m_finalPath;
 
     float m_timeSinceLastUpdate;
+
+    int32 m_currentTripPoint;
+    float m_totalTripPoint;
+
+    float m_deccelerationCoefficient;
 
 
 public:
@@ -158,6 +171,8 @@ public:
     void updateEnnemiesCampInfo();
 
     void updateAlliesCampInfo();
+
+    EPathFollowingRequestResult::Type stopDroneMoves(class ADrone* drone);
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
 
@@ -204,6 +219,11 @@ public:
     FORCEINLINE bool isArrivedAtDestination() const
     {
         return (m_destination - GetPawn()->GetActorLocation()).SizeSquared() < m_epsilonSquaredDistanceTolerance;
+    }
+
+    FORCEINLINE float getTravelCompletionPercentage() const
+    {
+        return static_cast<float>(m_currentTripPoint) / m_totalTripPoint;
     }
 
     //update the targeted height of the drone

@@ -31,6 +31,9 @@ ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
     m_actionFinished = true;
 
     m_king = nullptr;
+
+    m_totalTripPoint = 1.f;
+    m_currentTripPoint = 1;
 }
 
 void ADroneAIController::BeginPlay()
@@ -44,6 +47,8 @@ void ADroneAIController::BeginPlay()
 
     m_state = DRONE_MOVING; //for testing
     m_coeffKing = 3.f;
+
+    m_deccelerationCoefficient = (m_deccelPercentPath == 1.f) ? 0.001f : 1.f - m_deccelPercentPath;
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -291,20 +296,25 @@ int ADroneAIController::getNbEnnemiesInZone(const FVector& zoneCenter)
     return (m_sensedEnnemies.Num());
 }
 
+EPathFollowingRequestResult::Type ADroneAIController::stopDroneMoves(ADrone* drone)
+{
+    drone->GetMovementComponent()->Velocity = FVector::ZeroVector;
+    return EPathFollowingRequestResult::AlreadyAtGoal;
+}
+
 EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 {
-    ADrone* owner = Cast<ADrone>(GetPawn());
+    ADrone* drone = Cast<ADrone>(GetPawn());
 
     if(m_finalPath.Num() == 0)
     {
-        owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
-        return EPathFollowingRequestResult::AlreadyAtGoal;
+        return this->stopDroneMoves(drone);
     }
 
-    FVector actorLocation = owner->GetActorLocation();
+    FVector actorLocation = drone->GetActorLocation();
 
     FVector directionToTarget = m_finalPath.Top() - actorLocation;
-    FVector lastDirection = owner->GetMovementComponent()->Velocity;
+    FVector lastDirection = drone->GetMovementComponent()->Velocity;
 
     // Check if we have reach the current point
     while(
@@ -313,14 +323,26 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
          directionToTarget.SizeSquared() < m_epsilonSquaredDistanceTolerance))
     {
         directionToTarget = m_finalPath.Pop(false) - actorLocation;
+        ++m_currentTripPoint;
     }
 
     float directionVectSquaredSize = directionToTarget.SizeSquared();
 
     if(m_finalPath.Num() == 0 && directionVectSquaredSize < m_epsilonSquaredDistanceTolerance)
     {// Already at the goal
-        owner->GetMovementComponent()->Velocity = FVector::ZeroVector;
-        return EPathFollowingRequestResult::AlreadyAtGoal;
+        return this->stopDroneMoves(drone);
+    }
+
+    float tripCompletion = this->getTravelCompletionPercentage();
+
+    float speedCoefficient = 
+        (tripCompletion < m_accelPercentPath) ? tripCompletion / m_accelPercentPath : 
+        (tripCompletion > m_deccelPercentPath) ? (1.f - tripCompletion) / m_deccelerationCoefficient :
+        1.f;
+
+    if (speedCoefficient < 0.01f)
+    {
+        return this->stopDroneMoves(drone);
     }
 
     if(directionVectSquaredSize > 1.f)
@@ -328,7 +350,9 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
         directionToTarget /= FMath::Sqrt(directionVectSquaredSize);
     }
 
-    owner->GetMovementComponent()->Velocity = directionToTarget * m_droneVelocity;
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, FString::Printf(TEXT("Travel Speed : %f"), speedCoefficient));
+
+    drone->GetMovementComponent()->Velocity = directionToTarget * m_droneVelocity * speedCoefficient;
 
     return EPathFollowingRequestResult::RequestSuccessful;
 }
@@ -1025,4 +1049,7 @@ void ADroneAIController::splineForecast()
     }
 
     m_finalPath.Add(m_splinePath->GetLocationAtTime(0.f, ESplineCoordinateSpace::World));
+
+    m_totalTripPoint = static_cast<float>(m_finalPath.Num() + 1);
+    m_currentTripPoint = 1;
 }
