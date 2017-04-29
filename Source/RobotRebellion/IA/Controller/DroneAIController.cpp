@@ -45,10 +45,12 @@ void ADroneAIController::BeginPlay()
     m_currentTime = 0.f;
     m_debugCooldownDisplayTime = 1.5f;
 
-    m_state = DRONE_MOVING; //for testing
+    m_state = DRONE_WAITING; //for testing
     m_coeffKing = 3.f;
 
     m_deccelerationCoefficient = (m_deccelPercentPath == 1.f) ? 0.001f : 1.f - m_deccelPercentPath;
+
+    this->saveDroneLocalization();
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -140,6 +142,19 @@ void ADroneAIController::updateAlliesCampInfo()
     {
         m_groupBarycenter = GetPawn()->GetActorLocation();
     }
+}
+
+void ADroneAIController::saveDroneLocalization()
+{
+    m_realDroneOrient = GetPawn()->GetActorForwardVector();
+    m_realDroneLocation = GetPawn()->GetActorLocation();
+
+    this->resetIdleGoal();
+}
+
+void ADroneAIController::resetIdleGoal()
+{
+    m_idleForwardGoal = FMath::VRandCone(m_realDroneOrient, m_idleAngle);
 }
 
 void ADroneAIController::receiveBomb()
@@ -303,6 +318,8 @@ EPathFollowingRequestResult::Type ADroneAIController::stopDroneMoves(ADrone* dro
     droneRotation.Pitch = 0.f;
     drone->SetActorRotation(droneRotation);
 
+    this->saveDroneLocalization();
+
     return EPathFollowingRequestResult::AlreadyAtGoal;
 }
 
@@ -368,6 +385,34 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     
 
     return EPathFollowingRequestResult::RequestSuccessful;
+}
+
+void ADroneAIController::internalMakeIdleRotation()
+{
+    FVector droneForwardVector = GetPawn()->GetActorForwardVector();
+
+    if(!(m_idleForwardGoal - droneForwardVector).IsNearlyZero(0.05f))
+    {
+        GetPawn()->SetActorRotation(
+            FQuat::FastLerp(droneForwardVector.ToOrientationQuat(), m_idleForwardGoal.ToOrientationQuat(), m_idleAngleSpeed)
+        );
+    }
+    else
+    {
+        this->resetIdleGoal();
+    }
+}
+
+void ADroneAIController::internalMakeIdleTranslation()
+{
+    float sinCoeff = m_idleTranslationGain * FMath::Sin(m_idleTimer * m_idleTranslationSpeed);
+    GetPawn()->SetActorLocation({ m_realDroneLocation.X, m_realDroneLocation.Y, m_realDroneLocation.Z + sinCoeff });
+}
+
+void ADroneAIController::makeIdleMove()
+{
+    this->internalMakeIdleTranslation();
+    this->internalMakeIdleRotation();
 }
 
 void ADroneAIController::setDestination(const FVector& newDestinationPosition)
@@ -532,6 +577,7 @@ void ADroneAIController::followSafeZone()
 
 void  ADroneAIController::waiting()
 {
+    this->makeIdleMove();
     //m_actionFinished = true;
     m_idleTimer += m_timeSinceLastUpdate;
 }

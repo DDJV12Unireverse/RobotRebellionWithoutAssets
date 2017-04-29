@@ -146,6 +146,18 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
         float m_noisyTravelRandom;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 3.14159f))
+        float m_idleAngle;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.01f, ClampMax = 1.f))
+        float m_idleAngleSpeed;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_idleTranslationSpeed;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_idleTranslationGain;
+
 
 private:
     TArray<FVector> m_path;
@@ -159,9 +171,19 @@ private:
 
     float m_deccelerationCoefficient;
 
+    FVector m_realDroneOrient;
+    FVector m_idleForwardGoal;
+
+    FVector m_realDroneLocation;
+    
+
 
 private:
     void internalNoisyTravelTransfertMethod(FVector& inOutPoint, const FVector& nextPoint);
+
+    void internalMakeIdleRotation();
+
+    void internalMakeIdleTranslation();
 
 
 public:
@@ -181,9 +203,15 @@ public:
 
     void updateAlliesCampInfo();
 
+    void resetIdleGoal();
+
+    void saveDroneLocalization();
+
     EPathFollowingRequestResult::Type stopDroneMoves(class ADrone* drone);
 
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
+
+    void makeIdleMove();
 
     void findDropZone();
 
