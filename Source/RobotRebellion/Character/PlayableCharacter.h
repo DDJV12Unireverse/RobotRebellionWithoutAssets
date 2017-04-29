@@ -204,6 +204,11 @@ public:
         void ExecuteCommand(FString command) const;
 
     //////UI
+    void openTopWidget();
+
+    UFUNCTION(BlueprintCallable, Category = TopWidget)
+    void closeTopWidget();
+
     void openLobbyWidget();
 
     UFUNCTION(BlueprintCallable, Category = LobbyWidget)

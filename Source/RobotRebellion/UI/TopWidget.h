@@ -26,4 +26,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Menu")
         void GameOptionsMenu();
 
+    UFUNCTION(BlueprintCallable, Category = "Menu")
+        void CloseGameOptionsMenu();
+
 };

@@ -57,18 +57,26 @@ void UTopWidget::NetworkPlayerGame()
 
 void UTopWidget::GameOptionsMenu()
 {
-    //APlayerController *  MyPC = GetOwningPlayer();
+    APlayerController *  MyPC = GetOwningPlayer();
 
-    //if(MyPC)
-    //{
-    //    auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
-    //    if(myHud->LobbyImpl->IsVisible())
-    //    {
-    //        //CloseSinglePlayerGameWidget();
-    //        //return;
-    //    }
-    //    myHud->HideWidget(myHud->TopWidgetImpl);
-    //    myHud->DisplayWidget(myHud->LobbyImpl);
-    //    //giveInputGameMode(false);
-    //}
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud->OptionsWidgetImpl->IsVisible())
+        {
+            CloseGameOptionsMenu();
+        }
+        myHud->HideWidget(myHud->TopWidgetImpl);
+        myHud->DisplayWidget(myHud->OptionsWidgetImpl);
+    }
+}
+
+void UTopWidget::CloseGameOptionsMenu()
+{
+    APlayerController *  MyPC = GetOwningPlayer();
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->OptionsWidgetImpl);
+    }
 }

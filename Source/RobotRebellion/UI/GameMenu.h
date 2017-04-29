@@ -8,6 +8,7 @@
 #include "CustomRobotRebellionUserWidget.h"
 #include "RobotRebellionWidget.h"
 #include "TopWidget.h"
+#include "OptionsMenuWidget.h"
 #include "GameMenu.generated.h"
 
 /**
@@ -42,6 +43,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | Classes Selection")
         TSubclassOf<URobotRebellionWidget> ClassSelectionWidget;
     URobotRebellionWidget* ClassSelectionWidgetImpl;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget | Options Menu")
+        TSubclassOf<UOptionsMenuWidget> OptionsWidget;
+    UOptionsMenuWidget* OptionsWidgetImpl;
 
     //TODO OPTIONS MENU
 

@@ -25,10 +25,13 @@ void AGameMenu::BeginPlay()
     ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
 
     ClassSelectionWidgetImpl = CreateCustomWidget<URobotRebellionWidget>(ClassSelectionWidget.GetDefaultObject());
-    DisplayWidget(ClassSelectionWidgetImpl);
+    ClassSelectionWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+
+    OptionsWidgetImpl = CreateCustomWidget<UOptionsMenuWidget>(OptionsWidget.GetDefaultObject());
+    OptionsWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
 
     TopWidgetImpl = CreateCustomWidget<UTopWidget>(TopWidget.GetDefaultObject());
-    //DisplayWidget(TopWidgetImpl);
+    DisplayWidget(TopWidgetImpl);
 }
 
 void AGameMenu::Tick(float deltaTime)

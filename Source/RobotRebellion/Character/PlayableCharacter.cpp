@@ -460,6 +460,36 @@ EClassType APlayableCharacter::getType() const USE_NOEXCEPT
 }
 
 /////////UI
+
+void APlayableCharacter::openTopWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud->TopWidgetImpl->IsVisible())
+        {
+            closeTopWidget();
+            return;
+        }
+        myHud->DisplayWidget(myHud->TopWidgetImpl);
+        giveInputGameMode(false);
+    }
+}
+
+void APlayableCharacter::closeTopWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->TopWidgetImpl);
+        giveInputGameMode(true);
+    }
+}
+
 void APlayableCharacter::openLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
@@ -798,7 +828,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         */
 
         //ESCAPE
-        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openTopWidget);
 
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
@@ -847,7 +877,7 @@ void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponen
     if(PlayerInputComponent)
     {
         //ESCAPE
-        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openTopWidget);
 
         /************************************************************************/
         /* DEBUG                                                                */
