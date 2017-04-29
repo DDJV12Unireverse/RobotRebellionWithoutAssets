@@ -299,6 +299,10 @@ int ADroneAIController::getNbEnnemiesInZone(const FVector& zoneCenter)
 EPathFollowingRequestResult::Type ADroneAIController::stopDroneMoves(ADrone* drone)
 {
     drone->GetMovementComponent()->Velocity = FVector::ZeroVector;
+    FRotator droneRotation = drone->GetActorRotation();
+    droneRotation.Pitch = 0.f;
+    drone->SetActorRotation(droneRotation);
+
     return EPathFollowingRequestResult::AlreadyAtGoal;
 }
 
@@ -314,12 +318,12 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     FVector actorLocation = drone->GetActorLocation();
 
     FVector directionToTarget = m_finalPath.Top() - actorLocation;
-    FVector lastDirection = drone->GetMovementComponent()->Velocity;
+    FVector& velocity = drone->GetMovementComponent()->Velocity;
 
     // Check if we have reach the current point
     while(
         m_finalPath.Num() != 0 &&
-        (FVector::DotProduct(directionToTarget, lastDirection) < 0.f ||
+        (FVector::DotProduct(directionToTarget, velocity) < 0.f ||
          directionToTarget.SizeSquared() < m_epsilonSquaredDistanceTolerance))
     {
         directionToTarget = m_finalPath.Pop(false) - actorLocation;
@@ -352,7 +356,16 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
 
     //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, FString::Printf(TEXT("Travel Speed : %f"), speedCoefficient));
 
-    drone->GetMovementComponent()->Velocity = directionToTarget * m_droneVelocity * speedCoefficient;
+    velocity = directionToTarget * m_droneVelocity * speedCoefficient;
+
+    FVector velocityDownNormalized = velocity.GetSafeNormal();
+    velocityDownNormalized.Z -= speedCoefficient; //to make the drone nose point to down
+    velocityDownNormalized.Normalize();
+
+    drone->SetActorRotation(
+        FQuat::FastLerp(drone->GetActorForwardVector().ToOrientationQuat(), velocityDownNormalized.ToOrientationQuat(), 0.1f)
+    );
+    
 
     return EPathFollowingRequestResult::RequestSuccessful;
 }
@@ -424,10 +437,6 @@ void ADroneAIController::dropBomb()
     FVector test = drone->GetActorLocation();
     if(drone)
     {
-        if(drone->isLoaded())
-        {
-            PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "BOMB DROOOOOOOOOOOOOOOOOOOOP!!!!!!!!!!!!!!!");
-        }
         // Check if there is still living enemy in the drop zone
         TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{
             UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel3), // Robots
@@ -1052,8 +1061,6 @@ void ADroneAIController::splineForecast()
         m_finalPath.Add(m_splinePath->GetLocationAtTime(currentTime, ESplineCoordinateSpace::World));
         currentTime -= timeStep;
     }
-
-    
 
     m_finalPath.Add(m_splinePath->GetLocationAtTime(0.f, ESplineCoordinateSpace::World));
 
