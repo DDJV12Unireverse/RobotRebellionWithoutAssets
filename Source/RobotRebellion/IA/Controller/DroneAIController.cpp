@@ -1044,14 +1044,41 @@ void ADroneAIController::splineForecast()
     float currentTime = m_splinePath->Duration;
     const int32 lastPoint = totalPointCount - 1;
 
-    for(int32 iter = 0; iter < lastPoint; ++iter)
+    m_finalPath.Add(m_splinePath->GetLocationAtTime(currentTime, ESplineCoordinateSpace::World));
+    currentTime -= timeStep;
+
+    for(int32 iter = 1; iter < lastPoint; ++iter)
     {
         m_finalPath.Add(m_splinePath->GetLocationAtTime(currentTime, ESplineCoordinateSpace::World));
         currentTime -= timeStep;
     }
 
+    
+
     m_finalPath.Add(m_splinePath->GetLocationAtTime(0.f, ESplineCoordinateSpace::World));
 
+    if(m_noisyTravelRandom != 0.f)
+    {
+        int32 noisyPathToModifyCount = m_finalPath.Num() - 1;
+        for(int32 iter = 1; iter < noisyPathToModifyCount; ++iter)
+        {
+            internalNoisyTravelTransfertMethod(m_finalPath[iter], m_finalPath[iter + 1]);
+        }
+    }
     m_totalTripPoint = static_cast<float>(m_finalPath.Num() + 1);
     m_currentTripPoint = 1;
+}
+
+void ADroneAIController::internalNoisyTravelTransfertMethod(FVector& inOutPoint, const FVector& nextPoint)
+{
+    FVector perp1;
+    FVector perp2;
+    inOutPoint.FindBestAxisVectors(perp1, perp2);
+
+    float minNoisyTravelRandom = -m_noisyTravelRandom;
+
+    perp1 *= FMath::RandRange(minNoisyTravelRandom, m_noisyTravelRandom);
+    perp2 *= FMath::RandRange(minNoisyTravelRandom, m_noisyTravelRandom);
+
+    inOutPoint += (perp1 + perp2);
 }

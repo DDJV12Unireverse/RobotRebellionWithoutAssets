@@ -141,6 +141,11 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
         float m_deccelPercentPath;
 
+    //Noisy travel random value used to modify travel point (to make it more drone like).
+    //0.f means no noisy travel method
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_noisyTravelRandom;
+
 
 private:
     TArray<FVector> m_path;
@@ -153,6 +158,10 @@ private:
     float m_totalTripPoint;
 
     float m_deccelerationCoefficient;
+
+
+private:
+    void internalNoisyTravelTransfertMethod(FVector& inOutPoint, const FVector& nextPoint);
 
 
 public:
