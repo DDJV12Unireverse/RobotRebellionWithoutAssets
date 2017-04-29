@@ -574,11 +574,13 @@ void ADroneAIController::setFollowSafeZone()
 
 void ADroneAIController::setWaiting()
 {
-    GetPawn()->GetMovementComponent()->Velocity = FVector::ZeroVector;
-
-    m_actionFinished = false;
-    this->m_performAction = &ADroneAIController::waiting;
-    // TODO - find and set the destination
+    //wait for the drone to deccelerate entirely before waiting if it is currently moving
+    if (GetPawn()->GetMovementComponent()->Velocity == FVector::ZeroVector) 
+    {
+        m_actionFinished = false;
+        this->m_performAction = &ADroneAIController::waiting;
+        // TODO - find and set the destination
+    }
 }
 
 
