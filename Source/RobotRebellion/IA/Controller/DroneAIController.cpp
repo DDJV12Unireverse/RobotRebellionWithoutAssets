@@ -350,7 +350,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
         directionToTarget /= FMath::Sqrt(directionVectSquaredSize);
     }
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, FString::Printf(TEXT("Travel Speed : %f"), speedCoefficient));
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, FString::Printf(TEXT("Travel Speed : %f"), speedCoefficient));
 
     drone->GetMovementComponent()->Velocity = directionToTarget * m_droneVelocity * speedCoefficient;
 
