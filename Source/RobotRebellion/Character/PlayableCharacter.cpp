@@ -531,6 +531,18 @@ void APlayableCharacter::closeSelectionWidget()
     }
 }
 
+void APlayableCharacter::closeOptionWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->OptionsWidgetImpl);
+        giveInputGameMode(true);
+    }
+}
+
 void APlayableCharacter::giveInputGameMode(bool status)
 {
     ACustomPlayerController* MyPC = Cast<ACustomPlayerController>(this->GetController());

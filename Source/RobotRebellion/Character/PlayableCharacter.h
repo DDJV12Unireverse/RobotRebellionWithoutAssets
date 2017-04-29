@@ -217,6 +217,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = CharacterSelection)
         void closeSelectionWidget();
 
+    UFUNCTION(BlueprintCallable, Category = OptionMenu)
+        void closeOptionWidget();
+
     void giveInputGameMode(bool status);
 
     /************************************************************************/
