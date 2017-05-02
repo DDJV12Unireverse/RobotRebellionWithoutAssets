@@ -6,6 +6,7 @@
 #include "ClassType.h"
 #include "../Gameplay/Spell/SpellKit.h"
 #include "../Gameplay/Item/Focusable.h"
+#include "Location.h"
 #include "PlayableCharacter.generated.h"
 
 /**
@@ -115,7 +116,10 @@ public:
 
     bool m_isBurnEffectEnabled;
 
+    ELocation m_location;
+
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
+
 
 public:
     APlayableCharacter();
@@ -458,4 +462,13 @@ public:
 
 
     void disableFireEffect();
+
+    ELocation GetLocation()
+    {
+        return m_location;
+    }
+    void setLocation(ELocation location)
+    {
+        m_location=location;
+    }
 };
