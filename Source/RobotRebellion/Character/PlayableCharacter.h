@@ -463,10 +463,13 @@ public:
 
     void disableFireEffect();
 
+    UFUNCTION(BlueprintCallable, Category = "Reverberation")
     ELocation GetLocation()
     {
         return m_location;
     }
+
+    UFUNCTION(BlueprintCallable, Category = "Reverberation")
     void setLocation(ELocation location)
     {
         m_location=location;
