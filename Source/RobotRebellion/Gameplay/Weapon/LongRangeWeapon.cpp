@@ -7,6 +7,7 @@
 #include "AudioDevice.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/RobotRebellionCharacter.h"
+#include "Character/PlayableCharacter.h"
 
 
 ULongRangeWeapon::ULongRangeWeapon() :
@@ -58,11 +59,28 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                 projectile->setOwner(user);
 
                 FVector fireDirection = user->aim(muzzleRotation.Vector());
-
+                USoundCue* sound = m_longRangeWeaponOutsideFireSound;
                 // Fire
                 fireMethod(projectile, fireDirection);
-
-                playSound(m_longRangeWeaponFireSound, user);
+                APlayableCharacter* player = Cast<APlayableCharacter>(user);
+                if(player)
+                {
+                    switch(player->GetLocation())
+                    {
+                        case ELocation::BIGROOM:
+                            sound = m_longRangeWeaponBigRoomFireSound;
+                            break;
+                        case ELocation::CORRIDOR:
+                            sound = m_longRangeWeaponCorridorFireSound;
+                            break;
+                        case ELocation::SMALLROOM:
+                            sound = m_longRangeWeaponSmallRoomFireSound;
+                            break;
+                        default:
+                            sound = m_longRangeWeaponOutsideFireSound;
+                    }
+                }
+                playSound(sound, user);
 
                 reload();
             }
@@ -107,8 +125,29 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
                     UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation())));
 
                 fireMethod(projectile, fireDirection);
-                
-                playSound(m_longRangeWeaponFireSound, user);
+
+                USoundCue* sound = m_longRangeWeaponOutsideFireSound;
+                // Fire
+                fireMethod(projectile, fireDirection);
+                APlayableCharacter* player = Cast<APlayableCharacter>(user);
+                if(player)
+                {
+                    switch(player->GetLocation())
+                    {
+                        case ELocation::BIGROOM:
+                            sound = m_longRangeWeaponBigRoomFireSound;
+                            break;
+                        case ELocation::CORRIDOR:
+                            sound = m_longRangeWeaponCorridorFireSound;
+                            break;
+                        case ELocation::SMALLROOM:
+                            sound = m_longRangeWeaponSmallRoomFireSound;
+                            break;
+                        default:
+                            sound = m_longRangeWeaponOutsideFireSound;
+                    }
+                }
+                playSound(sound, user);
 
                 reload();
             }
