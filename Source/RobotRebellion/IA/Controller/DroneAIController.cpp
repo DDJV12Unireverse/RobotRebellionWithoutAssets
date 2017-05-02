@@ -31,9 +31,6 @@ ADroneAIController::ADroneAIController() : ACustomAIControllerBase()
     m_actionFinished = true;
 
     m_king = nullptr;
-
-    m_totalTripPoint = 1.f;
-    m_currentTripPoint = 1;
 }
 
 void ADroneAIController::BeginPlay()
@@ -48,9 +45,12 @@ void ADroneAIController::BeginPlay()
     m_state = DRONE_WAITING; //for testing
     m_coeffKing = 3.f;
 
-    m_deccelerationCoefficient = (m_deccelPercentPath == 1.f) ? 0.001f : 1.f - m_deccelPercentPath;
+    m_deccelPercentPath = 1.f - m_accelPercentPath;
+    m_deccelerationCoefficient = (m_accelPercentPath == 0.f) ? 0.001f : 1.f - m_deccelPercentPath;
 
     this->saveDroneLocalization();
+
+    this->resetTripPoint();
 }
 
 void ADroneAIController::Tick(float deltaTime)
@@ -155,6 +155,12 @@ void ADroneAIController::saveDroneLocalization()
 void ADroneAIController::resetIdleGoal()
 {
     m_idleForwardGoal = FMath::VRandCone(m_realDroneOrient, m_idleAngle);
+}
+
+void ADroneAIController::resetTripPoint()
+{
+    m_totalTripPoint = 1.f;
+    m_currentTripPoint = 1;
 }
 
 void ADroneAIController::receiveBomb()
@@ -320,6 +326,8 @@ EPathFollowingRequestResult::Type ADroneAIController::stopDroneMoves(ADrone* dro
 
     this->saveDroneLocalization();
 
+    this->resetTripPoint();
+
     return EPathFollowingRequestResult::AlreadyAtGoal;
 }
 
@@ -361,9 +369,10 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
         (tripCompletion > m_deccelPercentPath) ? (1.f - tripCompletion) / m_deccelerationCoefficient :
         1.f;
 
-    if (speedCoefficient < 0.01f)
+    constexpr const float minSpeedCoeff = 0.05f;
+    if (speedCoefficient < minSpeedCoeff)
     {
-        return this->stopDroneMoves(drone);
+        speedCoefficient = minSpeedCoeff;
     }
 
     if(directionVectSquaredSize > 1.f)
@@ -371,7 +380,16 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
         directionToTarget /= FMath::Sqrt(directionVectSquaredSize);
     }
 
-    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Yellow, FString::Printf(TEXT("Travel Speed : %f"), speedCoefficient));
+    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(
+        FColor::Yellow, 
+        FString::Printf(
+            TEXT("Travel Speed : %f  Completion : %f  pathP : %f  curr : %d"), 
+            speedCoefficient,
+            tripCompletion,
+            m_totalTripPoint,
+            m_currentTripPoint
+        )
+    );
 
     velocity = directionToTarget * m_droneVelocity * speedCoefficient;
 
@@ -1118,8 +1136,37 @@ void ADroneAIController::splineForecast()
             internalNoisyTravelTransfertMethod(m_finalPath[iter], m_finalPath[iter + 1]);
         }
     }
-    m_totalTripPoint = static_cast<float>(m_finalPath.Num() + 1);
-    m_currentTripPoint = 1;
+
+    /*
+    m_currentTripPoint / m_totalTripPoint = formerTravelCompletion
+    m_currentTripPoint + (m_finalPath.Num() + 1) = m_totalTripPoint
+    
+    => equation system with 2 unknown => m_currentTripPoint and m_totalTripPoint
+    */
+    float formerTravelCompletion = this->getTravelCompletionPercentage();
+    if(formerTravelCompletion > m_deccelPercentPath)
+    {
+        //invert to be on the acceleration phase => reacceleration
+        formerTravelCompletion = 1.f - formerTravelCompletion;
+    }
+
+    float notTravelledCompletion = 1.f - formerTravelCompletion;
+
+    constexpr const float minEpsilon = 0.001f;
+    if(notTravelledCompletion < minEpsilon) //security check
+    {
+        notTravelledCompletion = minEpsilon;
+    }
+
+    m_totalTripPoint = static_cast<float>(m_finalPath.Num() + 1) / notTravelledCompletion;
+
+    m_currentTripPoint = static_cast<int32>(m_totalTripPoint * formerTravelCompletion) + 1;
+
+    if(m_currentTripPoint < 1 || m_currentTripPoint > m_totalTripPoint) //something went wrong
+    {
+        m_currentTripPoint = 1;
+        m_totalTripPoint = static_cast<float>(m_finalPath.Num() + 1);
+    }
 }
 
 void ADroneAIController::internalNoisyTravelTransfertMethod(FVector& inOutPoint, const FVector& nextPoint)
