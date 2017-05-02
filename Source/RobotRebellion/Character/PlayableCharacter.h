@@ -115,7 +115,7 @@ public:
     bool m_tpsMode;
 
     bool m_isBurnEffectEnabled;
-
+    UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
     ELocation m_location;
 
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
