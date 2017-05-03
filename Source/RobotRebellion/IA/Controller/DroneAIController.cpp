@@ -241,7 +241,7 @@ float ADroneAIController::getAttackScore()
 float ADroneAIController::getFollowScore()
 {
     float score;
-    score = 1 - 250000.f / (0.1f + (GetPawn()->GetActorLocation() - m_groupBarycenter).SizeSquared()); //Change later
+    score = 1 - 320000.f / (0.1f + (GetPawn()->GetActorLocation() - m_groupBarycenter).SizeSquared()); //Change later
     score = (score < 0.f) ? 0.f : score;
     score *= score;
     if(isInCombat())
@@ -380,7 +380,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
         directionToTarget /= FMath::Sqrt(directionVectSquaredSize);
     }
 
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(
+    /*PRINT_MESSAGE_ON_SCREEN_UNCHECKED(
         FColor::Yellow, 
         FString::Printf(
             TEXT("Travel Speed : %f  Completion : %f  pathP : %f  curr : %d"), 
@@ -389,7 +389,7 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
             m_totalTripPoint,
             m_currentTripPoint
         )
-    );
+    );*/
 
     velocity = directionToTarget * m_droneVelocity * speedCoefficient;
 
