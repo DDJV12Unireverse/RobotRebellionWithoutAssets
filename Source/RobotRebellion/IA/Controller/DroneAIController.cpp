@@ -394,13 +394,15 @@ EPathFollowingRequestResult::Type ADroneAIController::MoveToTarget()
     velocity = directionToTarget * m_droneVelocity * speedCoefficient;
 
     FVector velocityDownNormalized = velocity.GetSafeNormal();
-    velocityDownNormalized.Z -= speedCoefficient; //to make the drone nose point to down
-    velocityDownNormalized.Normalize();
+    if(FVector::DotProduct(directionToTarget, FVector::UpVector) < 0.5f) // the drone not going up with a angle of more than 45 degree 
+    {
+        velocityDownNormalized.Z -= speedCoefficient; //to make the drone nose point to down
+        velocityDownNormalized.Normalize();
 
-    drone->SetActorRotation(
-        FQuat::FastLerp(drone->GetActorForwardVector().ToOrientationQuat(), velocityDownNormalized.ToOrientationQuat(), 0.1f)
-    );
-    
+        drone->SetActorRotation(
+            FQuat::FastLerp(drone->GetActorForwardVector().ToOrientationQuat(), velocityDownNormalized.ToOrientationQuat(), 0.1f)
+        );
+    }
 
     return EPathFollowingRequestResult::RequestSuccessful;
 }
