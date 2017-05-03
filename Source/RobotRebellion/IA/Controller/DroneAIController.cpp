@@ -591,6 +591,7 @@ void ADroneAIController::followSafeZone()
     }
     if(MoveToTarget() == EPathFollowingRequestResult::AlreadyAtGoal)
     {
+        this->makeIdleMove();
         m_idleTimer += m_timeSinceLastUpdate;
     }
 }
