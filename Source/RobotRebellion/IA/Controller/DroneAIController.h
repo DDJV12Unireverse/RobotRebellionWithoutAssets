@@ -133,14 +133,6 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 2))
         int32 m_splinePointCountIntraSegment;
 
-    //acceleration between 0 percent and m_accelPercentPath. Beyond, the drone is at its travel speed.
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
-        float m_accelPercentPath;
-
-    //decceleration between m_deccelPercentPath percent and 100 percent. Before, the drone is at its travel speed.
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 1.f))
-        float m_deccelPercentPath;
-
     //Noisy travel random value used to modify travel point (to make it more drone like).
     //0.f means no noisy travel method
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
@@ -158,6 +150,15 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
         float m_idleTranslationGain;
 
+    //acceleration between 0 percent and m_accelPercentPath. Beyond, the drone is at its travel speed.
+    //decceleration is the mirror of acceleration. 
+    //Thus : 
+    //- acceleration between 0% and m_accelPercentPath
+    //- travel speed between m_accelPercentPath and 1.f - m_accelPercentPath
+    //- decceleration between 1.f - m_accelPercentPath and 100%
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 0.5f))
+        float m_accelPercentPath;
+
 
 private:
     TArray<FVector> m_path;
@@ -169,6 +170,7 @@ private:
     int32 m_currentTripPoint;
     float m_totalTripPoint;
 
+    float m_deccelPercentPath;
     float m_deccelerationCoefficient;
 
     FVector m_realDroneOrient;
@@ -184,6 +186,8 @@ private:
     void internalMakeIdleRotation();
 
     void internalMakeIdleTranslation();
+
+    void resetTripPoint();
 
 
 public:
