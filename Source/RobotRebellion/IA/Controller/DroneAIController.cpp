@@ -49,6 +49,8 @@ void ADroneAIController::BeginPlay()
     m_deccelerationCoefficient = (m_accelPercentPath == 0.f) ? 0.001f : 1.f - m_deccelPercentPath;
     m_timeIdleMove = 0.f;
 
+    m_idleTranslationSpeed = FMath::CeilToFloat(m_idleTranslationSpeed) * PI; //Must be a multiple of PI
+
     this->saveDroneLocalization();
 
     this->resetTripPoint();
