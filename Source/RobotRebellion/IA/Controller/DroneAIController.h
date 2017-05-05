@@ -141,7 +141,7 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 3.14159f))
         float m_idleAngle;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.01f, ClampMax = 1.f))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.0001f, ClampMax = 1.f))
         float m_idleAngleSpeed;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
@@ -159,6 +159,9 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 0.5f))
         float m_accelPercentPath;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_idleRotationResetTime;
+
 
 private:
     TArray<FVector> m_path;
@@ -175,8 +178,7 @@ private:
 
     FVector m_realDroneOrient;
     FVector m_idleForwardGoal;
-
-    FVector m_realDroneLocation;
+    float m_timeIdleMove;
     
 
 

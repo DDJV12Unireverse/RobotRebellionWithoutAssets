@@ -47,6 +47,7 @@ void ADroneAIController::BeginPlay()
 
     m_deccelPercentPath = 1.f - m_accelPercentPath;
     m_deccelerationCoefficient = (m_accelPercentPath == 0.f) ? 0.001f : 1.f - m_deccelPercentPath;
+    m_timeIdleMove = 0.f;
 
     this->saveDroneLocalization();
 
@@ -147,14 +148,12 @@ void ADroneAIController::updateAlliesCampInfo()
 void ADroneAIController::saveDroneLocalization()
 {
     m_realDroneOrient = GetPawn()->GetActorForwardVector();
-    m_realDroneLocation = GetPawn()->GetActorLocation();
-
-    this->resetIdleGoal();
 }
 
 void ADroneAIController::resetIdleGoal()
 {
     m_idleForwardGoal = FMath::VRandCone(m_realDroneOrient, m_idleAngle);
+    m_timeIdleMove = 0.f;
 }
 
 void ADroneAIController::resetTripPoint()
@@ -426,7 +425,11 @@ void ADroneAIController::internalMakeIdleRotation()
 void ADroneAIController::internalMakeIdleTranslation()
 {
     float sinCoeff = m_idleTranslationGain * FMath::Sin(m_idleTimer * m_idleTranslationSpeed);
-    GetPawn()->SetActorLocation({ m_realDroneLocation.X, m_realDroneLocation.Y, m_realDroneLocation.Z + sinCoeff });
+
+    FVector position = GetPawn()->GetActorLocation();
+    position.Z = (m_state == DRONE_RECHARGE ? m_reloadHeight : m_stationaryElevation) + sinCoeff;
+
+    GetPawn()->SetActorLocation(position);
 }
 
 void ADroneAIController::makeIdleMove()
@@ -593,6 +596,12 @@ void ADroneAIController::followSafeZone()
     {
         this->makeIdleMove();
         m_idleTimer += m_timeSinceLastUpdate;
+        m_timeIdleMove += m_timeSinceLastUpdate;
+
+        if (m_timeIdleMove > m_idleRotationResetTime)
+        {
+            this->resetIdleGoal();
+        }
     }
 }
 
@@ -601,6 +610,12 @@ void  ADroneAIController::waiting()
     this->makeIdleMove();
     //m_actionFinished = true;
     m_idleTimer += m_timeSinceLastUpdate;
+    m_timeIdleMove += m_timeSinceLastUpdate;
+
+    if(m_timeIdleMove > m_idleRotationResetTime)
+    {
+        this->resetIdleGoal();
+    }
 }
 
 void ADroneAIController::setFollowGroup()
