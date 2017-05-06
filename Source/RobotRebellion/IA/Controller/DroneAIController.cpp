@@ -457,10 +457,19 @@ void ADroneAIController::internalMakeIdleTranslation()
     FVector wantedPosition = m_destination + m_idleTranslationDirection * sinCoeff;
     FVector deltaPosition = wantedPosition - currentPosition;
 
+    float dist = deltaPosition.SizeSquared();
     //to avoid jumping teleportation, we straph to destination (dumb asservissement simulation)
-    if (deltaPosition.SizeSquared() > 1.f) 
+    if (dist > 1.f)
     {
         wantedPosition = currentPosition + deltaPosition * m_timeSinceLastUpdate; // pf = pi + v * dt
+
+        dist = FMath::Sqrt(dist); //normalize
+        deltaPosition.Z -= dist * 0.1f; //nose point to down
+        deltaPosition /= dist;
+
+        drone->SetActorRotation(
+            FQuat::FastLerp(drone->GetActorForwardVector().ToOrientationQuat(), deltaPosition.ToOrientationQuat(), 0.1f)
+        );
     }
     //else we caught up to the idle movement translation
     
