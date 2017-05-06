@@ -96,6 +96,8 @@ APlayableCharacter::APlayableCharacter()
     m_isReviving = false;
 
     this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::doesNothing;
+
+    /*m_isBurnEffectEnabled = true;*/
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -832,6 +834,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         PlayerInputComponent->BindAction("Debug_CheatCode", IE_Released, this, &APlayableCharacter::onDebugCheat);
 
+
+        ////Fire Effect
+        PlayerInputComponent->BindAction("DisableFireEffect", IE_Pressed, this, &APlayableCharacter::disableFireEffect);
+
         /************************************************************************/
         /* DEBUG                                                                */
         /************************************************************************/
@@ -1278,6 +1284,26 @@ void APlayableCharacter::updateHUD(EClassType classType)
         if(myHud)
         {
             myHud->HUDCharacterImpl->updateClass(classType);
+        }
+    }
+}
+
+void APlayableCharacter::disableFireEffect()
+{
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
+    {
+        AWorldInstanceEntity* ent = Cast<AWorldInstanceEntity>(entity[0]);
+        if(ent->IsBurnEffectEnabled())
+        {
+            ent->setIsBurnEffectEnabled(false);
+            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect disabled");
+        }
+        else
+        {
+            ent->setIsBurnEffectEnabled(true);
+            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect enabled");
         }
     }
 }
