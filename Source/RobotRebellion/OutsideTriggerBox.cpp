@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "OutsideTriggerBox.h"
-#include "Character/PlayableCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 
@@ -22,7 +22,7 @@ void AOutsideTriggerBox::BeginPlay()
 void AOutsideTriggerBox::onOverlapBegin(UPrimitiveComponent* var1, AActor* var2, UPrimitiveComponent* var3,
                                          int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    APlayableCharacter* player = Cast<APlayableCharacter>(var2);
+    ARobotRebellionCharacter* player = Cast<ARobotRebellionCharacter>(var2);
     if(player)
     {
         PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "TRIGGER OUTSIDE");

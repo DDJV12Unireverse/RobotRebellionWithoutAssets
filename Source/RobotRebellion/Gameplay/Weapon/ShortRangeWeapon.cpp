@@ -83,7 +83,26 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
                     }
                 }
 
-                playSound(m_hitSound, user);
+                //playSound(m_hitSound, user);
+
+                USoundCue* sound;
+
+                switch(user->GetLocation())
+                {
+                    case ELocation::BIGROOM:
+                        sound = m_hitBigRoomSound;
+                        break;
+                    case ELocation::CORRIDOR:
+                        sound = m_hitCorridorSound;
+                        break;
+                    case ELocation::SMALLROOM:
+                        sound = m_hitSmallRoomSound;
+                        break;
+                    default:
+                        sound = m_hitOutsideSound;
+                }
+
+                playSound(sound, user);
             }
         }
         else

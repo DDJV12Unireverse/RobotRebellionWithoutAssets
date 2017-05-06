@@ -126,7 +126,7 @@ void APlayableCharacter::BeginPlay()
     {
         this->EnablePlayInput(false);
     }
-    m_location = ELocation::OUTSIDE;
+    
 }
 
 void APlayableCharacter::Tick(float DeltaTime)

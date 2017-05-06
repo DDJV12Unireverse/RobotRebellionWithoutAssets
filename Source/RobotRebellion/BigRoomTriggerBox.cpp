@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "BigRoomTriggerBox.h"
-#include "Character/PlayableCharacter.h"
+#include "Character/RobotRebellionCharacter.h"
 
 
 
@@ -24,7 +24,7 @@ void ABigRoomTriggerBox::onOverlapBegin(UPrimitiveComponent* var1, AActor* var2,
 {
 
 
-    APlayableCharacter* player = Cast<APlayableCharacter>(var2);
+    ARobotRebellionCharacter* player = Cast<ARobotRebellionCharacter>(var2);
     if(player)
     {
         PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "TRIGGER BIGROOM");

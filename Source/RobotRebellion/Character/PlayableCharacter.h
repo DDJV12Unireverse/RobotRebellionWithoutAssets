@@ -6,7 +6,6 @@
 #include "ClassType.h"
 #include "../Gameplay/Spell/SpellKit.h"
 #include "../Gameplay/Item/Focusable.h"
-#include "Location.h"
 #include "PlayableCharacter.generated.h"
 
 /**
@@ -115,8 +114,7 @@ public:
     bool m_tpsMode;
 
     bool m_isBurnEffectEnabled;
-    UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated)
-    ELocation m_location;
+    
 
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
 
@@ -463,15 +461,5 @@ public:
 
     void disableFireEffect();
 
-    UFUNCTION(BlueprintCallable, Category = "Reverberation")
-    ELocation GetLocation()
-    {
-        return m_location;
-    }
 
-    UFUNCTION(BlueprintCallable, Category = "Reverberation")
-    void setLocation(ELocation location)
-    {
-        m_location=location;
-    }
 };

@@ -126,13 +126,11 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
 
                 fireMethod(projectile, fireDirection);
 
-                USoundCue* sound = m_longRangeWeaponOutsideFireSound;
+                USoundCue* sound;
                 // Fire
                 fireMethod(projectile, fireDirection);
-                APlayableCharacter* player = Cast<APlayableCharacter>(user);
-                if(player)
-                {
-                    switch(player->GetLocation())
+                
+                    switch(user->GetLocation())
                     {
                         case ELocation::BIGROOM:
                             sound = m_longRangeWeaponBigRoomFireSound;
@@ -146,7 +144,7 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
                         default:
                             sound = m_longRangeWeaponOutsideFireSound;
                     }
-                }
+                
                 playSound(sound, user);
 
                 reload();

@@ -27,8 +27,20 @@ private:
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
         USoundCue* m_missSound;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
-        USoundCue* m_hitSound;
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+    //    USoundCue* m_hitSound;
+
+
+    // Weapon Fire Sound
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitOutsideSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitBigRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitSmallRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitCorridorSound;
+
 
     /************************************************************************/
     /*                  CONSTRUCTORS                                        */
