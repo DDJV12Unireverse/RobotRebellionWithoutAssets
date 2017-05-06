@@ -79,6 +79,10 @@ public:
     /************************************************************************/
     /* UPROPERTY                                                            */
     /************************************************************************/
+    //If problem arise (Controller spawns before drone), it will be at this position the drone will be spawned
+    //Please, update this according to the real drone position on the map.
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AGeneral")
+        FVector m_defaultDroneSpawnPositionIfProblem;
 
     //Deceleration Coefficient. Higher the value, faster the drone will arrive to its target and more rough the stop will be.
     //Beware, a too high value will cause instability.
@@ -178,7 +182,8 @@ private:
 
     FVector m_realDroneOrient;
     FVector m_idleForwardGoal;
-    float m_timeIdleMove;
+    FVector m_idleTranslationDirection;
+    float m_timeIdleRotationMove;
     
 
 
@@ -209,7 +214,9 @@ public:
 
     void updateAlliesCampInfo();
 
-    void resetIdleGoal();
+    void resetIdleRotationGoal();
+
+    void resetIdleTranslationGoal();
 
     void saveDroneLocalization();
 

@@ -43,11 +43,21 @@ void ADroneAIController::BeginPlay()
     m_debugCooldownDisplayTime = 1.5f;
 
     m_state = DRONE_WAITING; //for testing
+
+    if (APawn* drone = GetPawn()) //not so sure who spawn before who. So checking is the best
+    {
+        m_destination = drone->GetActorLocation();
+    }
+    else
+    {
+        m_destination = m_defaultDroneSpawnPositionIfProblem;
+    }
+
     m_coeffKing = 3.f;
 
     m_deccelPercentPath = 1.f - m_accelPercentPath;
     m_deccelerationCoefficient = (m_accelPercentPath == 0.f) ? 0.001f : 1.f - m_deccelPercentPath;
-    m_timeIdleMove = 0.f;
+    m_timeIdleRotationMove = 0.f;
 
     m_idleTranslationSpeed = FMath::CeilToFloat(m_idleTranslationSpeed) * PI; //Must be a multiple of PI
 
@@ -152,10 +162,15 @@ void ADroneAIController::saveDroneLocalization()
     m_realDroneOrient = GetPawn()->GetActorForwardVector();
 }
 
-void ADroneAIController::resetIdleGoal()
+void ADroneAIController::resetIdleRotationGoal()
 {
     m_idleForwardGoal = FMath::VRandCone(m_realDroneOrient, m_idleAngle);
-    m_timeIdleMove = 0.f;
+    m_timeIdleRotationMove = 0.f;
+}
+
+void ADroneAIController::resetIdleTranslationGoal()
+{
+    m_idleTranslationDirection = FMath::VRandCone(FVector::UpVector, PI);
 }
 
 void ADroneAIController::resetTripPoint()
@@ -255,31 +270,39 @@ float ADroneAIController::getFollowScore()
 
 float ADroneAIController::getReloadScore()
 {
-    float score = 1.0f;
     // No Bomb
     if(Cast<ADrone>(this->GetPawn())->isLoaded() || (getNbBombPlayers() == 0))  // no reloading possible
     {
-        score = 0.0f;
+        return 0.0f;
     }
     else
     {
+        float score = 1.0f;
+
         FVector dronePosition = GetPawn()->GetActorLocation();
         m_safeZone = findSafeZone();
+        float distSafeZoneToPos = 0.f;
         if(isInCombat())
         {
             //if not in combat, combat score always =1, else it's closer to 1 if many ennemies
-            score *= (1 - (m_alliesAliveCount / (4 * m_ennemyNear)));
+            score *= (1.f - (m_alliesAliveCount / (4.f * m_ennemyNear)));
         }
         else
         {
-            score *= FVector::DistSquared(m_groupBarycenter, dronePosition)
-                / FVector::DistSquared(m_safeZone, dronePosition);
+            distSafeZoneToPos = FVector::DistSquaredXY(m_safeZone, dronePosition);
+            score *= FVector::DistSquaredXY(m_groupBarycenter, dronePosition)
+                / distSafeZoneToPos;
+            distSafeZoneToPos = FMath::Sqrt(distSafeZoneToPos);
         }
-        score *= (1 - getNbEnnemiesInZone(m_safeZone) / (0.1f + FVector::Dist(dronePosition, m_safeZone))); //ZoneScore
-        score = (score < 0.f) ? 0.f : score;
-    }
+        score *= (1.f - getNbEnnemiesInZone(m_safeZone) / (0.1f + distSafeZoneToPos)); //ZoneScore
 
-    return score;
+        if (score < 0.f)
+        {
+            return 0.f;
+        }
+
+        return score;
+    }
 }
 
 float ADroneAIController::getWaitingScore()
@@ -420,7 +443,7 @@ void ADroneAIController::internalMakeIdleRotation()
     }
     else
     {
-        this->resetIdleGoal();
+        this->resetIdleRotationGoal();
     }
 }
 
@@ -428,10 +451,20 @@ void ADroneAIController::internalMakeIdleTranslation()
 {
     float sinCoeff = m_idleTranslationGain * FMath::Sin(m_idleTimer * m_idleTranslationSpeed);
 
-    FVector position = GetPawn()->GetActorLocation();
-    position.Z = (m_state == DRONE_RECHARGE ? m_reloadHeight : m_stationaryElevation) + sinCoeff;
+    APawn* drone = GetPawn();
+    FVector currentPosition = drone->GetActorLocation();
 
-    GetPawn()->SetActorLocation(position);
+    FVector wantedPosition = m_destination + m_idleTranslationDirection * sinCoeff;
+    FVector deltaPosition = wantedPosition - currentPosition;
+
+    //to avoid jumping teleportation, we straph to destination (dumb asservissement simulation)
+    if (deltaPosition.SizeSquared() > 1.f) 
+    {
+        wantedPosition = currentPosition + deltaPosition * m_timeSinceLastUpdate; // pf = pi + v * dt
+    }
+    //else we caught up to the idle movement translation
+    
+    drone->SetActorLocation(wantedPosition);
 }
 
 void ADroneAIController::makeIdleMove()
@@ -597,12 +630,17 @@ void ADroneAIController::followSafeZone()
     if(MoveToTarget() == EPathFollowingRequestResult::AlreadyAtGoal)
     {
         this->makeIdleMove();
-        m_idleTimer += m_timeSinceLastUpdate;
-        m_timeIdleMove += m_timeSinceLastUpdate;
-
-        if (m_timeIdleMove > m_idleRotationResetTime)
+        
+        if (m_idleTimer == 0.f)
         {
-            this->resetIdleGoal();
+            this->resetIdleTranslationGoal();
+        }
+        m_idleTimer += m_timeSinceLastUpdate;
+
+        m_timeIdleRotationMove += m_timeSinceLastUpdate;
+        if (m_timeIdleRotationMove > m_idleRotationResetTime)
+        {
+            this->resetIdleRotationGoal();
         }
     }
 }
@@ -611,12 +649,16 @@ void  ADroneAIController::waiting()
 {
     this->makeIdleMove();
     //m_actionFinished = true;
-    m_idleTimer += m_timeSinceLastUpdate;
-    m_timeIdleMove += m_timeSinceLastUpdate;
-
-    if(m_timeIdleMove > m_idleRotationResetTime)
+    if(FMath::Abs(m_idleTimer) < 0.01f)
     {
-        this->resetIdleGoal();
+        this->resetIdleTranslationGoal();
+    }
+    m_idleTimer += m_timeSinceLastUpdate;
+
+    m_timeIdleRotationMove += m_timeSinceLastUpdate;
+    if(m_timeIdleRotationMove > m_idleRotationResetTime)
+    {
+        this->resetIdleRotationGoal();
     }
 }
 
