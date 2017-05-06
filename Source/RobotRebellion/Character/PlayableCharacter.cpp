@@ -126,7 +126,6 @@ void APlayableCharacter::BeginPlay()
     {
         this->EnablePlayInput(false);
     }
-
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
@@ -251,6 +250,9 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
+
+    //try spell replication
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_spellKit, COND_OwnerOnly);
 }
 
 
@@ -517,6 +519,7 @@ void APlayableCharacter::switchWeapon()
     if(Role < ROLE_Authority)
     {
         serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+        m_weaponInventory->switchWeapon(); // switch weapon locally to show it on HUD
     }
     else
     {
@@ -741,8 +744,8 @@ void APlayableCharacter::changeInstanceTo(EClassType toType)
     m_spawner->spawnAndReplace(this, toType);
     UWorld* w = this->GetWorld();
     TArray<AActor*> entity;
-    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(),entity);
-    if(entity.Num()>0)
+    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
     {
         Cast<AWorldInstanceEntity>(entity[0])->setStartGameMode();
     }
@@ -1264,6 +1267,20 @@ void APlayableCharacter::enableDroneDisplay()
     if(droneController)
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
+    }
+}
+
+void APlayableCharacter::updateHUD(EClassType classType)
+{
+    // If HUD already create destroy it and create a new one
+    APlayerController* MyPC = Cast<APlayerController>(GetController());
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud)
+        {
+            myHud->HUDCharacterImpl->updateClass(classType);
+        }
     }
 }
 
