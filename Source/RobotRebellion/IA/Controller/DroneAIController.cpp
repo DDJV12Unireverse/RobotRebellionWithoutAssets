@@ -463,13 +463,14 @@ void ADroneAIController::internalMakeIdleTranslation()
     {
         wantedPosition = currentPosition + deltaPosition * m_timeSinceLastUpdate; // pf = pi + v * dt
 
-        dist = FMath::Sqrt(dist); //normalize
-        deltaPosition.Z -= dist * 0.1f; //nose point to down
-        deltaPosition /= dist;
+        //FVector forwardVector = drone->GetActorForwardVector();
+        //constexpr const float coeff = 0.01f;
+        //deltaPosition.Z -= dist * ((FVector::DotProduct(forwardVector, deltaPosition) >= 0.f) ? coeff : -coeff); //nose point to down
+        //deltaPosition.Normalize();
 
-        drone->SetActorRotation(
-            FQuat::FastLerp(drone->GetActorForwardVector().ToOrientationQuat(), deltaPosition.ToOrientationQuat(), 0.1f)
-        );
+        //drone->SetActorRotation(
+        //    FQuat::FastLerp(forwardVector.ToOrientationQuat(), deltaPosition.ToOrientationQuat(), 0.1f)
+        //);
     }
     //else we caught up to the idle movement translation
     
