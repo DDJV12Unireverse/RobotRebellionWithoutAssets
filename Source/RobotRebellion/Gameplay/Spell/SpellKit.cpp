@@ -23,8 +23,6 @@ void USpellKit::BeginPlay()
     Super::BeginPlay();
     if(GetOwner()->Role == ROLE_Authority)
     {
-        int bp = 50;
-        bp++;
         for(int i = 0; i < m_spellsClass.Num(); ++i)
         {
             USpell* tempSpell;
@@ -45,11 +43,6 @@ void USpellKit::BeginPlay()
 void USpellKit::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-    if(GetOwner()->Role != ROLE_Authority)
-    {
-        int bp = 50;
-        bp++;
-    }
     // ...
 }
 

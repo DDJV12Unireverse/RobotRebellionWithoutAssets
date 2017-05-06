@@ -1274,10 +1274,6 @@ void APlayableCharacter::updateHUD(EClassType classType)
 {
     // If HUD already create destroy it and create a new one
     APlayerController* MyPC = Cast<APlayerController>(GetController());
-    if(Role != ROLE_Authority)
-    {
-        int bp = 5;
-    }
     if(MyPC)
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
