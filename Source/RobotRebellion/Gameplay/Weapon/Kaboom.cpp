@@ -82,6 +82,8 @@ void AKaboom::initializeKaboomMovementComponent()
 
 void AKaboom::dropingPhysicSetting(bool reenablePhysic)
 {
+    m_collisionComp->SetAllPhysicsAngularVelocity(FVector::ZeroVector);
+    m_collisionComp->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
     m_collisionComp->SetSimulatePhysics(reenablePhysic);
     m_collisionComp->SetEnableGravity(reenablePhysic);
 }
