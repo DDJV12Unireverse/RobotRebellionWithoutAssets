@@ -29,6 +29,27 @@ UShortRangeWeapon::UShortRangeWeapon() :UWeaponBase()
 /************************************************************************/
 void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
+    USoundCue* missSound;
+    USoundCue* hitSound;
+    switch(user->GetLocation())
+    {
+        case ELocation::BIGROOM:
+            missSound = m_missBigRoomSound;
+            hitSound = m_hitBigRoomSound;
+            break;
+        case ELocation::CORRIDOR:
+            missSound = m_missCorridorSound;
+            hitSound = m_hitCorridorSound;
+            break;
+        case ELocation::SMALLROOM:
+            missSound = m_missSmallRoomSound;
+            hitSound = m_hitSmallRoomSound;
+            break;
+        default:
+            missSound = m_missOutsideSound;
+            hitSound = m_hitOutsideSound;
+    }
+
     if(canAttack())
     {
         bool alreadyHit = false;
@@ -63,10 +84,10 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
         {
             ARobotRebellionCharacter** exReceiver = nullptr;
             int32 outCount = OutHits.Num();
-
+           
             if(outCount <= 0)
             {
-                playSound(m_missSound, user);
+                playSound(missSound, user);
             }
             else
             {
@@ -85,29 +106,12 @@ void UShortRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 
                 //playSound(m_hitSound, user);
 
-                USoundCue* sound;
-
-                switch(user->GetLocation())
-                {
-                    case ELocation::BIGROOM:
-                        sound = m_hitBigRoomSound;
-                        break;
-                    case ELocation::CORRIDOR:
-                        sound = m_hitCorridorSound;
-                        break;
-                    case ELocation::SMALLROOM:
-                        sound = m_hitSmallRoomSound;
-                        break;
-                    default:
-                        sound = m_hitOutsideSound;
-                }
-
-                playSound(sound, user);
+                playSound(hitSound, user);
             }
         }
         else
         {
-            playSound(m_missSound, user);
+            playSound(missSound, user);
         }
 
         reload();

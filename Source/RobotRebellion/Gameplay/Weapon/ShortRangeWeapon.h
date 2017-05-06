@@ -25,8 +25,14 @@ private:
         float m_weaponVerticallyRange;
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
-        USoundCue* m_missSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missOutsideSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missBigRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missSmallRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missCorridorSound;
     //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
     //    USoundCue* m_hitSound;
 
