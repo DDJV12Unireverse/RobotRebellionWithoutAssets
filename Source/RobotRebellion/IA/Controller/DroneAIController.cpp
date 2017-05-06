@@ -641,7 +641,7 @@ void ADroneAIController::followSafeZone()
     {
         this->makeIdleMove();
         
-        if (m_idleTimer == 0.f)
+        if (m_idleTimer < 0.01f)
         {
             this->resetIdleTranslationGoal();
         }
@@ -659,7 +659,7 @@ void  ADroneAIController::waiting()
 {
     this->makeIdleMove();
     //m_actionFinished = true;
-    if(FMath::Abs(m_idleTimer) < 0.01f)
+    if(m_idleTimer < 0.01f)
     {
         this->resetIdleTranslationGoal();
     }
