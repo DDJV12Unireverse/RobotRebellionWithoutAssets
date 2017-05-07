@@ -152,6 +152,7 @@ void AKaboom::detonationImplementation()
             }
         }
     }
+    UGameplayStatics::SpawnSoundAttached(m_boomSound, GetRootComponent());
 
     multiExplosionOnEveryone();
 }
@@ -170,6 +171,8 @@ void AKaboom::multiExplosionOnEveryone_Implementation()
     m_destroyMethod = &AKaboom::realDestroy;
 
     this->m_kaboomMesh->SetVisibility(false);
+
+    UGameplayStatics::SpawnSoundAttached(m_boomSound, GetRootComponent());
 
     m_explosionPCS->SetRelativeScale3D(m_explosionEffectScale);
 
