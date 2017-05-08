@@ -37,7 +37,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f))
         float m_maxRunVelocity;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f, ClampMax = 1.f))
         float m_accelerationCoeff;
 
 
