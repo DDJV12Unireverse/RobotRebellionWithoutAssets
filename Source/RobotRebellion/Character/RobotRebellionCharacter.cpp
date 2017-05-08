@@ -41,7 +41,6 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 
 
     m_isShieldAnimated = true;
-
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -63,12 +62,16 @@ void ARobotRebellionCharacter::BeginPlay()
     {
         m_worldEntity = Cast<AWorldInstanceEntity>(entity[0]);
     }
+
     m_bonesToUpdate = 0;
     m_bonesSet = 5;
-    m_burningBones.Reserve(GetMesh()->GetNumBones());
-    m_fireEffects.Reserve(GetMesh()->GetNumBones());
-    m_effectTimer.Reserve(GetMesh()->GetNumBones());
+    int32 bonesCount = GetMesh()->GetNumBones();
+    m_burningBones.Reserve(bonesCount);
+    m_fireEffects.Reserve(bonesCount);
+    m_effectTimer.Reserve(bonesCount);
 
+    m_decelerationCoeff = m_accelerationCoeff / 2.f;
+    m_maxVelocity = m_maxWalkVelocity;
 
     m_healthBar = Cast<UWidgetComponent>(GetComponentByClass(UWidgetComponent::StaticClass()));
     if(m_healthBar)

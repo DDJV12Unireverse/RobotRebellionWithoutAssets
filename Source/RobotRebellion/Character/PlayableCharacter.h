@@ -104,6 +104,7 @@ public:
     // Maximal Focus distance on items.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MinUseDistance;
+
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
@@ -114,6 +115,9 @@ public:
     bool m_tpsMode;
 
     bool m_isBurnEffectEnabled;
+
+    float m_strafForwardMemory;
+    float m_strafRightMemory;
 
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
 
