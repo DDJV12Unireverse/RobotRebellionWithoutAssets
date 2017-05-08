@@ -188,6 +188,9 @@ public:
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
+    
+    UFUNCTION(BlueprintNativeEvent, Category = "UpdateMethod")
+        void updateInvisibilityMat(bool isVisible);
 
     UFUNCTION()
         void onDeath();
