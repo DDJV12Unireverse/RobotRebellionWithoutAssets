@@ -124,13 +124,12 @@ void APlayableCharacter::BeginPlay()
     {
         this->EnablePlayInput(false);
     }
-
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
+   
     if(Controller && Controller->IsLocalController())
     {
         AActor* usable = Cast<AActor>(GetUsableInView());
@@ -177,6 +176,7 @@ void APlayableCharacter::Tick(float DeltaTime)
     this->updateIfInCombat();
 
     //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
+    m_rotation = GetActorRotation();
 }
 
 void APlayableCharacter::updateIfInCombat()
@@ -202,8 +202,10 @@ void APlayableCharacter::updateIfInCombat()
 void APlayableCharacter::TurnAtRate(float Rate)
 {
     // calculate delta for this frame from the rate information
-    AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+        AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+
 }
+
 
 void APlayableCharacter::LookUpAtRate(float Rate)
 {
@@ -225,6 +227,7 @@ void APlayableCharacter::MoveForward(float Value)
     }
 }
 
+
 void APlayableCharacter::MoveRight(float Value)
 {
     if((Controller != NULL) && (Value != 0.0f))
@@ -240,6 +243,7 @@ void APlayableCharacter::MoveRight(float Value)
     }
 }
 
+
 ///// SERVER
 void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
@@ -249,6 +253,7 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_rotation, COND_OwnerOnly);
 }
 
 
@@ -779,6 +784,7 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         // We have 2 versions of the rotation bindings to handle different kinds of devices differently
         // "turn" handles devices that provide an absolute delta, such as a mouse.
         // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+        //PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
         PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
         PlayerInputComponent->BindAxis("TurnRate", this, &APlayableCharacter::TurnAtRate);
         PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
@@ -1259,4 +1265,9 @@ void APlayableCharacter::enableDroneDisplay()
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
     }
+}
+
+void APlayableCharacter::OnRep_ReplicatedMovement()
+{
+    this->SetActorRotation(m_rotation);
 }
