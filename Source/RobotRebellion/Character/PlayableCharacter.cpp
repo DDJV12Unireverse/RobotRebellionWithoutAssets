@@ -539,7 +539,9 @@ void APlayableCharacter::closeOptionWidget()
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->OptionsWidgetImpl);
-        giveInputGameMode(true);
+        //giveInputGameMode(true);
+        myHud->DisplayWidget(myHud->TopWidgetImpl);
+        giveInputGameMode(false);
     }
 }
 
