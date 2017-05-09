@@ -25,13 +25,9 @@ void UCheckEnnemyNearBTService::TickNode(UBehaviorTreeComponent & OwnerComp, uin
     {
         AIController->CheckEnnemyNear(m_radiusRange);
     }
-    else
+    else if(AIController->getTarget() && !AIController->getTarget()->isVisible()) //loose Track
     {
-        ARobotRebellionCharacter* charac = AIController->getTarget();
-        if(charac && !charac->isVisible()) //loose Track
-        {
-            AIController->setTarget(nullptr);
-            AIController->StopMovement();
-        }
+        AIController->setTarget(nullptr);
+        AIController->StopMovement();
     }
 }
