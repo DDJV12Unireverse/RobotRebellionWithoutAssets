@@ -123,6 +123,8 @@ float ABossAIController::computeIndividualDistScoring(const FVector& bossPositio
 
 void ABossAIController::computeTarget(float range)
 {
+    this->setTarget(nullptr);
+
     FVector currentPosition = GetPawn()->GetActorLocation();
 
     range *= range;
@@ -201,7 +203,7 @@ void ABossAIController::computeTarget(float range)
 
     for(APlayableCharacter* player : players)
     {
-        if(!player->isDead())
+        if(!player->isDead() && player->isVisible())
         {
             ++playerAlive;
 
