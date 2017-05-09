@@ -123,7 +123,11 @@ float ABossAIController::computeIndividualDistScoring(const FVector& bossPositio
 
 void ABossAIController::computeTarget(float range)
 {
-    this->setTarget(nullptr);
+    if (this->getTarget() && !this->getTarget()->isVisible())
+    {
+        this->setTarget(nullptr);
+        this->StopMovement();
+    }
 
     FVector currentPosition = GetPawn()->GetActorLocation();
 
