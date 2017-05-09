@@ -114,19 +114,19 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     }
 
 
-        if(m_healthBar)
+    if(m_healthBar)
+    {
+        //Orient lifeBar for player camera
+        APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+        if(charac)
         {
-            //Orient lifeBar for player camera
-            APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-            if(charac)
-            {
-                UCameraComponent* camera = charac->GetFollowCamera();
-                FRotator camRot = camera->GetComponentRotation();
-                m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
-                m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 50.f));
+            UCameraComponent* camera = charac->GetFollowCamera();
+            FRotator camRot = camera->GetComponentRotation();
+            m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
+            m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 50.f));
 
-            }
         }
+    }
 
     if(this->isBurning())
     {
@@ -402,28 +402,7 @@ void ARobotRebellionCharacter::addShield(float amount, float duration)
 
 void ARobotRebellionCharacter::setInvisible(bool isInvisible)
 {
-    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    APlayableCharacter* player = Cast<APlayableCharacter>(this);
-    if(player)
-    {
-        if(isInvisible)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-            player->m_fpsMesh->SetVisibility(!isInvisible);
-        }
-        else
-        {
-            UMeshComponent* mesh = player->getCurrentViewMesh();
-            mesh->SetVisibility(!isInvisible);
-        }
-    }
-    else
-    {
-        if(characterMesh)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-        }
-    }
+    updateInvisibilityMat(isInvisible);
 
     m_isInvisible = isInvisible;
 
@@ -431,6 +410,11 @@ void ARobotRebellionCharacter::setInvisible(bool isInvisible)
     {
         multiSetInvisible(isInvisible);
     }
+}
+
+void ARobotRebellionCharacter::updateInvisibilityMat_Implementation(bool isVisible)
+{
+    // does nothing
 }
 
 bool ARobotRebellionCharacter::isVisible()
@@ -602,28 +586,7 @@ bool ARobotRebellionCharacter::multiUnspawnReviveParticle_Validate()
 
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
 {
-    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    APlayableCharacter* player = Cast<APlayableCharacter>(this);
-    if(player)
-    {
-        if(isInvisible)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-            player->m_fpsMesh->SetVisibility(!isInvisible);
-        }
-        else
-        {
-            UMeshComponent* mesh = player->getCurrentViewMesh();
-            mesh->SetVisibility(!isInvisible);
-        }
-    }
-    else
-    {
-        if(characterMesh)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-        }
-    }
+    updateInvisibilityMat(isInvisible);
 
     m_isInvisible = isInvisible;
 }
