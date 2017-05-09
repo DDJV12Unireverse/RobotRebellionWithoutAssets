@@ -102,6 +102,13 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         bool m_isShieldParticleSpawned;
 
+    TArray<int32> m_burningBones;
+    TArray<UParticleSystemComponent*> m_fireEffects;
+    TMap<UParticleSystemComponent*, float> m_effectTimer;
+    float m_tickCount;
+    int m_bonesToUpdate;
+    int m_bonesSet;
+
 
     class AWorldInstanceEntity* m_worldEntity;
 
@@ -307,13 +314,6 @@ public:
         UParticleSystem* m_fireEffect;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
         class UParticleSystemComponent* m_particuleComponent;
-
-    TArray<int32> m_burningBones;
-    TArray<UParticleSystemComponent*> m_fireEffects;
-    TMap<UParticleSystemComponent*, float> m_effectTimer;
-    float m_tickCount;
-    int m_bonesToUpdate;
-    int m_bonesSet;
 
     void UpdateBurnEffect(float DeltaTime);
     void displayFireOnBone(const FName& bone);
