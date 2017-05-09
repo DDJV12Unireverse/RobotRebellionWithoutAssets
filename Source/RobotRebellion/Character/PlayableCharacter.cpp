@@ -54,6 +54,7 @@ APlayableCharacter::APlayableCharacter()
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
     GetCharacterMovement()->JumpZVelocity = 600.f;
     GetCharacterMovement()->AirControl = 0.2f;
+    GetCharacterMovement()->bOrientRotationToMovement = false;
 
     // Create a camera boom (pulls in towards the player if there is a collision)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -106,6 +107,18 @@ void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     check(PlayerInputComponent);
     inputOnLiving(PlayerInputComponent);
 }
+
+///// SERVER
+void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
+}
+
 
 void APlayableCharacter::BeginPlay()
 {
@@ -174,9 +187,6 @@ void APlayableCharacter::Tick(float DeltaTime)
     (this->*deactivatePhysicsKilledMethodPtr)();
 
     this->updateIfInCombat();
-
-    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
-    m_rotation = GetActorRotation();
 }
 
 void APlayableCharacter::updateIfInCombat()
@@ -240,22 +250,11 @@ void APlayableCharacter::MoveRight(float Value)
         const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
         // add movement in that direction
         AddMovementInput(Direction, m_moveSpeed*Value);
+
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
+        //updateActorRotation();
     }
 }
-
-
-///// SERVER
-void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
-{
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_rotation, COND_OwnerOnly);
-}
-
 
 void APlayableCharacter::ExecuteCommand(FString command) const
 {
@@ -1265,9 +1264,4 @@ void APlayableCharacter::enableDroneDisplay()
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
     }
-}
-
-void APlayableCharacter::OnRep_ReplicatedMovement()
-{
-    this->SetActorRotation(m_rotation);
 }

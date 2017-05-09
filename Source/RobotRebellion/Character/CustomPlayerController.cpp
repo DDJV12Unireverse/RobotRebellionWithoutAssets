@@ -23,9 +23,7 @@ void ACustomPlayerController::setInputMode_Implementation(bool status)
 
 void ACustomPlayerController::BeginPlay()
 {
-    //this->SetReplicateMovement(false);
     Super::BeginPlay();
-    
 }
 
 void ACustomPlayerController::Tick(float deltaTime)
@@ -37,7 +35,6 @@ void ACustomPlayerController::Tick(float deltaTime)
 void ACustomPlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    //DOREPLIFETIME_CONDITION(ACustomPlayerController, m_rotation, COND_OwnerOnly);
 }
 
 

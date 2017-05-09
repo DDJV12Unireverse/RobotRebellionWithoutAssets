@@ -107,6 +107,8 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
+    FRotator m_rotation;
+
     // Seulement vrai lors de la premi�re image avec un nouveau focus.
     bool bHasNewFocus;
     AActor* focusedPickupActor;
@@ -459,8 +461,5 @@ public:
     UFUNCTION(Reliable, Client)
         void updateAllCharacterBillboard(UCameraComponent* camToFollow);
     
-    void OnRep_ReplicatedMovement() override;
-    UPROPERTY(Replicated)
-    FRotator m_rotation;
-  
+    void setRotationImpl(const FRotator& rotation);
 };
