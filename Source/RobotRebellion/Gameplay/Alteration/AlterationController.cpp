@@ -71,13 +71,13 @@ void UAlterationController::update(float deltaTime)
     m_alterationsArray.RemoveAll([](UAlterationBase* current) { return current->IsPendingKillOrUnreachable(); });
 }
 
-UAlterationBase** UAlterationController::findByID(int32 id)
+UAlterationBase* UAlterationController::findByID(int32 id) const
 {
     for (auto iter = 0; iter < m_alterationsArray.Num(); ++iter)
     {
         if (m_alterationsArray[iter]->m_id.m_value == id)
         {
-            return &m_alterationsArray[iter];
+            return m_alterationsArray[iter];
         }
     }
 
