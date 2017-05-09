@@ -96,6 +96,12 @@ public:
 // Sets default values for this actor's properties
     AWorldInstanceEntity();
 
+    bool getGameStarted()
+    {
+        return m_gameIsStarted;
+    }
+
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 

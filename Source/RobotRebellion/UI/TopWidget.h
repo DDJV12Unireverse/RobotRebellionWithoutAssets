@@ -29,4 +29,17 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Menu")
         void CloseGameOptionsMenu();
 
+    void setReturnInGameVisible(bool enable)
+    {
+        auto widget = this->GetWidgetFromName(TEXT("ReturnToGameButton"));
+        if(enable)
+        {
+            widget->SetVisibility(ESlateVisibility::Visible);
+        }
+        else
+        {
+            widget->SetVisibility(ESlateVisibility::Hidden);
+        }
+
+    };
 };

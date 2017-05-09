@@ -473,6 +473,22 @@ void APlayableCharacter::openTopWidget()
             closeTopWidget();
             return;
         }
+
+        bool gameStarted = false;
+
+        UWorld* w = this->GetWorld();
+        TArray<AActor*> entity;
+        UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(), entity);
+        if(entity.Num() > 0)
+        {
+            gameStarted = Cast<AWorldInstanceEntity>(entity[0])->getGameStarted();
+        }
+        if(gameStarted)
+        {
+            Cast<AWorldInstanceEntity>(myHud->TopWidgetImpl);
+            myHud->TopWidgetImpl->setReturnInGameVisible(true);
+        }
+
         myHud->DisplayWidget(myHud->TopWidgetImpl);
         giveInputGameMode(false);
     }
