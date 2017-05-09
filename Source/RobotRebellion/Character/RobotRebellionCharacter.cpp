@@ -417,23 +417,9 @@ void ARobotRebellionCharacter::updateInvisibilityMat_Implementation(bool isVisib
     // does nothing
 }
 
-bool ARobotRebellionCharacter::isVisible()
+bool ARobotRebellionCharacter::isVisible() const
 {
-    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    APlayableCharacter* player = Cast<APlayableCharacter>(this);
-    if(player)
-    {
-        return player->getCurrentViewMesh()->IsVisible();
-    }
-    else
-    {
-        if(characterMesh)
-        {
-            return characterMesh->IsVisible();
-        }
-    }
-
-    return false;
+    return this->m_alterationController->findByID(IdentifiableObject<UInvisibilityAlteration>::ID.m_value) == nullptr;
 }
 
 void ARobotRebellionCharacter::inflictDamage(float damage, ELivingTextAnimMode animType, const FColor& damageColor)

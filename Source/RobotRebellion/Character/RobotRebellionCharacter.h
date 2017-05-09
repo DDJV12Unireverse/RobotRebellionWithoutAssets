@@ -234,7 +234,7 @@ public:
         void setInvisible(bool isInvisible);
 
     UFUNCTION()
-        bool isVisible();
+        bool isVisible() const;
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiSetInvisible(bool isInvisible);
