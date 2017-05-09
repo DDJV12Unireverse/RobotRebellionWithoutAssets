@@ -531,6 +531,11 @@ void APlayableCharacter::closeLobbyWidget()
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
+        //TODO: BUGBUG
+        if(myHud->TopWidgetImpl->IsVisible())
+        {
+            closeTopWidget();
+        }
         giveInputGameMode(true);
     }
 }
