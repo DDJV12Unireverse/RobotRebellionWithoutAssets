@@ -97,6 +97,8 @@ APlayableCharacter::APlayableCharacter()
     m_isReviving = false;
 
     this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::doesNothing;
+
+    /*m_isBurnEffectEnabled = true;*/
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -107,18 +109,6 @@ void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* Player
     check(PlayerInputComponent);
     inputOnLiving(PlayerInputComponent);
 }
-
-///// SERVER
-void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
-{
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
-    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
-}
-
 
 void APlayableCharacter::BeginPlay()
 {
@@ -142,7 +132,7 @@ void APlayableCharacter::BeginPlay()
 void APlayableCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-   
+
     if(Controller && Controller->IsLocalController())
     {
         AActor* usable = Cast<AActor>(GetUsableInView());
@@ -187,6 +177,8 @@ void APlayableCharacter::Tick(float DeltaTime)
     (this->*deactivatePhysicsKilledMethodPtr)();
 
     this->updateIfInCombat();
+
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
 }
 
 void APlayableCharacter::updateIfInCombat()
@@ -212,10 +204,8 @@ void APlayableCharacter::updateIfInCombat()
 void APlayableCharacter::TurnAtRate(float Rate)
 {
     // calculate delta for this frame from the rate information
-        AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-
+    AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
-
 
 void APlayableCharacter::LookUpAtRate(float Rate)
 {
@@ -237,7 +227,6 @@ void APlayableCharacter::MoveForward(float Value)
     }
 }
 
-
 void APlayableCharacter::MoveRight(float Value)
 {
     if((Controller != NULL) && (Value != 0.0f))
@@ -250,11 +239,23 @@ void APlayableCharacter::MoveRight(float Value)
         const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
         // add movement in that direction
         AddMovementInput(Direction, m_moveSpeed*Value);
-
-        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
-        //updateActorRotation();
     }
 }
+
+///// SERVER
+void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedCrouch, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bPressedRun, COND_SkipOwner);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
+
+    //try spell replication
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_spellKit, COND_OwnerOnly);
+}
+
 
 void APlayableCharacter::ExecuteCommand(FString command) const
 {
@@ -519,6 +520,7 @@ void APlayableCharacter::switchWeapon()
     if(Role < ROLE_Authority)
     {
         serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+        m_weaponInventory->switchWeapon(); // switch weapon locally to show it on HUD
     }
     else
     {
@@ -743,8 +745,8 @@ void APlayableCharacter::changeInstanceTo(EClassType toType)
     m_spawner->spawnAndReplace(this, toType);
     UWorld* w = this->GetWorld();
     TArray<AActor*> entity;
-    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(),entity);
-    if(entity.Num()>0)
+    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
     {
         Cast<AWorldInstanceEntity>(entity[0])->setStartGameMode();
     }
@@ -783,7 +785,6 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         // We have 2 versions of the rotation bindings to handle different kinds of devices differently
         // "turn" handles devices that provide an absolute delta, such as a mouse.
         // "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-        //PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
         PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
         PlayerInputComponent->BindAxis("TurnRate", this, &APlayableCharacter::TurnAtRate);
         PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
@@ -833,6 +834,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
 
         PlayerInputComponent->BindAction("Debug_CheatCode", IE_Released, this, &APlayableCharacter::onDebugCheat);
+
+
+        ////Fire Effect
+        PlayerInputComponent->BindAction("DisableFireEffect", IE_Pressed, this, &APlayableCharacter::disableFireEffect);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -1263,5 +1268,39 @@ void APlayableCharacter::enableDroneDisplay()
     if(droneController)
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
+    }
+}
+
+void APlayableCharacter::updateHUD(EClassType classType)
+{
+    // If HUD already create destroy it and create a new one
+    APlayerController* MyPC = Cast<APlayerController>(GetController());
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud)
+        {
+            myHud->HUDCharacterImpl->updateClass(classType);
+        }
+    }
+}
+
+void APlayableCharacter::disableFireEffect()
+{
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
+    {
+        AWorldInstanceEntity* ent = Cast<AWorldInstanceEntity>(entity[0]);
+        if(ent->IsBurnEffectEnabled())
+        {
+            ent->setIsBurnEffectEnabled(false);
+            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect disabled");
+        }
+        else
+        {
+            ent->setIsBurnEffectEnabled(true);
+            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect enabled");
+        }
     }
 }

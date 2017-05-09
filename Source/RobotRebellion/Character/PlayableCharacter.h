@@ -25,7 +25,7 @@ public:
         class UCameraComponent* FollowCamera;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
         class URobotRobellionSpawnerClass* m_spawner;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", Replicated)
         USpellKit* m_spellKit;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
         class USkeletalMeshComponent* m_fpsMesh;
@@ -38,7 +38,7 @@ public:
     ////CROUCH////
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", ReplicatedUsing = OnRep_CrouchButtonDown)
         bool m_bPressedCrouch;
-
+    
     ////INVENTORY
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Inventory", Replicated)
         int m_healthPotionsCount;
@@ -107,13 +107,13 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
-    FRotator m_rotation;
-
     // Seulement vrai lors de la premi�re image avec un nouveau focus.
     bool bHasNewFocus;
     AActor* focusedPickupActor;
 
     bool m_tpsMode;
+
+    bool m_isBurnEffectEnabled;
 
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
 
@@ -122,8 +122,7 @@ public:
 
 
 private:
-    void doesNothing()
-    {}
+    void doesNothing(){}
     void deactivatePhysicsWhenKilled();
 
 protected:
@@ -134,25 +133,21 @@ protected:
     /** Called for forwards/backward input */
     void MoveForward(float Value);
 
-
     /** Called for side to side input */
     void MoveRight(float Value);
+
     /**
     * Called via input to turn at a given rate.
     * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
     */
     void TurnAtRate(float Rate);
 
-
     /**
     * Called via input to turn look up/down at a given rate.
     * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
     */
     void LookUpAtRate(float Rate);
-    //     UFUNCTION(Reliable, Server, WithValidation)
-    //         void ServerTurnAtRate(float Rate);
-    //     UFUNCTION(Reliable, NetMulticast)
-    //         void MultiMoveRight(float Value);
+
 
 public:
 
@@ -212,7 +207,7 @@ public:
     void openLobbyWidget();
 
     UFUNCTION(BlueprintCallable, Category = LobbyWidget)
-        void closeLobbyWidget();
+    void closeLobbyWidget();
 
     UFUNCTION(BlueprintCallable, Category = CharacterSelection)
         void closeSelectionWidget();
@@ -278,7 +273,7 @@ public:
     template<int32 index>
     void castSpellInputHanlder()
     {
-        if(Role < ROLE_Authority)
+        if (Role < ROLE_Authority)
         {
             castSpellServer(index); // le param n'a pas d'importance pour l'instant
         }
@@ -417,12 +412,12 @@ public:
     }
 
     UFUNCTION()
-        void giveBombToDrone(ADroneAIController* drone);
+    void giveBombToDrone(ADroneAIController* drone);
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverGiveBombToDrone(ADroneAIController* drone);
 
-
+    
 
     int getManaPotionCount()
     {
@@ -460,6 +455,8 @@ public:
 
     UFUNCTION(Reliable, Client)
         void updateAllCharacterBillboard(UCameraComponent* camToFollow);
-    
-    void setRotationImpl(const FRotator& rotation);
+
+    void updateHUD(EClassType classType);
+
+    void disableFireEffect();
 };

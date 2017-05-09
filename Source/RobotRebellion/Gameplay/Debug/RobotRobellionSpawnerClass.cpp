@@ -43,6 +43,8 @@ void URobotRobellionSpawnerClass::TickComponent(float DeltaTime, ELevelTick Tick
 
 void URobotRobellionSpawnerClass::spawnAndReplace(APlayableCharacter* owner, EClassType typeToChange)
 {
+    // update HUD no matter the role
+    owner->updateHUD(typeToChange);
     if(owner->Role < ROLE_Authority)
     {
         serverSpawnAndReplace(owner, typeToChange);
