@@ -336,66 +336,41 @@ void ARobotRebellionCharacter::setBillboardInstanceNewCamera(UCameraComponent* c
 
 void ARobotRebellionCharacter::inflictStun()
 {
-    if(!this->isImmortal())
+    if(Role >= ROLE_Authority && !this->isImmortal())
     {
-        UStunAlteration* stunAlteration;
-
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
-            &stunAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
-            ))
-        {
-            m_alterationController->addAlteration(stunAlteration);
-        }
+        this->internalInflictAlteration<UStunAlteration>(
+            [](UStunAlteration* stunAlteration){});
     }
 }
 
 void ARobotRebellionCharacter::inflictStun(float duration)
 {
-    if(!this->isImmortal())
+    if (Role >= ROLE_Authority && !this->isImmortal())
     {
-        UStunAlteration* stunAlteration;
-
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
-            &stunAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
-            ))
-        {
-            stunAlteration->m_lifeTime = duration;
-            m_alterationController->addAlteration(stunAlteration);
-        }
+        this->internalInflictAlteration<UStunAlteration>(
+            [duration](UStunAlteration* stunAlteration) {
+                stunAlteration->m_lifeTime = duration;
+        });
     }
 }
 
 void ARobotRebellionCharacter::inflictInvisibility()
 {
-    if(!this->isImmortal())
+    if(Role >= ROLE_Authority)
     {
-        UInvisibilityAlteration* invisibilityAlteration;
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UInvisibilityAlteration>(
-            &invisibilityAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UInvisibilityAlteration>()
-            ))
-        {
-            m_alterationController->addAlteration(invisibilityAlteration);
-        }
+        this->internalInflictAlteration<UInvisibilityAlteration>([](UInvisibilityAlteration* invisibleAlteration) {});
     }
 }
 
 void ARobotRebellionCharacter::addShield(float amount, float duration)
 {
-    if(!this->isImmortal())
+    if(Role >= ROLE_Authority)
     {
-        UShieldAlteration* shieldAlteration;
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UShieldAlteration>(
-            &shieldAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UShieldAlteration>()
-            ))
-        {
+        this->internalInflictAlteration<UShieldAlteration>(
+            [amount, duration](UShieldAlteration* shieldAlteration) {
             shieldAlteration->m_lifeTime = duration;
             shieldAlteration->m_amount = amount;
-            m_alterationController->addAlteration(shieldAlteration);
-        }
+        });
     }
 }
 

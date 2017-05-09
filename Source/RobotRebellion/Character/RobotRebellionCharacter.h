@@ -102,6 +102,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         bool m_isShieldParticleSpawned;
 
+    UPROPERTY(BlueprintReadOnly, Replicated)
+        int m_burningBonesCount;
+
     TArray<int32> m_burningBones;
     TArray<UParticleSystemComponent*> m_fireEffects;
     TMap<UParticleSystemComponent*, float> m_effectTimer;
@@ -331,11 +334,8 @@ public:
         void multiDisplayFireOnBoneArray(const TArray<FName>& bone);
 
     void internalDisplayFireOnBoneArray(const TArray<FName>& bone);
-
-    UPROPERTY(BlueprintReadOnly, Replicated)
-        int m_burningBonesCount;
     
-    bool isBurning()
+    bool isBurning() const USE_NOEXCEPT
     {
         return (m_burningBonesCount > 0);
     }
@@ -358,5 +358,21 @@ public:
 
     void internalCleanFireComp();
 
+
+protected:
+    template<class Alteration, class AdditionalFunc, class ... AdditionalArgs>
+    void internalInflictAlteration(AdditionalFunc func, AdditionalArgs&& ... args)
+    {
+        Alteration* alteration;
+
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<Alteration>(
+            &alteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<Alteration>()
+            ))
+        {
+            func(alteration, std::forward<AdditionalArgs>(args)...);
+            m_alterationController->addAlteration(alteration);
+        }
+    }
 };
 

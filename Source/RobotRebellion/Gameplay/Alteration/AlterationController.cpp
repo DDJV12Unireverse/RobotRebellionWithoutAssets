@@ -49,14 +49,14 @@ void UAlterationController::TickComponent( float DeltaTime, ELevelTick TickType,
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
     (this->*m_updateMethod)(DeltaTime);
+
 }
 
 void UAlterationController::update(float deltaTime)
 {
-    volatile ENetRole role = GetOwnerRole();
-    if(role < ROLE_Authority)
+    if(GetOwnerRole() < ROLE_Authority) //not sure
     {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "TOTO");
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Err. Problem... Must not go there");
         return;
     }
 
