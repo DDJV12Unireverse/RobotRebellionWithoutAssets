@@ -14,6 +14,16 @@ ULivingTextRenderComponent::ULivingTextRenderComponent() : UTextRenderComponent(
 
     bAutoActivate = true;
 
+    /*this->bCastCinematicShadow = false;
+    this->bCastDynamicShadow = false;
+    this->bCastFarShadow = false;
+    this->bCastHiddenShadow = false; 
+    this->bCastInsetShadow = false;
+    this->bCastShadowAsTwoSided = false;
+    this->bCastStaticShadow = false;
+    this->bCastVolumetricTranslucentShadow = false;
+    this->bRenderCustomDepth = false;
+    */
     this->m_updateMethod = &ULivingTextRenderComponent::doesNothing;
 }
 
@@ -54,6 +64,24 @@ void ULivingTextRenderComponent::initializeWithInt(const FVector& actorPosition,
     this->initializeWithText(actorPosition, FString::FromInt(numberToDisplay), colorToDisplay, mode);
 }
 
+void ULivingTextRenderComponent::updateTextRotation()
+{
+    UWorld* world = GetWorld();
+    if(world)
+    {
+        APlayerController* pcControll = world->GetFirstPlayerController();
+        if (pcControll)
+        {
+            FVector dummy;
+            FRotator camViewPoint;
+            pcControll->GetPlayerViewPoint(dummy, camViewPoint);
+            camViewPoint.Yaw += 180.f;
+            camViewPoint.Pitch = -camViewPoint.Pitch;
+            this->SetWorldRotation(camViewPoint);
+        }
+    }
+}
+
 void ULivingTextRenderComponent::updateEverything(float deltaTime)
 {
     if (IsPendingKillOrUnreachable())
@@ -68,6 +96,8 @@ void ULivingTextRenderComponent::updateEverything(float deltaTime)
         m_savedBeginPosition.Z += m_zTranslationSpeed * deltaTime;
 
         this->SetWorldLocation(m_savedBeginPosition);
+
+        this->updateTextRotation();
     }
     else
     {
@@ -87,6 +117,7 @@ void ULivingTextRenderComponent::updateWithoutMoving(float deltaTime)
     if (!this->isAtEndOfLife())
     {
         this->SetWorldLocation(m_savedBeginPosition);
+        this->updateTextRotation();
     }
     else
     {
@@ -141,6 +172,8 @@ void ULivingTextRenderComponent::updateBoingBiggerText(float deltaTime)
 
         this->SetXScale(animationTransfertMethod);
         this->SetYScale(animationTransfertMethod);
+
+        this->updateTextRotation();
     }
     else
     {
