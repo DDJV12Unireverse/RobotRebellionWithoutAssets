@@ -20,3 +20,21 @@ void ACustomPlayerController::setInputMode_Implementation(bool status)
         SetInputMode(Mode);
     }
 }
+
+void ACustomPlayerController::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
+void ACustomPlayerController::Tick(float deltaTime)
+{
+    Super::Tick(deltaTime);
+
+}
+
+void ACustomPlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
+
