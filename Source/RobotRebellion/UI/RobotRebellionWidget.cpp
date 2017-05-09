@@ -20,7 +20,7 @@ void URobotRebellionWidget::startSound()
         m_loopAudioComp = UGameplayStatics::SpawnSoundAttached(m_widgetLoopSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
     }
 
-    if(m_stopAmbiantSound)
+    if(m_stopAmbiantSound && m_loopAudioComp)
     {
         if(GEngine)
         {
