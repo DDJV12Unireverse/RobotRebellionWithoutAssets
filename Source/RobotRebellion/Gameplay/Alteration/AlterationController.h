@@ -12,11 +12,12 @@ class ROBOTREBELLION_API UAlterationController : public UActorComponent
 	GENERATED_BODY()
 
 
-public:
+private:
     /************************************************************************/
     /* PROPERTY                                                             */
     /************************************************************************/
-    TArray<class UAlterationBase*> m_alterationsArray;
+    UPROPERTY()
+        TArray<class UAlterationBase*> m_alterationsArray;
 
     void (UAlterationController::* m_updateMethod)(float);
 
@@ -37,13 +38,13 @@ public:
 
     class UAlterationBase* findByID(int32 id) const;
 
-    void removeAllAlteration();
 
 
 private:
     void doesNothing(float) {}
     void update(float deltaTime);
 
+    void internalRemoveAllAlteration();
 
 
 public:
@@ -51,8 +52,13 @@ public:
     /* UFUNCTION                                                            */
     /************************************************************************/
     UFUNCTION(BlueprintCallable, Category = "Alteration")
-        void addAlteration(class UAlterationBase* newAlteration);
+        void removeAllAlteration();
 
+    UFUNCTION(Reliable, Server, WithValidation)
+        void serverRemoveAllAlteration();
+
+    UFUNCTION(BlueprintCallable, Category = "Alteration")
+        void addAlteration(class UAlterationBase* newAlteration);
 
     UFUNCTION(Reliable, Server, WithValidation)
         void serverAddAlteration(class UAlterationBase* newAlteration);

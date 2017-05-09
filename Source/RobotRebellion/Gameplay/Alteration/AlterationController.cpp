@@ -53,11 +53,20 @@ void UAlterationController::TickComponent( float DeltaTime, ELevelTick TickType,
 
 void UAlterationController::update(float deltaTime)
 {
-    m_alterationsArray.RemoveAll([](UAlterationBase* current) { return current->IsPendingKillOrUnreachable(); });
+    volatile ENetRole role = GetOwnerRole();
+    if(role < ROLE_Authority)
+    {
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "TOTO");
+        return;
+    }
+
+    auto removePredicate = [](UAlterationBase* current) { return current && current->IsPendingKillOrUnreachable(); };
+
+    m_alterationsArray.RemoveAll(removePredicate);
 
     for (int32 iter = 0; iter < m_alterationsArray.Num(); ++iter)
     {
-        if (!m_alterationsArray[iter]->IsPendingKillOrUnreachable())
+        if (!removePredicate(m_alterationsArray[iter]))
         {
             m_alterationsArray[iter]->update(deltaTime);
         }
@@ -68,7 +77,7 @@ void UAlterationController::update(float deltaTime)
         }
     }
 
-    m_alterationsArray.RemoveAll([](UAlterationBase* current) { return current->IsPendingKillOrUnreachable(); });
+    m_alterationsArray.RemoveAll(removePredicate);
 }
 
 UAlterationBase* UAlterationController::findByID(int32 id) const
@@ -84,15 +93,36 @@ UAlterationBase* UAlterationController::findByID(int32 id) const
     return nullptr;
 }
 
-void UAlterationController::removeAllAlteration()
+void UAlterationController::internalRemoveAllAlteration()
 {
-    while (m_alterationsArray.Num() != 0)
+    while(m_alterationsArray.Num() != 0)
     {
         UAlterationBase* alterationToDestroy = m_alterationsArray.Pop(false);
         alterationToDestroy->destroyItself();
     }
 }
 
+void UAlterationController::removeAllAlteration()
+{
+    if (GetOwnerRole() < ROLE_Authority)
+    {
+        this->serverRemoveAllAlteration();
+    }
+    else
+    {
+        this->internalRemoveAllAlteration();
+    }
+}
+
+void UAlterationController::serverRemoveAllAlteration_Implementation()
+{
+    this->internalRemoveAllAlteration();
+}
+
+bool UAlterationController::serverRemoveAllAlteration_Validate()
+{
+    return true;
+}
 
 GENERATE_DECLARATION_SERVER_CLIENT_METHODS_BASED_VALIDATION_SERVER_FROM_METHOD_PTR_WITH_CLIENT_IMPL_GEN(m_inflictMethod, UAlterationController, addAlteration, serverAddAlteration, UAlterationBase*, alteredOwner);
 
@@ -103,12 +133,12 @@ void UAlterationController::addAlterationServerImp(UAlterationBase* newAlteratio
     {
         if (!this->findByID(newAlteration->m_id.m_value))
         {
-            m_alterationsArray.Add(newAlteration);
-            newAlteration->onCreate(Cast<ARobotRebellionCharacter>(GetOwner()));
-
             auto character = Cast<ARobotRebellionCharacter>(GetOwner());
+
             if (character)
             {
+                m_alterationsArray.Add(newAlteration);
+                newAlteration->onCreate(character);
                 character->displayAnimatedText(newAlteration->toDebugString(), FColor::Silver, ELivingTextAnimMode::TEXT_ANIM_BOING_BOING);
             }
         }
