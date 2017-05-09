@@ -36,6 +36,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb Attribute", meta = (ClampMin = 0.f))
         float m_detonationRadius;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+        USoundCue* m_boomSound;
+
 
 protected:
     class ADrone* m_linkedDrone;

@@ -11,9 +11,10 @@
 AKingActivateTriggerBox::AKingActivateTriggerBox()
 {
     UShapeComponent* collisionComponent = GetCollisionComponent();
-    collisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECollisionResponse::ECR_Ignore);
-    collisionComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
-    collisionComponent->OnComponentHit.AddDynamic(this, &AKingActivateTriggerBox::onHit);
+    collisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+    collisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECollisionResponse::ECR_Overlap);
+
+    collisionComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &AKingActivateTriggerBox::onEnter);
 }
 
 void AKingActivateTriggerBox::BeginPlay()
@@ -21,7 +22,7 @@ void AKingActivateTriggerBox::BeginPlay()
     Super::BeginPlay();
 }
 
-void AKingActivateTriggerBox::onHit(UPrimitiveComponent* var1, AActor* var2, UPrimitiveComponent* var3, FVector var4, const FHitResult& var5)
+void AKingActivateTriggerBox::onEnter(UPrimitiveComponent* var1, AActor* enteredActor, UPrimitiveComponent* var3, int32 var4, bool var5, const FHitResult& var6)
 {
     if(Role >= ROLE_Authority)
     {
