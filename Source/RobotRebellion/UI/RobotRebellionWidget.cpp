@@ -9,16 +9,10 @@
 void URobotRebellionWidget::startSound()
 {
     // Begin sound
-    if (m_widgetBeginSound)
-    {
-        UGameplayStatics::SpawnSoundAttached(m_widgetBeginSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
-    }
+    playSound(m_widgetBeginSound);
 
     // Background Loop
-    if (m_widgetLoopSound && GetOwningPlayer()->GetCharacter())
-    {
-        m_loopAudioComp = UGameplayStatics::SpawnSoundAttached(m_widgetLoopSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
-    }
+    playSound(m_widgetLoopSound);
 
     if(m_stopAmbiantSound && m_loopAudioComp)
     {
@@ -49,7 +43,7 @@ void URobotRebellionWidget::endSound()
     }
 
     // Closing sound
-    UGameplayStatics::SpawnSoundAttached(m_widgetCloseSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
+    playSound(m_widgetCloseSound);
 
     if(m_loopAudioComp && m_stopAmbiantSound)
     {
@@ -66,6 +60,22 @@ void URobotRebellionWidget::endSound()
                         audioComp->SetVolumeMultiplier(1.f);
                     }
                 }
+            }
+        }
+    }
+}
+
+void URobotRebellionWidget::playSound(USoundCue * sound)
+{
+    if(sound)
+    {
+        auto owner = GetOwningPlayer();
+        if(owner)
+        {
+            auto charac = owner->GetCharacter();
+            if(charac)
+            {
+                UGameplayStatics::SpawnSoundAttached(sound, charac->GetRootComponent());
             }
         }
     }
