@@ -80,3 +80,16 @@ void UTopWidget::CloseGameOptionsMenu()
         myHud->HideWidget(myHud->OptionsWidgetImpl);
     }
 }
+
+void UTopWidget::setReturnInGameVisible(bool enable)
+{
+    auto widget = this->GetWidgetFromName(TEXT("ReturnToGameButton"));
+    if(enable)
+    {
+        widget->SetVisibility(ESlateVisibility::Visible);
+    }
+    else
+    {
+        widget->SetVisibility(ESlateVisibility::Hidden);
+    }
+};
