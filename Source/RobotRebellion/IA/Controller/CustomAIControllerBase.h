@@ -24,7 +24,18 @@ protected:
 
 
 public:
-	FVector m_hitDirection;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = 0.f))
+        float m_aimYMaxFallOffAngle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = 0.f))
+        float m_aimZMaxFallOffAngle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+        float m_aimZOffsetFallOffAngle;
+
+protected:
+    FVector getTargetToFollowLocation() const;
+
 
 public:
     ACustomAIControllerBase();
@@ -63,4 +74,7 @@ public:
     virtual void CheckEnnemyNear(FVector position, float range) PURE_VIRTUAL(ACustomAIControllerBase::CheckEnnemyNear, );
 
     virtual void AttackTarget() const PURE_VIRTUAL(ACustomAIControllerBase::AttackTarget, );
+
+    //aim at the fire direction and modify it needed.
+    virtual void aim(FVector& inOutFireDirection) const USE_NOEXCEPT;
 };

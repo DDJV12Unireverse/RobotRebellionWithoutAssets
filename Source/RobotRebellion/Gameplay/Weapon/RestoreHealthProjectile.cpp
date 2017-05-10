@@ -16,23 +16,11 @@ void ARestoreHealthProjectile::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
-void ARestoreHealthProjectile::OnHit(UPrimitiveComponent * ThisComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
+void ARestoreHealthProjectile::inflictDamageLogic(class AActor* otherActor, const FHitResult& hit)
 {
-    if(Role == ROLE_Authority)
+    ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(otherActor);
+    if(receiver && m_owner != receiver && !receiver->isDead() && !receiver->isImmortal())
     {
-        ARobotRebellionCharacter* receiver = Cast<ARobotRebellionCharacter>(OtherActor);
-        if(receiver && m_owner != receiver && !receiver->isDead())
-        {
-            if(!receiver->isImmortal())
-            {
-                receiver->restoreHealth(m_restoredHealth);
-            }
-            //else // CHEAT CODE
-            //{
-            //    receiver->displayAnimatedText("IMMORTAL OBJECT", FColor::Purple, ELivingTextAnimMode::TEXT_ANIM_NOT_MOVING);
-            //}
-        }
-
-        Destroy();
+         receiver->restoreHealth(m_restoredHealth);
     }
 }

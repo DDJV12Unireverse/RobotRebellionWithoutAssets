@@ -14,6 +14,16 @@ ULivingTextRenderComponent::ULivingTextRenderComponent() : UTextRenderComponent(
 
     bAutoActivate = true;
 
+    /*this->bCastCinematicShadow = false;
+    this->bCastDynamicShadow = false;
+    this->bCastFarShadow = false;
+    this->bCastHiddenShadow = false; 
+    this->bCastInsetShadow = false;
+    this->bCastShadowAsTwoSided = false;
+    this->bCastStaticShadow = false;
+    this->bCastVolumetricTranslucentShadow = false;
+    this->bRenderCustomDepth = false;
+    */
     this->m_updateMethod = &ULivingTextRenderComponent::doesNothing;
 }
 
@@ -54,6 +64,24 @@ void ULivingTextRenderComponent::initializeWithInt(const FVector& actorPosition,
     this->initializeWithText(actorPosition, FString::FromInt(numberToDisplay), colorToDisplay, mode);
 }
 
+void ULivingTextRenderComponent::updateTextRotation()
+{
+    UWorld* world = GetWorld();
+    if(world)
+    {
+        APlayerController* pcControll = world->GetFirstPlayerController();
+        if (pcControll)
+        {
+            FVector dummy;
+            FRotator camViewPoint;
+            pcControll->GetPlayerViewPoint(dummy, camViewPoint);
+            camViewPoint.Yaw += 180.f;
+            camViewPoint.Pitch = -camViewPoint.Pitch;
+            this->SetWorldRotation(camViewPoint);
+        }
+    }
+}
+
 void ULivingTextRenderComponent::updateEverything(float deltaTime)
 {
     if (IsPendingKillOrUnreachable())
@@ -68,6 +96,8 @@ void ULivingTextRenderComponent::updateEverything(float deltaTime)
         m_savedBeginPosition.Z += m_zTranslationSpeed * deltaTime;
 
         this->SetWorldLocation(m_savedBeginPosition);
+
+        this->updateTextRotation();
     }
     else
     {
@@ -87,6 +117,7 @@ void ULivingTextRenderComponent::updateWithoutMoving(float deltaTime)
     if (!this->isAtEndOfLife())
     {
         this->SetWorldLocation(m_savedBeginPosition);
+        this->updateTextRotation();
     }
     else
     {
@@ -121,6 +152,35 @@ void ULivingTextRenderComponent::updateBoingBoing(float deltaTime)
     }
 }
 
+void ULivingTextRenderComponent::updateBoingBiggerText(float deltaTime)
+{
+    if(IsPendingKillOrUnreachable())
+    {
+        return;
+    }
+
+    m_currentTime += deltaTime;
+
+    if(!this->isAtEndOfLife())
+    {
+        m_savedBeginPosition.Z += m_zTranslationSpeed * deltaTime;
+        this->SetWorldLocation(m_savedBeginPosition);
+
+        float animationTransfertMethod = m_currentTime * PI_MUL_3 / m_lifeTime; //normalized time over 6 PI
+        animationTransfertMethod = FMath::Abs(FMath::Sin(animationTransfertMethod)) + 0.5f; //result will be between 0.3f and 1.3f
+        //this->SetRelativeScale3D({ this->RelativeScale3D.X, animationTransfertMethod, animationTransfertMethod });
+
+        this->SetXScale(animationTransfertMethod);
+        this->SetYScale(animationTransfertMethod);
+
+        this->updateTextRotation();
+    }
+    else
+    {
+        this->destroyLivingText();
+    }
+}
+
 void ULivingTextRenderComponent::copyFrom(const ULivingTextRenderComponent& objectToCopyFrom)
 {
     m_lifeTime = objectToCopyFrom.m_lifeTime;
@@ -137,7 +197,8 @@ void ULivingTextRenderComponent::setDelegateAccordingToAnimMode(ELivingTextAnimM
         &ULivingTextRenderComponent::doesNothing,
         &ULivingTextRenderComponent::updateEverything,
         &ULivingTextRenderComponent::updateWithoutMoving,
-        &ULivingTextRenderComponent::updateBoingBoing
+        &ULivingTextRenderComponent::updateBoingBoing,
+        &ULivingTextRenderComponent::updateBoingBiggerText
     };
 
     this->m_updateMethod = delegateArrayMapperLookUpTable[static_cast<uint8>(mode)];

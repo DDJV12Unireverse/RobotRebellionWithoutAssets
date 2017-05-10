@@ -9,18 +9,12 @@
 void URobotRebellionWidget::startSound()
 {
     // Begin sound
-    if (m_widgetBeginSound)
-    {
-        UGameplayStatics::SpawnSoundAttached(m_widgetBeginSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
-    }
+    playSound(m_widgetBeginSound);
 
     // Background Loop
-    if (m_widgetLoopSound && GetOwningPlayer()->GetCharacter())
-    {
-        m_loopAudioComp = UGameplayStatics::SpawnSoundAttached(m_widgetLoopSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
-    }
+    playSound(m_widgetLoopSound);
 
-    if(m_stopAmbiantSound)
+    if(m_stopAmbiantSound && m_loopAudioComp)
     {
         if(GEngine)
         {
@@ -43,15 +37,15 @@ void URobotRebellionWidget::startSound()
 void URobotRebellionWidget::endSound()
 {
     // Stop loop
-    if(m_loopAudioComp->IsPlaying())
+    if(m_loopAudioComp && m_loopAudioComp->IsPlaying())
     {
         m_loopAudioComp->Stop();
     }
 
     // Closing sound
-    UGameplayStatics::SpawnSoundAttached(m_widgetCloseSound, GetOwningPlayer()->GetCharacter()->GetRootComponent());
+    playSound(m_widgetCloseSound);
 
-    if(m_stopAmbiantSound)
+    if(m_loopAudioComp && m_stopAmbiantSound)
     {
         if(GEngine)
         {
@@ -59,13 +53,29 @@ void URobotRebellionWidget::endSound()
             for(auto sound : sounds)
             {
                 UAudioComponent *audioComp = UAudioComponent::GetAudioComponentFromID(sound->GetAudioComponentID());
-                if(audioComp)
+                if(audioComp && m_loopAudioComp)
                 {
                     if(audioComp->GetAudioComponentID() != m_loopAudioComp->GetAudioComponentID())
                     {
                         audioComp->SetVolumeMultiplier(1.f);
                     }
                 }
+            }
+        }
+    }
+}
+
+void URobotRebellionWidget::playSound(USoundCue * sound)
+{
+    if(sound)
+    {
+        auto owner = GetOwningPlayer();
+        if(owner)
+        {
+            auto charac = owner->GetCharacter();
+            if(charac)
+            {
+                UGameplayStatics::SpawnSoundAttached(sound, charac->GetRootComponent());
             }
         }
     }

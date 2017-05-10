@@ -41,11 +41,11 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponBaseDamage;
 
-    //Weapon base damage. Specific to the weapon.
+    //Weapon base fire rate. Specific to the weapon.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General")
         float m_weaponBaseCadence;
 
-    //Projectile position Offset
+    //Weapon max range.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
         float m_WeaponRadiusRange;
 

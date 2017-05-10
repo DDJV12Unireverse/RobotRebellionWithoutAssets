@@ -201,4 +201,33 @@ public:
     {
         return static_cast<ReturnType>(FMath::Rand()) * coeff;
     }
+
+    static FORCEINLINE void drawObligatoryPersistentLineInWorld(
+        UWorld* world, 
+        const FVector& start, 
+        const FVector& end, 
+        const FColor& color, 
+        float thickness, 
+        float duration
+    )
+    {
+        if(world->PersistentLineBatcher)
+        {
+            world->PersistentLineBatcher->DrawLine(start, end, color, SDPG_Foreground, thickness, duration);
+        }
+    }
+
+    template<class ActorType>
+    UFUNCTION()
+        static FORCEINLINE FVector getBarycenter(const TArray<ActorType*>& actors)
+    {
+        FVector bary = FVector::ZeroVector;
+        
+        for (int32 iter = 0; iter < actors.Num(); ++iter)
+        {
+            bary += actors[iter]->GetActorLocation();
+        }
+
+        return bary / actors.Num();
+    }
 };
