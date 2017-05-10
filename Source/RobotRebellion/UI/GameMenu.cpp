@@ -10,6 +10,11 @@ AGameMenu::AGameMenu()
     PrimaryActorTick.bCanEverTick = true;
 }
 
+void AGameMenu::firstCallHUD_Implementation()
+{
+    // does nothing
+}
+
 void AGameMenu::BeginPlay()
 {
     Super::BeginPlay();
@@ -31,7 +36,9 @@ void AGameMenu::BeginPlay()
     OptionsWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
 
     TopWidgetImpl = CreateCustomWidget<UTopWidget>(TopWidget.GetDefaultObject());
-    DisplayWidget(TopWidgetImpl);
+    TopWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+
+    firstCallHUD();
 }
 
 void AGameMenu::Tick(float deltaTime)
