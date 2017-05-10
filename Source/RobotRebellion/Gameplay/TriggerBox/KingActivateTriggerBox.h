@@ -20,7 +20,7 @@ public:
     virtual void BeginPlay() override;
 
     UFUNCTION()
-        void onHit(UPrimitiveComponent* var1, AActor* var2, UPrimitiveComponent* var3, FVector var4, const FHitResult& var5);
+        void onEnter(UPrimitiveComponent* var1, AActor* enteredActor, UPrimitiveComponent* var3, int32 var4, bool var5, const FHitResult& var6);
 
 
 private:

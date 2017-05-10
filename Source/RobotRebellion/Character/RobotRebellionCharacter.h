@@ -102,6 +102,16 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shield)
         bool m_isShieldParticleSpawned;
 
+    UPROPERTY(BlueprintReadOnly, Replicated)
+        int m_burningBonesCount;
+
+    TArray<int32> m_burningBones;
+    TArray<UParticleSystemComponent*> m_fireEffects;
+    TMap<UParticleSystemComponent*, float> m_effectTimer;
+    float m_tickCount;
+    int m_bonesToUpdate;
+    int m_bonesSet;
+
 
     class AWorldInstanceEntity* m_worldEntity;
 
@@ -188,6 +198,9 @@ public:
     /************************************************************************/
     /* UFUNCTION                                                            */
     /************************************************************************/
+    
+    UFUNCTION(BlueprintNativeEvent, Category = "UpdateMethod")
+        void updateInvisibilityMat(bool isVisible);
 
     UFUNCTION()
         void onDeath();
@@ -224,7 +237,7 @@ public:
         void setInvisible(bool isInvisible);
 
     UFUNCTION()
-        bool isVisible();
+        bool isVisible() const;
 
     UFUNCTION(Reliable, NetMulticast, WithValidation)
         void multiSetInvisible(bool isInvisible);
@@ -305,13 +318,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Fire)
         class UParticleSystemComponent* m_particuleComponent;
 
-    TArray<int32> m_burningBones;
-    TArray<UParticleSystemComponent*> m_fireEffects;
-    TMap<UParticleSystemComponent*, float> m_effectTimer;
-    float m_tickCount;
-    int m_bonesToUpdate;
-    int m_bonesSet;
-
     void UpdateBurnEffect(float DeltaTime);
     void displayFireOnBone(const FName& bone);
 
@@ -328,11 +334,8 @@ public:
         void multiDisplayFireOnBoneArray(const TArray<FName>& bone);
 
     void internalDisplayFireOnBoneArray(const TArray<FName>& bone);
-
-    UPROPERTY(BlueprintReadOnly, Replicated)
-        int m_burningBonesCount;
     
-    bool isBurning()
+    bool isBurning() const USE_NOEXCEPT
     {
         return (m_burningBonesCount > 0);
     }
@@ -355,5 +358,21 @@ public:
 
     void internalCleanFireComp();
 
+
+protected:
+    template<class Alteration, class AdditionalFunc, class ... AdditionalArgs>
+    void internalInflictAlteration(AdditionalFunc func, AdditionalArgs&& ... args)
+    {
+        Alteration* alteration;
+
+        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<Alteration>(
+            &alteration,
+            *GameAlterationInstaller::getInstance().getAlterationDefault<Alteration>()
+            ))
+        {
+            func(alteration, std::forward<AdditionalArgs>(args)...);
+            m_alterationController->addAlteration(alteration);
+        }
+    }
 };
 
