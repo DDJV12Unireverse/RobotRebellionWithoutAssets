@@ -208,6 +208,11 @@ public:
         void ExecuteCommand(FString command) const;
 
     //////UI
+    void openTopWidget();
+
+    UFUNCTION(BlueprintCallable, Category = TopWidget)
+    void closeTopWidget();
+
     void openLobbyWidget();
 
     UFUNCTION(BlueprintCallable, Category = LobbyWidget)
@@ -215,6 +220,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = CharacterSelection)
         void closeSelectionWidget();
+
+    UFUNCTION(BlueprintCallable, Category = OptionMenu)
+        void closeOptionWidget();
 
     void giveInputGameMode(bool status);
 

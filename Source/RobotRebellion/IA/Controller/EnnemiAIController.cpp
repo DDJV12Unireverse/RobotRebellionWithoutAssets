@@ -50,14 +50,12 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
         int32 countHit = OutHits.Num();
         for(int32 i = 0; i < countHit; i++)
         {
-            FHitResult Hit = OutHits[i];
+            FHitResult& Hit = OutHits[i];
             ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
-            if(NULL != RRCharacter)
+            if(RRCharacter && 
+                !RRCharacter->isDead() && 
+                RRCharacter->isVisible())
             {
-                if(RRCharacter->isDead() || !RRCharacter->isVisible())
-                {
-                    continue;
-                }
                 setTarget(RRCharacter);
                 break;
             }

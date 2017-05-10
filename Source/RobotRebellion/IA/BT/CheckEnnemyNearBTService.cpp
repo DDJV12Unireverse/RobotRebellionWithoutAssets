@@ -25,4 +25,9 @@ void UCheckEnnemyNearBTService::TickNode(UBehaviorTreeComponent & OwnerComp, uin
     {
         AIController->CheckEnnemyNear(m_radiusRange);
     }
+    else if(AIController->getTarget() && !AIController->getTarget()->isVisible()) //loose Track
+    {
+        AIController->setTarget(nullptr);
+        AIController->StopMovement();
+    }
 }

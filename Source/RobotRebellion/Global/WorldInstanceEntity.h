@@ -96,11 +96,17 @@ public:
 // Sets default values for this actor's properties
     AWorldInstanceEntity();
 
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
     // Called every frame
     virtual void Tick(float DeltaSeconds) override;
+
+    FORCEINLINE bool getGameStarted() const USE_NOEXCEPT
+    {
+        return m_gameIsStarted;
+    }
 
     void setBossGameMode();
 
@@ -131,12 +137,12 @@ public:
     UFUNCTION(Reliable, NetMulticast)
         void multiSetupAudioComponents();
 
-    const bool IsBurnEffectEnabled()
+    FORCEINLINE bool IsBurnEffectEnabled() const USE_NOEXCEPT
     {
         return m_isBurnEffectEnabled;
     }
 
-    void setIsBurnEffectEnabled(bool enable)
+    FORCEINLINE void setIsBurnEffectEnabled(bool enable)
     {
         m_isBurnEffectEnabled = enable;
     }

@@ -11,6 +11,7 @@ ANonPlayableCharacter::ANonPlayableCharacter() : ARobotRebellionCharacter()
 {
     // fill it
     m_lootTable = CreateDefaultSubobject<ULootTable>(TEXT("LootTable"));
+    GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 
@@ -120,6 +121,7 @@ void ANonPlayableCharacter::goAway(const FVector& fromWhere, float delta)
 
         toMove *= delta;
 
+        controller->StopMovement(); //stop the move it did before
         controller->MoveToLocation(actorLocation + toMove);
     }
 }
