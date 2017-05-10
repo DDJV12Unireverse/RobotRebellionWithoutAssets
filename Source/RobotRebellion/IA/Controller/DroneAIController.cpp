@@ -140,7 +140,7 @@ void ADroneAIController::updateAlliesCampInfo()
     for(int noplayer = 0; noplayer < m_alliesInScene; ++noplayer)
     {
         APlayableCharacter* currentPlayer = Cast<APlayableCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), noplayer));
-        if(!currentPlayer->isDead())
+        if(currentPlayer && !currentPlayer->isDead())
         {
             ++m_alliesAliveCount;
             m_groupBarycenter += currentPlayer->GetActorLocation();
