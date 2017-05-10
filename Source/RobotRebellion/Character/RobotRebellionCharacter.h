@@ -19,8 +19,27 @@ private:
     bool m_isShieldAnimated;
 
 public:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
-        float m_moveSpeed;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+        float m_moveForwardSpeed;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+        float m_moveStraphSpeed;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f))
+        float m_maxVelocity;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f))
+        float m_maxCrouchVelocity;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f))
+        float m_maxWalkVelocity;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f))
+        float m_maxRunVelocity;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = 0.00001f, ClampMax = 1.f))
+        float m_accelerationCoeff;
+
 
     ////Weapon Inventory/////
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -114,6 +133,8 @@ protected:
 
 
     class AWorldInstanceEntity* m_worldEntity;
+
+    float m_decelerationCoeff;
 
 
     /************************************************************************/

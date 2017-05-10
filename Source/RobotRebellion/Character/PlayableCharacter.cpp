@@ -34,7 +34,7 @@
 #define CROUCH_HEIGHT -10.f
 
 
-APlayableCharacter::APlayableCharacter()
+APlayableCharacter::APlayableCharacter() : ARobotRebellionCharacter()
 {
 
     // Set size for collision capsule
@@ -54,6 +54,7 @@ APlayableCharacter::APlayableCharacter()
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
     GetCharacterMovement()->JumpZVelocity = 600.f;
     GetCharacterMovement()->AirControl = 0.2f;
+    GetCharacterMovement()->bOrientRotationToMovement = false;
 
     // Create a camera boom (pulls in towards the player if there is a collision)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -76,7 +77,8 @@ APlayableCharacter::APlayableCharacter()
     m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
     m_spellKit = CreateDefaultSubobject<USpellKit>(TEXT("SpellKit"));
 
-    m_moveSpeed = 0.3f;
+    m_moveForwardSpeed = 0.f;
+    m_moveStraphSpeed = 0.f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
@@ -212,32 +214,89 @@ void APlayableCharacter::LookUpAtRate(float Rate)
     AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void APlayableCharacter::MoveForward(float Value)
+void APlayableCharacter::MoveForward(float value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if (Controller != NULL)
     {
         // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
+        const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
         // get forward vector
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        AddMovementInput(Direction, m_moveSpeed*Value);
+        const FVector direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+        if(value == 0.f)
+        {
+            m_moveForwardSpeed -= m_decelerationCoeff * m_maxVelocity;
+            if(m_moveForwardSpeed < 0.f)
+            {
+                m_moveForwardSpeed = 0.f;
+            }
+        }
+        else
+        {
+            m_strafForwardMemory = value;
+
+            if(m_moveForwardSpeed <= m_maxVelocity)
+            {
+                m_moveForwardSpeed += m_accelerationCoeff * m_maxVelocity;
+                if(m_moveForwardSpeed > m_maxVelocity)
+                {
+                    m_moveForwardSpeed = m_maxVelocity;
+                }
+            }
+            else //we're already sup -> the only way to go there was to decrease max velocity
+            {
+                m_moveForwardSpeed -= m_decelerationCoeff * m_maxVelocity;
+            }
+        }
+
+        AddMovementInput(direction, m_moveForwardSpeed * m_strafForwardMemory * 0.5f);
+
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, FString::Printf(TEXT("Forward : Value Input : %f\nVelocity : %f"), value, m_moveForwardSpeed));
     }
 }
 
-void APlayableCharacter::MoveRight(float Value)
+void APlayableCharacter::MoveRight(float value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if(Controller != NULL)
     {
-        // find out which way is right
+        // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
+        const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
-        // get right vector 
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        // add movement in that direction
-        AddMovementInput(Direction, m_moveSpeed*Value);
+        // get forward vector
+        const FVector direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+        if(value == 0.f)
+        {
+            m_moveStraphSpeed -= m_decelerationCoeff * m_maxVelocity;
+            if(m_moveStraphSpeed < 0.f)
+            {
+                m_moveStraphSpeed = 0.f;
+            }
+        }
+        else
+        {
+            m_strafRightMemory = value;
+
+            if(m_moveStraphSpeed <= m_maxVelocity)
+            {
+                m_moveStraphSpeed += m_accelerationCoeff * m_maxVelocity;
+                if (m_moveStraphSpeed > m_maxVelocity)
+                {
+                    m_moveStraphSpeed = m_maxVelocity;
+                }
+            }
+            else //we're already sup -> the only way to go there was to decrease max velocity
+            {
+                m_moveStraphSpeed -= m_decelerationCoeff * m_maxVelocity;
+            }
+        }
+
+        AddMovementInput(direction, m_moveStraphSpeed * m_strafRightMemory * 0.5f);
+
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, FString::Printf(TEXT("Strafe : Value Input : %f\nVelocity : %f"), value, m_moveStraphSpeed));
     }
 }
 
@@ -293,7 +352,7 @@ void APlayableCharacter::OnStartSprint()
     else
     {
         //increase move speed
-        m_moveSpeed = 1.0f;
+        m_maxVelocity = m_maxRunVelocity;
         m_bPressedRun = true;
 
         if(Role < ROLE_Authority)
@@ -306,7 +365,7 @@ void APlayableCharacter::OnStartSprint()
 void APlayableCharacter::OnStopSprint()
 {
     //decrease move speed
-    m_moveSpeed = 0.3;
+    m_maxVelocity = m_maxWalkVelocity;
     m_bPressedRun = false;
     // Si nous sommes sur un client
     if(Role < ROLE_Authority)
@@ -378,7 +437,7 @@ void APlayableCharacter::OnCrouchToggle()
         if(!m_bPressedCrouch)
         {
             m_bPressedCrouch = true;
-            m_moveSpeed = 0.1f;
+            m_maxVelocity = m_maxCrouchVelocity;
 
             CameraBoom->TargetOffset.Z = CROUCH_HEIGHT;
             this->BaseEyeHeight = CROUCH_HEIGHT;
@@ -388,7 +447,7 @@ void APlayableCharacter::OnCrouchToggle()
         else
         {
             m_bPressedCrouch = false;
-            m_moveSpeed = 0.3f;
+            m_maxVelocity = m_maxWalkVelocity;
 
             CameraBoom->TargetOffset.Z = STAND_UP_HEIGHT;
             this->BaseEyeHeight = STAND_UP_HEIGHT;
