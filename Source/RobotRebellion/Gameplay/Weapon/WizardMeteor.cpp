@@ -80,7 +80,7 @@ void AWizardMeteor::explode()
             objectType,
             false,
             {this},
-            EDrawDebugTrace::ForDuration,
+            SPHERECAST_DISPLAY_DURATION,
             OutHits,
             true
         );

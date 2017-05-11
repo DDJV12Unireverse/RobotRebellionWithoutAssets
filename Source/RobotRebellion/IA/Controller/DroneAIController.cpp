@@ -532,6 +532,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_currentTime = 0.f;
     }
 
+#ifdef ENABLE_DRONE_DEBUG_DISPLAY
     if(m_showDestination)
     {
         DrawDebugSphere(
@@ -542,6 +543,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
             FColor(0, 0, 255)
         );
     }
+#endif //ENABLE_DRONE_DEBUG_DISPLAY
 }
 
 void ADroneAIController::dropBomb()
@@ -1027,6 +1029,7 @@ bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector&
 
 void ADroneAIController::debugDrawPath() const
 {
+#ifdef ENABLE_DRONE_DEBUG_DISPLAY
     //path
     if(m_showOriginPath)
     {
@@ -1044,6 +1047,7 @@ void ADroneAIController::debugDrawPath() const
     {
         this->debugElementaryDrawPath(m_finalPath, FColor::Blue);
     }
+#endif //ENABLE_DRONE_DEBUG_DISPLAY
 }
 
 void ADroneAIController::debugElementaryDrawPath(const TArray<FVector>& pathToDraw, const FColor& lineColor) const
