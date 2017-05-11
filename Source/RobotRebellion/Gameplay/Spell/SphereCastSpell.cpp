@@ -19,11 +19,11 @@ void USphereCastSpell::cast()
 {
     if(m_useEffect)
     {
-        GEngine->AddOnScreenDebugMessage(50, 30, FColor::Emerald, "use effect");
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "use effect");
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(50, 30, FColor::Emerald, "dont use effect");
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "dont use effect");
     }
     if(!canCast())
     {
