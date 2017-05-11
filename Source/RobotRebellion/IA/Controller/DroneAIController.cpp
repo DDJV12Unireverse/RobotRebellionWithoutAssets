@@ -744,10 +744,12 @@ void ADroneAIController::chooseNextAction()
         drone->displayScore(scoresArray);
     }
 
+#ifdef ENABLE_PRINT_ON_SCREEN
     GEngine->AddOnScreenDebugMessage(15, 5.f, FColor::White, "waitScore : " + FString::SanitizeFloat(scoresArray[DRONE_WAITING]));
     GEngine->AddOnScreenDebugMessage(16, 5.f, FColor::White, "followScore : " + FString::SanitizeFloat(scoresArray[DRONE_MOVING]));
     GEngine->AddOnScreenDebugMessage(18, 5.f, FColor::White, "attackScore : " + FString::SanitizeFloat(scoresArray[DRONE_COMBAT]));
     GEngine->AddOnScreenDebugMessage(17, 5.f, FColor::White, "reloadScore : " + FString::SanitizeFloat(scoresArray[DRONE_RECHARGE]));
+#endif //ENABLE_PRINT_ON_SCREEN
 
     float bestScore = -1.f;
 
