@@ -532,6 +532,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
         m_currentTime = 0.f;
     }
 
+#ifdef ENABLE_DRONE_DEBUG_DISPLAY
     if(m_showDestination)
     {
         DrawDebugSphere(
@@ -542,6 +543,7 @@ void ADroneAIController::IAUpdate(float deltaTime)
             FColor(0, 0, 255)
         );
     }
+#endif //ENABLE_DRONE_DEBUG_DISPLAY
 }
 
 void ADroneAIController::dropBomb()
@@ -744,10 +746,12 @@ void ADroneAIController::chooseNextAction()
         drone->displayScore(scoresArray);
     }
 
+#ifdef ENABLE_PRINT_ON_SCREEN
     GEngine->AddOnScreenDebugMessage(15, 5.f, FColor::White, "waitScore : " + FString::SanitizeFloat(scoresArray[DRONE_WAITING]));
     GEngine->AddOnScreenDebugMessage(16, 5.f, FColor::White, "followScore : " + FString::SanitizeFloat(scoresArray[DRONE_MOVING]));
     GEngine->AddOnScreenDebugMessage(18, 5.f, FColor::White, "attackScore : " + FString::SanitizeFloat(scoresArray[DRONE_COMBAT]));
     GEngine->AddOnScreenDebugMessage(17, 5.f, FColor::White, "reloadScore : " + FString::SanitizeFloat(scoresArray[DRONE_RECHARGE]));
+#endif //ENABLE_PRINT_ON_SCREEN
 
     float bestScore = -1.f;
 
@@ -1025,6 +1029,7 @@ bool ADroneAIController::testFlyFromTo(const FVector& startPoint, const FVector&
 
 void ADroneAIController::debugDrawPath() const
 {
+#ifdef ENABLE_DRONE_DEBUG_DISPLAY
     //path
     if(m_showOriginPath)
     {
@@ -1042,6 +1047,7 @@ void ADroneAIController::debugDrawPath() const
     {
         this->debugElementaryDrawPath(m_finalPath, FColor::Blue);
     }
+#endif //ENABLE_DRONE_DEBUG_DISPLAY
 }
 
 void ADroneAIController::debugElementaryDrawPath(const TArray<FVector>& pathToDraw, const FColor& lineColor) const
