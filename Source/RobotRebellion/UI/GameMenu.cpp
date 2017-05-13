@@ -10,6 +10,11 @@ AGameMenu::AGameMenu()
     PrimaryActorTick.bCanEverTick = true;
 }
 
+void AGameMenu::firstCallHUD_Implementation()
+{
+    // does nothing
+}
+
 void AGameMenu::BeginPlay()
 {
     Super::BeginPlay();
@@ -25,7 +30,15 @@ void AGameMenu::BeginPlay()
     ReviveTimerWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
 
     ClassSelectionWidgetImpl = CreateCustomWidget<URobotRebellionWidget>(ClassSelectionWidget.GetDefaultObject());
-    DisplayWidget(ClassSelectionWidgetImpl);
+    ClassSelectionWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+
+    OptionsWidgetImpl = CreateCustomWidget<UOptionsMenuWidget>(OptionsWidget.GetDefaultObject());
+    OptionsWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+
+    TopWidgetImpl = CreateCustomWidget<UTopWidget>(TopWidget.GetDefaultObject());
+    TopWidgetImpl->SetVisibility(ESlateVisibility::Hidden);
+
+    firstCallHUD();
 }
 
 void AGameMenu::Tick(float deltaTime)

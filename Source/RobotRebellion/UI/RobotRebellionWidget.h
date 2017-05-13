@@ -34,4 +34,5 @@ public:
     UFUNCTION(BlueprintCallable, Category = "WidgetSound")
         virtual void endSound();
 
+    void playSound(USoundCue* sound);
 };

@@ -41,7 +41,6 @@ ARobotRebellionCharacter::ARobotRebellionCharacter()
 
 
     m_isShieldAnimated = true;
-
 }
 
 void ARobotRebellionCharacter::BeginPlay()
@@ -63,12 +62,16 @@ void ARobotRebellionCharacter::BeginPlay()
     {
         m_worldEntity = Cast<AWorldInstanceEntity>(entity[0]);
     }
+
     m_bonesToUpdate = 0;
     m_bonesSet = 5;
-    m_burningBones.Reserve(GetMesh()->GetNumBones());
-    m_fireEffects.Reserve(GetMesh()->GetNumBones());
-    m_effectTimer.Reserve(GetMesh()->GetNumBones());
+    int32 bonesCount = GetMesh()->GetNumBones();
+    m_burningBones.Reserve(bonesCount);
+    m_fireEffects.Reserve(bonesCount);
+    m_effectTimer.Reserve(bonesCount);
 
+    m_decelerationCoeff = m_accelerationCoeff / 2.f;
+    m_maxVelocity = m_maxWalkVelocity;
 
     m_healthBar = Cast<UWidgetComponent>(GetComponentByClass(UWidgetComponent::StaticClass()));
     if(m_healthBar)
@@ -115,19 +118,19 @@ void ARobotRebellionCharacter::Tick(float deltaTime)
     }
 
 
-        if(m_healthBar)
+    if(m_healthBar)
+    {
+        //Orient lifeBar for player camera
+        APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+        if(charac)
         {
-            //Orient lifeBar for player camera
-            APlayableCharacter* charac = Cast<APlayableCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-            if(charac)
-            {
-                UCameraComponent* camera = charac->GetFollowCamera();
-                FRotator camRot = camera->GetComponentRotation();
-                m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
-                m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 50.f));
+            UCameraComponent* camera = charac->GetFollowCamera();
+            FRotator camRot = camera->GetComponentRotation();
+            m_healthBar->SetWorldRotation(FRotator(-camRot.Pitch, camRot.Yaw + 180.f, camRot.Roll));
+            m_healthBar->SetRelativeLocation(FVector(0.f, 0.f, charac->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 50.f));
 
-            }
         }
+    }
 
     if(this->isBurning())
     {
@@ -337,94 +340,48 @@ void ARobotRebellionCharacter::setBillboardInstanceNewCamera(UCameraComponent* c
 
 void ARobotRebellionCharacter::inflictStun()
 {
-    if(!this->isImmortal())
+    if(Role >= ROLE_Authority && !this->isImmortal())
     {
-        UStunAlteration* stunAlteration;
-
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
-            &stunAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
-            ))
-        {
-            m_alterationController->addAlteration(stunAlteration);
-        }
+        this->internalInflictAlteration<UStunAlteration>(
+            [](UStunAlteration* stunAlteration){});
     }
 }
 
 void ARobotRebellionCharacter::inflictStun(float duration)
 {
-    if(!this->isImmortal())
+    if (Role >= ROLE_Authority && !this->isImmortal())
     {
-        UStunAlteration* stunAlteration;
-
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UStunAlteration>(
-            &stunAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UStunAlteration>()
-            ))
-        {
-            stunAlteration->m_lifeTime = duration;
-            m_alterationController->addAlteration(stunAlteration);
-        }
+        this->internalInflictAlteration<UStunAlteration>(
+            [duration](UStunAlteration* stunAlteration) {
+                stunAlteration->m_lifeTime = duration;
+        });
     }
 }
 
 void ARobotRebellionCharacter::inflictInvisibility()
 {
-    if(!this->isImmortal())
+    if(Role >= ROLE_Authority)
     {
-        UInvisibilityAlteration* invisibilityAlteration;
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UInvisibilityAlteration>(
-            &invisibilityAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UInvisibilityAlteration>()
-            ))
-        {
-            m_alterationController->addAlteration(invisibilityAlteration);
-        }
+        this->internalInflictAlteration<UInvisibilityAlteration>([](UInvisibilityAlteration* invisibleAlteration) {});
     }
 }
 
 void ARobotRebellionCharacter::addShield(float amount, float duration)
 {
-    if(!this->isImmortal())
+    if(Role >= ROLE_Authority)
     {
-        UShieldAlteration* shieldAlteration;
-        if(UUtilitaryFunctionLibrary::createObjectFromDefaultWithoutAttach<UShieldAlteration>(
-            &shieldAlteration,
-            *GameAlterationInstaller::getInstance().getAlterationDefault<UShieldAlteration>()
-            ))
-        {
+        this->internalInflictAlteration<UShieldAlteration>(
+            [amount, duration](UShieldAlteration* shieldAlteration) {
             shieldAlteration->m_lifeTime = duration;
             shieldAlteration->m_amount = amount;
-            m_alterationController->addAlteration(shieldAlteration);
-        }
+        });
     }
 }
 
 
 void ARobotRebellionCharacter::setInvisible(bool isInvisible)
 {
-    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    APlayableCharacter* player = Cast<APlayableCharacter>(this);
-    if(player)
-    {
-        if(isInvisible)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-            player->m_fpsMesh->SetVisibility(!isInvisible);
-        }
-        else
-        {
-            UMeshComponent* mesh = player->getCurrentViewMesh();
-            mesh->SetVisibility(!isInvisible);
-        }
-    }
-    else
-    {
-        if(characterMesh)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-        }
-    }
+    updateInvisibilityMat(isInvisible);
 
     m_isInvisible = isInvisible;
 
@@ -434,23 +391,14 @@ void ARobotRebellionCharacter::setInvisible(bool isInvisible)
     }
 }
 
-bool ARobotRebellionCharacter::isVisible()
+void ARobotRebellionCharacter::updateInvisibilityMat_Implementation(bool isVisible)
 {
-    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    APlayableCharacter* player = Cast<APlayableCharacter>(this);
-    if(player)
-    {
-        return player->getCurrentViewMesh()->IsVisible();
-    }
-    else
-    {
-        if(characterMesh)
-        {
-            return characterMesh->IsVisible();
-        }
-    }
+    // does nothing
+}
 
-    return false;
+bool ARobotRebellionCharacter::isVisible() const
+{
+    return this->m_alterationController->findByID(IdentifiableObject<UInvisibilityAlteration>::ID.m_value) == nullptr;
 }
 
 void ARobotRebellionCharacter::inflictDamage(float damage, ELivingTextAnimMode animType, const FColor& damageColor)
@@ -603,28 +551,7 @@ bool ARobotRebellionCharacter::multiUnspawnReviveParticle_Validate()
 
 GENERATE_IMPLEMENTATION_METHOD_AND_DEFAULT_VALIDATION_METHOD(ARobotRebellionCharacter, multiSetInvisible, bool isInvisible)
 {
-    UMeshComponent* characterMesh = FindComponentByClass<UMeshComponent>();
-    APlayableCharacter* player = Cast<APlayableCharacter>(this);
-    if(player)
-    {
-        if(isInvisible)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-            player->m_fpsMesh->SetVisibility(!isInvisible);
-        }
-        else
-        {
-            UMeshComponent* mesh = player->getCurrentViewMesh();
-            mesh->SetVisibility(!isInvisible);
-        }
-    }
-    else
-    {
-        if(characterMesh)
-        {
-            characterMesh->SetVisibility(!isInvisible);
-        }
-    }
+    updateInvisibilityMat(isInvisible);
 
     m_isInvisible = isInvisible;
 }

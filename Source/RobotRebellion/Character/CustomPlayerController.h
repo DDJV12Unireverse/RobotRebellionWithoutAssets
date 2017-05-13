@@ -11,10 +11,18 @@
 UCLASS()
 class ROBOTREBELLION_API ACustomPlayerController : public APlayerController
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
+
+        
+        
 
 public:
     UFUNCTION(Reliable, Client)
         void setInputMode(bool status);
+  
+    void BeginPlay() override;
+    void Tick(float deltaTime) override;
+    void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
     
+
 };

@@ -25,7 +25,7 @@ public:
         class UCameraComponent* FollowCamera;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
         class URobotRobellionSpawnerClass* m_spawner;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", Replicated)
         USpellKit* m_spellKit;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
         class USkeletalMeshComponent* m_fpsMesh;
@@ -104,6 +104,7 @@ public:
     // Maximal Focus distance on items.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MinUseDistance;
+
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
@@ -115,6 +116,9 @@ public:
 
     bool m_isBurnEffectEnabled;
     
+
+    float m_strafForwardMemory;
+    float m_strafRightMemory;
 
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
 
@@ -206,6 +210,11 @@ public:
         void ExecuteCommand(FString command) const;
 
     //////UI
+    void openTopWidget();
+
+    UFUNCTION(BlueprintCallable, Category = TopWidget)
+    void closeTopWidget();
+
     void openLobbyWidget();
 
     UFUNCTION(BlueprintCallable, Category = LobbyWidget)
@@ -213,6 +222,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = CharacterSelection)
         void closeSelectionWidget();
+
+    UFUNCTION(BlueprintCallable, Category = OptionMenu)
+        void closeOptionWidget();
 
     void giveInputGameMode(bool status);
 
@@ -458,6 +470,7 @@ public:
     UFUNCTION(Reliable, Client)
         void updateAllCharacterBillboard(UCameraComponent* camToFollow);
 
+    void updateHUD(EClassType classType);
 
     void disableFireEffect();
 

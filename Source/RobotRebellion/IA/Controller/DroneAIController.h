@@ -79,6 +79,10 @@ public:
     /************************************************************************/
     /* UPROPERTY                                                            */
     /************************************************************************/
+    //If problem arise (Controller spawns before drone), it will be at this position the drone will be spawned
+    //Please, update this according to the real drone position on the map.
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AGeneral")
+        FVector m_defaultDroneSpawnPositionIfProblem;
 
     //Deceleration Coefficient. Higher the value, faster the drone will arrive to its target and more rough the stop will be.
     //Beware, a too high value will cause instability.
@@ -133,6 +137,35 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 2))
         int32 m_splinePointCountIntraSegment;
 
+    //Noisy travel random value used to modify travel point (to make it more drone like).
+    //0.f means no noisy travel method
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_noisyTravelRandom;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 3.14159f))
+        float m_idleAngle;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.0001f, ClampMax = 1.f))
+        float m_idleAngleSpeed;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_idleTranslationSpeed;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_idleTranslationGain;
+
+    //acceleration between 0 percent and m_accelPercentPath. Beyond, the drone is at its travel speed.
+    //decceleration is the mirror of acceleration. 
+    //Thus : 
+    //- acceleration between 0% and m_accelPercentPath
+    //- travel speed between m_accelPercentPath and 1.f - m_accelPercentPath
+    //- decceleration between 1.f - m_accelPercentPath and 100%
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f, ClampMax = 0.5f))
+        float m_accelPercentPath;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Move", meta = (ClampMin = 0.f))
+        float m_idleRotationResetTime;
+
 
 private:
     TArray<FVector> m_path;
@@ -140,6 +173,28 @@ private:
     TArray<FVector> m_finalPath;
 
     float m_timeSinceLastUpdate;
+
+    int32 m_currentTripPoint;
+    float m_totalTripPoint;
+
+    float m_deccelPercentPath;
+    float m_deccelerationCoefficient;
+
+    FVector m_realDroneOrient;
+    FVector m_idleForwardGoal;
+    FVector m_idleTranslationDirection;
+    float m_timeIdleRotationMove;
+    
+
+
+private:
+    void internalNoisyTravelTransfertMethod(FVector& inOutPoint, const FVector& nextPoint);
+
+    void internalMakeIdleRotation();
+
+    void internalMakeIdleTranslation();
+
+    void resetTripPoint();
 
 
 public:
@@ -159,7 +214,17 @@ public:
 
     void updateAlliesCampInfo();
 
+    void resetIdleRotationGoal();
+
+    void resetIdleTranslationGoal();
+
+    void saveDroneLocalization();
+
+    EPathFollowingRequestResult::Type stopDroneMoves(class ADrone* drone);
+
     virtual EPathFollowingRequestResult::Type MoveToTarget() override;
+
+    void makeIdleMove();
 
     void findDropZone();
 
@@ -204,6 +269,11 @@ public:
     FORCEINLINE bool isArrivedAtDestination() const
     {
         return (m_destination - GetPawn()->GetActorLocation()).SizeSquared() < m_epsilonSquaredDistanceTolerance;
+    }
+
+    FORCEINLINE float getTravelCompletionPercentage() const
+    {
+        return static_cast<float>(m_currentTripPoint) / m_totalTripPoint;
     }
 
     //update the targeted height of the drone
