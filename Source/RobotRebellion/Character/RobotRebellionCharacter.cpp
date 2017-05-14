@@ -24,6 +24,7 @@
 #include "Global/WorldInstanceEntity.h"
 #include "WidgetComponent.h"
 #include "UI/LifeBarWidget.h"
+#include "Global/EntityDataSingleton.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -343,17 +344,17 @@ void ARobotRebellionCharacter::inflictStun()
     if(Role >= ROLE_Authority && !this->isImmortal())
     {
         this->internalInflictAlteration<UStunAlteration>(
-            [](UStunAlteration* stunAlteration){});
+            [](UStunAlteration* stunAlteration) {});
     }
 }
 
 void ARobotRebellionCharacter::inflictStun(float duration)
 {
-    if (Role >= ROLE_Authority && !this->isImmortal())
+    if(Role >= ROLE_Authority && !this->isImmortal())
     {
         this->internalInflictAlteration<UStunAlteration>(
             [duration](UStunAlteration* stunAlteration) {
-                stunAlteration->m_lifeTime = duration;
+            stunAlteration->m_lifeTime = duration;
         });
     }
 }
@@ -764,7 +765,7 @@ void ARobotRebellionCharacter::displayFireOnBone(const FName& bone)
 
 void ARobotRebellionCharacter::multiDisplayFireOnBone_Implementation(const FName& bone)
 {
-    if(m_worldEntity->IsBurnEffectEnabled())
+    if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
     {
         internalDisplayFireOnBone(bone);
     }
@@ -826,7 +827,7 @@ void ARobotRebellionCharacter::internalDisplayFireOnBoneArray(const TArray<FName
 
 void ARobotRebellionCharacter::multiDisplayFireOnBoneArray_Implementation(const TArray<FName>& bones)
 {
-    if(m_worldEntity->IsBurnEffectEnabled())
+    if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
     {
         internalDisplayFireOnBoneArray(bones);
     }
@@ -834,7 +835,7 @@ void ARobotRebellionCharacter::multiDisplayFireOnBoneArray_Implementation(const 
 
 void ARobotRebellionCharacter::internalSpawnFireEffect(FVector location)
 {
-    if(m_worldEntity->IsBurnEffectEnabled())
+    if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
     {
         if(Role >= ROLE_Authority)
         {
@@ -889,17 +890,6 @@ void ARobotRebellionCharacter::internalCleanFireComp()
     m_effectTimer.Reset();
     m_burningBonesCount = 0;
 
-    //    TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());
-    //    fireComponents.RemoveAll([&](UActorComponent* comp) {
-    //         UParticleSystemComponent* systComp = Cast<UParticleSystemComponent>(comp);
-    //         //Change for integration
-    //         systComp->DestroyComponent();
-    //         if(systComp)
-    //         {
-    //             return true;
-    //         }
-    //         return false;
-    //     });
 }
 
 void ARobotRebellionCharacter::cleanFireComp()

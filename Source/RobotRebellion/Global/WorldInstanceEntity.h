@@ -33,7 +33,7 @@ private:
 
     bool m_bossIsDead;
     bool m_gameIsStarted;
-    bool m_isBurnEffectEnabled;
+    
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
@@ -137,15 +137,6 @@ public:
     UFUNCTION(Reliable, NetMulticast)
         void multiSetupAudioComponents();
 
-    FORCEINLINE bool IsBurnEffectEnabled() const USE_NOEXCEPT
-    {
-        return m_isBurnEffectEnabled;
-    }
-
-    FORCEINLINE void setIsBurnEffectEnabled(bool enable)
-    {
-        m_isBurnEffectEnabled = enable;
-    }
 
 private:
     void internalSetupAudioComponents();

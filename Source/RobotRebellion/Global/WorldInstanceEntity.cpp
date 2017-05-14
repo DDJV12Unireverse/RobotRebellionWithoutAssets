@@ -32,7 +32,7 @@ void AWorldInstanceEntity::BeginPlay()
 
     NavigationVolumeGraph& navGraph = NavigationVolumeGraph::getInstance();
     navGraph.m_showConnection = this->m_showVolumeConnection;
-    m_isBurnEffectEnabled = true;
+
     setupAudioComponents();
 }
 
