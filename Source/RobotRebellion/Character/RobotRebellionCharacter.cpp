@@ -862,15 +862,6 @@ void ARobotRebellionCharacter::spawnFireEffect(FVector location)
     }
 }
 
-//void ARobotRebellionCharacter::serverSpawnFireEffect_Implementation(FVector location)
-//{
-//    spawnFireEffect(location);
-//}
-//
-//bool ARobotRebellionCharacter::serverSpawnFireEffect_Validate(FVector location)
-//{
-//    return true;
-//}
 
 void ARobotRebellionCharacter::multiSpawnFireEffect_Implementation(FVector location)
 {
