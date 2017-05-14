@@ -27,8 +27,6 @@ public:
 private:
     class AKing* m_serverKing;
     class ADrone* m_serverDrone;
-    //bool m_isBurnEffectEnabled=true;
-
 
 public:
     void update(const class UWorld* world);
@@ -48,16 +46,6 @@ public:
     {
         return retrieveIfRoleCorrect(askingActor, m_serverDrone);
     }
-
-//     FORCEINLINE bool IsBurnEffectEnabled() const USE_NOEXCEPT
-//     {
-//         return m_isBurnEffectEnabled;
-//     }
-// 
-//     FORCEINLINE void setIsBurnEffectEnabled(bool enable)
-//     {
-//         m_isBurnEffectEnabled = enable;
-//     }
 
 
 private:

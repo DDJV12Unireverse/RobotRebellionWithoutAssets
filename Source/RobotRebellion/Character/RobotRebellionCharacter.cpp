@@ -827,7 +827,6 @@ void ARobotRebellionCharacter::internalDisplayFireOnBoneArray(const TArray<FName
 
 void ARobotRebellionCharacter::multiDisplayFireOnBoneArray_Implementation(const TArray<FName>& bones)
 {
-    //if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
     if(m_worldEntity->IsBurnEffectEnabled())
     {
         internalDisplayFireOnBoneArray(bones);
@@ -838,22 +837,16 @@ void ARobotRebellionCharacter::internalSpawnFireEffect(FVector location)
 {
     if(m_worldEntity->IsBurnEffectEnabled())
     {
-        if(Role >= ROLE_Authority)
+        FName bone = GetMesh()->FindClosestBone(location);
+        int32 boneIndex = GetMesh()->GetBoneIndex(bone);
+        int32 intIsPresent = (m_burningBones.Find(boneIndex));
+        if(intIsPresent == -1)
         {
-            FName bone = GetMesh()->FindClosestBone(location);
-            int32 boneIndex = GetMesh()->GetBoneIndex(bone);
-            int32 intIsPresent = (m_burningBones.Find(boneIndex));
-            if(intIsPresent == -1)
-            {
-                displayFireOnBone(bone);
-            }
-        }
-        else
-        {
-            serverSpawnFireEffect(location);
+            displayFireOnBone(bone);
         }
     }
 }
+
 
 
 void ARobotRebellionCharacter::spawnFireEffect(FVector location)
@@ -869,15 +862,15 @@ void ARobotRebellionCharacter::spawnFireEffect(FVector location)
     }
 }
 
-void ARobotRebellionCharacter::serverSpawnFireEffect_Implementation(FVector location)
-{
-    spawnFireEffect(location);
-}
-
-bool ARobotRebellionCharacter::serverSpawnFireEffect_Validate(FVector location)
-{
-    return true;
-}
+//void ARobotRebellionCharacter::serverSpawnFireEffect_Implementation(FVector location)
+//{
+//    spawnFireEffect(location);
+//}
+//
+//bool ARobotRebellionCharacter::serverSpawnFireEffect_Validate(FVector location)
+//{
+//    return true;
+//}
 
 void ARobotRebellionCharacter::multiSpawnFireEffect_Implementation(FVector location)
 {
