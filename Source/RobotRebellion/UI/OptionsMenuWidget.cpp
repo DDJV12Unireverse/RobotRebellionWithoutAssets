@@ -15,7 +15,15 @@ void UOptionsMenuWidget::OptionsMenuCheckBox1(bool checkBoxStatus)
 }
 
 void UOptionsMenuWidget::OptionsMenuCheckBox2(bool checkBoxStatus)
-{}
+{
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
+    {
+        AWorldInstanceEntity* ent = Cast<AWorldInstanceEntity>(entity[0]);
+        ent->setShieldAnimation(checkBoxStatus);
+    }
+}
 
 void UOptionsMenuWidget::OptionsMenuCheckBox3(bool checkBoxStatus)
 {}

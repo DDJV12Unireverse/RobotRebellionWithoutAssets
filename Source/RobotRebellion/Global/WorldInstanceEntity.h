@@ -34,6 +34,7 @@ private:
     bool m_bossIsDead;
     bool m_gameIsStarted;
     bool m_isBurnEffectEnabled;
+    bool m_isShieldAnimated;
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
@@ -144,6 +145,16 @@ public:
     FORCEINLINE void setIsBurnEffectEnabled(bool enable)
     {
         m_isBurnEffectEnabled = enable;
+    }
+    
+    FORCEINLINE bool isShieldAnimated() const USE_NOEXCEPT
+    {
+        return m_isShieldAnimated;
+    }
+
+    FORCEINLINE void setShieldAnimation(bool enable)
+    {
+        m_isShieldAnimated = enable;
     }
 
 

@@ -587,11 +587,11 @@ void ARobotRebellionCharacter::spawnShieldParticle()
     }
 
     // Test if shield animation has changed in option
-    if(/* m_isShieldAnimated != option.animatedShield*/false)
+    if(m_isShieldAnimated != m_worldEntity->isShieldAnimated())
     {
         // Destroye old particle emitter and build a new one
         m_shieldParticleSystem->DestroyComponent();
-        /*m_isShieldAnimated = option.animatedShield*/
+        m_isShieldAnimated = m_worldEntity->isShieldAnimated();
         if(m_isShieldAnimated)
         {
             m_shieldParticleSystem =
@@ -649,11 +649,11 @@ void ARobotRebellionCharacter::multiSpawnShieldParticle_Implementation()
     }
 
     // Test if shield animation has changed in option
-    if(/* m_isShieldAnimated != option.animatedShield*/false)
+    if( m_isShieldAnimated != m_worldEntity->isShieldAnimated())
     {
         // Destroye old particle emitter and build a new one
         m_shieldParticleSystem->DestroyComponent();
-        /*m_isShieldAnimated = option.animatedShield*/
+        m_isShieldAnimated = m_worldEntity->isShieldAnimated();
         if(m_isShieldAnimated)
         {
             m_shieldParticleSystem =
