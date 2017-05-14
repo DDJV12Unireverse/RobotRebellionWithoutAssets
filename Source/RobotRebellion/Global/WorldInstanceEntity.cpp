@@ -14,6 +14,7 @@ AWorldInstanceEntity::AWorldInstanceEntity()
     m_previousGameMode = ECurrentGameMode::NONE;
     m_bossIsDead = false;
     m_gameIsStarted = false;
+    m_isShieldAnimated = true;
 }
 
 // Called when the game starts or when spawned

@@ -368,9 +368,7 @@ public:
     UFUNCTION(Reliable, NetMulticast)
         void multiSpawnFireEffect(FVector location);
 
-
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverSpawnFireEffect(FVector location);
+    
 
     void internalSpawnFireEffect(FVector location);
 
