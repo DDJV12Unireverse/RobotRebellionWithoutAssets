@@ -385,7 +385,7 @@ public:
 
 
     UFUNCTION(BlueprintCallable, Category = "Reverberation")
-        ELocation GetLocation()
+        ELocation GetLocation() const USE_NOEXCEPT
     {
         return m_location;
     }
@@ -395,6 +395,7 @@ public:
     {
         m_location = location;
     }
+
 protected:
     template<class Alteration, class AdditionalFunc, class ... AdditionalArgs>
     void internalInflictAlteration(AdditionalFunc func, AdditionalArgs&& ... args)
