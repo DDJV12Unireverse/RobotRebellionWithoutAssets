@@ -26,7 +26,20 @@ void UOptionsMenuWidget::OptionsMenuCheckBox2(bool checkBoxStatus)
 }
 
 void UOptionsMenuWidget::OptionsMenuCheckBox3(bool checkBoxStatus)
-{}
+{
+    TArray<AActor*> outResult;
+
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), outResult);
+
+    for(AActor* postProcessActorVolume : outResult)
+    {
+        APostProcessVolume* postProcessVolume = Cast<APostProcessVolume>(postProcessActorVolume);
+        if(postProcessVolume && postProcessVolume->GetName() == "PostProcessVolume")
+        {
+            postProcessVolume->BlendWeight = checkBoxStatus ? 1.f : 0.f;
+        }
+    }
+}
 
 // Disable Burn Effect
 void UOptionsMenuWidget::OptionsMenuCheckBox4(bool checkBoxStatus)
@@ -43,9 +56,8 @@ void UOptionsMenuWidget::OptionsMenuCheckBox4(bool checkBoxStatus)
 void UOptionsMenuWidget::OptionsMenuCheckBox5(bool checkBoxStatus)
 {
     TArray<AActor*> outResult;
-    TSubclassOf<APostProcessVolume> classToSearchFor{ APostProcessVolume::StaticClass() };
 
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToSearchFor, outResult);
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), outResult);
 
     for (AActor* postProcessActorVolume : outResult)
     {
