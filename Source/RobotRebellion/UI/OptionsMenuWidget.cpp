@@ -3,6 +3,7 @@
 #include "RobotRebellion.h"
 #include "Tool/UtilitaryMacros.h"
 #include "OptionsMenuWidget.h"
+#include "Global/EntityDataSingleton.h"
 
 
 
@@ -18,8 +19,11 @@ void UOptionsMenuWidget::OptionsMenuCheckBox2(bool checkBoxStatus)
 void UOptionsMenuWidget::OptionsMenuCheckBox3(bool checkBoxStatus)
 {}
 
+// Disable Burn Effect
 void UOptionsMenuWidget::OptionsMenuCheckBox4(bool checkBoxStatus)
-{}
+{
+    EntityDataSingleton::getInstance().setIsBurnEffectEnabled(checkBoxStatus);
+}
 
 void UOptionsMenuWidget::OptionsMenuCheckBox5(bool checkBoxStatus)
 {
