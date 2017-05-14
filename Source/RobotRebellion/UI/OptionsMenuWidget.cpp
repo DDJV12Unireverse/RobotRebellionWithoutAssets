@@ -2,14 +2,28 @@
 
 #include "RobotRebellion.h"
 #include "Tool/UtilitaryMacros.h"
+#include "Engine/HairWorksAsset.h"
 #include "OptionsMenuWidget.h"
 
 
 
 
+UOptionsMenuWidget::UOptionsMenuWidget()
+{
+    ConstructorHelpers::FObjectFinder<UObject> hairworkMaterialObject(TEXT("/Game/MixamoAnimPack/Mixamo_Maw/Materials/Maw_Hair"));
+    UHairWorksAsset* hairworksAsset = Cast<UHairWorksAsset>(hairworkMaterialObject.Object);
+    if(hairworksAsset)
+    {
+        m_hairworksMaterial = hairworksAsset->HairMaterial;
+    }
+}
+
 void UOptionsMenuWidget::OptionsMenuCheckBox1(bool checkBoxStatus)
 {
-    // TODO: Set a variable used by your animtion/rendering fx or call a method.
+    if(m_hairworksMaterial)
+    {
+        m_hairworksMaterial->bEnable = checkBoxStatus;
+    }
 }
 
 void UOptionsMenuWidget::OptionsMenuCheckBox2(bool checkBoxStatus)
