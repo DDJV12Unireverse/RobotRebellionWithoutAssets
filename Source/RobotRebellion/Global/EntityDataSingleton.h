@@ -28,7 +28,6 @@ private:
     class AKing* m_serverKing;
     class ADrone* m_serverDrone;
 
-
 public:
     void update(const class UWorld* world);
 

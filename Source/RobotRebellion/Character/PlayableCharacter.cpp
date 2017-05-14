@@ -217,7 +217,7 @@ void APlayableCharacter::LookUpAtRate(float Rate)
 
 void APlayableCharacter::MoveForward(float value)
 {
-    if (Controller != NULL)
+    if(Controller != NULL)
     {
         // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
@@ -284,7 +284,7 @@ void APlayableCharacter::MoveRight(float value)
             if(m_moveStraphSpeed <= m_maxVelocity)
             {
                 m_moveStraphSpeed += m_accelerationCoeff * m_maxVelocity;
-                if (m_moveStraphSpeed > m_maxVelocity)
+                if(m_moveStraphSpeed > m_maxVelocity)
                 {
                     m_moveStraphSpeed = m_maxVelocity;
                 }
@@ -1410,20 +1410,14 @@ void APlayableCharacter::updateHUD(EClassType classType)
 
 void APlayableCharacter::disableFireEffect()
 {
-    TArray<AActor*> entity;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
-    if(entity.Num() > 0)
+    if(m_worldEntity->IsBurnEffectEnabled())
     {
-        AWorldInstanceEntity* ent = Cast<AWorldInstanceEntity>(entity[0]);
-        if(ent->IsBurnEffectEnabled())
-        {
-            ent->setIsBurnEffectEnabled(false);
-            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect disabled");
-        }
-        else
-        {
-            ent->setIsBurnEffectEnabled(true);
-            PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect enabled");
-        }
+        m_worldEntity->setIsBurnEffectEnabled(false);
+        PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect disabled");
+    }
+    else
+    {
+        m_worldEntity->setIsBurnEffectEnabled(true);
+        PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect enabled");
     }
 }
