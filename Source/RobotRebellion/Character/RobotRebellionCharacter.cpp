@@ -82,6 +82,7 @@ void ARobotRebellionCharacter::BeginPlay()
             widget->setOwner(this);
         }
     }
+    m_location = ELocation::OUTSIDE;
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)

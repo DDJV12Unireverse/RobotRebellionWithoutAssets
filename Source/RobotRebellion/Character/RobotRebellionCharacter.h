@@ -4,6 +4,7 @@
 #include "../Gameplay/Alteration/AlterationController.h"
 #include "../UI/ELivingTextAnimMode.h"
 #include "GameFramework/Character.h"
+#include "Location.h"
 #include "RobotRebellionCharacter.generated.h"
 
 
@@ -136,6 +137,9 @@ protected:
 
     float m_decelerationCoeff;
 
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+        ELocation m_location;
 
     /************************************************************************/
     /* PROPERTY                                                             */
@@ -380,6 +384,18 @@ public:
     void internalCleanFireComp();
 
 
+    UFUNCTION(BlueprintCallable, Category = "Reverberation")
+        ELocation GetLocation() const USE_NOEXCEPT
+    {
+        return m_location;
+    }
+
+    UFUNCTION(BlueprintCallable, Category = "Reverberation")
+        void setLocation(ELocation location)
+    {
+        m_location = location;
+    }
+
 protected:
     template<class Alteration, class AdditionalFunc, class ... AdditionalArgs>
     void internalInflictAlteration(AdditionalFunc func, AdditionalArgs&& ... args)
@@ -394,6 +410,7 @@ protected:
             func(alteration, std::forward<AdditionalArgs>(args)...);
             m_alterationController->addAlteration(alteration);
         }
+
     }
 };
 

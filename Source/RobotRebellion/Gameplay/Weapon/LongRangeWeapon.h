@@ -38,7 +38,13 @@ public:
 
     // Weapon Fire Sound
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
-        USoundCue* m_longRangeWeaponFireSound;
+        USoundCue* m_longRangeWeaponOutsideFireSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_longRangeWeaponBigRoomFireSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_longRangeWeaponSmallRoomFireSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_longRangeWeaponCorridorFireSound;
 
     /************************************************************************/
     /*                  PROPERTY                                            */

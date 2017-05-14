@@ -128,6 +128,7 @@ void APlayableCharacter::BeginPlay()
     {
         this->EnablePlayInput(false);
     }
+
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
@@ -309,7 +310,6 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
-
     //try spell replication
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_spellKit, COND_OwnerOnly);
 }

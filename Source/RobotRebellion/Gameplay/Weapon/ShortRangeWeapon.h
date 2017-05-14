@@ -25,10 +25,28 @@ private:
         float m_weaponVerticallyRange;
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
-        USoundCue* m_missSound;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
-        USoundCue* m_hitSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missOutsideSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missBigRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missSmallRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missCorridorSound;
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+    //    USoundCue* m_hitSound;
+
+
+    // Weapon Fire Sound
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitOutsideSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitBigRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitSmallRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitCorridorSound;
+
 
     /************************************************************************/
     /*                  CONSTRUCTORS                                        */
