@@ -1410,15 +1410,14 @@ void APlayableCharacter::updateHUD(EClassType classType)
 
 void APlayableCharacter::disableFireEffect()
 {
-    EntityDataSingleton& datas = EntityDataSingleton::getInstance();
-    if(datas.IsBurnEffectEnabled())
+    if(m_worldEntity->IsBurnEffectEnabled())
     {
-        datas.setIsBurnEffectEnabled(false);
+        m_worldEntity->setIsBurnEffectEnabled(false);
         PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect disabled");
     }
     else
     {
-        datas.setIsBurnEffectEnabled(true);
+        m_worldEntity->setIsBurnEffectEnabled(true);
         PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect enabled");
     }
 }

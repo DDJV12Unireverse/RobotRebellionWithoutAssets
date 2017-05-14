@@ -4,6 +4,7 @@
 #include "Tool/UtilitaryMacros.h"
 #include "OptionsMenuWidget.h"
 #include "Global/EntityDataSingleton.h"
+#include "Global/WorldInstanceEntity.h"
 
 
 
@@ -22,7 +23,13 @@ void UOptionsMenuWidget::OptionsMenuCheckBox3(bool checkBoxStatus)
 // Disable Burn Effect
 void UOptionsMenuWidget::OptionsMenuCheckBox4(bool checkBoxStatus)
 {
-    EntityDataSingleton::getInstance().setIsBurnEffectEnabled(checkBoxStatus);
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
+    {
+        AWorldInstanceEntity* ent = Cast<AWorldInstanceEntity>(entity[0]);
+        ent->setIsBurnEffectEnabled(checkBoxStatus);
+    }
 }
 
 void UOptionsMenuWidget::OptionsMenuCheckBox5(bool checkBoxStatus)

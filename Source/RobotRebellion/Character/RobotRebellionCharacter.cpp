@@ -765,7 +765,7 @@ void ARobotRebellionCharacter::displayFireOnBone(const FName& bone)
 
 void ARobotRebellionCharacter::multiDisplayFireOnBone_Implementation(const FName& bone)
 {
-    if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
+    if(m_worldEntity->IsBurnEffectEnabled())
     {
         internalDisplayFireOnBone(bone);
     }
@@ -827,7 +827,8 @@ void ARobotRebellionCharacter::internalDisplayFireOnBoneArray(const TArray<FName
 
 void ARobotRebellionCharacter::multiDisplayFireOnBoneArray_Implementation(const TArray<FName>& bones)
 {
-    if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
+    //if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
+    if(m_worldEntity->IsBurnEffectEnabled())
     {
         internalDisplayFireOnBoneArray(bones);
     }
@@ -835,7 +836,7 @@ void ARobotRebellionCharacter::multiDisplayFireOnBoneArray_Implementation(const 
 
 void ARobotRebellionCharacter::internalSpawnFireEffect(FVector location)
 {
-    if(EntityDataSingleton::getInstance().IsBurnEffectEnabled())
+    if(m_worldEntity->IsBurnEffectEnabled())
     {
         if(Role >= ROLE_Authority)
         {
