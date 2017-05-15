@@ -3,6 +3,7 @@
 #pragma once
 
 #include "UI/CustomRobotRebellionUserWidget.h"
+//#include "Engine/HairWorksMaterial.h"
 #include "OptionsMenuWidget.generated.h"
 
 /**
@@ -11,9 +12,14 @@
 UCLASS()
 class ROBOTREBELLION_API UOptionsMenuWidget : public UCustomRobotRebellionUserWidget
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
+private:
+    //UHairWorksMaterial* m_hairworksMaterial;
+
 public:
+        UOptionsMenuWidget();
+
         UFUNCTION(BlueprintCallable, Category = "Menu")
             void OptionsMenuCheckBox1(bool checkBoxStatus);
 
