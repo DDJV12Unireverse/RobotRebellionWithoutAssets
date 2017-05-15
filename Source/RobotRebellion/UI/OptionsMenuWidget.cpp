@@ -2,7 +2,7 @@
 
 #include "RobotRebellion.h"
 #include "Tool/UtilitaryMacros.h"
-#include "Engine/HairWorksAsset.h"
+//#include "Engine/HairWorksAsset.h"
 #include "OptionsMenuWidget.h"
 #include "Global/EntityDataSingleton.h"
 #include "Global/WorldInstanceEntity.h"
@@ -12,20 +12,20 @@
 
 UOptionsMenuWidget::UOptionsMenuWidget()
 {
-    ConstructorHelpers::FObjectFinder<UObject> hairworkMaterialObject(TEXT("/Game/MixamoAnimPack/Mixamo_Maw/Materials/Maw_Hair"));
-    UHairWorksAsset* hairworksAsset = Cast<UHairWorksAsset>(hairworkMaterialObject.Object);
-    if(hairworksAsset)
-    {
-        m_hairworksMaterial = hairworksAsset->HairMaterial;
-    }
+    //ConstructorHelpers::FObjectFinder<UObject> hairworkMaterialObject(TEXT("/Game/MixamoAnimPack/Mixamo_Maw/Materials/Maw_Hair"));
+    //UHairWorksAsset* hairworksAsset = Cast<UHairWorksAsset>(hairworkMaterialObject.Object);
+    //if(hairworksAsset)
+    //{
+    //    m_hairworksMaterial = hairworksAsset->HairMaterial;
+    //}
 }
 
 void UOptionsMenuWidget::OptionsMenuCheckBox1(bool checkBoxStatus)
 {
-    if(m_hairworksMaterial)
-    {
-        m_hairworksMaterial->bEnable = checkBoxStatus;
-    }
+    //if(m_hairworksMaterial)
+    //{
+    //    m_hairworksMaterial->bEnable = checkBoxStatus;
+    //}
 }
 
 void UOptionsMenuWidget::OptionsMenuCheckBox2(bool checkBoxStatus)

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "UI/CustomRobotRebellionUserWidget.h"
-#include "Engine/HairWorksMaterial.h"
+//#include "Engine/HairWorksMaterial.h"
 #include "OptionsMenuWidget.generated.h"
 
 /**
@@ -15,7 +15,7 @@ class ROBOTREBELLION_API UOptionsMenuWidget : public UCustomRobotRebellionUserWi
     GENERATED_BODY()
 
 private:
-    UHairWorksMaterial* m_hairworksMaterial;
+    //UHairWorksMaterial* m_hairworksMaterial;
 
 public:
         UOptionsMenuWidget();
