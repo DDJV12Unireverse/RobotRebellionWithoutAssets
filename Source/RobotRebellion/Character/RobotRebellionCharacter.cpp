@@ -24,6 +24,7 @@
 #include "Global/WorldInstanceEntity.h"
 #include "WidgetComponent.h"
 #include "UI/LifeBarWidget.h"
+#include "Global/EntityDataSingleton.h"
 
 
 ARobotRebellionCharacter::ARobotRebellionCharacter()
@@ -82,6 +83,7 @@ void ARobotRebellionCharacter::BeginPlay()
             widget->setOwner(this);
         }
     }
+    m_location = ELocation::OUTSIDE;
 }
 
 void ARobotRebellionCharacter::Tick(float deltaTime)
@@ -342,17 +344,17 @@ void ARobotRebellionCharacter::inflictStun()
     if(Role >= ROLE_Authority && !this->isImmortal())
     {
         this->internalInflictAlteration<UStunAlteration>(
-            [](UStunAlteration* stunAlteration){});
+            [](UStunAlteration* stunAlteration) {});
     }
 }
 
 void ARobotRebellionCharacter::inflictStun(float duration)
 {
-    if (Role >= ROLE_Authority && !this->isImmortal())
+    if(Role >= ROLE_Authority && !this->isImmortal())
     {
         this->internalInflictAlteration<UStunAlteration>(
             [duration](UStunAlteration* stunAlteration) {
-                stunAlteration->m_lifeTime = duration;
+            stunAlteration->m_lifeTime = duration;
         });
     }
 }
@@ -585,11 +587,11 @@ void ARobotRebellionCharacter::spawnShieldParticle()
     }
 
     // Test if shield animation has changed in option
-    if(/* m_isShieldAnimated != option.animatedShield*/false)
+    if(m_isShieldAnimated != m_worldEntity->isShieldAnimated())
     {
         // Destroye old particle emitter and build a new one
         m_shieldParticleSystem->DestroyComponent();
-        /*m_isShieldAnimated = option.animatedShield*/
+        m_isShieldAnimated = m_worldEntity->isShieldAnimated();
         if(m_isShieldAnimated)
         {
             m_shieldParticleSystem =
@@ -647,11 +649,11 @@ void ARobotRebellionCharacter::multiSpawnShieldParticle_Implementation()
     }
 
     // Test if shield animation has changed in option
-    if(/* m_isShieldAnimated != option.animatedShield*/false)
+    if( m_isShieldAnimated != m_worldEntity->isShieldAnimated())
     {
         // Destroye old particle emitter and build a new one
         m_shieldParticleSystem->DestroyComponent();
-        /*m_isShieldAnimated = option.animatedShield*/
+        m_isShieldAnimated = m_worldEntity->isShieldAnimated();
         if(m_isShieldAnimated)
         {
             m_shieldParticleSystem =
@@ -835,22 +837,16 @@ void ARobotRebellionCharacter::internalSpawnFireEffect(FVector location)
 {
     if(m_worldEntity->IsBurnEffectEnabled())
     {
-        if(Role >= ROLE_Authority)
+        FName bone = GetMesh()->FindClosestBone(location);
+        int32 boneIndex = GetMesh()->GetBoneIndex(bone);
+        int32 intIsPresent = (m_burningBones.Find(boneIndex));
+        if(intIsPresent == -1)
         {
-            FName bone = GetMesh()->FindClosestBone(location);
-            int32 boneIndex = GetMesh()->GetBoneIndex(bone);
-            int32 intIsPresent = (m_burningBones.Find(boneIndex));
-            if(intIsPresent == -1)
-            {
-                displayFireOnBone(bone);
-            }
-        }
-        else
-        {
-            serverSpawnFireEffect(location);
+            displayFireOnBone(bone);
         }
     }
 }
+
 
 
 void ARobotRebellionCharacter::spawnFireEffect(FVector location)
@@ -866,15 +862,6 @@ void ARobotRebellionCharacter::spawnFireEffect(FVector location)
     }
 }
 
-void ARobotRebellionCharacter::serverSpawnFireEffect_Implementation(FVector location)
-{
-    spawnFireEffect(location);
-}
-
-bool ARobotRebellionCharacter::serverSpawnFireEffect_Validate(FVector location)
-{
-    return true;
-}
 
 void ARobotRebellionCharacter::multiSpawnFireEffect_Implementation(FVector location)
 {
@@ -888,17 +875,6 @@ void ARobotRebellionCharacter::internalCleanFireComp()
     m_effectTimer.Reset();
     m_burningBonesCount = 0;
 
-    //    TArray<UActorComponent*> fireComponents = GetComponentsByClass(UParticleSystemComponent::StaticClass());
-    //    fireComponents.RemoveAll([&](UActorComponent* comp) {
-    //         UParticleSystemComponent* systComp = Cast<UParticleSystemComponent>(comp);
-    //         //Change for integration
-    //         systComp->DestroyComponent();
-    //         if(systComp)
-    //         {
-    //             return true;
-    //         }
-    //         return false;
-    //     });
 }
 
 void ARobotRebellionCharacter::cleanFireComp()

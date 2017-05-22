@@ -34,6 +34,7 @@ private:
     bool m_bossIsDead;
     bool m_gameIsStarted;
     bool m_isBurnEffectEnabled;
+    bool m_isShieldAnimated;
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug Display")
@@ -93,7 +94,7 @@ public:
         USoundCue* m_loseSounds;
 
 
-// Sets default values for this actor's properties
+    // Sets default values for this actor's properties
     AWorldInstanceEntity();
 
 
@@ -136,7 +137,6 @@ public:
         void serverSetupAudioComponents();
     UFUNCTION(Reliable, NetMulticast)
         void multiSetupAudioComponents();
-
     FORCEINLINE bool IsBurnEffectEnabled() const USE_NOEXCEPT
     {
         return m_isBurnEffectEnabled;
@@ -146,6 +146,17 @@ public:
     {
         m_isBurnEffectEnabled = enable;
     }
+    
+    FORCEINLINE bool isShieldAnimated() const USE_NOEXCEPT
+    {
+        return m_isShieldAnimated;
+    }
+
+    FORCEINLINE void setShieldAnimation(bool enable)
+    {
+        m_isShieldAnimated = enable;
+    }
+
 
 private:
     void internalSetupAudioComponents();
