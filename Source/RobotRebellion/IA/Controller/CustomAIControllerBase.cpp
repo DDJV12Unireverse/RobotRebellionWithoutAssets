@@ -9,14 +9,19 @@
 ACustomAIControllerBase::ACustomAIControllerBase()
 {
     PrimaryActorTick.bCanEverTick = true;
+    m_targetToFollow = nullptr;
 }
 
 void ACustomAIControllerBase::BeginPlay()
 {
     Super::BeginPlay();
-    m_isInCombat = false;
-    m_hitDirection = FVector(0, 0, 0);
     m_showDebugSphereTrace = !!EntityDataSingleton::getInstance().m_showEnnemyDetectionSphere;
+}
+
+
+FVector ACustomAIControllerBase::getTargetToFollowLocation() const
+{
+    return m_targetToFollow ? m_targetToFollow->GetActorLocation() : FVector::ZeroVector;
 }
 
 bool ACustomAIControllerBase::hasALivingTarget() const USE_NOEXCEPT
@@ -31,14 +36,22 @@ EPathFollowingRequestResult::Type ACustomAIControllerBase::MoveToTarget()
     return MoveToActorResult;
 }
 
-void ACustomAIControllerBase::setCombat(bool isCombat, ARobotRebellionCharacter* attacker)
+bool ACustomAIControllerBase::isInCombat()
 {
-    m_isInCombat = isCombat;
-    if(isCombat)
-    {
-        if(!hasALivingTarget())
-        {
-            m_targetToFollow = attacker;
-        }
-    }
+    return Cast<ARobotRebellionCharacter>(GetPawn())->m_isInCombat;
+}
+
+void ACustomAIControllerBase::setTarget(class ARobotRebellionCharacter* attacker)
+{
+    m_targetToFollow = attacker;
+
+    Cast<ARobotRebellionCharacter>(GetPawn())->m_isInCombat = (attacker != nullptr);
+}
+
+void ACustomAIControllerBase::aim(FVector& inOutFireDirection) const USE_NOEXCEPT
+{
+    inOutFireDirection.Y += FMath::RandRange(-m_aimYMaxFallOffAngle, m_aimYMaxFallOffAngle);
+    inOutFireDirection.Z += FMath::RandRange(-m_aimZMaxFallOffAngle, m_aimZMaxFallOffAngle) + m_aimZOffsetFallOffAngle;
+
+    inOutFireDirection.Normalize();
 }

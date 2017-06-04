@@ -73,3 +73,5 @@ enc_temp_folder/*
 *.TMP
 
 Content/InfinityBlade**/**
+Content/AridDesert/**
+Config/DefaultEngine.ini

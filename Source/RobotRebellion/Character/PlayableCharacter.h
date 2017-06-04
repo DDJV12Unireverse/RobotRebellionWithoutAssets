@@ -25,7 +25,7 @@ public:
         class UCameraComponent* FollowCamera;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
         class URobotRobellionSpawnerClass* m_spawner;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpellKit", Replicated)
         USpellKit* m_spellKit;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
         class USkeletalMeshComponent* m_fpsMesh;
@@ -97,9 +97,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
         float m_FPSCameraDistance;
 
+    //camera broom distance from player pawn while in tps mode
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+        FVector m_mireOffset;
+
     // Maximal Focus distance on items.
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MinUseDistance;
+
     UPROPERTY(EditDefaultsOnly, Category = "ObjectInteraction")
         float MaxUseDistance;
 
@@ -109,7 +114,14 @@ public:
 
     bool m_tpsMode;
 
+    bool m_isBurnEffectEnabled;
+    
+
+    float m_strafForwardMemory;
+    float m_strafRightMemory;
+
     void(APlayableCharacter::* deactivatePhysicsKilledMethodPtr)();
+
 
 public:
     APlayableCharacter();
@@ -169,6 +181,7 @@ public:
     ////Server
     void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
+    void updateIfInCombat();
 
     UFUNCTION()
         void cppPreRevive(APlayableCharacter* characterToRevive);
@@ -197,6 +210,11 @@ public:
         void ExecuteCommand(FString command) const;
 
     //////UI
+    void openTopWidget();
+
+    UFUNCTION(BlueprintCallable, Category = TopWidget)
+    void closeTopWidget();
+
     void openLobbyWidget();
 
     UFUNCTION(BlueprintCallable, Category = LobbyWidget)
@@ -204,6 +222,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = CharacterSelection)
         void closeSelectionWidget();
+
+    UFUNCTION(BlueprintCallable, Category = OptionMenu)
+        void closeOptionWidget();
 
     void giveInputGameMode(bool status);
 
@@ -357,12 +378,6 @@ public:
     UFUNCTION(Reliable, Server, WithValidation)
         void serverUseManaPotion();
 
-
-    //Remove later
-    void loseMana();
-    UFUNCTION(Reliable, Server, WithValidation)
-        void serverLoseMana();
-
     void loseBomb();
     UFUNCTION(Reliable, Server, WithValidation)
         void serverLoseBomb();
@@ -395,17 +410,17 @@ public:
         void serverGotoGym();
 
     UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        float getReviveTimer()
+        float getReviveTimer() const USE_NOEXCEPT
     {
         return m_currentRevivingTime;
     }
     UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        float getRequiredReviveTime()
+        float getRequiredReviveTime() const USE_NOEXCEPT
     {
         return m_requiredTimeToRevive;
     }
     UFUNCTION(BlueprintCallable, Category = "ReviveTimer")
-        bool isReviving()
+        bool isReviving() const USE_NOEXCEPT
     {
         return m_isReviving;
     }
@@ -454,4 +469,10 @@ public:
 
     UFUNCTION(Reliable, Client)
         void updateAllCharacterBillboard(UCameraComponent* camToFollow);
+
+    void updateHUD(EClassType classType);
+
+    void disableFireEffect();
+
+
 };

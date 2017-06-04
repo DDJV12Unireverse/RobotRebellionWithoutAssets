@@ -25,26 +25,48 @@ private:
         float m_weaponVerticallyRange;
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
-        USoundCue* m_missSound;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
-        USoundCue* m_hitSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missOutsideSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missBigRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missSmallRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_missCorridorSound;
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+    //    USoundCue* m_hitSound;
+
+
+    // Weapon Fire Sound
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitOutsideSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitBigRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitSmallRoomSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_hitCorridorSound;
+
 
     /************************************************************************/
     /*                  CONSTRUCTORS                                        */
     /************************************************************************/
 
     UShortRangeWeapon();
+
+
     /************************************************************************/
     /*                  UFUNCTION                                           */
     /************************************************************************/
-
-
     UFUNCTION(BlueprintCallable, Category = "General")
         virtual EWeaponRange getWeaponRange() const USE_NOEXCEPT override
     {
         return EWeaponRange::SHORT_RANGE_WEAPON;
     }
+
+    UFUNCTION(NetMulticast, Reliable)
+        virtual void playSound(USoundCue* sound, AActor* originator) override;
+
 
     /************************************************************************/
     /*                  METHODS                                             */
@@ -52,10 +74,12 @@ public:
 
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
 
+
+    virtual void cppAttack(ARobotRebellionCharacter* user, ARobotRebellionCharacter* ennemy) override;
+
     //virtual void playSound(ARobotRebellionCharacter* user) override;
 
-    UFUNCTION(NetMulticast, Reliable)
-        virtual void playSound(USoundCue* sound, AActor* originator) override;
-
     virtual FString rangeToFString() const USE_NOEXCEPT;
+
+    virtual void inflictDamageLogic(ARobotRebellionCharacter* receiver, const FHitResult& hit);
 };

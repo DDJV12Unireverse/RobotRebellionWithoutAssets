@@ -17,6 +17,14 @@ void USphereCastSpell::BeginPlay()
 
 void USphereCastSpell::cast()
 {
+    if(m_useEffect)
+    {
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "use effect");
+    }
+    else
+    {
+        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "dont use effect");
+    }
     if(!canCast())
     {
         PRINT_MESSAGE_ON_SCREEN(FColor::Emerald,
@@ -57,7 +65,7 @@ void USphereCastSpell::cast()
                                                                        ObjectTypes,
                                                                        false,
                                                                        ActorsToIgnore,
-                                                                       EDrawDebugTrace::ForDuration,
+                                                                       EDrawDebugTrace::None,
                                                                        hitActors,
                                                                        true);
 
@@ -69,6 +77,14 @@ void USphereCastSpell::cast()
                 applyEffect(tempCharacter);
             }
         }
+
+        // the spell is successfully cast consumme mana and launch CD
+        if(m_useEffect)
+        {
+            AActor* temp = GetWorld()->SpawnActor<AActor>(m_effectActor, startLocation + m_offset * aimDir, aimDir.Rotation());
+        }
+        caster->consumeMana(m_manaCost);
+        m_nextAllowedCastTimer = FPlatformTime::Seconds() + m_cooldown;
     }
 }
 

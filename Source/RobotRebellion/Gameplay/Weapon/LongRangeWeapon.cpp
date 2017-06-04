@@ -7,16 +7,28 @@
 #include "AudioDevice.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/RobotRebellionCharacter.h"
+#include "Character/PlayableCharacter.h"
 
 
 ULongRangeWeapon::ULongRangeWeapon() :
     UWeaponBase()
 {}
 
+void ULongRangeWeapon::fireMethod(AProjectile* projectile, const FVector& fireDirection)
+{
+    if(projectile->isRaycast())
+    {
+        projectile->simulateInstant(fireDirection, m_WeaponRadiusRange);
+    }
+    else
+    {
+        projectile->InitProjectileParams(fireDirection, m_WeaponRadiusRange);
+    }
+}
+
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
 {
     bool canFire = canAttack();
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "LongAtt");
     if(canFire && m_projectileClass != NULL)
     {
         // Retrieve the camera location and rotation
@@ -46,32 +58,39 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user)
             {
                 projectile->setOwner(user);
 
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
-
+                FVector fireDirection = user->aim(muzzleRotation.Vector());
+                USoundCue* sound = m_longRangeWeaponOutsideFireSound;
                 // Fire
-                const FVector fireDirection = muzzleRotation.Vector();
-                projectile->InitVelocity(fireDirection);
-
-                playSound(m_longRangeWeaponFireSound, user);
+                fireMethod(projectile, fireDirection);
+                APlayableCharacter* player = Cast<APlayableCharacter>(user);
+                if(player)
+                {
+                    switch(player->GetLocation())
+                    {
+                        case ELocation::BIGROOM:
+                            sound = m_longRangeWeaponBigRoomFireSound;
+                            break;
+                        case ELocation::CORRIDOR:
+                            sound = m_longRangeWeaponCorridorFireSound;
+                            break;
+                        case ELocation::SMALLROOM:
+                            sound = m_longRangeWeaponSmallRoomFireSound;
+                            break;
+                        default:
+                            sound = m_longRangeWeaponOutsideFireSound;
+                    }
+                }
+                playSound(sound, user);
 
                 reload();
             }
         }
-    }
-    else if(!canFire)
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading");
-    }
-    else
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
     }
 }
 
 void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellionCharacter* ennemy)
 {
     bool canFire = canAttack();
-    PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Cyan, "LongAtt");
     if(canFire && m_projectileClass != NULL)
     {
         // Retrieve the camera location and rotation
@@ -101,26 +120,36 @@ void ULongRangeWeapon::cppAttack(ARobotRebellionCharacter* user, ARobotRebellion
             {
                 projectile->setOwner(user);
 
-                PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Purple, "FIRE");
-
                 // Fire
-                const FVector fireDirection = UKismetMathLibrary::GetForwardVector(
-                    UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation()));
-                projectile->InitVelocity(fireDirection);
+                const FVector fireDirection = user->aim(UKismetMathLibrary::GetForwardVector(
+                    UKismetMathLibrary::FindLookAtRotation(user->GetActorLocation(), ennemy->GetActorLocation())));
+
+                fireMethod(projectile, fireDirection);
+
+                USoundCue* sound;
+                // Fire
+                fireMethod(projectile, fireDirection);
                 
-                playSound(m_longRangeWeaponFireSound, user);
+                    switch(user->GetLocation())
+                    {
+                        case ELocation::BIGROOM:
+                            sound = m_longRangeWeaponBigRoomFireSound;
+                            break;
+                        case ELocation::CORRIDOR:
+                            sound = m_longRangeWeaponCorridorFireSound;
+                            break;
+                        case ELocation::SMALLROOM:
+                            sound = m_longRangeWeaponSmallRoomFireSound;
+                            break;
+                        default:
+                            sound = m_longRangeWeaponOutsideFireSound;
+                    }
+                
+                playSound(sound, user);
 
                 reload();
             }
         }
-    }
-    else if(!canFire)
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Cannot attack !!! Reloading");
-    }
-    else
-    {
-        PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Emerald, "Projectile null");
     }
 }
 

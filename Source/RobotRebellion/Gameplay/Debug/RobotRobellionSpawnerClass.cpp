@@ -43,6 +43,8 @@ void URobotRobellionSpawnerClass::TickComponent(float DeltaTime, ELevelTick Tick
 
 void URobotRobellionSpawnerClass::spawnAndReplace(APlayableCharacter* owner, EClassType typeToChange)
 {
+    // update HUD no matter the role
+    owner->updateHUD(typeToChange);
     if(owner->Role < ROLE_Authority)
     {
         serverSpawnAndReplace(owner, typeToChange);
@@ -99,8 +101,11 @@ void URobotRobellionSpawnerClass::spawnAndReplace(APlayableCharacter* owner, ECl
 
             owner->Destroy();
 
-            intermediary->createTextBillboardWithThisCamera(intermediary->FollowCamera);
-            intermediary->updateAllCharacterBillboard(intermediary->FollowCamera);
+            if(intermediary)
+            {
+                intermediary->createTextBillboardWithThisCamera(intermediary->FollowCamera);
+                intermediary->updateAllCharacterBillboard(intermediary->FollowCamera);
+            }
 
             PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Black, "Spawn");
         }

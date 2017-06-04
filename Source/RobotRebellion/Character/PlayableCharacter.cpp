@@ -3,27 +3,29 @@
 #include "RobotRebellion.h"
 #include "PlayableCharacter.h"
 
-
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
-
-#include "../Gameplay/Damage/Damage.h"
-#include "../Global/GlobalDamageMethod.h"
-#include "../UI/GameMenu.h"
-#include "../Gameplay/Weapon/WeaponBase.h"
-#include "../Gameplay/Weapon/WeaponInventory.h"
+#include "Gameplay/Damage/Damage.h"
+#include "Global/GlobalDamageMethod.h"
+#include "UI/GameMenu.h"
+#include "Gameplay/Weapon/WeaponBase.h"
+#include "Gameplay/Weapon/WeaponInventory.h"
 #include "CustomPlayerController.h"
-#include "../Gameplay/Item/PickupActor.h"
+#include "IA/Controller/DroneAIController.h"
+#include "Gameplay/Item/PickupActor.h"
 
-#include "../Gameplay/Debug/RobotRobellionSpawnerClass.h"
+#include "Gameplay/Debug/RobotRobellionSpawnerClass.h"
 
 #include "Assassin.h"
 #include "Wizard.h"
 #include "Soldier.h"
 #include "Healer.h"
-
-#include "../Tool/UtilitaryMacros.h"
 #include "Drone.h"
-#include "IA/Controller/DroneAIController.h"
+#include "IA/Character/RobotsCharacter.h"
+
+#include "Tool/UtilitaryMacros.h"
+#include "Global/EntityDataSingleton.h"
+#include "Global/WorldInstanceEntity.h"
+
+#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 
 
 #define TYPE_PARSING(TypeName) "Type is "## #TypeName
@@ -32,7 +34,7 @@
 #define CROUCH_HEIGHT -10.f
 
 
-APlayableCharacter::APlayableCharacter()
+APlayableCharacter::APlayableCharacter() : ARobotRebellionCharacter()
 {
 
     // Set size for collision capsule
@@ -52,6 +54,7 @@ APlayableCharacter::APlayableCharacter()
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
     GetCharacterMovement()->JumpZVelocity = 600.f;
     GetCharacterMovement()->AirControl = 0.2f;
+    GetCharacterMovement()->bOrientRotationToMovement = false;
 
     // Create a camera boom (pulls in towards the player if there is a collision)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -59,7 +62,6 @@ APlayableCharacter::APlayableCharacter()
     CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
     // Slight camera offset to aid with object selection
-    //CameraBoom->SocketOffset = FVector(0, 35, 0);
     CameraBoom->TargetOffset = FVector(0.f, 0.f, STAND_UP_HEIGHT);
 
     // Create a follow camera
@@ -75,7 +77,8 @@ APlayableCharacter::APlayableCharacter()
     m_weaponInventory = CreateDefaultSubobject<UWeaponInventory>(TEXT("WeaponInventory"));
     m_spellKit = CreateDefaultSubobject<USpellKit>(TEXT("SpellKit"));
 
-    m_moveSpeed = 0.3f;
+    m_moveForwardSpeed = 0.f;
+    m_moveStraphSpeed = 0.f;
     m_bPressedCrouch = false;
     m_bPressedRun = false;
 
@@ -95,10 +98,14 @@ APlayableCharacter::APlayableCharacter()
     m_isReviving = false;
 
     this->deactivatePhysicsKilledMethodPtr = &APlayableCharacter::doesNothing;
+
+    /*m_isBurnEffectEnabled = true;*/
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
+    CameraBoom->SocketOffset = m_mireOffset;
+
     // Set up gameplay key bindings
     check(PlayerInputComponent);
     inputOnLiving(PlayerInputComponent);
@@ -114,7 +121,6 @@ void APlayableCharacter::BeginPlay()
     CameraBoom->TargetArmLength = m_TPSCameraDistance; // The camera follows at this distance behind the character	
 
     m_tpsMode = true;
-
 
     // InputMode UI to select classes
     APlayerController* MyPC = Cast<APlayerController>(GetController());
@@ -171,6 +177,30 @@ void APlayableCharacter::Tick(float DeltaTime)
     }
 
     (this->*deactivatePhysicsKilledMethodPtr)();
+
+    this->updateIfInCombat();
+
+    //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Red, "Combat : " + FString::FromInt(m_isInCombat));
+}
+
+void APlayableCharacter::updateIfInCombat()
+{
+    EntityDataSingleton& data = EntityDataSingleton::getInstance();
+
+    TArray<ARobotsCharacter*>& robots = data.m_robotArray;
+    uint32 robotCount = robots.Num();
+
+    for(uint32 iter = 0; iter < robotCount; ++iter)
+    {
+        ARobotsCharacter* rob = robots[iter];
+        if(rob && !rob->IsPendingKillOrUnreachable() && rob->m_isInCombat)
+        {
+            m_isInCombat = true;
+            return;
+        }
+    }
+
+    m_isInCombat = false;
 }
 
 void APlayableCharacter::TurnAtRate(float Rate)
@@ -185,32 +215,89 @@ void APlayableCharacter::LookUpAtRate(float Rate)
     AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void APlayableCharacter::MoveForward(float Value)
+void APlayableCharacter::MoveForward(float value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if(Controller != NULL)
     {
         // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
+        const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
         // get forward vector
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        AddMovementInput(Direction, m_moveSpeed*Value);
+        const FVector direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+        if(value == 0.f)
+        {
+            m_moveForwardSpeed -= m_decelerationCoeff * m_maxVelocity;
+            if(m_moveForwardSpeed < 0.f)
+            {
+                m_moveForwardSpeed = 0.f;
+            }
+        }
+        else
+        {
+            m_strafForwardMemory = value;
+
+            if(m_moveForwardSpeed <= m_maxVelocity)
+            {
+                m_moveForwardSpeed += m_accelerationCoeff * m_maxVelocity;
+                if(m_moveForwardSpeed > m_maxVelocity)
+                {
+                    m_moveForwardSpeed = m_maxVelocity;
+                }
+            }
+            else //we're already sup -> the only way to go there was to decrease max velocity
+            {
+                m_moveForwardSpeed -= m_decelerationCoeff * m_maxVelocity;
+            }
+        }
+
+        AddMovementInput(direction, m_moveForwardSpeed * m_strafForwardMemory * 0.5f);
+
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, FString::Printf(TEXT("Forward : Value Input : %f\nVelocity : %f"), value, m_moveForwardSpeed));
     }
 }
 
-void APlayableCharacter::MoveRight(float Value)
+void APlayableCharacter::MoveRight(float value)
 {
-    if((Controller != NULL) && (Value != 0.0f))
+    if(Controller != NULL)
     {
-        // find out which way is right
+        // find out which way is forward
         const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
+        const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
-        // get right vector 
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        // add movement in that direction
-        AddMovementInput(Direction, m_moveSpeed*Value);
+        // get forward vector
+        const FVector direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+        if(value == 0.f)
+        {
+            m_moveStraphSpeed -= m_decelerationCoeff * m_maxVelocity;
+            if(m_moveStraphSpeed < 0.f)
+            {
+                m_moveStraphSpeed = 0.f;
+            }
+        }
+        else
+        {
+            m_strafRightMemory = value;
+
+            if(m_moveStraphSpeed <= m_maxVelocity)
+            {
+                m_moveStraphSpeed += m_accelerationCoeff * m_maxVelocity;
+                if(m_moveStraphSpeed > m_maxVelocity)
+                {
+                    m_moveStraphSpeed = m_maxVelocity;
+                }
+            }
+            else //we're already sup -> the only way to go there was to decrease max velocity
+            {
+                m_moveStraphSpeed -= m_decelerationCoeff * m_maxVelocity;
+            }
+        }
+
+        AddMovementInput(direction, m_moveStraphSpeed * m_strafRightMemory * 0.5f);
+
+        //PRINT_MESSAGE_ON_SCREEN_UNCHECKED(FColor::Blue, FString::Printf(TEXT("Strafe : Value Input : %f\nVelocity : %f"), value, m_moveStraphSpeed));
     }
 }
 
@@ -223,6 +310,8 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_bombCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_healthPotionsCount, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(APlayableCharacter, m_manaPotionsCount, COND_OwnerOnly);
+    //try spell replication
+    DOREPLIFETIME_CONDITION(APlayableCharacter, m_spellKit, COND_OwnerOnly);
 }
 
 
@@ -263,7 +352,7 @@ void APlayableCharacter::OnStartSprint()
     else
     {
         //increase move speed
-        m_moveSpeed = 1.0f;
+        m_maxVelocity = m_maxRunVelocity;
         m_bPressedRun = true;
 
         if(Role < ROLE_Authority)
@@ -276,7 +365,7 @@ void APlayableCharacter::OnStartSprint()
 void APlayableCharacter::OnStopSprint()
 {
     //decrease move speed
-    m_moveSpeed = 0.3;
+    m_maxVelocity = m_maxWalkVelocity;
     m_bPressedRun = false;
     // Si nous sommes sur un client
     if(Role < ROLE_Authority)
@@ -348,7 +437,7 @@ void APlayableCharacter::OnCrouchToggle()
         if(!m_bPressedCrouch)
         {
             m_bPressedCrouch = true;
-            m_moveSpeed = 0.1f;
+            m_maxVelocity = m_maxCrouchVelocity;
 
             CameraBoom->TargetOffset.Z = CROUCH_HEIGHT;
             this->BaseEyeHeight = CROUCH_HEIGHT;
@@ -358,7 +447,7 @@ void APlayableCharacter::OnCrouchToggle()
         else
         {
             m_bPressedCrouch = false;
-            m_moveSpeed = 0.3f;
+            m_maxVelocity = m_maxWalkVelocity;
 
             CameraBoom->TargetOffset.Z = STAND_UP_HEIGHT;
             this->BaseEyeHeight = STAND_UP_HEIGHT;
@@ -432,6 +521,52 @@ EClassType APlayableCharacter::getType() const USE_NOEXCEPT
 }
 
 /////////UI
+
+void APlayableCharacter::openTopWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud->TopWidgetImpl->IsVisible())
+        {
+            closeTopWidget();
+            return;
+        }
+
+        bool gameStarted = false;
+
+        UWorld* w = this->GetWorld();
+        TArray<AActor*> entity;
+        UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(), entity);
+        if(entity.Num() > 0)
+        {
+            gameStarted = Cast<AWorldInstanceEntity>(entity[0])->getGameStarted();
+        }
+        if(gameStarted)
+        {
+            Cast<AWorldInstanceEntity>(myHud->TopWidgetImpl);
+            myHud->TopWidgetImpl->setReturnInGameVisible(true);
+        }
+
+        myHud->DisplayWidget(myHud->TopWidgetImpl);
+        giveInputGameMode(false);
+    }
+}
+
+void APlayableCharacter::closeTopWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->TopWidgetImpl);
+        giveInputGameMode(true);
+    }
+}
+
 void APlayableCharacter::openLobbyWidget()
 {
     APlayerController* MyPC = Cast<APlayerController>(Controller);
@@ -457,6 +592,11 @@ void APlayableCharacter::closeLobbyWidget()
     {
         auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
         myHud->HideWidget(myHud->LobbyImpl);
+        //TODO: BUGBUG
+        if(myHud->TopWidgetImpl->IsVisible())
+        {
+            closeTopWidget();
+        }
         giveInputGameMode(true);
     }
 }
@@ -470,6 +610,20 @@ void APlayableCharacter::closeSelectionWidget()
         myHud->HideWidget(myHud->ClassSelectionWidgetImpl);
         myHud->DisplayWidget(myHud->HUDCharacterImpl);
         giveInputGameMode(true);
+    }
+}
+
+void APlayableCharacter::closeOptionWidget()
+{
+    APlayerController* MyPC = Cast<APlayerController>(Controller);
+
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        myHud->HideWidget(myHud->OptionsWidgetImpl);
+        //giveInputGameMode(true);
+        myHud->DisplayWidget(myHud->TopWidgetImpl);
+        giveInputGameMode(false);
     }
 }
 
@@ -489,6 +643,7 @@ void APlayableCharacter::switchWeapon()
     if(Role < ROLE_Authority)
     {
         serverSwitchWeapon(); // le param n'a pas d'importance pour l'instant
+        m_weaponInventory->switchWeapon(); // switch weapon locally to show it on HUD
     }
     else
     {
@@ -711,6 +866,13 @@ FString APlayableCharacter::typeToString() const USE_NOEXCEPT
 void APlayableCharacter::changeInstanceTo(EClassType toType)
 {
     m_spawner->spawnAndReplace(this, toType);
+    UWorld* w = this->GetWorld();
+    TArray<AActor*> entity;
+    UGameplayStatics::GetAllActorsOfClass(w, AWorldInstanceEntity::StaticClass(), entity);
+    if(entity.Num() > 0)
+    {
+        Cast<AWorldInstanceEntity>(entity[0])->setStartGameMode();
+    }
 }
 
 void APlayableCharacter::changeToAssassin()
@@ -758,9 +920,12 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
 
         //FIRE
         PlayerInputComponent->BindAction("MainFire", IE_Pressed, this, &APlayableCharacter::mainFire);
+        /* Removed cause feature cut
+        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::secondFire);
+        */
 
         //ESCAPE
-        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openTopWidget);
 
         //SWITCH WEAPON
         PlayerInputComponent->BindAction("SwitchWeapon", IE_Pressed, this, &APlayableCharacter::switchWeapon);
@@ -773,15 +938,18 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("Spell1", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<0>);
         PlayerInputComponent->BindAction("Spell2", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<1>);
         PlayerInputComponent->BindAction("Spell3", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<2>);
+        /* Removed cause feature cut
         PlayerInputComponent->BindAction("Spell4", IE_Pressed, this, &APlayableCharacter::castSpellInputHanlder<3>);
+        */
 
         //USE OBJECTS
         PlayerInputComponent->BindAction("LifePotion", IE_Pressed, this, &APlayableCharacter::useHealthPotion);
         PlayerInputComponent->BindAction("ManaPotion", IE_Pressed, this, &APlayableCharacter::useManaPotion);
-        PlayerInputComponent->BindAction("SecondFire", IE_Pressed, this, &APlayableCharacter::loseMana);
 
         //VIEW
+        /* Remove to ensure we dont switch to FPV during presentation
         PlayerInputComponent->BindAction("SwitchView", IE_Pressed, this, &APlayableCharacter::switchView);
+        */
 
         //CHANGE MAP
         PlayerInputComponent->BindAction("Debug_GotoDesert", IE_Released, this, &APlayableCharacter::gotoDesert);
@@ -789,6 +957,10 @@ void APlayableCharacter::inputOnLiving(class UInputComponent* PlayerInputCompone
         PlayerInputComponent->BindAction("Debug_GotoGym", IE_Released, this, &APlayableCharacter::gotoGym);
 
         PlayerInputComponent->BindAction("Debug_CheatCode", IE_Released, this, &APlayableCharacter::onDebugCheat);
+
+
+        ////Fire Effect
+        PlayerInputComponent->BindAction("DisableFireEffect", IE_Pressed, this, &APlayableCharacter::disableFireEffect);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -802,7 +974,7 @@ void APlayableCharacter::inputOnDying(class UInputComponent* PlayerInputComponen
     if(PlayerInputComponent)
     {
         //ESCAPE
-        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openLobbyWidget);
+        PlayerInputComponent->BindAction("Escape", IE_Pressed, this, &APlayableCharacter::openTopWidget);
 
         /************************************************************************/
         /* DEBUG                                                                */
@@ -1042,26 +1214,6 @@ void APlayableCharacter::setBombCount(int nbBombs)
     }
 }
 
-void APlayableCharacter::loseMana()
-{
-    this->consumeMana(150.f);
-
-    if(Role < ROLE_Authority)
-    {
-        serverLoseMana();
-    }
-}
-
-void APlayableCharacter::serverLoseMana_Implementation()
-{
-    loseMana();
-}
-
-bool APlayableCharacter::serverLoseMana_Validate()
-{
-    return true;
-}
-
 void APlayableCharacter::loseBomb()
 {
     m_bombCount = 0;
@@ -1082,7 +1234,6 @@ bool APlayableCharacter::serverLoseBomb_Validate()
 {
     return true;
 }
-
 
 void APlayableCharacter::gotoDesert()
 {
@@ -1222,7 +1373,7 @@ void APlayableCharacter::multiActivatePhysics_Implementation(bool mustActive)
     {
         //this->GetCapsuleComponent()->DestroyPhysicsState();
         GetCapsuleComponent()->BodyInstance.SetCollisionProfileName("Dead");
-        
+
     }
 }
 
@@ -1240,5 +1391,33 @@ void APlayableCharacter::enableDroneDisplay()
     if(droneController)
     {
         droneController->enableDroneDisplay(!droneController->isDebugEnabled());
+    }
+}
+
+void APlayableCharacter::updateHUD(EClassType classType)
+{
+    // If HUD already create destroy it and create a new one
+    APlayerController* MyPC = Cast<APlayerController>(GetController());
+    if(MyPC)
+    {
+        auto myHud = Cast<AGameMenu>(MyPC->GetHUD());
+        if(myHud)
+        {
+            myHud->HUDCharacterImpl->updateClass(classType);
+        }
+    }
+}
+
+void APlayableCharacter::disableFireEffect()
+{
+    if(m_worldEntity->IsBurnEffectEnabled())
+    {
+        m_worldEntity->setIsBurnEffectEnabled(false);
+        PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect disabled");
+    }
+    else
+    {
+        m_worldEntity->setIsBurnEffectEnabled(true);
+        PRINT_MESSAGE_ON_SCREEN(FColor::Black, "effect enabled");
     }
 }

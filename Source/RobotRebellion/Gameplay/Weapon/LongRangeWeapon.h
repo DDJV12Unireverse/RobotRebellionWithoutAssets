@@ -38,7 +38,18 @@ public:
 
     // Weapon Fire Sound
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
-        USoundCue* m_longRangeWeaponFireSound;
+        USoundCue* m_longRangeWeaponOutsideFireSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_longRangeWeaponBigRoomFireSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_longRangeWeaponSmallRoomFireSound;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sounds")
+        USoundCue* m_longRangeWeaponCorridorFireSound;
+
+    /************************************************************************/
+    /*                  PROPERTY                                            */
+    /************************************************************************/
+
 
     /************************************************************************/
     /*                  UFUNCTION                                           */
@@ -49,9 +60,14 @@ public:
         return EWeaponRange::LONG_RANGE_WEAPON;
     }
 
+    UFUNCTION(NetMulticast, Reliable)
+        virtual void playSound(USoundCue* sound, AActor* originator) override;
+
     /************************************************************************/
     /*                  METHODS                                             */
     /************************************************************************/
+
+    ULongRangeWeapon();
 
     virtual void cppAttack(class ARobotRebellionCharacter* user) override;
     
@@ -59,8 +75,5 @@ public:
 
     virtual FString rangeToFString() const USE_NOEXCEPT;
 
-    ULongRangeWeapon();
-
-    UFUNCTION(NetMulticast, Reliable)
-        virtual void playSound(USoundCue* sound, AActor* originator) override;
+    void fireMethod(class AProjectile* projectile, const FVector& fireDirection);
 };

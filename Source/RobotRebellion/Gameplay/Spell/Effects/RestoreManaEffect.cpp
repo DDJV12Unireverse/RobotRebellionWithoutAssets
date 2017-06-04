@@ -18,9 +18,10 @@ void URestoreManaEffect::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 void URestoreManaEffect::exec(ARobotRebellionCharacter* caster, ARobotRebellionCharacter* target)
 {
     target->restoreMana(m_manaGiven);
+    target->spawnManaParticle();
 }
 
-void URestoreManaEffect::exec(const FVector impactPoint)
+void URestoreManaEffect::exec(const FVector& impactPoint, ARobotRebellionCharacter* caster)
 {
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
@@ -46,6 +47,7 @@ void URestoreManaEffect::exec(const FVector impactPoint)
         if(temp)
         {
             temp->restoreMana(m_manaGiven);
+            
         }
     }
 }

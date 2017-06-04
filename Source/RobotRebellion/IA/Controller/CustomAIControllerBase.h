@@ -13,17 +13,29 @@ class ROBOTREBELLION_API ACustomAIControllerBase : public AAIController
 {
     GENERATED_BODY()
 
+
+private:
+    class ARobotRebellionCharacter* m_targetToFollow;
+
+
 protected:
-    class ARobotRebellionCharacter *m_targetToFollow;
-
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
         bool m_showDebugSphereTrace;
 
 
 public:
-    bool m_isInCombat;
-	FVector m_hitDirection;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = 0.f))
+        float m_aimYMaxFallOffAngle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (ClampMin = 0.f))
+        float m_aimZMaxFallOffAngle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+        float m_aimZOffsetFallOffAngle;
+
+protected:
+    FVector getTargetToFollowLocation() const;
+
 
 public:
     ACustomAIControllerBase();
@@ -36,10 +48,14 @@ public:
         return m_targetToFollow != NULL;
     }
 
-    ARobotRebellionCharacter* getTarget() const USE_NOEXCEPT
+    FORCEINLINE ARobotRebellionCharacter* getTarget() const USE_NOEXCEPT
     {
         return m_targetToFollow;
     }
+
+    bool isInCombat();
+
+    void setTarget(class ARobotRebellionCharacter* attacker);
 
     bool hasALivingTarget() const USE_NOEXCEPT;
 
@@ -59,11 +75,6 @@ public:
 
     virtual void AttackTarget() const PURE_VIRTUAL(ACustomAIControllerBase::AttackTarget, );
 
-    bool IsInCombat()
-    {
-        return m_isInCombat;
-    }
-
-    //Set in combat mode and give information from combat direction
-    void setCombat(bool isCombat, ARobotRebellionCharacter* attacker);
+    //aim at the fire direction and modify it needed.
+    virtual void aim(FVector& inOutFireDirection) const USE_NOEXCEPT;
 };

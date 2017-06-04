@@ -16,6 +16,8 @@ AEditorGraphVolume::AEditorGraphVolume()
     // Init box comp to have editor visual feedback
     m_box = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
     m_box->SetCollisionEnabled(ECollisionEnabled::NoCollision); // disable collision
+    // Enable collision for steering ray cast
+    m_box->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel9, ECollisionResponse::ECR_Block);
 }
 
 // Called when the game starts or when spawned

@@ -63,6 +63,7 @@ public:
     //It doesn't initialize the object => you must call initializeWith... to use the widget 
     void copyFrom(const ULivingTextRenderComponent& objectToCopyFrom);
 
+    void updateTextRotation();
 
 
 protected:
@@ -74,6 +75,8 @@ protected:
     void updateWithoutMoving(float deltaTime);
 
     void updateBoingBoing(float deltaTime);
+
+    void updateBoingBiggerText(float deltaTime);
 
 
     void setDelegateAccordingToAnimMode(ELivingTextAnimMode mode);
@@ -98,7 +101,7 @@ public:
     This object will be destroyed at the end of its live.
     Does nothing until isReady return true.
     */
-    UFUNCTION(BlueprintCallable, Category = "General")
+    FORCEINLINE UFUNCTION(BlueprintCallable, Category = "General")
         void update(float deltaTime)
     {
         (this->*m_updateMethod)(deltaTime);
@@ -107,7 +110,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "General")
         void destroyLivingText();
 
-    UFUNCTION(BlueprintCallable, Category = "General")
+    FORCEINLINE UFUNCTION(BlueprintCallable, Category = "General")
         bool isAtEndOfLife() const USE_NOEXCEPT
     {
         return m_currentTime > m_lifeTime;

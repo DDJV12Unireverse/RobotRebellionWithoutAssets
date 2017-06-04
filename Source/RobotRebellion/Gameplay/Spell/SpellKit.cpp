@@ -21,24 +21,19 @@ USpellKit::USpellKit()
 void USpellKit::BeginPlay()
 {
     Super::BeginPlay();
-    // ...
-
-    for(int i = 0; i < m_spellsClass.Num(); ++i)
+    if(GetOwner()->Role == ROLE_Authority)
     {
-        USpell* tempSpell;
-
-//         UUtilitaryFunctionLibrary::createObjectFromDefault<USpell>(
-//             &tempSpell,
-//             m_spellsClass[i],
-//             this,
-//             TEXT("Spell")
-//             );
-        tempSpell = NewObject<USpell>(this, m_spellsClass[i]);
-
-        if(tempSpell)
+        for(int i = 0; i < m_spellsClass.Num(); ++i)
         {
-            tempSpell->initializeSpell();
-            m_spells.Emplace(tempSpell);
+            USpell* tempSpell;
+            tempSpell = NewObject<USpell>(this, m_spellsClass[i]);
+            tempSpell->SetIsReplicated(true);
+
+            if(tempSpell)
+            {
+                tempSpell->initializeSpell();
+                m_spells.Emplace(tempSpell);
+            }
         }
     }
 }
@@ -48,8 +43,14 @@ void USpellKit::BeginPlay()
 void USpellKit::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
     // ...
+}
+
+
+void USpellKit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME_CONDITION(USpellKit, m_spells, COND_OwnerOnly);
 }
 
 void USpellKit::cast(int32 index)
@@ -58,4 +59,14 @@ void USpellKit::cast(int32 index)
     {
         m_spells[index]->cast();
     }
+}
+
+TArray<float> USpellKit::getCooldowns()
+{
+    TArray<float> cooldowns{};
+    for(int32 index{}; index < m_spells.Num(); ++index)
+    {
+        cooldowns.Emplace(m_spells[index]->getCurrentCooldown());
+    }
+    return cooldowns;
 }

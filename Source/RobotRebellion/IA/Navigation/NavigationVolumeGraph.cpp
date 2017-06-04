@@ -5,6 +5,7 @@
 #include "EditorGraphVolume.h"
 #include "VolumeIdProvider.h"
 
+
 struct NodeRecordSingleton
 {
     int32 m_id;
@@ -33,7 +34,7 @@ NavigationVolumeGraph::NavigationVolumeGraph()
     m_edgesCosts{},
     m_indexEdgesForNode{},
     m_isBuilt{false},
-    m_NodeAmountExpected{205}
+    m_NodeAmountExpected{184}
 {
     // default graph is empty
 }
@@ -285,6 +286,45 @@ int32 NavigationVolumeGraph::getBelowVolume(FVector& point, float offset) const
     }
     return -1;
 }
+
+int32 NavigationVolumeGraph::getNearestVolume(FVector& point, float offset, bool useCenter) const
+{
+    float minDist = 9E+16f;
+    int32 idVolume{};
+    for(int index{}; index < m_nodes.Num(); ++index)
+    {
+        float dist = FVector::DistSquared(m_nodes[index]->GetActorLocation(), point);
+        if(dist < minDist)
+        { // if distance is inferior to last min dist just update it
+            minDist = dist;
+            idVolume = index;
+        }
+    }
+    if(useCenter)
+    {
+        point = m_nodes[idVolume]->GetActorLocation();
+        return idVolume;
+    }
+    else
+    {
+        // Cast ray form point to center to get impact point
+        FHitResult hitActors(ForceInit);
+        FCollisionQueryParams TraceParams(TEXT("SteeringTrace"), true);
+        TraceParams.bTraceAsyncScene = true;
+        // atm only should only proc on static mesh
+        FVector centerLocation = m_nodes[idVolume]->GetActorLocation();
+        m_nodes[idVolume]->GetWorld()->LineTraceSingleByChannel(hitActors, point, centerLocation, ECC_GameTraceChannel9, TraceParams);
+        DRAW_DEBUG_LINE(m_nodes[idVolume]->GetWorld(), point, centerLocation, FColor::Emerald);
+
+        // get direction and normalize it
+        FVector direction = centerLocation - point;
+        direction.Normalize();
+        point = hitActors.ImpactPoint + (offset * direction);
+        return idVolume;
+    }
+    // find nearest point overllaped in the volume
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 //                           DEBUG                                    //

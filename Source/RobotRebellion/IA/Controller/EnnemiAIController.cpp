@@ -26,22 +26,19 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
     APawn *currentPawn = GetPawn();
 
     FVector MultiSphereStart = currentPawn->GetActorLocation();
-    FVector MultiSphereEnd = MultiSphereStart + FVector(0, 0, 15.0f);
 
-    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)); // Players
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4)); // Sovec
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)); // Beasts
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes{
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2), // Players
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel4), // Sovec
+        UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel6)  // Beasts
+    };
 
-    TArray<AActor*> ActorsToIgnore;
-    ActorsToIgnore.Add(currentPawn);
-
-    m_targetToFollow = NULL;
+    TArray<AActor*> ActorsToIgnore{ currentPawn };
 
     TArray<FHitResult> OutHits;
     if(UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(),
                                                         MultiSphereStart,
-                                                        MultiSphereEnd,
+                                                        MultiSphereStart,
                                                         range,
                                                         ObjectTypes,
                                                         false,
@@ -50,50 +47,53 @@ void AEnnemiAIController::CheckEnnemyNear(float range)
                                                         OutHits,
                                                         true))
     {
-        for(int32 i = 0; i < OutHits.Num(); i++)
+        int32 countHit = OutHits.Num();
+        for(int32 i = 0; i < countHit; i++)
         {
-            FHitResult Hit = OutHits[i];
+            FHitResult& Hit = OutHits[i];
             ARobotRebellionCharacter* RRCharacter = Cast<ARobotRebellionCharacter>(Hit.GetActor());
-            if(NULL != RRCharacter)
+            if(RRCharacter && 
+                !RRCharacter->isDead() && 
+                RRCharacter->isVisible())
             {
-                if(RRCharacter->isDead() || !RRCharacter->isVisible())
-                {
-                    continue;
-                }
-                m_targetToFollow = RRCharacter;
+                setTarget(RRCharacter);
                 break;
             }
         }
+    }
+    else
+    {
+        setTarget(nullptr);
     }
 }
 
 void AEnnemiAIController::AttackTarget() const
 {
     ANonPlayableCharacter* ennemiCharacter = Cast<ANonPlayableCharacter>(GetCharacter());
-    if(m_targetToFollow)
+    if(this->getTarget())
     {
         FVector hitDirection = UKismetMathLibrary::GetForwardVector(
-            UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), m_targetToFollow->GetActorLocation()));
-        hitDirection.Z = 0;
+            UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), this->getTarget()->GetActorLocation()));
+        hitDirection.Z = 0.f;
         hitDirection.Normalize();
         FVector front = GetPawn()->GetActorForwardVector();
-        front.Z = 0;
+        front.Z = 0.f;
         front.Normalize();
         FVector vert = FVector::CrossProduct(front, hitDirection);
         float moveDirection = vert.Z;
         float sinAngle = vert.Size();
 
-         if(moveDirection > 0)
-         {
-             GetPawn()->AddActorLocalRotation(FQuat(FVector(0, 0, 1), asinf(sinAngle)), true); //Correct
-         }
-         else
-         {
-             GetPawn()->AddActorLocalRotation(FQuat(FVector(0, 0, 1), asinf(-sinAngle)), true);
-         }
+        if(moveDirection > 0.f)
+        {
+            GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(sinAngle)), true); //Correct
+        }
+        else
+        {
+            GetPawn()->AddActorLocalRotation(FQuat(FVector(0.f, 0.f, 1.f), asinf(-sinAngle)), true);
+        }
         
         
-        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, m_targetToFollow);
+        ennemiCharacter->m_weaponInventory->getCurrentWeapon()->cppAttack(ennemiCharacter, this->getTarget());
     }
     else
     {
